@@ -1,0 +1,52 @@
+{
+package ast
+
+func ifaceStr(val interface{}) string {
+  str := ""
+  for _, seg := range val.([]interface{}) {
+    str = str + string(seg.([]byte))
+  }
+
+  return str
+}
+
+func ifaceNodes(val interface{}) []Node {
+  nodes := []Node{}
+  for _, node := range val.([]interface{}) {
+    nodes = append(nodes, node.(Node))
+  }
+
+  return nodes
+}
+}
+
+Booklit <- node:Sequence !. {
+  return node, nil
+}
+
+Node <- val:(String / Escaped / Invoke) {
+  return val, nil
+}
+
+String <- str:[^\\{}]+ {
+  return String(c.text), nil
+}
+
+Escaped <- "\\\\" {
+  return String("\\"), nil
+}
+
+Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
+  return Invoke{
+    Name: ifaceStr(name),
+    Arguments: ifaceNodes(args),
+  }, nil
+}
+
+Argument <- '{' node:Sequence '}' {
+  return node, nil
+}
+
+Sequence <- seq:(Node*) {
+  return Sequence(ifaceNodes(seq)), nil
+}
