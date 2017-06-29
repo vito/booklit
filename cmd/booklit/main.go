@@ -1,14 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	flags "github.com/jessevdk/go-flags"
-	"github.com/vito/booklit"
-	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/baselit"
+	"github.com/vito/booklit/processor"
 	"github.com/vito/booklit/render"
 )
 
@@ -18,33 +17,16 @@ type Command struct {
 }
 
 func (cmd *Command) Execute(args []string) error {
-	source := `hi
+	process := processor.Processor{
+		PluginFactories: []processor.PluginFactory{
+			baselit.BaselitPluginFactory{},
+		},
+	}
 
-im a thing
-
-\title{Hello, \italic{world}!}{hello}
-
-how are you?
-`
-
-	node, err := ast.Parse("test", []byte(source))
+	section, err := process.Load(cmd.In)
 	if err != nil {
-		return fmt.Errorf("failed to parse: %s", err)
+		return err
 	}
-
-	json.NewEncoder(os.Stdout).Encode(node)
-
-	section := &booklit.Section{
-		Title: booklit.String("Hello, world!"),
-		Body: booklit.Sequence([]booklit.Content{
-			booklit.String("hi"),
-		}),
-	}
-
-	// file, err := os.Open(cmd.In)
-	// if err != nil {
-	// 	return err
-	// }
 
 	err = os.MkdirAll(cmd.Out, 0755)
 	if err != nil {

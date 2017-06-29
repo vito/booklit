@@ -1,12 +1,15 @@
 package baselit
 
-import "github.com/vito/booklit"
+import (
+	"github.com/vito/booklit"
+	"github.com/vito/booklit/processor"
+)
 
-type BaseLitPluginFactory struct{}
+type BaselitPluginFactory struct{}
 
-func (BaseLitPluginFactory) NewPlugin(section *booklit.Section) booklit.Plugin {
-	return baseLitPlugin{
-		Plugin: section,
+func (BaselitPluginFactory) NewPlugin(section *booklit.Section) processor.Plugin {
+	return baselitPlugin{
+		section: section,
 	}
 }
 
@@ -30,4 +33,8 @@ func (plugin baselitPlugin) IncludeSection(path string) booklit.Content {
 }
 
 func (plugin baselitPlugin) SplitSections() {
+}
+
+func (plugin baselitPlugin) Something() booklit.Content {
+	return booklit.String("hello from plugin")
 }

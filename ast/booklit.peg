@@ -1,6 +1,8 @@
 {
 package ast
 
+import "strings"
+
 func ifaceStr(val interface{}) string {
   str := ""
   for _, seg := range val.([]interface{}) {
@@ -17,6 +19,15 @@ func ifaceNodes(val interface{}) []Node {
   }
 
   return nodes
+}
+
+func methodName(name string) string {
+  camel := ""
+  for _, word := range strings.Split(name, "-") {
+    camel += strings.Title(word)
+  }
+
+  return camel
 }
 }
 
@@ -38,7 +49,7 @@ Escaped <- "\\\\" {
 
 Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   return Invoke{
-    Name: ifaceStr(name),
+    Method: methodName(ifaceStr(name)),
     Arguments: ifaceNodes(args),
   }, nil
 }
