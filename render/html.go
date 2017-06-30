@@ -23,7 +23,10 @@ func init() {
 			panic(err)
 		}
 
-		tmpl.New(filepath.Base(info.Name())).Parse(string(MustAsset(asset)))
+		_, err = tmpl.New(filepath.Base(info.Name())).Parse(string(MustAsset(asset)))
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
