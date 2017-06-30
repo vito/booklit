@@ -10,8 +10,7 @@ inputs:
   path: gopath/src/github.com/vito/booklit
 
 caches:
-- path: gopath/pkg
-- path: gopath/bin
+- path: depspath/
 
 run:
   path: gopath/src/github.com/vito/booklit/ci/test
