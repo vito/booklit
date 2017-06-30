@@ -2,12 +2,11 @@ package baselit
 
 import (
 	"github.com/vito/booklit"
-	"github.com/vito/booklit/processor"
 )
 
 type BaselitPluginFactory struct{}
 
-func (BaselitPluginFactory) NewPlugin(section *booklit.Section) processor.Plugin {
+func (BaselitPluginFactory) NewPlugin(section *booklit.Section) booklit.Plugin {
 	return baselitPlugin{
 		section: section,
 	}

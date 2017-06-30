@@ -1,4 +1,4 @@
-package processor
+package stages
 
 import (
 	"fmt"
@@ -8,79 +8,23 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
-type Processor struct {
-	PluginFactories []PluginFactory
-}
-
-type PluginFactory interface {
-	NewPlugin(*booklit.Section) Plugin
-}
-
-type Plugin interface {
-	// methods are dynamically invoked
-}
-
-func (processor Processor) Load(path string) (*booklit.Section, error) {
-	result, err := ast.ParseFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	node := result.(ast.Node)
-
-	section := &booklit.Section{
-		Title: booklit.Empty,
-		Body:  booklit.Empty,
-	}
-
-	plugins := []Plugin{}
-	for _, pf := range processor.PluginFactories {
-		plugins = append(plugins, pf.NewPlugin(section))
-	}
-
-	evaluator := &Evaluator{
-		Plugins: plugins,
-		Section: section,
-	}
-
-	node.Visit(evaluator)
-
-	section.Body = evaluator.Result
-
-	return section, nil
-}
-
-type Evaluator struct {
-	Plugins []Plugin
+type Evaluate struct {
+	Plugins []booklit.Plugin
 
 	Result booklit.Content
-
-	Section *booklit.Section
 }
 
-func (eval *Evaluator) VisitString(str ast.String) {
+func (eval *Evaluate) VisitString(str ast.String) {
 	eval.Result = booklit.Append(eval.Result, booklit.String(str))
 }
 
-func (eval *Evaluator) VisitSequence(seq ast.Sequence) {
+func (eval *Evaluate) VisitSequence(seq ast.Sequence) {
 	for _, node := range seq {
 		node.Visit(eval)
 	}
 }
 
-func (eval *Evaluator) VisitInvoke(invoke ast.Invoke) {
-	argContent := make([]booklit.Content, len(invoke.Arguments))
-	for i, arg := range invoke.Arguments {
-		eval := &Evaluator{
-			Plugins: eval.Plugins,
-			Section: eval.Section,
-		}
-
-		arg.Visit(eval)
-
-		argContent[i] = eval.Result
-	}
-
+func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) {
 	var method reflect.Value
 	for _, p := range eval.Plugins {
 		value := reflect.ValueOf(p)
@@ -92,6 +36,17 @@ func (eval *Evaluator) VisitInvoke(invoke ast.Invoke) {
 
 	if !method.IsValid() {
 		panic(fmt.Errorf("undefined method: %s", invoke.Method))
+	}
+
+	argContent := make([]booklit.Content, len(invoke.Arguments))
+	for i, arg := range invoke.Arguments {
+		eval := &Evaluate{
+			Plugins: eval.Plugins,
+		}
+
+		arg.Visit(eval)
+
+		argContent[i] = eval.Result
 	}
 
 	argc := method.Type().NumIn()
@@ -162,15 +117,10 @@ func (eval *Evaluator) VisitInvoke(invoke ast.Invoke) {
 	}
 }
 
-func (eval Evaluator) convert(to reflect.Type, content booklit.Content) reflect.Value {
+func (eval Evaluate) convert(to reflect.Type, content booklit.Content) reflect.Value {
 	switch reflect.New(to).Interface().(type) {
 	case *string:
-		switch v := content.(type) {
-		case booklit.String:
-			return reflect.ValueOf(v.String())
-		default:
-			panic(fmt.Errorf("cannot satisfy string argument with %T", content))
-		}
+		return reflect.ValueOf(content.String())
 	case *booklit.Content:
 		return reflect.ValueOf(content)
 	default:

@@ -1,6 +1,8 @@
 package booklit
 
 type Content interface {
+	String() string
+
 	Visit(Visitor)
 }
 

@@ -36,6 +36,10 @@ func NewHTMLRenderingEngine() *HTMLRenderingEngine {
 	return &HTMLRenderingEngine{}
 }
 
+func (engine *HTMLRenderingEngine) FileExtension() string {
+	return "html"
+}
+
 func (engine *HTMLRenderingEngine) VisitString(str booklit.String) {
 	engine.template = tmpl.Lookup("string.html")
 	engine.data = str

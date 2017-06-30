@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 
 	flags "github.com/jessevdk/go-flags"
+	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
-	"github.com/vito/booklit/processor"
+	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
 )
 
@@ -17,13 +18,13 @@ type Command struct {
 }
 
 func (cmd *Command) Execute(args []string) error {
-	process := processor.Processor{
-		PluginFactories: []processor.PluginFactory{
+	process := load.Processor{
+		PluginFactories: []booklit.PluginFactory{
 			baselit.BaselitPluginFactory{},
 		},
 	}
 
-	section, err := process.Load(cmd.In)
+	section, err := process.LoadFile(cmd.In)
 	if err != nil {
 		return err
 	}
