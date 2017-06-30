@@ -1,0 +1,34 @@
+---
+resources_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
+resources:
+- name: booklit
+  type: git
+  source:
+    uri: https://github.com/vito/booklit
+
+- name: booklit-pr
+  type: pull-request
+  source:
+    repo: vito/booklit
+
+jobs:
+- name: unit
+  plan:
+  - get: booklit
+    trigger: true
+  - task: unit
+    file: booklit/ci/test.yml
+
+- name: pr-unit
+  plan:
+  - get: booklit-pr
+    version: every
+    trigger: true
+  - task: unit
+    file: booklit-pr/ci/test.yml
+    input_mapping: {booklit: booklit-pr}

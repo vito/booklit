@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e -u
+
+export GOPATH=$PWD/gopath
+export PATH=$PWD/gopath/bin:$PATH
+
+cd gopath/src/github.com/vito/booklit
+
+echo "fetching dependencies..."
+go get -t -d ./...
+
+echo "installing ginkgo..."
+go install github.com/onsi/ginkgo/ginkgo
+
+ginkgo -r -p
