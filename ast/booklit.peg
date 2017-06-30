@@ -44,7 +44,7 @@ Booklit <- node:Paragraphs !. {
   return node, nil
 }
 
-Paragraphs <- paragraphs:(p:Paragraph "\n"* { return p, nil })+ {
+Paragraphs <- "\n"* paragraphs:(p:Paragraph "\n"* { return p, nil })+ {
   return Sequence(ifaceNodes(paragraphs)), nil
 }
 
@@ -52,7 +52,7 @@ Paragraph <- sentences:(s:Sentence "\n" { return s, nil })+ {
   return Paragraph(ifaceSequences(sentences)), nil
 }
 
-Sentence <- ' '* words:(Word)+ {
+Sentence <- [ \t]* words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
