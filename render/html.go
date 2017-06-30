@@ -17,7 +17,7 @@ func init() {
 		"render": renderFunc,
 		"sectionHeader": func(con *booklit.Section, content template.HTML) template.HTML {
 			depth := 1
-			for sec := con; sec.Parent != nil; sec = sec.Parent {
+			for sec := con; sec.Parent != nil && !sec.Parent.SplitSections; sec = sec.Parent {
 				depth++
 			}
 

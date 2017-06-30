@@ -31,7 +31,7 @@ func (eval *Evaluate) VisitSequence(seq ast.Sequence) error {
 }
 
 func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
-	newContent := eval.Result
+	previous := eval.Result
 
 	para := booklit.Paragraph{}
 	for _, sentence := range node {
@@ -51,16 +51,17 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 
 	if len(para) == 0 {
 		// paragraph resulted in no content (e.g. an invoke with no return value)
+		eval.Result = previous
 		return nil
 	}
 
 	if len(para) == 1 && !para[0].IsSentence() {
 		// paragraph resulted in block content (e.g. a section)
-		eval.Result = booklit.Append(newContent, para[0])
+		eval.Result = booklit.Append(previous, para[0])
 		return nil
 	}
 
-	eval.Result = booklit.Append(newContent, para)
+	eval.Result = booklit.Append(previous, para)
 
 	return nil
 }

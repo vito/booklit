@@ -14,6 +14,8 @@ type Section struct {
 
 	Parent   *Section
 	Children []*Section
+
+	SplitSections bool
 }
 
 func (con *Section) String() string {

@@ -24,7 +24,7 @@ func (plugin baselitPlugin) Title(title booklit.Content, tags ...string) {
 	plugin.section.Tags = tags
 }
 
-func (plugin baselitPlugin) Section(title booklit.Content, content booklit.Content) booklit.Content {
+func (plugin baselitPlugin) Section(title booklit.Content, content booklit.Content) {
 	section := &booklit.Section{
 		Title: title,
 		Body:  content,
@@ -33,8 +33,6 @@ func (plugin baselitPlugin) Section(title booklit.Content, content booklit.Conte
 	}
 
 	plugin.section.Children = append(plugin.section.Children, section)
-
-	return section
 }
 
 func (plugin baselitPlugin) Reference(tag string, content booklit.Content) {
@@ -45,6 +43,7 @@ func (plugin baselitPlugin) IncludeSection(path string) booklit.Content {
 }
 
 func (plugin baselitPlugin) SplitSections() {
+	plugin.section.SplitSections = true
 }
 
 func (plugin baselitPlugin) Something() booklit.Content {

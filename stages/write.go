@@ -28,8 +28,7 @@ func (stage Write) VisitSequence(booklit.Sequence) error { return nil }
 func (stage Write) VisitParagraph(booklit.Paragraph) error { return nil }
 
 func (stage Write) VisitSection(section *booklit.Section) error {
-	if section.Parent != nil {
-		// TODO: or, if parent is not configured for split sections
+	if section.Parent != nil && !section.Parent.SplitSections {
 		return nil
 	}
 
@@ -41,7 +40,21 @@ func (stage Write) VisitSection(section *booklit.Section) error {
 		return err
 	}
 
-	err = section.Visit(stage.Engine)
+	var node booklit.Content = section
+	if section.SplitSections {
+		for _, child := range section.Children {
+			err = child.Visit(stage)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		for _, child := range section.Children {
+			node = booklit.Append(section, child)
+		}
+	}
+
+	err = node.Visit(stage.Engine)
 	if err != nil {
 		return err
 	}
