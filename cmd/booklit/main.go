@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	flags "github.com/jessevdk/go-flags"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
+	"github.com/vito/booklit/stages"
 )
 
 type Command struct {
@@ -18,13 +18,13 @@ type Command struct {
 }
 
 func (cmd *Command) Execute(args []string) error {
-	process := load.Processor{
+	processor := load.Processor{
 		PluginFactories: []booklit.PluginFactory{
 			baselit.BaselitPluginFactory{},
 		},
 	}
 
-	section, err := process.LoadFile(cmd.In)
+	section, err := processor.LoadFile(cmd.In)
 	if err != nil {
 		return err
 	}
@@ -34,18 +34,12 @@ func (cmd *Command) Execute(args []string) error {
 		return err
 	}
 
-	out, err := os.Create(filepath.Join(cmd.Out, "test.html"))
-	if err != nil {
-		return err
+	write := stages.Write{
+		Engine:      render.NewHTMLRenderingEngine(),
+		Destination: cmd.Out,
 	}
 
-	defer out.Close()
-
-	engine := render.NewHTMLRenderingEngine()
-
-	section.Visit(engine)
-
-	err = engine.Render(out)
+	err = section.Visit(write)
 	if err != nil {
 		return err
 	}
