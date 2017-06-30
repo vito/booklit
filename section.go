@@ -16,27 +16,29 @@ type Section struct {
 	Children []*Section
 }
 
-func (sec *Section) String() string {
-	return fmt.Sprintf("{section: %s}", sec.Title)
+func (con *Section) String() string {
+	return fmt.Sprintf("{section: %s}", con.Title)
 }
 
-func (sec *Section) Visit(visitor Visitor) {
-	visitor.VisitSection(sec)
+func (con *Section) IsSentence() bool { return false }
+
+func (con *Section) Visit(visitor Visitor) {
+	visitor.VisitSection(con)
 }
 
 var whitespaceRegexp = regexp.MustCompile(`\s+`)
 var specialCharsRegexp = regexp.MustCompile(`[^[:alnum:]_\-]`)
 
-func (sec *Section) PrimaryTag() string {
-	if len(sec.Tags) > 0 {
-		return sec.Tags[0]
+func (con *Section) PrimaryTag() string {
+	if len(con.Tags) > 0 {
+		return con.Tags[0]
 	}
 
 	return strings.ToLower(
 		specialCharsRegexp.ReplaceAllString(
 			whitespaceRegexp.ReplaceAllString(
 				strings.Replace(
-					sec.Title.String(),
+					con.Title.String(),
 					" & ",
 					" and ",
 					-1,

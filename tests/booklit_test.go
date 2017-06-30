@@ -35,4 +35,26 @@ I'm good, thanks!
 `,
 		},
 	}),
+
+	Entry("sub-sections", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\section{How I'm doing}{
+	Good, thanks!
+}
+`,
+
+		Outputs: Outputs{
+			"hello-world.html": `<h1>Hello, world!</h1>
+
+<p>How are you?</p>
+
+<h1>How I'm doing</h1>
+
+<p>Good, thanks!</p>
+`,
+		},
+	}),
 )

@@ -37,7 +37,11 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) {
 		return
 	}
 
-	eval.Result = booklit.Append(previous, booklit.Paragraph{eval.Result})
+	if eval.Result.IsSentence() {
+		eval.Result = booklit.Paragraph{eval.Result}
+	}
+
+	eval.Result = booklit.Append(previous, eval.Result)
 }
 
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) {

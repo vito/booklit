@@ -24,6 +24,19 @@ func (plugin baselitPlugin) Title(title booklit.Content, tags ...string) {
 	plugin.section.Tags = tags
 }
 
+func (plugin baselitPlugin) Section(title booklit.Content, content booklit.Content) booklit.Content {
+	section := &booklit.Section{
+		Title: title,
+		Body:  content,
+
+		Parent: plugin.section,
+	}
+
+	plugin.section.Children = append(plugin.section.Children, section)
+
+	return section
+}
+
 func (plugin baselitPlugin) Reference(tag string, content booklit.Content) {
 }
 

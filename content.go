@@ -3,6 +3,8 @@ package booklit
 type Content interface {
 	String() string
 
+	IsSentence() bool
+
 	Visit(Visitor)
 }
 
