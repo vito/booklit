@@ -51,7 +51,7 @@ How are you?
 
 <p>How are you?</p>
 
-<h1>How I'm doing</h1>
+<h2>How I'm doing</h2>
 
 <p>Good, thanks!</p>
 `,

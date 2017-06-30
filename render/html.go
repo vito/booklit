@@ -15,6 +15,18 @@ var tmpl *template.Template
 func init() {
 	tmpl = template.New("engine").Funcs(template.FuncMap{
 		"render": renderFunc,
+		"sectionHeader": func(con *booklit.Section, content template.HTML) template.HTML {
+			depth := 1
+			for sec := con; sec.Parent != nil; sec = sec.Parent {
+				depth++
+			}
+
+			if depth > 6 {
+				depth = 6
+			}
+
+			return template.HTML(fmt.Sprintf("<h%d>%s</h%d>", depth, content, depth))
+		},
 	})
 
 	for _, asset := range AssetNames() {
