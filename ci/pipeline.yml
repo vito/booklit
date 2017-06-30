@@ -15,6 +15,7 @@ resources:
   type: pull-request
   source:
     repo: vito/booklit
+    access_token: ((access_token))
 
 jobs:
 - name: unit
