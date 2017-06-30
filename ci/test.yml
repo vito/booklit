@@ -11,6 +11,7 @@ inputs:
 
 caches:
 - path: depspath/
+- path: gopath/pkg/
 
 run:
   path: gopath/src/github.com/vito/booklit/ci/test
