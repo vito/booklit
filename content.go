@@ -5,12 +5,12 @@ type Content interface {
 
 	IsSentence() bool
 
-	Visit(Visitor)
+	Visit(Visitor) error
 }
 
 type Visitor interface {
-	VisitString(String)
-	VisitSequence(Sequence)
-	VisitSection(*Section)
-	VisitParagraph(Paragraph)
+	VisitString(String) error
+	VisitSequence(Sequence) error
+	VisitSection(*Section) error
+	VisitParagraph(Paragraph) error
 }

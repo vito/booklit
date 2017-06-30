@@ -1,20 +1,20 @@
 package ast
 
 type Node interface {
-	Visit(Visitor)
+	Visit(Visitor) error
 }
 
 type Visitor interface {
-	VisitString(String)
-	VisitInvoke(Invoke)
-	VisitSequence(Sequence)
-	VisitParagraph(Paragraph)
+	VisitString(String) error
+	VisitInvoke(Invoke) error
+	VisitSequence(Sequence) error
+	VisitParagraph(Paragraph) error
 }
 
 type String string
 
-func (node String) Visit(visitor Visitor) {
-	visitor.VisitString(node)
+func (node String) Visit(visitor Visitor) error {
+	return visitor.VisitString(node)
 }
 
 type Invoke struct {
@@ -22,18 +22,18 @@ type Invoke struct {
 	Arguments []Node
 }
 
-func (node Invoke) Visit(visitor Visitor) {
-	visitor.VisitInvoke(node)
+func (node Invoke) Visit(visitor Visitor) error {
+	return visitor.VisitInvoke(node)
 }
 
 type Sequence []Node
 
-func (node Sequence) Visit(visitor Visitor) {
-	visitor.VisitSequence(node)
+func (node Sequence) Visit(visitor Visitor) error {
+	return visitor.VisitSequence(node)
 }
 
 type Paragraph []Sequence
 
-func (node Paragraph) Visit(visitor Visitor) {
-	visitor.VisitParagraph(node)
+func (node Paragraph) Visit(visitor Visitor) error {
+	return visitor.VisitParagraph(node)
 }

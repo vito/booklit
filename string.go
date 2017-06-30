@@ -10,6 +10,6 @@ func (str String) String() string {
 	return string(str)
 }
 
-func (str String) Visit(visitor Visitor) {
-	visitor.VisitString(str)
+func (str String) Visit(visitor Visitor) error {
+	return visitor.VisitString(str)
 }

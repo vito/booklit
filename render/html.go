@@ -55,24 +55,28 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 	return "html"
 }
 
-func (engine *HTMLRenderingEngine) VisitString(con booklit.String) {
+func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
 	engine.template = tmpl.Lookup("string.html")
 	engine.data = con
+	return nil
 }
 
-func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) {
+func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
 	engine.template = tmpl.Lookup("section.html")
 	engine.data = con
+	return nil
 }
 
-func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) {
+func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) error {
 	engine.template = tmpl.Lookup("sequence.html")
 	engine.data = con
+	return nil
 }
 
-func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) {
+func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
 	engine.template = tmpl.Lookup("paragraph.html")
 	engine.data = con
+	return nil
 }
 
 func (engine *HTMLRenderingEngine) Render(out io.Writer) error {
@@ -87,8 +91,13 @@ func renderFunc(content booklit.Content) (template.HTML, error) {
 	buf := new(bytes.Buffer)
 
 	engine := NewHTMLRenderingEngine()
-	content.Visit(engine)
-	err := engine.Render(buf)
+
+	err := content.Visit(engine)
+	if err != nil {
+		return "", err
+	}
+
+	err = engine.Render(buf)
 	if err != nil {
 		return "", err
 	}

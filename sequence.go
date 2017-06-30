@@ -25,6 +25,6 @@ func (con Sequence) Contents() []Content {
 	return con
 }
 
-func (con Sequence) Visit(visitor Visitor) {
-	visitor.VisitSequence(con)
+func (con Sequence) Visit(visitor Visitor) error {
+	return visitor.VisitSequence(con)
 }

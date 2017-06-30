@@ -16,6 +16,6 @@ func (con Paragraph) IsSentence() bool {
 	return false
 }
 
-func (con Paragraph) Visit(visitor Visitor) {
-	visitor.VisitParagraph(con)
+func (con Paragraph) Visit(visitor Visitor) error {
+	return visitor.VisitParagraph(con)
 }

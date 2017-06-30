@@ -22,8 +22,8 @@ func (con *Section) String() string {
 
 func (con *Section) IsSentence() bool { return false }
 
-func (con *Section) Visit(visitor Visitor) {
-	visitor.VisitSection(con)
+func (con *Section) Visit(visitor Visitor) error {
+	return visitor.VisitSection(con)
 }
 
 var whitespaceRegexp = regexp.MustCompile(`\s+`)
