@@ -1,1 +1,1 @@
-<p>{{.Content | render}}</p>
+<p>{{range $index, $sentence := .}}{{if $index}} {{end}}{{$sentence | render}}{{end}}</p>

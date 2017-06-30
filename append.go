@@ -1,16 +1,22 @@
 package booklit
 
-func Append(a, b Content) Content {
-	if a == nil {
-		return b
+func Append(first Content, rest ...Content) Content {
+	appended := first
+
+	for _, content := range rest {
+		if content == nil {
+			continue
+		}
+
+		switch v := appended.(type) {
+		case nil:
+			appended = content
+		case Sequence:
+			return Sequence(append(v, content))
+		default:
+			return Sequence([]Content{appended, content})
+		}
 	}
 
-	switch v := a.(type) {
-	case nil:
-		return b
-	case Sequence:
-		return Sequence(append(v, b))
-	default:
-		return Sequence([]Content{a, b})
-	}
+	return appended
 }

@@ -71,7 +71,7 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _renderHtmlParagraphHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\xb0\xab\xae\xd6\x73\xce\xcf\x2b\x49\xcd\x2b\x51\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x2f\xb0\xe3\x02\x04\x00\x00\xff\xff\x7e\xf4\x37\x0c\x1d\x00\x00\x00")
+var _renderHtmlParagraphHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\xb0\xab\xae\x2e\x4a\xcc\x4b\x4f\x55\x50\xc9\xcc\x4b\x49\xad\xd0\x51\x50\x29\x4e\xcd\x2b\x49\xcd\x4b\x4e\x55\xb0\xb2\x55\xd0\xab\xad\xad\xae\xce\x4c\x83\x4a\xd6\xd6\x2a\x54\x57\xa7\xe6\xa5\x80\x04\x11\xca\x6a\x14\x8a\x52\xf3\x52\x52\x8b\x40\xa2\x60\x49\x1b\xfd\x02\x3b\x2e\x40\x00\x00\x00\xff\xff\xd3\x3e\x01\x8c\x5a\x00\x00\x00")
 
 func renderHtmlParagraphHtmlBytes() ([]byte, error) {
 	return bindataRead(
@@ -86,7 +86,7 @@ func renderHtmlParagraphHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/html/paragraph.html", size: 29, mode: os.FileMode(420), modTime: time.Unix(1498794853, 0)}
+	info := bindataFileInfo{name: "render/html/paragraph.html", size: 90, mode: os.FileMode(420), modTime: time.Unix(1498827174, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func renderHtmlSequenceHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/html/sequence.html", size: 41, mode: os.FileMode(420), modTime: time.Unix(1498700481, 0)}
+	info := bindataFileInfo{name: "render/html/sequence.html", size: 41, mode: os.FileMode(420), modTime: time.Unix(1498830402, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

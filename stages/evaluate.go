@@ -25,23 +25,33 @@ func (eval *Evaluate) VisitSequence(seq ast.Sequence) {
 }
 
 func (eval *Evaluate) VisitParagraph(node ast.Paragraph) {
-	previous := eval.Result
-	eval.Result = nil
+	newContent := eval.Result
 
-	for _, node := range node {
-		node.Visit(eval)
+	para := booklit.Paragraph{}
+	for _, sentence := range node {
+		eval.Result = nil
+
+		sentence.Visit(eval)
+
+		if eval.Result != nil {
+			para = append(para, eval.Result)
+		}
 	}
 
-	if eval.Result == nil {
+	eval.Result = nil
+
+	if len(para) == 0 {
 		// paragraph resulted in no content (e.g. an invoke with no return value)
 		return
 	}
 
-	if eval.Result.IsSentence() {
-		eval.Result = booklit.Paragraph{eval.Result}
+	if len(para) == 1 && !para[0].IsSentence() {
+		// paragraph resulted in block content (e.g. a section)
+		eval.Result = booklit.Append(newContent, para[0])
+		return
 	}
 
-	eval.Result = booklit.Append(previous, eval.Result)
+	eval.Result = booklit.Append(newContent, para)
 }
 
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) {
