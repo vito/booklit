@@ -5,13 +5,27 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"path/filepath"
 
 	"github.com/vito/booklit"
 )
 
-var tmpl = template.Must(template.New("engine").Funcs(template.FuncMap{
-	"render": renderFunc,
-}).ParseGlob("render/html/*.html"))
+var tmpl *template.Template
+
+func init() {
+	tmpl = template.New("engine").Funcs(template.FuncMap{
+		"render": renderFunc,
+	})
+
+	for _, asset := range AssetNames() {
+		info, err := AssetInfo(asset)
+		if err != nil {
+			panic(err)
+		}
+
+		tmpl.New(filepath.Base(info.Name())).Parse(string(MustAsset(asset)))
+	}
+}
 
 type HTMLRenderingEngine struct {
 	template *template.Template
