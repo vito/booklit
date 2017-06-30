@@ -24,6 +24,22 @@ func (eval *Evaluate) VisitSequence(seq ast.Sequence) {
 	}
 }
 
+func (eval *Evaluate) VisitParagraph(node ast.Paragraph) {
+	previous := eval.Result
+	eval.Result = nil
+
+	for _, node := range node {
+		node.Visit(eval)
+	}
+
+	if eval.Result == nil {
+		// paragraph resulted in no content (e.g. an invoke with no return value)
+		return
+	}
+
+	eval.Result = booklit.Append(previous, booklit.Paragraph{eval.Result})
+}
+
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) {
 	var method reflect.Value
 	for _, p := range eval.Plugins {

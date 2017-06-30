@@ -40,19 +40,24 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 	return "html"
 }
 
-func (engine *HTMLRenderingEngine) VisitString(str booklit.String) {
+func (engine *HTMLRenderingEngine) VisitString(con booklit.String) {
 	engine.template = tmpl.Lookup("string.html")
-	engine.data = str
+	engine.data = con
 }
 
-func (engine *HTMLRenderingEngine) VisitSection(str *booklit.Section) {
+func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) {
 	engine.template = tmpl.Lookup("section.html")
-	engine.data = str
+	engine.data = con
 }
 
-func (engine *HTMLRenderingEngine) VisitSequence(str booklit.Sequence) {
+func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) {
 	engine.template = tmpl.Lookup("sequence.html")
-	engine.data = str
+	engine.data = con
+}
+
+func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) {
+	engine.template = tmpl.Lookup("paragraph.html")
+	engine.data = con
 }
 
 func (engine *HTMLRenderingEngine) Render(out io.Writer) error {

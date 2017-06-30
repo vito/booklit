@@ -21,9 +21,11 @@ type Write struct {
 	Destination string
 }
 
-func (stage Write) VisitString(str booklit.String) {}
+func (stage Write) VisitString(booklit.String) {}
 
-func (stage Write) VisitSequence(seq booklit.Sequence) {}
+func (stage Write) VisitSequence(booklit.Sequence) {}
+
+func (stage Write) VisitParagraph(booklit.Paragraph) {}
 
 func (stage Write) VisitSection(section *booklit.Section) {
 	if section.Parent != nil {

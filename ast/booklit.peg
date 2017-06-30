@@ -1,51 +1,66 @@
 {
-package ast
+  package ast
 
-import "strings"
+  import "strings"
 
-func ifaceStr(val interface{}) string {
-  str := ""
-  for _, seg := range val.([]interface{}) {
-    str = str + string(seg.([]byte))
+  func ifaceStr(val interface{}) string {
+    str := ""
+    for _, seg := range val.([]interface{}) {
+      str = str + string(seg.([]byte))
+    }
+
+    return str
   }
 
-  return str
-}
+  func ifaceSequences(val interface{}) []Sequence {
+    sentences := []Sequence{}
+    for _, node := range val.([]interface{}) {
+      sentences = append(sentences, node.(Sequence))
+    }
 
-func ifaceNodes(val interface{}) []Node {
-  nodes := []Node{}
-  for _, node := range val.([]interface{}) {
-    nodes = append(nodes, node.(Node))
+    return sentences
   }
 
-  return nodes
-}
+  func ifaceNodes(val interface{}) []Node {
+    nodes := []Node{}
+    for _, node := range val.([]interface{}) {
+      nodes = append(nodes, node.(Node))
+    }
 
-func methodName(name string) string {
-  camel := ""
-  for _, word := range strings.Split(name, "-") {
-    camel += strings.Title(word)
+    return nodes
   }
 
-  return camel
-}
+  func methodName(name string) string {
+    camel := ""
+    for _, word := range strings.Split(name, "-") {
+      camel += strings.Title(word)
+    }
+
+    return camel
+  }
 }
 
-Booklit <- node:Sequence !. {
+Booklit <- node:Paragraphs !. {
   return node, nil
 }
 
-Node <- val:(String / Escaped / Invoke) {
+Paragraphs <- paragraphs:(p:Paragraph "\n"* { return p, nil })+ {
+  return Sequence(ifaceNodes(paragraphs)), nil
+}
+
+Paragraph <- sentences:(s:Sentence "\n" { return s, nil })+ {
+  return Paragraph(ifaceSequences(sentences)), nil
+}
+
+Sentence <- ' '* words:(Word)+ {
+  return Sequence(ifaceNodes(words)), nil
+}
+
+Word <- val:(String / Invoke) {
   return val, nil
 }
 
-String <- str:[^\\{}]+ {
-  return String(c.text), nil
-}
-
-Escaped <- "\\\\" {
-  return String("\\"), nil
-}
+String <- str:[^\\{}\n]+ { return String(c.text), nil } / "\\\\" { return String("\\"), nil }
 
 Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   return Invoke{
@@ -54,10 +69,6 @@ Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   }, nil
 }
 
-Argument <- '{' node:Sequence '}' {
+Argument <- '{' node:(Sentence / Paragraphs) '}' {
   return node, nil
-}
-
-Sequence <- seq:(Node*) {
-  return Sequence(ifaceNodes(seq)), nil
 }

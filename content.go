@@ -10,4 +10,5 @@ type Visitor interface {
 	VisitString(String)
 	VisitSequence(Sequence)
 	VisitSection(*Section)
+	VisitParagraph(Paragraph)
 }
