@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
+	"strings"
 
 	"github.com/vito/booklit"
 )
@@ -35,7 +36,9 @@ func init() {
 			panic(err)
 		}
 
-		_, err = tmpl.New(filepath.Base(info.Name())).Parse(string(MustAsset(asset)))
+		content := strings.TrimRight(string(MustAsset(asset)), "\n")
+
+		_, err = tmpl.New(filepath.Base(info.Name())).Parse(content)
 		if err != nil {
 			panic(err)
 		}
