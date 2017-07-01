@@ -9,7 +9,6 @@ import (
 	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
-	"github.com/vito/booklit/stages"
 )
 
 type Command struct {
@@ -20,7 +19,7 @@ type Command struct {
 func (cmd *Command) Execute(args []string) error {
 	processor := load.Processor{
 		PluginFactories: []booklit.PluginFactory{
-			baselit.BaselitPluginFactory{},
+			baselit.PluginFactory{},
 		},
 	}
 
@@ -34,12 +33,12 @@ func (cmd *Command) Execute(args []string) error {
 		return err
 	}
 
-	write := stages.Write{
+	writer := render.Writer{
 		Engine:      render.NewHTMLRenderingEngine(),
 		Destination: cmd.Out,
 	}
 
-	err = section.Visit(write)
+	err = writer.WriteSection(section)
 	if err != nil {
 		return err
 	}

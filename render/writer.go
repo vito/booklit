@@ -1,4 +1,4 @@
-package stages
+package render
 
 import (
 	"io"
@@ -15,25 +15,19 @@ type RenderingEngine interface {
 	Render(io.Writer) error
 }
 
-type Write struct {
+type Writer struct {
 	Engine RenderingEngine
 
 	Destination string
 }
 
-func (stage Write) VisitString(booklit.String) error { return nil }
-
-func (stage Write) VisitSequence(booklit.Sequence) error { return nil }
-
-func (stage Write) VisitParagraph(booklit.Paragraph) error { return nil }
-
-func (stage Write) VisitSection(section *booklit.Section) error {
+func (writer Writer) WriteSection(section *booklit.Section) error {
 	if section.Parent != nil && !section.Parent.SplitSections {
 		return nil
 	}
 
-	name := section.PrimaryTag() + "." + stage.Engine.FileExtension()
-	path := filepath.Join(stage.Destination, name)
+	name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
+	path := filepath.Join(writer.Destination, name)
 
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -43,21 +37,21 @@ func (stage Write) VisitSection(section *booklit.Section) error {
 	var node booklit.Content = section
 	if section.SplitSections {
 		for _, child := range section.Children {
-			err = child.Visit(stage)
+			err := writer.WriteSection(child)
 			if err != nil {
 				return err
 			}
 		}
 	} else {
 		for _, child := range section.Children {
-			node = booklit.Append(section, child)
+			node = booklit.Append(node, child)
 		}
 	}
 
-	err = node.Visit(stage.Engine)
+	err = node.Visit(writer.Engine)
 	if err != nil {
 		return err
 	}
 
-	return stage.Engine.Render(file)
+	return writer.Engine.Render(file)
 }

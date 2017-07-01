@@ -67,6 +67,10 @@ varius molestie.
 How are you?
 
 \section{How I'm doing}{
+	Good, thanks! And you?
+}
+
+\section{Their Reply}{
 	Good, thanks!
 }
 `,
@@ -77,6 +81,10 @@ How are you?
 <p>How are you?</p>
 
 <h2>How I'm doing</h2>
+
+<p>Good, thanks! And you?</p>
+
+<h2>Their Reply</h2>
 
 <p>Good, thanks!</p>
 `,

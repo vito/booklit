@@ -11,7 +11,6 @@ import (
 	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
-	"github.com/vito/booklit/stages"
 )
 
 type Example struct {
@@ -24,7 +23,7 @@ type Outputs map[string]string
 func (example Example) Run() {
 	processor := load.Processor{
 		PluginFactories: []booklit.PluginFactory{
-			baselit.BaselitPluginFactory{},
+			baselit.PluginFactory{},
 		},
 	}
 
@@ -34,12 +33,13 @@ func (example Example) Run() {
 	dir, err := ioutil.TempDir("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())
 
-	write := stages.Write{
+	writer := render.Writer{
 		Engine:      render.NewHTMLRenderingEngine(),
 		Destination: dir,
 	}
 
-	section.Visit(write)
+	err = writer.WriteSection(section)
+	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Outputs {
 		fileContents, err := ioutil.ReadFile(filepath.Join(dir, file))
