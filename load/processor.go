@@ -43,9 +43,21 @@ func (processor Processor) process(node ast.Node) (*booklit.Section, error) {
 		Plugins: plugins,
 	}
 
-	node.Visit(evaluator)
+	err := node.Visit(evaluator)
+	if err != nil {
+		return nil, err
+	}
 
 	section.Body = evaluator.Result
+
+	resolver := &stages.Resolve{
+		Section: section,
+	}
+
+	err = section.Visit(resolver)
+	if err != nil {
+		return nil, err
+	}
 
 	return section, nil
 }

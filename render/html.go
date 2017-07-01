@@ -16,6 +16,7 @@ var tmpl *template.Template
 func init() {
 	tmpl = template.New("engine").Funcs(template.FuncMap{
 		"render": renderFunc,
+		"url":    tagURLFunc,
 		"sectionHeader": func(con *booklit.Section, content template.HTML) template.HTML {
 			depth := 1
 			for sec := con; sec.Parent != nil && !sec.Parent.SplitSections; sec = sec.Parent {
@@ -64,6 +65,12 @@ func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
 	return nil
 }
 
+func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error {
+	engine.template = tmpl.Lookup("reference.html")
+	engine.data = con
+	return nil
+}
+
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
 	engine.template = tmpl.Lookup("section.html")
 	engine.data = con
@@ -106,4 +113,40 @@ func renderFunc(content booklit.Content) (template.HTML, error) {
 	}
 
 	return template.HTML(buf.String()), nil
+}
+
+func tagURLFunc(tag booklit.Tag) string {
+	return sectionURL(tag.Section, tag.Anchor)
+}
+
+func sectionURL(section *booklit.Section, anchor string) string {
+	owner := sectionPageOwner(section)
+
+	if owner != section {
+		if anchor == "" {
+			anchor = section.PrimaryTag.Name
+		}
+
+		return sectionURL(owner, anchor)
+	}
+
+	filename := section.PrimaryTag.Name + ".html"
+
+	if anchor != "" {
+		filename += "#" + anchor
+	}
+
+	return filename
+}
+
+func sectionPageOwner(section *booklit.Section) *booklit.Section {
+	if section.Parent == nil {
+		return section
+	}
+
+	if section.Parent.SplitSections {
+		return section
+	}
+
+	return sectionPageOwner(section.Parent)
 }

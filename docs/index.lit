@@ -1,15 +1,21 @@
 \title{Booklit}{index}
 
-Booklit is a documentation engine optimized for flexibility, extensibility, and
-safety.
+Booklit is a documentation authoring tool designed to be
+\reference{sections}{flexible} in how you organize your content and
+\reference{extending}{extensible} so that patterns can emerge and be optimized
+as your documentation grows.
 
-Sections can be organized however you want, rather than fitting a rigid
-hierarchy. They can be embedded within each other, split into separate pages,
-omitted from table-of-contents listings, all on a section-by-section basis.
+\section{Sections}{
+  Sections can be organized however you want, rather than conforming to a rigid
+  hierarchy. They can be embedded within each other, split into separate pages,
+  omitted from table-of-contents listings, all on a section-by-section basis.
 
-Documents are written in a language that can be extended via plugins written in
-Go. As patterns emerge in your documents, you can optimize for them by quickly
-writing a plugin and pulling it in.
+  Broken references, malformed documents, and invalid method calls are all
+  caught at compile-time.
+}
 
-Broken references, malformed documents, and invalid method calls are all caught
-at compile-time.
+\section{Extending}{
+  Documents are written in a language that can be extended via plugins written
+  in Go. As patterns emerge in your documents, you can optimize for them by
+  quickly writing a plugin and pulling it in.
+}

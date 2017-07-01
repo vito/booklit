@@ -103,7 +103,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		}
 	} else {
 		if len(argContent) != argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Method, argc, len(argContent))
+			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Method, len(argContent), argc)
 		}
 	}
 

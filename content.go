@@ -11,6 +11,7 @@ type Content interface {
 type Visitor interface {
 	VisitString(String) error
 	VisitSequence(Sequence) error
+	VisitReference(*Reference) error
 	VisitSection(*Section) error
 	VisitParagraph(Paragraph) error
 }

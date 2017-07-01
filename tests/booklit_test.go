@@ -114,4 +114,82 @@ How are you?
 `,
 		},
 	}),
+
+	Entry("references to other sections on the same page", Example{
+		Input: `\title{Hello, world!}
+
+See also \reference{section-c}{the last section}.
+
+\section{Section A}{
+	See also \reference{section-b}.
+}
+
+\section{Section B}{
+	See also \reference{section-a}.
+}
+
+\section{Section C}{
+	See also \reference{hello-world}.
+}
+`,
+
+		Outputs: Outputs{
+			"hello-world.html": `<h1>Hello, world!</h1>
+
+<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
+
+<h2>Section A</h2>
+
+<p>See also <a href="hello-world.html#section-b">Section B</a>.</p>
+
+<h2>Section B</h2>
+
+<p>See also <a href="hello-world.html#section-a">Section A</a>.</p>
+
+<h2>Section C</h2>
+
+<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+`,
+		},
+	}),
+
+	Entry("references to other sections on split pages", Example{
+		Input: `\title{Hello, world!}
+
+See also \reference{section-c}{the last section}.
+
+\split-sections
+
+\section{Section A}{
+	See also \reference{section-b}.
+}
+
+\section{Section B}{
+	See also \reference{section-a}.
+}
+
+\section{Section C}{
+	See also \reference{hello-world}.
+}
+`,
+
+		Outputs: Outputs{
+			"hello-world.html": `<h1>Hello, world!</h1>
+
+<p>See also <a href="section-c.html">the last section</a>.</p>
+`,
+			"section-a.html": `<h1>Section A</h1>
+
+<p>See also <a href="section-b.html">Section B</a>.</p>
+`,
+			"section-b.html": `<h1>Section B</h1>
+
+<p>See also <a href="section-a.html">Section A</a>.</p>
+`,
+			"section-c.html": `<h1>Section C</h1>
+
+<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+`,
+		},
+	}),
 )
