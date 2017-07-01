@@ -1,33 +1,42 @@
 package baselit
 
-import "github.com/vito/booklit"
+import (
+	"github.com/vito/booklit"
+	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/load"
+)
 
-type PluginFactory struct{}
+type PluginFactory struct {
+	Processor *load.Processor
+}
 
-func (PluginFactory) NewPlugin(section *booklit.Section) booklit.Plugin {
+func (pf PluginFactory) NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
-		section: section,
+		processor: pf.Processor,
+		section:   section,
 	}
 }
 
 type Plugin struct {
-	section *booklit.Section
+	processor *load.Processor
+	section   *booklit.Section
 }
 
 func (plugin Plugin) Title(title booklit.Content, tags ...string) {
 	plugin.section.SetTitle(title, tags...)
 }
 
-func (plugin Plugin) Section(title booklit.Content, content booklit.Content) {
-	section := &booklit.Section{
-		Body: content,
-
-		Parent: plugin.section,
+func (plugin Plugin) Section(node ast.Node) error {
+	section, err := plugin.processor.EvaluateSection(node)
+	if err != nil {
+		return err
 	}
 
-	section.SetTitle(title)
+	section.Parent = plugin.section
 
 	plugin.section.Children = append(plugin.section.Children, section)
+
+	return nil
 }
 
 func (plugin Plugin) SplitSections() {

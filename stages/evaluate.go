@@ -80,37 +80,25 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		return fmt.Errorf("undefined method: %s", invoke.Method)
 	}
 
-	argContent := make([]booklit.Content, len(invoke.Arguments))
-	for i, arg := range invoke.Arguments {
-		eval := &Evaluate{
-			Plugins: eval.Plugins,
-		}
-
-		err := arg.Visit(eval)
-		if err != nil {
-			return err
-		}
-
-		argContent[i] = eval.Result
-	}
+	rawArgs := invoke.Arguments
 
 	argc := method.Type().NumIn()
 	if method.Type().IsVariadic() {
 		argc--
 
-		if len(argContent) < argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", invoke.Method, len(argContent), argc)
+		if len(rawArgs) < argc {
+			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", invoke.Method, len(rawArgs), argc)
 		}
 	} else {
-		if len(argContent) != argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Method, len(argContent), argc)
+		if len(rawArgs) != argc {
+			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Method, len(rawArgs), argc)
 		}
 	}
 
 	argv := make([]reflect.Value, argc)
 	for i := 0; i < argc; i++ {
 		t := method.Type().In(i)
-		arg, err := eval.convert(t, argContent[i])
+		arg, err := eval.convert(t, rawArgs[i])
 		if err != nil {
 			return err
 		}
@@ -119,7 +107,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	}
 
 	if method.Type().IsVariadic() {
-		variadic := argContent[argc:]
+		variadic := rawArgs[argc:]
 		variadicType := method.Type().In(argc)
 
 		subType := variadicType.Elem()
@@ -140,6 +128,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	case 1:
 		last := result[0]
 		switch v := last.Interface().(type) {
+		case nil:
 		case error:
 			return v
 		case booklit.Content:
@@ -158,6 +147,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 
 		last := result[1]
 		switch v := last.Interface().(type) {
+		case nil:
 		case error:
 			return v
 		default:
@@ -170,13 +160,30 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	return nil
 }
 
-func (eval Evaluate) convert(to reflect.Type, content booklit.Content) (reflect.Value, error) {
-	switch reflect.New(to).Interface().(type) {
+func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, error) {
+	iface := reflect.New(to).Interface()
+
+	if _, ok := iface.(*ast.Node); ok {
+		return reflect.ValueOf(node), nil
+	}
+
+	argEval := &Evaluate{
+		Plugins: eval.Plugins,
+	}
+
+	err := node.Visit(argEval)
+	if err != nil {
+		return reflect.ValueOf(nil), err
+	}
+
+	content := argEval.Result
+
+	switch iface.(type) {
 	case *string:
 		return reflect.ValueOf(content.String()), nil
 	case *booklit.Content:
 		return reflect.ValueOf(content), nil
 	default:
-		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %s", to)
+		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %T", iface)
 	}
 }

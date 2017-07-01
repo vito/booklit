@@ -66,11 +66,15 @@ varius molestie.
 
 How are you?
 
-\section{How I'm doing}{
+\section{
+	\title{How I'm doing}
+
 	Good, thanks! And you?
 }
 
-\section{Their Reply}{
+\section{
+	\title{Their Reply}
+
 	Good, thanks!
 }
 `,
@@ -98,7 +102,9 @@ How are you?
 
 \split-sections
 
-\section{How I'm doing}{
+\section{
+	\title{How I'm doing}
+
 	Good, thanks!
 }
 `,
@@ -120,15 +126,21 @@ How are you?
 
 See also \reference{section-c}{the last section}.
 
-\section{Section A}{
+\section{
+	\title{Section A}
+
 	See also \reference{section-b}.
 }
 
-\section{Section B}{
+\section{
+	\title{Section B}
+
 	See also \reference{section-a}.
 }
 
-\section{Section C}{
+\section{
+	\title{Section C}
+
 	See also \reference{hello-world}.
 }
 `,
@@ -160,15 +172,21 @@ See also \reference{section-c}{the last section}.
 
 \split-sections
 
-\section{Section A}{
+\section{
+	\title{Section A}
+
 	See also \reference{section-b}.
 }
 
-\section{Section B}{
+\section{
+	\title{Section B}
+
 	See also \reference{section-a}.
 }
 
-\section{Section C}{
+\section{
+	\title{Section C}
+
 	See also \reference{hello-world}.
 }
 `,

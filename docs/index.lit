@@ -5,7 +5,11 @@ Booklit is a documentation authoring tool designed to be
 \reference{extending}{extensible} so that patterns can emerge and be optimized
 as your documentation grows.
 
-\section{Sections}{
+\split-sections
+
+\section{
+  \title{Flexibility with Sections}{sections}
+
   Sections can be organized however you want, rather than conforming to a rigid
   hierarchy. They can be embedded within each other, split into separate pages,
   omitted from table-of-contents listings, all on a section-by-section basis.
@@ -14,7 +18,9 @@ as your documentation grows.
   caught at compile-time.
 }
 
-\section{Extending}{
+\section{
+  \title{Extending your Documentation}{extending}
+
   Documents are written in a language that can be extended via plugins written
   in Go. As patterns emerge in your documents, you can optimize for them by
   quickly writing a plugin and pulling it in.
