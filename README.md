@@ -1,6 +1,5 @@
 # booklit
 
-
 [![GoDoc](https://godoc.org/github.com/vito/booklit?status.svg)](https://godoc.org/github.com/vito/booklit)
 [![CI](https://wings.concourse.ci/api/v1/teams/vito/pipelines/booklit/jobs/unit/badge)](https://wings.concourse.ci/teams/vito/pipelines/booklit/jobs/unit)
 
