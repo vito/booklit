@@ -60,37 +60,37 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 }
 
 func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
-	engine.template = tmpl.Lookup("string.html")
+	engine.template = tmpl.Lookup("string.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error {
-	engine.template = tmpl.Lookup("reference.html")
+	engine.template = tmpl.Lookup("reference.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
-	engine.template = tmpl.Lookup("section.html")
+	engine.template = tmpl.Lookup("section.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) error {
-	engine.template = tmpl.Lookup("sequence.html")
+	engine.template = tmpl.Lookup("sequence.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
-	engine.template = tmpl.Lookup("paragraph.html")
+	engine.template = tmpl.Lookup("paragraph.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
-	engine.template = tmpl.Lookup("toc.html")
+	engine.template = tmpl.Lookup("toc.tmpl")
 	engine.data = con.Section
 	return nil
 }

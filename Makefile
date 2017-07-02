@@ -6,5 +6,5 @@ docs/index.html: docs/index.lit
 ast/booklit.peg.go: ast/booklit.peg
 	pigeon -o ast/booklit.peg.go ast/booklit.peg
 
-render/bindata.go: render/html/*.html
-	go-bindata -o render/bindata.go -pkg render render/html/*.html
+render/bindata.go: render/html/*.tmpl
+	go-bindata -o render/bindata.go -pkg render render/html/*.tmpl

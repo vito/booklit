@@ -5,7 +5,7 @@
     <li>
       <a href="{{.PrimaryTag | url}}">{{.Number}} {{.Title | render}}</a>
 
-      {{template "toc.html" .}}
+      {{template "toc.tmpl" .}}
     </li>
   {{end}}
   </ul>
