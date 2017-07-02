@@ -1,4 +1,9 @@
-<h{{headerDepth .}}>{{if .Parent}}{{.Number}} {{end}}{{.Title | render}}</h{{headerDepth .}}>
+<h{{headerDepth .}} class="section-header">
+  {{- if .Parent -}}
+    <span class="number">{{.Number}} </span>
+  {{- end -}}
+  {{.Title | render -}}
+</h{{headerDepth .}}>
 
 {{.Body | render}}
 

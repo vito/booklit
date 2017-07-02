@@ -30,8 +30,13 @@ func (example Example) Run() {
 	dir, err := ioutil.TempDir("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())
 
+	engine := render.NewHTMLRenderingEngine()
+
+	err = engine.LoadTemplates("fixtures")
+	Expect(err).ToNot(HaveOccurred())
+
 	writer := render.Writer{
-		Engine:      render.NewHTMLRenderingEngine(),
+		Engine:      engine,
 		Destination: dir,
 	}
 

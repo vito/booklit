@@ -11,12 +11,24 @@ import (
 	"github.com/vito/booklit"
 )
 
-var tmpl *template.Template
+var initTmpl *template.Template
+
+type WalkContext struct {
+	Current *booklit.Section
+	Section *booklit.Section
+}
 
 func init() {
-	tmpl = template.New("engine").Funcs(template.FuncMap{
+	initTmpl = template.New("engine").Funcs(template.FuncMap{
 		"render": renderFunc,
 		"url":    tagURLFunc,
+		"walkContext": func(current *booklit.Section, section *booklit.Section) WalkContext {
+			return WalkContext{
+				Current: current,
+				Section: section,
+			}
+		},
+
 		"headerDepth": func(con *booklit.Section) int {
 			depth := 1
 			for sec := con; sec.Parent != nil && !sec.Parent.SplitSections; sec = sec.Parent {
@@ -39,7 +51,7 @@ func init() {
 
 		content := strings.TrimRight(string(MustAsset(asset)), "\n")
 
-		_, err = tmpl.New(filepath.Base(info.Name())).Parse(content)
+		_, err = initTmpl.New(filepath.Base(info.Name())).Parse(content)
 		if err != nil {
 			panic(err)
 		}
@@ -47,12 +59,27 @@ func init() {
 }
 
 type HTMLRenderingEngine struct {
+	tmpl *template.Template
+
 	template *template.Template
 	data     interface{}
 }
 
 func NewHTMLRenderingEngine() *HTMLRenderingEngine {
-	return &HTMLRenderingEngine{}
+	return &HTMLRenderingEngine{
+		tmpl: template.Must(initTmpl.Clone()),
+	}
+}
+
+func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
+	tmpl, err := engine.tmpl.ParseGlob(filepath.Join(templatesDir, "*.tmpl"))
+	if err != nil {
+		return err
+	}
+
+	engine.tmpl = tmpl
+
+	return nil
 }
 
 func (engine *HTMLRenderingEngine) FileExtension() string {
@@ -60,37 +87,48 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 }
 
 func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
-	engine.template = tmpl.Lookup("string.tmpl")
+	engine.template = engine.tmpl.Lookup("string.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error {
-	engine.template = tmpl.Lookup("reference.tmpl")
+	engine.template = engine.tmpl.Lookup("reference.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
-	engine.template = tmpl.Lookup("section.tmpl")
+	var pageTemplate *template.Template
+
+	if con.Parent == nil || con.Parent.SplitSections {
+		pageTemplate = engine.tmpl.Lookup("page.tmpl")
+	}
+
+	if pageTemplate == nil {
+		pageTemplate = engine.tmpl.Lookup("section.tmpl")
+	}
+
+	engine.template = pageTemplate
 	engine.data = con
+
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) error {
-	engine.template = tmpl.Lookup("sequence.tmpl")
+	engine.template = engine.tmpl.Lookup("sequence.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
-	engine.template = tmpl.Lookup("paragraph.tmpl")
+	engine.template = engine.tmpl.Lookup("paragraph.tmpl")
 	engine.data = con
 	return nil
 }
 
 func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
-	engine.template = tmpl.Lookup("toc.tmpl")
+	engine.template = engine.tmpl.Lookup("toc.tmpl")
 	engine.data = con.Section
 	return nil
 }

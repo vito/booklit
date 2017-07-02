@@ -1,0 +1,113 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, Georgia, serif;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: row;
+  background: #F8F0F0;
+  color: #432E2B;
+  background: #BFCDB4;
+}
+
+a {
+  text-decoration: none;
+  color: #D69F88;
+}
+
+a:hover {
+  color: #EFB198;
+}
+
+nav ul {
+  list-style-type: none;
+}
+
+.page {
+  width: 450px;
+  padding: 2rem;
+  padding-top: 0;
+  background: #FFFAEA;
+}
+
+
+.side {
+  width: 200px;
+  background: #7D5D4E;
+  color: #888;
+  padding: 1rem;
+}
+
+.side {
+  color: #432E2B;
+}
+
+.side a {
+  color: #432E2B;
+}
+
+.side .context {
+  position: relative;
+}
+
+.side .context a.self {
+  font-weight: lighter;
+  color: #fff;
+}
+
+.side .context .top {
+  padding-left: 1.4rem;
+}
+
+.side .context .toggle {
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  line-height: 1.4rem;
+  font-size: .75rem;
+  cursor: pointer;
+}
+
+.side .toggle:before {
+  content: "\25ba";
+}
+
+.side .toggle:focus {
+  outline: none;
+}
+
+.side .toggle:checked:before {
+  content: "\25bc";
+}
+
+.side .toggle:not(:checked) + .children {
+  display: none;
+}
+
+.side .children {
+  border-left: 1px solid #403430;
+  margin-left: .35rem;
+  padding-left: .8rem;
+}
+
+.side .children table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.side table td {
+  vertical-align: top;
+}
+
+.page.sub h1 {
+  font-size: 1.6em;
+  border-bottom: 1px dotted #BFCDB4;
+}
+
+.section-header .number {
+  margin-right: .4rem;
+}

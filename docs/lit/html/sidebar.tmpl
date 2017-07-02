@@ -1,0 +1,28 @@
+{{define "section-link"}}
+<a href="{{.Section.PrimaryTag | url}}" {{if eq .Section.PrimaryTag.Name .Current.PrimaryTag.Name}} class="self"{{end}}>
+  {{- .Section.Title | render -}}
+</a>
+{{end}}
+
+<div class="context">
+  <nav>
+    <div class="top">
+      {{template "section-link" walkContext $ .Top}}
+    </div>
+
+    {{if .Top.Children}}
+    <input type="checkbox" class="toggle" {{if .Top.Contains .}}checked{{end}} />
+
+    <div class="children">
+      <table>
+      {{range .Top.Children}}
+        <tr>
+          <td class="number-cell" align="right">{{.Number}}&nbsp;</td>
+          <td class="title-cell">{{template "section-link" walkContext $ .}}</td>
+        </tr>
+      {{end}}
+      </table>
+    </div>
+    {{end}}
+  </nav>
+</div>

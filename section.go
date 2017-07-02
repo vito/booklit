@@ -74,6 +74,28 @@ func (con *Section) Number() string {
 	return fmt.Sprintf("%s.%d", parentNumber, selfIndex)
 }
 
+func (con *Section) Top() *Section {
+	if con.Parent != nil {
+		return con.Parent.Top()
+	}
+
+	return con
+}
+
+func (con *Section) Contains(sub *Section) bool {
+	if con == sub {
+		return true
+	}
+
+	for _, child := range con.Children {
+		if child.Contains(sub) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (con *Section) FindTag(tagName string) (Tag, bool) {
 	return con.findTag(tagName, true, nil)
 }

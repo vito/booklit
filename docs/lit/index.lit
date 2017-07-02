@@ -21,7 +21,7 @@ as your documentation grows.
 }
 
 \section{
-  \title{Extending your Documentation}{extending}
+  \title{Extending your Docs}{extending}
 
   Documents are written in a language that can be extended via plugins written
   in Go. As patterns emerge in your documents, you can optimize for them by

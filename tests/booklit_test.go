@@ -12,9 +12,11 @@ How are you?
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>How are you?</p>`,
+	<p>How are you?</p>
+</section>`,
 		},
 	}),
 
@@ -27,11 +29,13 @@ I'm good, thanks!
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>How are you?</p>
+	<p>How are you?</p>
 
-<p>I'm good, thanks!</p>
+	<p>I'm good, thanks!</p>
+</section>
 `,
 		},
 	}),
@@ -52,11 +56,13 @@ varius molestie.
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate. Sed mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui sollicitudin porta.</p>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate. Sed mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui sollicitudin porta.</p>
 
-<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex varius molestie.</p>
+	<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex varius molestie.</p>
+</section>
 `,
 		},
 	}),
@@ -80,17 +86,19 @@ How are you?
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>How are you?</p>
+	<p>How are you?</p>
 
-<h2>1 How I'm doing</h2>
+	<h2>1 How I'm doing</h2>
 
-<p>Good, thanks! And you?</p>
+	<p>Good, thanks! And you?</p>
 
-<h2>2 Their Reply</h2>
+	<h2>2 Their Reply</h2>
 
-<p>Good, thanks!</p>
+	<p>Good, thanks!</p>
+</section>
 `,
 		},
 	}),
@@ -110,13 +118,17 @@ How are you?
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>How are you?</p>
+	<p>How are you?</p>
+</section>
 `,
-			"how-im-doing.html": `<h1>1 How I'm Doing</h1>
+			"how-im-doing.html": `<section>
+	<h1>1 How I'm Doing</h1>
 
-<p>Good, thanks!</p>
+	<p>Good, thanks!</p>
+</section>
 `,
 		},
 	}),
@@ -146,21 +158,23 @@ See also \reference{section-c}{the last section}.
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
+	<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
 
-<h2>1 Section A</h2>
+	<h2>1 Section A</h2>
 
-<p>See also <a href="hello-world.html#section-b">Section B</a>.</p>
+	<p>See also <a href="hello-world.html#section-b">Section B</a>.</p>
 
-<h2>2 Section B</h2>
+	<h2>2 Section B</h2>
 
-<p>See also <a href="hello-world.html#section-a">Section A</a>.</p>
+	<p>See also <a href="hello-world.html#section-a">Section A</a>.</p>
 
-<h2>3 Section C</h2>
+	<h2>3 Section C</h2>
 
-<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+	<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+</section>
 `,
 		},
 	}),
@@ -192,21 +206,29 @@ See also \reference{section-c}{the last section}.
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>See also <a href="section-c.html">the last section</a>.</p>
+	<p>See also <a href="section-c.html">the last section</a>.</p>
+</section>
 `,
-			"section-a.html": `<h1>1 Section A</h1>
+			"section-a.html": `<section>
+	<h1>1 Section A</h1>
 
-<p>See also <a href="section-b.html">Section B</a>.</p>
+	<p>See also <a href="section-b.html">Section B</a>.</p>
+</section>
 `,
-			"section-b.html": `<h1>2 Section B</h1>
+			"section-b.html": `<section>
+	<h1>2 Section B</h1>
 
-<p>See also <a href="section-a.html">Section A</a>.</p>
+	<p>See also <a href="section-a.html">Section A</a>.</p>
+</section>
 `,
-			"section-c.html": `<h1>3 Section C</h1>
+			"section-c.html": `<section>
+	<h1>3 Section C</h1>
 
-<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+	<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+</section>
 `,
 		},
 	}),
@@ -246,44 +268,46 @@ This is some more content.
 `,
 
 		Outputs: Outputs{
-			"hello-world.html": `<h1>Hello, world!</h1>
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
 
-<p>How are you?</p>
+	<p>How are you?</p>
 
-<nav>
-	<ul>
-		<li>
-			<a href="hello-world.html#top-section-a">1 Top Section A</a>
-			<nav>
-				<ul>
-					<li><a href="hello-world.html#nested-section">1.1 Nested Section</a></li>
-					<li><a href="hello-world.html#another-nested-section">1.2 Another Nested Section</a></li>
-				</ul>
-			</nav>
-		</li>
-		<li>
-			<a href="hello-world.html#top-section-b">2 Top Section B</a>
-		</li>
-	</ul>
-</nav>
+	<nav>
+		<ul>
+			<li>
+				<a href="hello-world.html#top-section-a">1 Top Section A</a>
+				<nav>
+					<ul>
+						<li><a href="hello-world.html#nested-section">1.1 Nested Section</a></li>
+						<li><a href="hello-world.html#another-nested-section">1.2 Another Nested Section</a></li>
+					</ul>
+				</nav>
+			</li>
+			<li>
+				<a href="hello-world.html#top-section-b">2 Top Section B</a>
+			</li>
+		</ul>
+	</nav>
 
-<p>This is some more content.</p>
+	<p>This is some more content.</p>
 
-<h2>1 Top Section A</h2>
+	<h2>1 Top Section A</h2>
 
-<p>Foo bar.</p>
+	<p>Foo bar.</p>
 
-<h3>1.1 Nested Section</h3>
+	<h3>1.1 Nested Section</h3>
 
-<p>Fizz buzz.</p>
+	<p>Fizz buzz.</p>
 
-<h3>1.2 Another Nested Section</h3>
+	<h3>1.2 Another Nested Section</h3>
 
-<p>Fiddlesticks.</p>
+	<p>Fiddlesticks.</p>
 
-<h2>2 Top Section B</h2>
+	<h2>2 Top Section B</h2>
 
-<p>Fiddlesticks is as far as I go.</p>
+	<p>Fiddlesticks is as far as I go.</p>
+</section>
 `,
 		},
 	}),

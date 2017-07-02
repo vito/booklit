@@ -13,6 +13,10 @@ import (
 type Command struct {
 	In  string `long:"in"  short:"i" required:"true" description:"Input .lit file."`
 	Out string `long:"out" short:"o" required:"true" description:"Output directory in which to render."`
+
+	HTMLEngine struct {
+		Templates string `long:"templates" description:"Directory containing .tmpl files to load."`
+	} `group:"HTML Rendering Engine" namespace:"html"`
 }
 
 func (cmd *Command) Execute(args []string) error {
@@ -30,8 +34,14 @@ func (cmd *Command) Execute(args []string) error {
 		return err
 	}
 
+	engine := render.NewHTMLRenderingEngine()
+	err = engine.LoadTemplates(cmd.HTMLEngine.Templates)
+	if err != nil {
+		return err
+	}
+
 	writer := render.Writer{
-		Engine:      render.NewHTMLRenderingEngine(),
+		Engine:      engine,
 		Destination: cmd.Out,
 	}
 
