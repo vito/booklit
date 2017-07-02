@@ -21,7 +21,7 @@ booklit -i foo.lit -o ./out
 clone this repo and build its docs:
 
 ```bash
-booklit -i ./docs/index.lit -o ./docs
+booklit -i ./docs/lit/index.lit -o ./docs
 ```
 
 you can see the result at https://vito.github.io/docs
