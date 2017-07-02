@@ -43,6 +43,12 @@ func (plugin Plugin) SplitSections() {
 	plugin.section.SplitSections = true
 }
 
+func (plugin Plugin) TableOfContents() booklit.Content {
+	return booklit.TableOfContents{
+		Section: plugin.section,
+	}
+}
+
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
 		TagName: tag,

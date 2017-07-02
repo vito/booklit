@@ -1,3 +1,9 @@
-{{.Title | render | sectionHeader .}}
+<h{{headerDepth .}}>{{if .Parent}}{{.Number}} {{end}}{{.Title | render}}</h{{headerDepth .}}>
 
 {{.Body | render}}
+
+{{if not .SplitSections}}
+  {{range .Children}}
+    {{template "section.html" .}}
+  {{end}}
+{{end}}

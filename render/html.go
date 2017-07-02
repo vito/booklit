@@ -17,7 +17,7 @@ func init() {
 	tmpl = template.New("engine").Funcs(template.FuncMap{
 		"render": renderFunc,
 		"url":    tagURLFunc,
-		"sectionHeader": func(con *booklit.Section, content template.HTML) template.HTML {
+		"headerDepth": func(con *booklit.Section) int {
 			depth := 1
 			for sec := con; sec.Parent != nil && !sec.Parent.SplitSections; sec = sec.Parent {
 				depth++
@@ -27,7 +27,7 @@ func init() {
 				depth = 6
 			}
 
-			return template.HTML(fmt.Sprintf("<h%d>%s</h%d>", depth, content, depth))
+			return depth
 		},
 	})
 
@@ -86,6 +86,12 @@ func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) error {
 func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
 	engine.template = tmpl.Lookup("paragraph.html")
 	engine.data = con
+	return nil
+}
+
+func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
+	engine.template = tmpl.Lookup("toc.html")
+	engine.data = con.Section
 	return nil
 }
 

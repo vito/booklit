@@ -338,8 +338,18 @@ var g = &grammar{
 								},
 							},
 						},
+						&zeroOrMoreExpr{
+							pos: position{line: 72, col: 46, offset: 1493},
+							expr: &charClassMatcher{
+								pos:        position{line: 72, col: 46, offset: 1493},
+								val:        "[ \\t]",
+								chars:      []rune{' ', '\t'},
+								ignoreCase: false,
+								inverted:   false,
+							},
+						},
 						&litMatcher{
-							pos:        position{line: 72, col: 46, offset: 1493},
+							pos:        position{line: 72, col: 53, offset: 1500},
 							val:        "}",
 							ignoreCase: false,
 						},

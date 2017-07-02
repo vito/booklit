@@ -56,6 +56,24 @@ func (con *Section) SetTitle(title Content, tags ...string) {
 	con.PrimaryTag = con.Tags[tags[0]]
 }
 
+func (con *Section) Number() string {
+	if con.Parent == nil {
+		return ""
+	}
+
+	parentNumber := con.Parent.Number()
+	selfIndex := 1
+	for i := 0; con.Parent.Children[i] != con; i++ {
+		selfIndex++
+	}
+
+	if parentNumber == "" {
+		return fmt.Sprintf("%d", selfIndex)
+	}
+
+	return fmt.Sprintf("%s.%d", parentNumber, selfIndex)
+}
+
 func (con *Section) FindTag(tagName string) (Tag, bool) {
 	return con.findTag(tagName, true, nil)
 }

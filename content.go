@@ -14,4 +14,5 @@ type Visitor interface {
 	VisitReference(*Reference) error
 	VisitSection(*Section) error
 	VisitParagraph(Paragraph) error
+	VisitTableOfContents(TableOfContents) error
 }

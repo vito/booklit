@@ -73,3 +73,7 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 
 	return nil
 }
+
+func (resolve *Resolve) VisitTableOfContents(booklit.TableOfContents) error {
+	return nil
+}

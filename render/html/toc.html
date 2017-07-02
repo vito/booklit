@@ -1,0 +1,13 @@
+{{if .Children}}
+<nav>
+  <ul>
+  {{range .Children}}
+    <li>
+      <a href="{{.PrimaryTag | url}}">{{.Number}} {{.Title | render}}</a>
+
+      {{template "toc.html" .}}
+    </li>
+  {{end}}
+  </ul>
+</nav>
+{{end}}

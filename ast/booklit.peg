@@ -69,6 +69,6 @@ Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   }, nil
 }
 
-Argument <- '{' node:(Sentence / Paragraphs) '}' {
+Argument <- '{' node:(Sentence / Paragraphs) [ \t]* '}' {
   return node, nil
 }

@@ -5,6 +5,7 @@
 // render/html/section.html
 // render/html/sequence.html
 // render/html/string.html
+// render/html/toc.html
 // DO NOT EDIT!
 
 package render
@@ -87,7 +88,7 @@ func renderHtmlParagraphHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/html/paragraph.html", size: 90, mode: os.FileMode(420), modTime: time.Unix(1498827174, 0)}
+	info := bindataFileInfo{name: "render/html/paragraph.html", size: 90, mode: os.FileMode(420), modTime: time.Unix(1498953201, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,12 +108,12 @@ func renderHtmlReferenceHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/html/reference.html", size: 51, mode: os.FileMode(420), modTime: time.Unix(1498872470, 0)}
+	info := bindataFileInfo{name: "render/html/reference.html", size: 51, mode: os.FileMode(420), modTime: time.Unix(1498873062, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _renderHtmlSectionHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xaa\xae\xd6\x0b\xc9\x2c\xc9\x49\x55\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\x52\xa8\x51\x28\x4e\x4d\x2e\xc9\xcc\xcf\xf3\x48\x4d\x04\xf1\xf5\x6a\x6b\xb9\xb8\xaa\xab\xf5\x9c\xf2\x53\x2a\xe1\xaa\x6a\x6b\xb9\x00\x01\x00\x00\xff\xff\x07\xdf\xfd\x32\x3a\x00\x00\x00")
+var _renderHtmlSectionHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x6c\xce\x41\xaa\x02\x31\x0c\x06\xe0\x7d\x4f\x11\xe6\x00\x79\x17\x18\xde\x42\x5d\x8b\x30\x5e\xa0\xda\x8c\x2d\x74\x32\xa5\x13\x17\x12\x73\x77\x69\x45\x70\xe1\x2a\xf0\x25\x7f\x92\x31\xaa\x46\xf2\x81\xea\x81\x8a\x44\x40\xb3\x7f\xd5\x34\x03\x9e\x7c\x25\x16\x33\x55\x3c\xde\x97\x0b\x55\x33\x50\x25\x0e\x9d\xce\x49\x32\xc1\x13\x2a\x71\x68\xad\xf1\xef\xc7\x22\xe7\x54\x71\xb7\x86\xc7\xd7\x60\xb3\x34\x03\xaf\x02\x38\x95\x9c\x64\xa2\xab\xa4\x95\x37\x33\x07\xa0\x5a\x3d\xdf\x08\x70\x1f\x53\x0e\x95\xb8\x6b\x73\xa1\xa5\x64\x2f\x04\xc3\xf6\x0e\x60\x94\x25\x0f\xed\x4e\xcf\xf5\xc7\xdc\xa7\xbe\x02\x00\x00\xff\xff\x9b\x17\xcb\x1e\xd7\x00\x00\x00")
 
 func renderHtmlSectionHtmlBytes() ([]byte, error) {
 	return bindataRead(
@@ -127,7 +128,7 @@ func renderHtmlSectionHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/html/section.html", size: 58, mode: os.FileMode(420), modTime: time.Unix(1498825583, 0)}
+	info := bindataFileInfo{name: "render/html/section.html", size: 215, mode: os.FileMode(420), modTime: time.Unix(1498952778, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -168,6 +169,26 @@ func renderHtmlStringHtml() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/string.html", size: 14, mode: os.FileMode(420), modTime: time.Unix(1498870948, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlTocHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x54\x8e\x31\x0e\xc2\x30\x0c\x45\xf7\x9e\xe2\x2b\x07\x48\x2e\x10\xb2\xb0\x23\x86\x5e\x20\x50\xb7\x8d\xe4\x04\x64\xa5\x48\xc8\xcd\xdd\x51\x0b\x1d\x98\x6c\x3d\x59\x7e\x4f\x35\x8d\xb0\xe7\x39\xf1\x20\x54\x5a\xeb\x7c\x89\xaf\xd0\x01\x7e\xe1\x6d\xa8\x4a\x2c\x13\xfd\x9d\x00\x80\xe7\x14\xf6\x05\xf0\x11\xb3\xd0\x78\x32\xaa\xf6\x2a\x29\x47\x79\xf7\x71\xc2\x8a\x45\xb8\x35\x13\x54\xed\x65\xc9\x37\x92\xd6\xa0\x6a\xfb\x54\x99\xb0\x42\xa8\x0c\x1b\xf3\x2e\x86\xee\xf7\x4a\xb5\x52\x7e\x72\xac\x04\x53\x1f\x77\x3b\xd7\xcc\x06\xf6\x70\xba\xaf\x54\x95\xca\xb0\x33\xef\xb6\x4a\xef\xf6\xe6\x03\x7f\x02\x00\x00\xff\xff\x5c\x93\x6d\x12\xd3\x00\x00\x00")
+
+func renderHtmlTocHtmlBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlTocHtml,
+		"render/html/toc.html",
+	)
+}
+
+func renderHtmlTocHtml() (*asset, error) {
+	bytes, err := renderHtmlTocHtmlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/toc.html", size: 211, mode: os.FileMode(420), modTime: time.Unix(1499007373, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -229,6 +250,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/section.html": renderHtmlSectionHtml,
 	"render/html/sequence.html": renderHtmlSequenceHtml,
 	"render/html/string.html": renderHtmlStringHtml,
+	"render/html/toc.html": renderHtmlTocHtml,
 }
 
 // AssetDir returns the file names below a certain
@@ -278,6 +300,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"section.html": &bintree{renderHtmlSectionHtml, map[string]*bintree{}},
 			"sequence.html": &bintree{renderHtmlSequenceHtml, map[string]*bintree{}},
 			"string.html": &bintree{renderHtmlStringHtml, map[string]*bintree{}},
+			"toc.html": &bintree{renderHtmlTocHtml, map[string]*bintree{}},
 		}},
 	}},
 }}

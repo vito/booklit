@@ -42,10 +42,6 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 				return err
 			}
 		}
-	} else {
-		for _, child := range section.Children {
-			node = booklit.Append(node, child)
-		}
 	}
 
 	err = node.Visit(writer.Engine)
