@@ -60,7 +60,7 @@ Word <- val:(String / Invoke) {
   return val, nil
 }
 
-String <- str:[^\\{}\n]+ { return String(c.text), nil } / "\\\\" { return String("\\"), nil }
+String <- str:[^\\{}\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
 
 Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   return Invoke{
