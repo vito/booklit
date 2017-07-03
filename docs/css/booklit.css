@@ -53,30 +53,35 @@ nav ul {
   padding-left: 1.4rem;
 }
 
-.side .context .toggle {
-  width: 0;
-  height: 0;
+.side .toggle {
   position: absolute;
   top: 0;
   left: 0;
   line-height: 1.4rem;
-  font-size: .75rem;
-  cursor: pointer;
-}
-
-.side .toggle:before {
-  content: "\25ba";
+  z-index: 2;
+  opacity: 0;
 }
 
 .side .toggle:focus {
   outline: none;
 }
 
-.side .toggle:checked:before {
+.side .arrow:after, .side .toggle:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "\25ba";
+  line-height: 1.4rem;
+  font-size: .75rem;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.side .toggle:checked + .arrow:after {
   content: "\25bc";
 }
 
-.side .toggle:not(:checked) + .children {
+.side .toggle:not(:checked) + .arrow + .children {
   display: none;
 }
 
