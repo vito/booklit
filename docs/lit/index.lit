@@ -10,6 +10,28 @@ as your documentation grows.
 \table-of-contents
 
 \section{
+  \title{Getting Started}
+
+  \section{
+    \title{Hello, world!}
+
+    First, create a file called \code{hello.lit} with the following content:
+
+    \code{{{
+      \title{Hello, world!}
+
+      I'm a Booklit document!
+    }}}
+
+    Then, run the following to build it in to \code{./docs/hello.html}:
+
+    \code{{
+    $ booklit -i hello.lit -o docs
+    }}
+  }
+}
+
+\section{
   \title{Flexibility with Sections}{sections}
 
   Sections can be organized however you want, rather than conforming to a rigid

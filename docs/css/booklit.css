@@ -96,6 +96,10 @@ nav ul {
   border-collapse: collapse;
 }
 
+.side .context {
+  margin-bottom: 2rem;
+}
+
 .side table td {
   vertical-align: top;
 }

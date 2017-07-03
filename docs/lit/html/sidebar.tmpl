@@ -26,3 +26,26 @@
     {{end}}
   </nav>
 </div>
+
+{{if .Children}}
+<div class="context">
+  <nav>
+    <div class="top">
+      {{template "section-link" walkContext $ .}}
+    </div>
+
+    <input type="checkbox" class="toggle" {{if .Top.Contains .}}checked{{end}} />
+    <span class="arrow"></span>
+    <div class="children">
+      <table>
+      {{range .Children}}
+        <tr>
+          <td class="number-cell" align="right">{{.Number}}&nbsp;</td>
+          <td class="title-cell">{{template "section-link" walkContext $ .}}</td>
+        </tr>
+      {{end}}
+      </table>
+    </div>
+  </nav>
+</div>
+{{end}}
