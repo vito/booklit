@@ -48,7 +48,9 @@ func (processor *Processor) EvaluateSection(node ast.Node) (*booklit.Section, er
 		return nil, err
 	}
 
-	section.Body = evaluator.Result
+	if evaluator.Result != nil {
+		section.Body = evaluator.Result
+	}
 
 	return section, nil
 }

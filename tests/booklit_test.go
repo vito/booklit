@@ -103,6 +103,48 @@ How are you?
 		},
 	}),
 
+	Entry("nested sub-sections", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\section{
+	\title{How I'm doing}
+
+	\section{
+		\title{After Much Deliberation}
+
+		I have decided that I'm doing well. How about you?
+	}
+}
+
+\section{
+	\title{Their Reply}
+
+	Good, thanks!
+}
+`,
+
+		Outputs: Outputs{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm doing</h2>
+
+	<h3>1.1 After Much Deliberation</h3>
+
+	<p>I have decided that I'm doing well. How about you?</p>
+
+	<h2>2 Their Reply</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("split sub-sections", Example{
 		Input: `\title{Hello, world!}
 
