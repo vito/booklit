@@ -276,26 +276,234 @@ var g = &grammar{
 			},
 		},
 		{
-			name: "Invoke",
+			name: "VerbatimString",
 			pos:  position{line: 65, col: 1, offset: 1308},
+			expr: &choiceExpr{
+				pos: position{line: 65, col: 19, offset: 1326},
+				alternatives: []interface{}{
+					&actionExpr{
+						pos: position{line: 65, col: 19, offset: 1326},
+						run: (*parser).callonVerbatimString2,
+						expr: &labeledExpr{
+							pos:   position{line: 65, col: 19, offset: 1326},
+							label: "str",
+							expr: &oneOrMoreExpr{
+								pos: position{line: 65, col: 23, offset: 1330},
+								expr: &charClassMatcher{
+									pos:        position{line: 65, col: 23, offset: 1330},
+									val:        "[^\\n}]",
+									chars:      []rune{'\n', '}'},
+									ignoreCase: false,
+									inverted:   true,
+								},
+							},
+						},
+					},
+					&actionExpr{
+						pos: position{line: 67, col: 5, offset: 1373},
+						run: (*parser).callonVerbatimString6,
+						expr: &seqExpr{
+							pos: position{line: 67, col: 5, offset: 1373},
+							exprs: []interface{}{
+								&litMatcher{
+									pos:        position{line: 67, col: 5, offset: 1373},
+									val:        "}",
+									ignoreCase: false,
+								},
+								&notExpr{
+									pos: position{line: 67, col: 9, offset: 1377},
+									expr: &litMatcher{
+										pos:        position{line: 67, col: 10, offset: 1378},
+										val:        "}}",
+										ignoreCase: false,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Indent",
+			pos:  position{line: 71, col: 1, offset: 1417},
 			expr: &actionExpr{
-				pos: position{line: 65, col: 11, offset: 1318},
-				run: (*parser).callonInvoke1,
+				pos: position{line: 71, col: 11, offset: 1427},
+				run: (*parser).callonIndent1,
+				expr: &zeroOrMoreExpr{
+					pos: position{line: 71, col: 11, offset: 1427},
+					expr: &charClassMatcher{
+						pos:        position{line: 71, col: 11, offset: 1427},
+						val:        "[ \\t]",
+						chars:      []rune{' ', '\t'},
+						ignoreCase: false,
+						inverted:   false,
+					},
+				},
+			},
+		},
+		{
+			name: "PreformattedSentence",
+			pos:  position{line: 88, col: 1, offset: 1692},
+			expr: &actionExpr{
+				pos: position{line: 88, col: 25, offset: 1716},
+				run: (*parser).callonPreformattedSentence1,
 				expr: &seqExpr{
-					pos: position{line: 65, col: 11, offset: 1318},
+					pos: position{line: 88, col: 25, offset: 1716},
+					exprs: []interface{}{
+						&labeledExpr{
+							pos:   position{line: 88, col: 25, offset: 1716},
+							label: "indent",
+							expr: &ruleRefExpr{
+								pos:  position{line: 88, col: 32, offset: 1723},
+								name: "Indent",
+							},
+						},
+						&labeledExpr{
+							pos:   position{line: 88, col: 39, offset: 1730},
+							label: "words",
+							expr: &zeroOrMoreExpr{
+								pos: position{line: 88, col: 45, offset: 1736},
+								expr: &choiceExpr{
+									pos: position{line: 88, col: 46, offset: 1737},
+									alternatives: []interface{}{
+										&ruleRefExpr{
+											pos:  position{line: 88, col: 46, offset: 1737},
+											name: "String",
+										},
+										&ruleRefExpr{
+											pos:  position{line: 88, col: 55, offset: 1746},
+											name: "Invoke",
+										},
+									},
+								},
+							},
+						},
+						&litMatcher{
+							pos:        position{line: 88, col: 64, offset: 1755},
+							val:        "\n",
+							ignoreCase: false,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Preformatted",
+			pos:  position{line: 94, col: 1, offset: 1880},
+			expr: &actionExpr{
+				pos: position{line: 94, col: 17, offset: 1896},
+				run: (*parser).callonPreformatted1,
+				expr: &seqExpr{
+					pos: position{line: 94, col: 17, offset: 1896},
 					exprs: []interface{}{
 						&litMatcher{
-							pos:        position{line: 65, col: 11, offset: 1318},
+							pos:        position{line: 94, col: 17, offset: 1896},
+							val:        "\n",
+							ignoreCase: false,
+						},
+						&labeledExpr{
+							pos:   position{line: 94, col: 22, offset: 1901},
+							label: "sentences",
+							expr: &zeroOrMoreExpr{
+								pos: position{line: 94, col: 32, offset: 1911},
+								expr: &ruleRefExpr{
+									pos:  position{line: 94, col: 32, offset: 1911},
+									name: "PreformattedSentence",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "VerbatimSentence",
+			pos:  position{line: 99, col: 1, offset: 2031},
+			expr: &actionExpr{
+				pos: position{line: 99, col: 21, offset: 2051},
+				run: (*parser).callonVerbatimSentence1,
+				expr: &seqExpr{
+					pos: position{line: 99, col: 21, offset: 2051},
+					exprs: []interface{}{
+						&labeledExpr{
+							pos:   position{line: 99, col: 21, offset: 2051},
+							label: "indent",
+							expr: &ruleRefExpr{
+								pos:  position{line: 99, col: 28, offset: 2058},
+								name: "Indent",
+							},
+						},
+						&labeledExpr{
+							pos:   position{line: 99, col: 35, offset: 2065},
+							label: "words",
+							expr: &zeroOrMoreExpr{
+								pos: position{line: 99, col: 41, offset: 2071},
+								expr: &ruleRefExpr{
+									pos:  position{line: 99, col: 41, offset: 2071},
+									name: "VerbatimString",
+								},
+							},
+						},
+						&litMatcher{
+							pos:        position{line: 99, col: 57, offset: 2087},
+							val:        "\n",
+							ignoreCase: false,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Verbatim",
+			pos:  position{line: 105, col: 1, offset: 2212},
+			expr: &actionExpr{
+				pos: position{line: 105, col: 13, offset: 2224},
+				run: (*parser).callonVerbatim1,
+				expr: &seqExpr{
+					pos: position{line: 105, col: 13, offset: 2224},
+					exprs: []interface{}{
+						&litMatcher{
+							pos:        position{line: 105, col: 13, offset: 2224},
+							val:        "\n",
+							ignoreCase: false,
+						},
+						&labeledExpr{
+							pos:   position{line: 105, col: 18, offset: 2229},
+							label: "sentences",
+							expr: &zeroOrMoreExpr{
+								pos: position{line: 105, col: 28, offset: 2239},
+								expr: &ruleRefExpr{
+									pos:  position{line: 105, col: 28, offset: 2239},
+									name: "VerbatimSentence",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Invoke",
+			pos:  position{line: 110, col: 1, offset: 2355},
+			expr: &actionExpr{
+				pos: position{line: 110, col: 11, offset: 2365},
+				run: (*parser).callonInvoke1,
+				expr: &seqExpr{
+					pos: position{line: 110, col: 11, offset: 2365},
+					exprs: []interface{}{
+						&litMatcher{
+							pos:        position{line: 110, col: 11, offset: 2365},
 							val:        "\\",
 							ignoreCase: false,
 						},
 						&labeledExpr{
-							pos:   position{line: 65, col: 16, offset: 1323},
+							pos:   position{line: 110, col: 16, offset: 2370},
 							label: "name",
 							expr: &oneOrMoreExpr{
-								pos: position{line: 65, col: 22, offset: 1329},
+								pos: position{line: 110, col: 22, offset: 2376},
 								expr: &charClassMatcher{
-									pos:        position{line: 65, col: 22, offset: 1329},
+									pos:        position{line: 110, col: 22, offset: 2376},
 									val:        "[a-z-]",
 									chars:      []rune{'-'},
 									ranges:     []rune{'a', 'z'},
@@ -305,12 +513,12 @@ var g = &grammar{
 							},
 						},
 						&labeledExpr{
-							pos:   position{line: 65, col: 31, offset: 1338},
+							pos:   position{line: 110, col: 31, offset: 2385},
 							label: "args",
 							expr: &zeroOrMoreExpr{
-								pos: position{line: 65, col: 37, offset: 1344},
+								pos: position{line: 110, col: 37, offset: 2391},
 								expr: &ruleRefExpr{
-									pos:  position{line: 65, col: 37, offset: 1344},
+									pos:  position{line: 110, col: 37, offset: 2391},
 									name: "Argument",
 								},
 							},
@@ -320,40 +528,31 @@ var g = &grammar{
 			},
 		},
 		{
-			name: "Argument",
-			pos:  position{line: 72, col: 1, offset: 1459},
+			name: "VerbatimArg",
+			pos:  position{line: 117, col: 1, offset: 2506},
 			expr: &actionExpr{
-				pos: position{line: 72, col: 13, offset: 1471},
-				run: (*parser).callonArgument1,
+				pos: position{line: 117, col: 16, offset: 2521},
+				run: (*parser).callonVerbatimArg1,
 				expr: &seqExpr{
-					pos: position{line: 72, col: 13, offset: 1471},
+					pos: position{line: 117, col: 16, offset: 2521},
 					exprs: []interface{}{
 						&litMatcher{
-							pos:        position{line: 72, col: 13, offset: 1471},
-							val:        "{",
+							pos:        position{line: 117, col: 16, offset: 2521},
+							val:        "{{{",
 							ignoreCase: false,
 						},
 						&labeledExpr{
-							pos:   position{line: 72, col: 17, offset: 1475},
+							pos:   position{line: 117, col: 22, offset: 2527},
 							label: "node",
-							expr: &choiceExpr{
-								pos: position{line: 72, col: 23, offset: 1481},
-								alternatives: []interface{}{
-									&ruleRefExpr{
-										pos:  position{line: 72, col: 23, offset: 1481},
-										name: "Sentence",
-									},
-									&ruleRefExpr{
-										pos:  position{line: 72, col: 34, offset: 1492},
-										name: "Paragraphs",
-									},
-								},
+							expr: &ruleRefExpr{
+								pos:  position{line: 117, col: 27, offset: 2532},
+								name: "Verbatim",
 							},
 						},
 						&zeroOrMoreExpr{
-							pos: position{line: 72, col: 46, offset: 1504},
+							pos: position{line: 117, col: 36, offset: 2541},
 							expr: &charClassMatcher{
-								pos:        position{line: 72, col: 46, offset: 1504},
+								pos:        position{line: 117, col: 36, offset: 2541},
 								val:        "[ \\t]",
 								chars:      []rune{' ', '\t'},
 								ignoreCase: false,
@@ -361,10 +560,122 @@ var g = &grammar{
 							},
 						},
 						&litMatcher{
-							pos:        position{line: 72, col: 53, offset: 1511},
+							pos:        position{line: 117, col: 43, offset: 2548},
+							val:        "}}}",
+							ignoreCase: false,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "PreformattedArg",
+			pos:  position{line: 121, col: 1, offset: 2578},
+			expr: &actionExpr{
+				pos: position{line: 121, col: 20, offset: 2597},
+				run: (*parser).callonPreformattedArg1,
+				expr: &seqExpr{
+					pos: position{line: 121, col: 20, offset: 2597},
+					exprs: []interface{}{
+						&litMatcher{
+							pos:        position{line: 121, col: 20, offset: 2597},
+							val:        "{{",
+							ignoreCase: false,
+						},
+						&labeledExpr{
+							pos:   position{line: 121, col: 25, offset: 2602},
+							label: "node",
+							expr: &ruleRefExpr{
+								pos:  position{line: 121, col: 30, offset: 2607},
+								name: "Preformatted",
+							},
+						},
+						&zeroOrMoreExpr{
+							pos: position{line: 121, col: 43, offset: 2620},
+							expr: &charClassMatcher{
+								pos:        position{line: 121, col: 43, offset: 2620},
+								val:        "[ \\t]",
+								chars:      []rune{' ', '\t'},
+								ignoreCase: false,
+								inverted:   false,
+							},
+						},
+						&litMatcher{
+							pos:        position{line: 121, col: 50, offset: 2627},
+							val:        "}}",
+							ignoreCase: false,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Arg",
+			pos:  position{line: 125, col: 1, offset: 2656},
+			expr: &actionExpr{
+				pos: position{line: 125, col: 8, offset: 2663},
+				run: (*parser).callonArg1,
+				expr: &seqExpr{
+					pos: position{line: 125, col: 8, offset: 2663},
+					exprs: []interface{}{
+						&litMatcher{
+							pos:        position{line: 125, col: 8, offset: 2663},
+							val:        "{",
+							ignoreCase: false,
+						},
+						&labeledExpr{
+							pos:   position{line: 125, col: 12, offset: 2667},
+							label: "node",
+							expr: &choiceExpr{
+								pos: position{line: 125, col: 18, offset: 2673},
+								alternatives: []interface{}{
+									&ruleRefExpr{
+										pos:  position{line: 125, col: 18, offset: 2673},
+										name: "Sentence",
+									},
+									&ruleRefExpr{
+										pos:  position{line: 125, col: 29, offset: 2684},
+										name: "Paragraphs",
+									},
+								},
+							},
+						},
+						&zeroOrMoreExpr{
+							pos: position{line: 125, col: 41, offset: 2696},
+							expr: &charClassMatcher{
+								pos:        position{line: 125, col: 41, offset: 2696},
+								val:        "[ \\t]",
+								chars:      []rune{' ', '\t'},
+								ignoreCase: false,
+								inverted:   false,
+							},
+						},
+						&litMatcher{
+							pos:        position{line: 125, col: 48, offset: 2703},
 							val:        "}",
 							ignoreCase: false,
 						},
+					},
+				},
+			},
+		},
+		{
+			name: "Argument",
+			pos:  position{line: 129, col: 1, offset: 2731},
+			expr: &choiceExpr{
+				pos: position{line: 129, col: 13, offset: 2743},
+				alternatives: []interface{}{
+					&ruleRefExpr{
+						pos:  position{line: 129, col: 13, offset: 2743},
+						name: "VerbatimArg",
+					},
+					&ruleRefExpr{
+						pos:  position{line: 129, col: 27, offset: 2757},
+						name: "PreformattedArg",
+					},
+					&ruleRefExpr{
+						pos:  position{line: 129, col: 45, offset: 2775},
+						name: "Arg",
 					},
 				},
 			},
@@ -462,6 +773,95 @@ func (p *parser) callonString6() (interface{}, error) {
 	return p.cur.onString6()
 }
 
+func (c *current) onVerbatimString2(str interface{}) (interface{}, error) {
+	return String(c.text), nil
+}
+
+func (p *parser) callonVerbatimString2() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onVerbatimString2(stack["str"])
+}
+
+func (c *current) onVerbatimString6() (interface{}, error) {
+	return String(c.text), nil
+}
+
+func (p *parser) callonVerbatimString6() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onVerbatimString6()
+}
+
+func (c *current) onIndent1() (interface{}, error) {
+	skip := len(c.text)
+
+	i, found := c.globalStore["indent-skip"]
+	if found {
+		skip = i.(int)
+	} else {
+		c.globalStore["indent-skip"] = skip
+	}
+
+	if skip <= len(c.text) {
+		return string(c.text[skip:]), nil
+	} else {
+		return "", nil
+	}
+}
+
+func (p *parser) callonIndent1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onIndent1()
+}
+
+func (c *current) onPreformattedSentence1(indent, words interface{}) (interface{}, error) {
+	line := []Node{String(indent.(string))}
+	line = append(line, ifaceNodes(words)...)
+	return Sequence(line), nil
+}
+
+func (p *parser) callonPreformattedSentence1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onPreformattedSentence1(stack["indent"], stack["words"])
+}
+
+func (c *current) onPreformatted1(sentences interface{}) (interface{}, error) {
+	delete(c.globalStore, "indentation")
+	return Preformatted(ifaceSequences(sentences)), nil
+}
+
+func (p *parser) callonPreformatted1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onPreformatted1(stack["sentences"])
+}
+
+func (c *current) onVerbatimSentence1(indent, words interface{}) (interface{}, error) {
+	line := []Node{String(indent.(string))}
+	line = append(line, ifaceNodes(words)...)
+	return Sequence(line), nil
+}
+
+func (p *parser) callonVerbatimSentence1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onVerbatimSentence1(stack["indent"], stack["words"])
+}
+
+func (c *current) onVerbatim1(sentences interface{}) (interface{}, error) {
+	delete(c.globalStore, "indentation")
+	return Preformatted(ifaceSequences(sentences)), nil
+}
+
+func (p *parser) callonVerbatim1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onVerbatim1(stack["sentences"])
+}
+
 func (c *current) onInvoke1(name, args interface{}) (interface{}, error) {
 	return Invoke{
 		Method:    methodName(ifaceStr(name)),
@@ -475,14 +875,34 @@ func (p *parser) callonInvoke1() (interface{}, error) {
 	return p.cur.onInvoke1(stack["name"], stack["args"])
 }
 
-func (c *current) onArgument1(node interface{}) (interface{}, error) {
+func (c *current) onVerbatimArg1(node interface{}) (interface{}, error) {
 	return node, nil
 }
 
-func (p *parser) callonArgument1() (interface{}, error) {
+func (p *parser) callonVerbatimArg1() (interface{}, error) {
 	stack := p.vstack[len(p.vstack)-1]
 	_ = stack
-	return p.cur.onArgument1(stack["node"])
+	return p.cur.onVerbatimArg1(stack["node"])
+}
+
+func (c *current) onPreformattedArg1(node interface{}) (interface{}, error) {
+	return node, nil
+}
+
+func (p *parser) callonPreformattedArg1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onPreformattedArg1(stack["node"])
+}
+
+func (c *current) onArg1(node interface{}) (interface{}, error) {
+	return node, nil
+}
+
+func (p *parser) callonArg1() (interface{}, error) {
+	stack := p.vstack[len(p.vstack)-1]
+	_ = stack
+	return p.cur.onArg1(stack["node"])
 }
 
 var (

@@ -127,9 +127,31 @@ func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
 	return nil
 }
 
+func (engine *HTMLRenderingEngine) VisitPreformatted(con booklit.Preformatted) error {
+	engine.template = engine.tmpl.Lookup("preformatted.tmpl")
+	engine.data = con
+	return nil
+}
+
 func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
 	engine.template = engine.tmpl.Lookup("toc.tmpl")
 	engine.data = con.Section
+	return nil
+}
+
+func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
+	switch con.Style {
+	case booklit.StyleVerbatim:
+		if con.IsSentence() {
+			engine.template = engine.tmpl.Lookup("code-inline.tmpl")
+		} else {
+			engine.template = engine.tmpl.Lookup("code-block.tmpl")
+		}
+	default:
+		return fmt.Errorf("unknown style: %s", con.Style)
+	}
+
+	engine.data = con.Content
 	return nil
 }
 

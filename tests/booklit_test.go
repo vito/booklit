@@ -311,4 +311,111 @@ This is some more content.
 `,
 		},
 	}),
+
+	Entry("inline code and code blocks", Example{
+		Input: `\title{Hello, world!}
+
+This is some \code{inline} code.
+
+Here's a code block:
+
+\code{
+	I'm a code block.
+
+		I'm indented more.
+
+			I'm indented even more.
+
+I'm indented less.
+
+	\reference{hello-world}
+
+	\\some-method\{Some argument.\}
+
+
+	One more line, with meaning.
+}
+
+\code{{
+	I'm a code block.
+
+		I'm indented more.
+
+			I'm indented even more.
+
+I'm indented less.
+
+	\reference{hello-world}
+
+	\\some-method\{Some argument.\}
+
+
+	One more line, with meaning.
+}}
+
+\code{{{
+	I'm a code block.
+
+		I'm indented more.
+
+			I'm indented even more.
+
+I'm indented less.
+
+	\reference{hello-world}
+
+	\\some-method\{Some argument.\}
+
+
+	One more line, with meaning.
+}}}
+
+And here's some more content.
+`,
+
+		Outputs: Outputs{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>This is some <code>inline</code> code.</p>
+
+	<p>Here's a code block:</p>
+
+	<pre><p>I'm a code block.</p><p>I'm indented more.</p><p>I'm indented even more.</p><p>I'm indented less.</p><p><a href="hello-world.html">Hello, world!</a></p><p>\some-method{Some argument.}</p><p>One more line, with meaning.</p></pre>
+
+	<pre>I'm a code block.
+
+	I'm indented more.
+
+		I'm indented even more.
+
+I'm indented less.
+
+<a href="hello-world.html">Hello, world!</a>
+
+\some-method{Some argument.}
+
+
+One more line, with meaning.</pre>
+
+	<pre>I'm a code block.
+
+	I'm indented more.
+
+		I'm indented even more.
+
+I'm indented less.
+
+\reference{hello-world}
+
+\\some-method\{Some argument.\}
+
+
+One more line, with meaning.</pre>
+
+	<p>And here's some more content.</p>
+</section>
+`,
+		},
+	}),
 )

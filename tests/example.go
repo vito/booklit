@@ -46,7 +46,6 @@ func (example Example) Run() {
 	for file, contents := range example.Outputs {
 		fileContents, err := ioutil.ReadFile(filepath.Join(dir, file))
 		Expect(err).ToNot(HaveOccurred())
-
 		Expect(string(fileContents)).To(MatchXML(contents))
 	}
 }

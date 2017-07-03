@@ -9,6 +9,7 @@ type Visitor interface {
 	VisitInvoke(Invoke) error
 	VisitSequence(Sequence) error
 	VisitParagraph(Paragraph) error
+	VisitPreformatted(Preformatted) error
 }
 
 type String string
@@ -36,4 +37,10 @@ type Paragraph []Sequence
 
 func (node Paragraph) Visit(visitor Visitor) error {
 	return visitor.VisitParagraph(node)
+}
+
+type Preformatted []Sequence
+
+func (node Preformatted) Visit(visitor Visitor) error {
+	return visitor.VisitPreformatted(node)
 }

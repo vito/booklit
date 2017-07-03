@@ -49,6 +49,13 @@ func (plugin Plugin) TableOfContents() booklit.Content {
 	}
 }
 
+func (plugin Plugin) Code(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleVerbatim,
+	}
+}
+
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
 		TagName: tag,

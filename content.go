@@ -15,4 +15,6 @@ type Visitor interface {
 	VisitSection(*Section) error
 	VisitParagraph(Paragraph) error
 	VisitTableOfContents(TableOfContents) error
+	VisitPreformatted(Preformatted) error
+	VisitStyled(Styled) error
 }

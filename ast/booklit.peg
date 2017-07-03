@@ -62,6 +62,51 @@ Word <- val:(String / Invoke) {
 
 String <- str:[^\\{}\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
 
+VerbatimString <- str:[^\n}]+ {
+  return String(c.text), nil
+} / '}' !"}}" {
+  return String(c.text), nil
+}
+
+Indent <- [ \t]* {
+  skip := len(c.text)
+
+  i, found := c.globalStore["indent-skip"]
+  if found {
+    skip = i.(int)
+  } else {
+    c.globalStore["indent-skip"] = skip
+  }
+
+  if skip <= len(c.text) {
+    return string(c.text[skip:]), nil
+  } else {
+    return "", nil
+  }
+}
+
+PreformattedSentence <- indent:Indent words:(String / Invoke)* '\n' {
+  line := []Node{String(indent.(string))}
+  line = append(line, ifaceNodes(words)...)
+  return Sequence(line), nil
+}
+
+Preformatted <- '\n' sentences:PreformattedSentence* {
+  delete(c.globalStore, "indentation")
+  return Preformatted(ifaceSequences(sentences)), nil
+}
+
+VerbatimSentence <- indent:Indent words:VerbatimString* '\n' {
+  line := []Node{String(indent.(string))}
+  line = append(line, ifaceNodes(words)...)
+  return Sequence(line), nil
+}
+
+Verbatim <- '\n' sentences:VerbatimSentence* {
+  delete(c.globalStore, "indentation")
+  return Preformatted(ifaceSequences(sentences)), nil
+}
+
 Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   return Invoke{
     Method: methodName(ifaceStr(name)),
@@ -69,6 +114,16 @@ Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   }, nil
 }
 
-Argument <- '{' node:(Sentence / Paragraphs) [ \t]* '}' {
+VerbatimArg <- "{{{" node:Verbatim [ \t]* "}}}" {
   return node, nil
 }
+
+PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
+  return node, nil
+}
+
+Arg <- '{' node:(Sentence / Paragraphs) [ \t]* '}' {
+  return node, nil
+}
+
+Argument <- VerbatimArg / PreformattedArg / Arg

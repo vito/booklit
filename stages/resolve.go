@@ -36,6 +36,17 @@ func (resolve *Resolve) VisitParagraph(con booklit.Paragraph) error {
 	return nil
 }
 
+func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
+	for _, c := range con {
+		err := c.Visit(resolve)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	tag, found := resolve.Section.FindTag(con.TagName)
 	if !found {
@@ -76,4 +87,8 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 
 func (resolve *Resolve) VisitTableOfContents(booklit.TableOfContents) error {
 	return nil
+}
+
+func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
+	return con.Content.Visit(resolve)
 }

@@ -66,6 +66,28 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
+func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
+	previous := eval.Result
+
+	pre := booklit.Preformatted{}
+	for _, sentence := range node {
+		eval.Result = nil
+
+		err := sentence.Visit(eval)
+		if err != nil {
+			return err
+		}
+
+		if eval.Result != nil {
+			pre = append(pre, eval.Result)
+		}
+	}
+
+	eval.Result = booklit.Append(previous, pre)
+
+	return nil
+}
+
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	var method reflect.Value
 	for _, p := range eval.Plugins {
