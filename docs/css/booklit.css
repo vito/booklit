@@ -1,5 +1,6 @@
-html, body {
-  height: 100%;
+html {
+  display: flex;
+  min-height: 100%;
 }
 
 body {
