@@ -27,11 +27,11 @@
   </nav>
 </div>
 
-{{if .Children}}
+{{if and .Parent .Children}}
 <div class="context">
   <nav>
     <div class="top">
-      {{template "section-link" walkContext $ .}}
+      {{.Number}}&nbsp;{{template "section-link" walkContext $ .}}
     </div>
 
     <input type="checkbox" class="toggle" {{if .Top.Contains .}}checked{{end}} />

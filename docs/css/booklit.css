@@ -42,6 +42,7 @@ nav ul {
 
 .side .context {
   position: relative;
+  margin-bottom: 2rem;
 }
 
 .side .context a.self {
@@ -50,7 +51,8 @@ nav ul {
 }
 
 .side .context .top {
-  padding-left: 1.4rem;
+  padding-left: 1.2rem;
+  font-size: 1.1em;
 }
 
 .side .toggle {
@@ -96,10 +98,6 @@ nav ul {
   border-collapse: collapse;
 }
 
-.side .context {
-  margin-bottom: 2rem;
-}
-
 .side table td {
   vertical-align: top;
 }
@@ -109,6 +107,6 @@ nav ul {
   border-bottom: 1px dotted #BFCDB4;
 }
 
-.section-header .number {
+.section-number {
   margin-right: .4rem;
 }
