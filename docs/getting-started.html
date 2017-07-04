@@ -27,21 +27,28 @@
         <tr>
           <td class="number-cell" align="right">1&nbsp;</td>
           <td class="title-cell">
-<a href="getting-started.html"  class="self">Getting Started</a>
+<a href="what-and-why.html" >What &amp; Why</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">2&nbsp;</td>
           <td class="title-cell">
-<a href="sections.html" >Flexibility with Sections</a>
+<a href="getting-started.html"  class="self">Getting Started</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="extending.html" >Extending your Docs</a>
+<a href="the-baselit-plugin.html" >The <code>baselit</code> Plugin</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">4&nbsp;</td>
+          <td class="title-cell">
+<a href="writing-and-using-plugins.html" >Writing &amp; Using Plugins</a>
 </td>
         </tr>
       
@@ -55,7 +62,7 @@
 <div class="context">
   <nav>
     <div class="top">
-      1&nbsp;
+      2&nbsp;
 <a href="getting-started.html"  class="self">Getting Started</a>
 
     </div>
@@ -66,9 +73,30 @@
       <table>
       
         <tr>
-          <td class="number-cell" align="right">1.1&nbsp;</td>
+          <td class="number-cell" align="right">2.1&nbsp;</td>
           <td class="title-cell">
 <a href="getting-started.html#hello-world" >Hello, world!</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">2.2&nbsp;</td>
+          <td class="title-cell">
+<a href="getting-started.html#organizing-with-sections" >Organizing with Sections</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">2.3&nbsp;</td>
+          <td class="title-cell">
+<a href="getting-started.html#splitting-sections" >Splitting Sections</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">2.4&nbsp;</td>
+          <td class="title-cell">
+<a href="getting-started.html#references-and-tagging" >References &amp; Tagging</a>
 </td>
         </tr>
       
@@ -80,17 +108,92 @@
 
     </div>
     <div class="page sub">
-      <h1 class="section-header"><span class="section-number">1 </span>Getting Started</h1>
+      <h1 class="section-header"><span class="section-number">2 </span>Getting Started</h1>
 
 
 
 
   
-    <h2 class="section-header"><span class="section-number">1.1 </span>Hello, world!</h2>
+    <h2 class="section-header"><span class="section-number">2.1 </span>Hello, world!</h2>
 
 <p>First, create a file called <code>hello.lit</code> with the following content:</p><pre>\title{Hello, world!}
 
 I&#39;m a Booklit document!</pre><p>Then, run the following to build it in to <code>./docs/hello.html</code>:</p><pre>$ booklit -i hello.lit -o docs</pre>
+
+
+  
+
+  
+    <h2 class="section-header"><span class="section-number">2.2 </span>Organizing with Sections</h2>
+
+<p>Next, let&#39;s try adding a section within our document:</p><pre>\title{Hello, world!}
+
+I&#39;m a Booklit document!
+
+\section{
+  \title{Hi there!}
+
+  I&#39;m so organized!
+}</pre><p>Upon building this you should see something like:</p><p>(TODO: image)</p>
+
+
+  
+
+  
+    <h2 class="section-header"><span class="section-number">2.3 </span>Splitting Sections</h2>
+
+<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><pre>\title{Hello, world!}
+
+\split-sections
+
+I&#39;m a Booklit document!
+
+\section{
+  \title{Hi there!}
+
+  I&#39;m so organized!
+}</pre><p>You may want to use this in combination with <code>\table-of-contents</code>, which generates a...table of contents:</p><pre>\title{Hello, world!}
+
+\split-sections
+
+I&#39;m a Booklit document!
+
+\table-of-contents
+
+\section{
+  \title{Hi there!}
+
+  I&#39;m so organized!
+}</pre>
+
+
+  
+
+  
+    <h2 class="section-header"><span class="section-number">2.4 </span>References &amp; Tagging</h2>
+
+<p>Having separate pages isn&#39;t very useful without a way to link to them. For this, use <code>\reference</code>:</p><pre>\title{Hello, world!}
+
+\split-sections
+
+I&#39;m a Booklit document! To read further, see \reference{hi-there}.
+
+\section{
+  \title{Hi there!}
+
+  I&#39;m so organized!
+}</pre><p>The first argument to <code>\reference</code> is the name of a tag to reference. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <code>\reference</code>:</p><pre>\title{Hello, world!}
+
+\split-sections
+
+I&#39;m a Booklit document! Consult \reference{hi-there}{this section}
+for more information.
+
+\section{
+  \title{Hi there!}
+
+  I&#39;m so organized!
+}</pre>
 
 
   

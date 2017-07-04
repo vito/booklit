@@ -22,6 +22,16 @@ a:hover {
   color: #EFB198;
 }
 
+code, pre {
+  font-size: .7rem;
+}
+
+pre {
+  background: #F7E5BF;
+  border-bottom: 1px dotted #EAD2A4;
+  padding: .5rem;
+}
+
 nav ul {
   list-style-type: none;
 }
