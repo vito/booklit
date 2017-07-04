@@ -56,6 +56,13 @@ func (plugin Plugin) Code(content booklit.Content) booklit.Content {
 	}
 }
 
+func (plugin Plugin) Italic(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleItalic,
+	}
+}
+
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
 		TagName: tag,

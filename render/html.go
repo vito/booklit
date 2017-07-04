@@ -141,6 +141,8 @@ func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfConte
 
 func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
 	switch con.Style {
+	case booklit.StyleItalic:
+		engine.template = engine.tmpl.Lookup("italic.tmpl")
 	case booklit.StyleVerbatim:
 		if con.IsSentence() {
 			engine.template = engine.tmpl.Lookup("code-inline.tmpl")
