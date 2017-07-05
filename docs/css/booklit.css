@@ -4,8 +4,10 @@ html {
 }
 
 body {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, Georgia, serif;
-  line-height: 1.4;
+  font-family: 'Lora', 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, Georgia, serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
   display: flex;
   flex-direction: row;
   background: #F8F0F0;
@@ -15,7 +17,7 @@ body {
 
 a {
   text-decoration: none;
-  color: #D69F88;
+  color: #D68F78;
 }
 
 a:hover {
@@ -23,7 +25,8 @@ a:hover {
 }
 
 code, pre {
-  font-size: .7rem;
+  font-family: 'Source Code Pro', monospace;
+  font-size: .8em;
 }
 
 pre {
@@ -32,8 +35,41 @@ pre {
   padding: .5rem;
 }
 
+p code {
+  background: #F7E5BF;
+  border-bottom: 1px dotted #EAD2A4;
+  padding: .1em .2em;
+  white-space: nowrap;
+}
+
+h1 code, h2 code, h3 code {
+  font-weight: 600;
+  font-size: .9em;
+}
+
 nav ul {
   list-style-type: none;
+}
+
+h1, h2 {
+  font-family: 'Roboto Slab', serif;
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 24px;
+  border-bottom: 1px solid #BFCDB4;
+}
+
+h2 {
+  font-size: 20px;
+  border-bottom: 1px dotted #BFCDB4;
+  margin-top: 2rem;
+}
+
+.page.top h1 {
+  font-size: 32px;
+  border-bottom: 0;
 }
 
 .page {
@@ -45,10 +81,16 @@ nav ul {
 
 
 .side {
+  font-family: 'Roboto Slab', serif;
+  font-size: 13px;
   width: 200px;
   background: #7D5D4E;
   padding: 1rem;
   color: #432E2B;
+}
+
+.side a {
+  color: #D69F88;
 }
 
 .side .context {
@@ -111,11 +153,6 @@ nav ul {
 
 .side table td {
   vertical-align: top;
-}
-
-.page.sub h1 {
-  font-size: 1.6em;
-  border-bottom: 1px dotted #BFCDB4;
 }
 
 .section-number {

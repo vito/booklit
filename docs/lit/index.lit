@@ -159,13 +159,13 @@ as your documentation grows.
 }
 
 \section{
+  \title{Writing & Using Plugins}
+}
+
+\section{
   \title{The \code{baselit} Plugin}
 
   Booklit comes with a default plugin called \code{baselit}. It provides the
   basic set of functions needed for authoring Booklit documents, plus many
   common methods useful for writing prose.
-}
-
-\section{
-  \title{Writing & Using Plugins}
 }

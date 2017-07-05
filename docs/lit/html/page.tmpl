@@ -5,12 +5,15 @@
     <title>{{.Title.String}}</title>
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,600" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i" rel="stylesheet" />
   </head>
   <body>
     <div class="side">
       {{template "sidebar.tmpl" .}}
     </div>
-    <div class="page{{if .Parent}} sub{{end}}">
+    <div class="page{{if not .Parent}} top{{end}}">
       {{template "section.tmpl" .}}
     </div>
   </body>
