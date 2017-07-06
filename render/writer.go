@@ -22,10 +22,6 @@ type Writer struct {
 }
 
 func (writer Writer) WriteSection(section *booklit.Section) error {
-	if section.Parent != nil && !section.Parent.SplitSections {
-		return nil
-	}
-
 	name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
 	path := filepath.Join(writer.Destination, name)
 
