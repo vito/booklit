@@ -1,0 +1,123 @@
+\title{Getting Started}
+
+\section{
+  \title{Hello, world!}
+
+  First, create a file called \code{hello.lit} with the following content:
+
+  \code{{{
+    \title{Hello, world!}
+
+    I'm a Booklit document!
+  }}}
+
+  Then, run the following to build it in to \code{./docs/hello.html}:
+
+  \code{{
+  $ booklit -i hello.lit -o docs
+  }}
+}
+
+\section{
+  \title{Organizing with Sections}
+
+  Next, let's try adding a section within our document:
+
+  \code{{{
+    \title{Hello, world!}
+
+    I'm a Booklit document!
+
+    \section{
+      \title{Hi there!}
+
+      I'm so organized!
+    }
+  }}}
+
+  Upon building this you should see something like:
+
+  (TODO: image)
+}
+
+\section{
+  \title{Splitting Sections}
+
+  To render each sub-section on its own page, simply call
+  \code{\\split-sections} somewhere in the section.
+
+  \code{{{
+    \title{Hello, world!}
+
+    \split-sections
+
+    I'm a Booklit document!
+
+    \section{
+      \title{Hi there!}
+
+      I'm so organized!
+    }
+  }}}
+
+  You may want to use this in combination with \code{\\table-of-contents},
+  which generates a...table of contents:
+
+  \code{{{
+    \title{Hello, world!}
+
+    \split-sections
+
+    I'm a Booklit document!
+
+    \table-of-contents
+
+    \section{
+      \title{Hi there!}
+
+      I'm so organized!
+    }
+  }}}
+}
+
+\section{
+  \title{References & Tagging}
+
+  Having separate pages isn't very useful without a way to link to them. For
+  this, use \code{\\reference}:
+
+  \code{{{
+    \title{Hello, world!}
+
+    \split-sections
+
+    I'm a Booklit document! To read further, see \reference{hi-there}.
+
+    \section{
+      \title{Hi there!}
+
+      I'm so organized!
+    }
+  }}}
+
+  The first argument to \code{\\reference} is the name of a tag to reference.
+  At build time, references will \italic{resolve} to their tag, and generate
+  a link to it. By default, the name of the link is determined by the tag, so
+  for a section it'll be the section's title. This can be overridden by
+  passing a second argument to \code{\\reference}:
+
+  \code{{{
+    \title{Hello, world!}
+
+    \split-sections
+
+    I'm a Booklit document! Consult \reference{hi-there}{this section}
+    for more information.
+
+    \section{
+      \title{Hi there!}
+
+      I'm so organized!
+    }
+  }}}
+}

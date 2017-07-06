@@ -16,20 +16,22 @@ func (processor *Processor) LoadFile(path string) (*booklit.Section, error) {
 		return nil, err
 	}
 
-	return processor.loadNode(result.(ast.Node))
+	return processor.loadNode(path, result.(ast.Node))
 }
 
-func (processor *Processor) LoadSource(name string, source []byte) (*booklit.Section, error) {
-	result, err := ast.Parse(name, source)
+func (processor *Processor) LoadSource(path string, source []byte) (*booklit.Section, error) {
+	result, err := ast.Parse(path, source)
 	if err != nil {
 		return nil, err
 	}
 
-	return processor.loadNode(result.(ast.Node))
+	return processor.loadNode(path, result.(ast.Node))
 }
 
-func (processor *Processor) EvaluateSection(node ast.Node) (*booklit.Section, error) {
+func (processor *Processor) EvaluateSection(path string, node ast.Node) (*booklit.Section, error) {
 	section := &booklit.Section{
+		Path: path,
+
 		Title: booklit.Empty,
 		Body:  booklit.Empty,
 	}
@@ -55,11 +57,12 @@ func (processor *Processor) EvaluateSection(node ast.Node) (*booklit.Section, er
 	return section, nil
 }
 
-func (processor *Processor) loadNode(node ast.Node) (*booklit.Section, error) {
-	section, err := processor.EvaluateSection(node)
+func (processor *Processor) loadNode(path string, node ast.Node) (*booklit.Section, error) {
+	section, err := processor.EvaluateSection(path, node)
 	if err != nil {
 		return nil, err
 	}
+
 	resolver := &stages.Resolve{
 		Section: section,
 	}

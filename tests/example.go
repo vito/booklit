@@ -14,20 +14,27 @@ import (
 
 type Example struct {
 	Input   string
-	Outputs Outputs
+	Inputs  Files
+	Outputs Files
 }
 
-type Outputs map[string]string
+type Files map[string]string
 
 func (example Example) Run() {
 	processor := &load.Processor{}
 	baselitFactory := baselit.PluginFactory{processor}
 	processor.PluginFactories = append(processor.PluginFactories, baselitFactory)
 
-	section, err := processor.LoadSource(ginkgo.CurrentGinkgoTestDescription().TestText, []byte(example.Input))
+	dir, err := ioutil.TempDir("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())
 
-	dir, err := ioutil.TempDir("", "booklit-tests")
+	for file, contents := range example.Inputs {
+		err := ioutil.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
+		Expect(err).ToNot(HaveOccurred())
+	}
+
+	fakePath := filepath.Join(dir, ginkgo.CurrentGinkgoTestDescription().TestText+".lit")
+	section, err := processor.LoadSource(fakePath, []byte(example.Input))
 	Expect(err).ToNot(HaveOccurred())
 
 	engine := render.NewHTMLRenderingEngine()

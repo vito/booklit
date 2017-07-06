@@ -7,6 +7,8 @@ import (
 )
 
 type Section struct {
+	Path string
+
 	Title Content
 	Body  Content
 

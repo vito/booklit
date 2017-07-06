@@ -1,6 +1,8 @@
 package baselit
 
 import (
+	"path/filepath"
+
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/load"
@@ -27,7 +29,27 @@ func (plugin Plugin) Title(title booklit.Content, tags ...string) {
 }
 
 func (plugin Plugin) Section(node ast.Node) error {
-	section, err := plugin.processor.EvaluateSection(node)
+	section, err := plugin.processor.EvaluateSection(plugin.section.Path, node)
+	if err != nil {
+		return err
+	}
+
+	section.Parent = plugin.section
+
+	plugin.section.Children = append(plugin.section.Children, section)
+
+	return nil
+}
+
+func (plugin Plugin) IncludeSection(path string) error {
+	sectionPath := filepath.Join(filepath.Dir(plugin.section.Path), path)
+
+	result, err := ast.ParseFile(sectionPath)
+	if err != nil {
+		return err
+	}
+
+	section, err := plugin.processor.EvaluateSection(sectionPath, result.(ast.Node))
 	if err != nil {
 		return err
 	}

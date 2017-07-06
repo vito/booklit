@@ -1,0 +1,20 @@
+\title{What & Why}{why}
+
+\section{
+  \title{Flexibility with Sections}{sections}
+
+  Sections can be organized however you want, rather than conforming to a rigid
+  hierarchy. They can be embedded within each other, split into separate pages,
+  omitted from table-of-contents listings, all on a section-by-section basis.
+
+  Broken references, malformed documents, and invalid method calls are all
+  caught at compile-time.
+}
+
+\section{
+  \title{Extending your Docs}{extending}
+
+  Documents are written in a language that can be extended via plugins written
+  in Go. As patterns emerge in your documents, you can optimize for them by
+  quickly writing a plugin and pulling it in.
+}

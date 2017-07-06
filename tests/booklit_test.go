@@ -11,7 +11,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 How are you?
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -28,7 +28,7 @@ How are you?
 I'm good, thanks!
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -55,7 +55,7 @@ potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex
 varius molestie.
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -85,7 +85,46 @@ How are you?
 }
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm doing</h2>
+
+	<p>Good, thanks! And you?</p>
+
+	<h2>2 Their Reply</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+		},
+	}),
+
+	Entry("sub-sections from files", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\include-section{how-im-doing.lit}
+
+\section{
+	\title{Their Reply}
+
+	Good, thanks!
+}
+`,
+
+		Inputs: Files{
+			"how-im-doing.lit": `\title{How I'm doing}
+
+Good, thanks! And you?
+`,
+		},
+
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -125,7 +164,7 @@ How are you?
 }
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -159,7 +198,7 @@ How are you?
 }
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -199,7 +238,7 @@ See also \reference{section-c}{the last section}.
 }
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -247,7 +286,7 @@ See also \reference{section-c}{the last section}.
 }
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -309,7 +348,7 @@ This is some more content.
 }
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
@@ -415,7 +454,7 @@ I'm indented less.
 And here's some more content.
 `,
 
-		Outputs: Outputs{
+		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
