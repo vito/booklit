@@ -20,6 +20,21 @@ How are you?
 		},
 	}),
 
+	Entry("italics", Example{
+		Input: `\title{Hello, world!}
+
+How are \italic{you}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <em>you</em>?</p>
+</section>`,
+		},
+	}),
+
 	Entry("multiple paragraphs", Example{
 		Input: `\title{Hello, world!}
 
