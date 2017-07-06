@@ -24,6 +24,8 @@ jobs:
     trigger: true
   - task: unit
     file: booklit/ci/test.yml
+    params:
+      COVERALLS_TOKEN: ((coveralls_token))
 
 - name: pr-unit
   plan:

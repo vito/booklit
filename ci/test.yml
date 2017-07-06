@@ -13,5 +13,8 @@ caches:
 - path: depspath/
 - path: gopath/pkg/
 
+params:
+  COVERALLS_TOKEN:
+
 run:
   path: gopath/src/github.com/vito/booklit/ci/test

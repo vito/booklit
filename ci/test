@@ -13,4 +13,20 @@ go get -t -d ./...
 echo "installing ginkgo..."
 go install github.com/onsi/ginkgo/ginkgo
 
-ginkgo -r -p
+function emit_coveralls() {
+  if [ -n "$COVERALLS_TOKEN" ]; then
+    echo "emitting code coverage..."
+    go get github.com/mattn/goveralls
+    goveralls -service concourse \
+      -coverprofile <(find . -name '*.coverprofile' | xargs cat)
+  fi
+}
+
+trap emit_coveralls EXIT
+
+echo "running tests..."
+ginkgo -r -p \
+  -cover \
+  -coverpkg $(go list ./... | grep -v /cmd/ | xargs echo | tr ' ' ',') \
+  -covermode atomic \
+  "$@"
