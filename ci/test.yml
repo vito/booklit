@@ -15,6 +15,7 @@ caches:
 
 params:
   COVERALLS_TOKEN:
+  GIT_BRANCH: master
 
 run:
   path: gopath/src/github.com/vito/booklit/ci/test
