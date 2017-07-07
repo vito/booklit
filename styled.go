@@ -5,6 +5,7 @@ type Style string
 const (
 	StyleVerbatim Style = "verbatim"
 	StyleItalic   Style = "italic"
+	StyleBold     Style = "bold"
 )
 
 type Styled struct {
