@@ -18,7 +18,7 @@ function emit_coveralls() {
     echo "emitting code coverage..."
     go get github.com/mattn/goveralls
     goveralls -service concourse \
-      -coverprofile <(find . -name '*.coverprofile' | xargs cat)
+      -coverprofile <(find . -name '*.coverprofile' | xargs cat | grep -v 'booklit.peg.go\|render/bindata.go')
   fi
 }
 
