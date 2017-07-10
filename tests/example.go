@@ -7,6 +7,7 @@ import (
 	"github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
@@ -55,4 +56,18 @@ func (example Example) Run() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchXML(contents))
 	}
+
+	Expect(stringifyEverything(section)).ToNot(BeEmpty())
+}
+
+// NB: this is really just to cut down on "missing" non-critical test
+// coverage. this should recursively stringify all the content.
+func stringifyEverything(section *booklit.Section) string {
+	str := section.String() + " " + section.Body.String()
+
+	for _, sub := range section.Children {
+		str += stringifyEverything(sub)
+	}
+
+	return str
 }
