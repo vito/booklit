@@ -103,3 +103,17 @@ func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.C
 
 	return ref
 }
+
+func (plugin Plugin) Target(tag string, display ...booklit.Content) booklit.Content {
+	ref := &booklit.Target{
+		TagName: tag,
+	}
+
+	if len(display) > 0 {
+		ref.Display = display[0]
+	} else {
+		ref.Display = booklit.String(tag)
+	}
+
+	return ref
+}

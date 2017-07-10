@@ -1,5 +1,11 @@
 package booklit
 
+type Styled struct {
+	Content
+
+	Style Style
+}
+
 type Style string
 
 const (
@@ -7,12 +13,6 @@ const (
 	StyleItalic   Style = "italic"
 	StyleBold     Style = "bold"
 )
-
-type Styled struct {
-	Content
-
-	Style Style
-}
 
 func (con Styled) Visit(visitor Visitor) error {
 	return visitor.VisitStyled(con)

@@ -11,6 +11,7 @@
 // render/html/section.tmpl
 // render/html/sequence.tmpl
 // render/html/string.tmpl
+// render/html/target.tmpl
 // render/html/toc.tmpl
 // DO NOT EDIT!
 
@@ -299,6 +300,26 @@ func renderHtmlStringTmpl() (*asset, error) {
 	return a, nil
 }
 
+var _renderHtmlTargetTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\x54\xc8\x4b\xcc\x4d\xb5\x55\xaa\xae\xd6\x0b\x49\x4c\xf7\x4b\xcc\x4d\xad\xad\x55\xb2\xb3\xd1\x4f\xb4\xe3\x02\x04\x00\x00\xff\xff\x6d\x16\xe9\x86\x1c\x00\x00\x00")
+
+func renderHtmlTargetTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlTargetTmpl,
+		"render/html/target.tmpl",
+	)
+}
+
+func renderHtmlTargetTmpl() (*asset, error) {
+	bytes, err := renderHtmlTargetTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/target.tmpl", size: 28, mode: os.FileMode(420), modTime: time.Unix(1499649481, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _renderHtmlTocTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x54\x8e\x31\xca\xc3\x30\x0c\x46\xf7\x9c\xe2\xc3\x07\xb0\x2f\xe0\xdf\xcb\xbf\x97\x0e\xb9\x80\xdb\x28\x89\x41\x76\x83\x70\x0a\x45\xf1\xdd\x4b\xd2\x66\xe8\x24\xf1\x10\x7a\x4f\x35\x8d\xb0\xff\x73\xe2\x41\xa8\xb4\xd6\xf9\x12\x9f\xa1\x03\xfc\xca\xfb\x50\x95\x58\x26\xfa\x39\x01\x00\xcf\x29\x1c\x0b\xe0\x23\x66\xa1\xf1\xcf\xa8\xda\xab\xa4\x1c\xe5\xd5\xc7\x09\x1b\x56\xe1\xd6\x4c\x50\xb5\x97\x35\xdf\x48\x5a\x83\xaa\xed\x53\x65\xc2\x06\xa1\x32\xec\xcc\xbb\x18\xba\xef\x2b\xd5\x4a\x79\xe1\x58\x09\xa6\x3e\xee\xb6\xe6\x85\x0d\xec\xe9\x74\x1f\xa9\x2a\x95\xe1\x60\xde\xed\x95\xde\x1d\xcd\x27\x7e\x07\x00\x00\xff\xff\x8e\xbb\xb4\xef\xd3\x00\x00\x00")
 
 func renderHtmlTocTmplBytes() ([]byte, error) {
@@ -382,6 +403,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/section.tmpl": renderHtmlSectionTmpl,
 	"render/html/sequence.tmpl": renderHtmlSequenceTmpl,
 	"render/html/string.tmpl": renderHtmlStringTmpl,
+	"render/html/target.tmpl": renderHtmlTargetTmpl,
 	"render/html/toc.tmpl": renderHtmlTocTmpl,
 }
 
@@ -438,6 +460,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"section.tmpl": &bintree{renderHtmlSectionTmpl, map[string]*bintree{}},
 			"sequence.tmpl": &bintree{renderHtmlSequenceTmpl, map[string]*bintree{}},
 			"string.tmpl": &bintree{renderHtmlStringTmpl, map[string]*bintree{}},
+			"target.tmpl": &bintree{renderHtmlTargetTmpl, map[string]*bintree{}},
 			"toc.tmpl": &bintree{renderHtmlTocTmpl, map[string]*bintree{}},
 		}},
 	}},

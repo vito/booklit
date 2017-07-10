@@ -92,3 +92,7 @@ func (resolve *Resolve) VisitTableOfContents(booklit.TableOfContents) error {
 func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
 	return con.Content.Visit(resolve)
 }
+
+func (resolve *Resolve) VisitTarget(con booklit.Target) error {
+	return con.Display.Visit(resolve)
+}

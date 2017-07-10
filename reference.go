@@ -22,7 +22,7 @@ func (con *Reference) String() string {
 		return con.Tag.Display.String()
 	}
 
-	return fmt.Sprintf("{reference: %s}", con.Tag)
+	return fmt.Sprintf("{reference: %s}", con.TagName)
 }
 
 func (con *Reference) Visit(visitor Visitor) error {

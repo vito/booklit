@@ -63,6 +63,15 @@ func (processor *Processor) loadNode(path string, node ast.Node) (*booklit.Secti
 		return nil, err
 	}
 
+	collector := &stages.Collect{
+		Section: section,
+	}
+
+	err = section.Visit(collector)
+	if err != nil {
+		return nil, err
+	}
+
 	resolver := &stages.Resolve{
 		Section: section,
 	}

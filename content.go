@@ -17,4 +17,5 @@ type Visitor interface {
 	VisitTableOfContents(TableOfContents) error
 	VisitPreformatted(Preformatted) error
 	VisitStyled(Styled) error
+	VisitTarget(Target) error
 }
