@@ -100,3 +100,14 @@ func (resolve *Resolve) VisitTarget(con booklit.Target) error {
 func (resolve *Resolve) VisitBlock(con booklit.Block) error {
 	return con.Content.Visit(resolve)
 }
+
+func (resolve *Resolve) VisitList(con booklit.List) error {
+	for _, c := range con.Items {
+		err := c.Visit(resolve)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

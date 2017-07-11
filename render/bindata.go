@@ -5,6 +5,7 @@
 // render/html/code-block.tmpl
 // render/html/code-inline.tmpl
 // render/html/italic.tmpl
+// render/html/list.tmpl
 // render/html/page.tmpl
 // render/html/paragraph.tmpl
 // render/html/preformatted.tmpl
@@ -177,6 +178,26 @@ func renderHtmlItalicTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/italic.tmpl", size: 24, mode: os.FileMode(420), modTime: time.Unix(1499171452, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlListTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x54\xcc\x31\x0a\x82\x31\x10\x44\xe1\x3e\xa7\xd8\x13\x24\x17\x08\xe9\xad\x3c\x83\xb0\xa3\x04\xd6\x08\xfb\x6b\x35\xce\xdd\x05\x1b\x63\xf7\x9a\xf7\x91\xf3\x6a\xf5\x9c\x8e\x84\x4b\xfd\x11\x83\x44\x1c\x90\xfa\xeb\xdb\xcb\xa5\x42\xe6\x65\xdd\x60\xf5\xf4\xc4\xfd\x90\x8a\x59\x8f\x39\xc8\x6a\x6f\x4b\x2c\x47\x4a\xbd\xc5\x1c\xe5\xb7\xfc\xcb\x6d\xa7\xdb\x66\x7f\x02\x00\x00\xff\xff\x26\x88\xac\xef\x83\x00\x00\x00")
+
+func renderHtmlListTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlListTmpl,
+		"render/html/list.tmpl",
+	)
+}
+
+func renderHtmlListTmpl() (*asset, error) {
+	bytes, err := renderHtmlListTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/list.tmpl", size: 131, mode: os.FileMode(420), modTime: time.Unix(1499801773, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -418,6 +439,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/code-block.tmpl": renderHtmlCodeBlockTmpl,
 	"render/html/code-inline.tmpl": renderHtmlCodeInlineTmpl,
 	"render/html/italic.tmpl": renderHtmlItalicTmpl,
+	"render/html/list.tmpl": renderHtmlListTmpl,
 	"render/html/page.tmpl": renderHtmlPageTmpl,
 	"render/html/paragraph.tmpl": renderHtmlParagraphTmpl,
 	"render/html/preformatted.tmpl": renderHtmlPreformattedTmpl,
@@ -476,6 +498,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"code-block.tmpl": &bintree{renderHtmlCodeBlockTmpl, map[string]*bintree{}},
 			"code-inline.tmpl": &bintree{renderHtmlCodeInlineTmpl, map[string]*bintree{}},
 			"italic.tmpl": &bintree{renderHtmlItalicTmpl, map[string]*bintree{}},
+			"list.tmpl": &bintree{renderHtmlListTmpl, map[string]*bintree{}},
 			"page.tmpl": &bintree{renderHtmlPageTmpl, map[string]*bintree{}},
 			"paragraph.tmpl": &bintree{renderHtmlParagraphTmpl, map[string]*bintree{}},
 			"preformatted.tmpl": &bintree{renderHtmlPreformattedTmpl, map[string]*bintree{}},

@@ -96,3 +96,14 @@ func (collect *Collect) VisitTarget(con booklit.Target) error {
 
 	return nil
 }
+
+func (collect *Collect) VisitList(con booklit.List) error {
+	for _, c := range con.Items {
+		err := c.Visit(collect)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

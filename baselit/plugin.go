@@ -117,3 +117,16 @@ func (plugin Plugin) Target(tag string, display ...booklit.Content) booklit.Cont
 
 	return ref
 }
+
+func (plugin Plugin) List(items ...booklit.Content) booklit.Content {
+	return booklit.List{
+		Items: items,
+	}
+}
+
+func (plugin Plugin) OrderedList(items ...booklit.Content) booklit.Content {
+	return booklit.List{
+		Items:   items,
+		Ordered: true,
+	}
+}

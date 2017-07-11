@@ -79,5 +79,5 @@ methods useful for writing prose.
 
   \define{\bold{text}}{
     Present \italic{text} in bold upon rendering.
- }
+  }
 }
