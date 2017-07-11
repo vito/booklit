@@ -101,7 +101,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	}
 
 	if !method.IsValid() {
-		return fmt.Errorf("undefined method: %s", method)
+		return fmt.Errorf("undefined booklit function: %s", invoke.Function)
 	}
 
 	rawArgs := invoke.Arguments
@@ -111,11 +111,11 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		argc--
 
 		if len(rawArgs) < argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", methodName, len(rawArgs), argc)
+			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", invoke.Function, len(rawArgs), argc)
 		}
 	} else {
 		if len(rawArgs) != argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", methodName, len(rawArgs), argc)
+			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Function, len(rawArgs), argc)
 		}
 	}
 
@@ -178,7 +178,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 			return fmt.Errorf("unknown second return type: %T", v)
 		}
 	default:
-		return fmt.Errorf("expected 0-2 return values from %s, got %d", methodName, len(result))
+		return fmt.Errorf("expected 0-2 return values from %s, got %d", invoke.Function, len(result))
 	}
 
 	return nil
