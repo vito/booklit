@@ -29,15 +29,6 @@
 
     return nodes
   }
-
-  func methodName(name string) string {
-    camel := ""
-    for _, word := range strings.Split(name, "-") {
-      camel += strings.Title(word)
-    }
-
-    return camel
-  }
 }
 
 Booklit <- node:Paragraphs !. {
@@ -109,7 +100,7 @@ Verbatim <- '\n' sentences:VerbatimSentence* {
 
 Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   return Invoke{
-    Method: methodName(ifaceStr(name)),
+    Function: ifaceStr(name),
     Arguments: ifaceNodes(args),
   }, nil
 }

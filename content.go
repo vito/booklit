@@ -18,4 +18,5 @@ type Visitor interface {
 	VisitPreformatted(Preformatted) error
 	VisitStyled(Styled) error
 	VisitTarget(Target) error
+	VisitBlock(Block) error
 }

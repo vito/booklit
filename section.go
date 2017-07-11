@@ -13,7 +13,7 @@ type Section struct {
 	Body  Content
 
 	PrimaryTag Tag
-	Tags       map[string]Tag
+	Tags       []Tag
 
 	Parent   *Section
 	Children []*Section
@@ -44,18 +44,18 @@ func (con *Section) SetTitle(title Content, tags ...string) {
 		tags = []string{con.defaultTag(title)}
 	}
 
-	con.Tags = map[string]Tag{}
+	con.Tags = []Tag{}
 	for _, name := range tags {
-		con.Tags[name] = Tag{
+		con.Tags = append(con.Tags, Tag{
 			Name:    name,
 			Display: title,
 
 			Section: con,
-		}
+		})
 	}
 
 	con.Title = title
-	con.PrimaryTag = con.Tags[tags[0]]
+	con.PrimaryTag = con.Tags[0]
 }
 
 func (con *Section) Number() string {
@@ -74,6 +74,40 @@ func (con *Section) Number() string {
 	}
 
 	return fmt.Sprintf("%s.%d", parentNumber, selfIndex)
+}
+
+func (con *Section) HasAnchors() bool {
+	for _, tag := range con.Tags {
+		if tag.Anchor != "" {
+			return true
+		}
+	}
+
+	if con.SplitSections {
+		return false
+	}
+
+	for _, child := range con.Children {
+		if child.HasAnchors() {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (con *Section) AnchorTags() []Tag {
+	tags := []Tag{}
+
+	for _, tag := range con.Tags {
+		if tag.Anchor == "" {
+			continue
+		}
+
+		tags = append(tags, tag)
+	}
+
+	return tags
 }
 
 func (con *Section) Top() *Section {
@@ -103,9 +137,10 @@ func (con *Section) FindTag(tagName string) (Tag, bool) {
 }
 
 func (con *Section) findTag(tagName string, up bool, exclude *Section) (Tag, bool) {
-	tag, found := con.Tags[tagName]
-	if found {
-		return tag, true
+	for _, t := range con.Tags {
+		if t.Name == tagName {
+			return t, true
+		}
 	}
 
 	for _, sub := range con.Children {

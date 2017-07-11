@@ -1,5 +1,7 @@
 package ast
 
+import "strings"
+
 type Node interface {
 	Visit(Visitor) error
 }
@@ -19,12 +21,21 @@ func (node String) Visit(visitor Visitor) error {
 }
 
 type Invoke struct {
-	Method    string
+	Function  string
 	Arguments []Node
 }
 
 func (node Invoke) Visit(visitor Visitor) error {
 	return visitor.VisitInvoke(node)
+}
+
+func (node Invoke) Method() string {
+	camel := ""
+	for _, word := range strings.Split(node.Function, "-") {
+		camel += strings.Title(word)
+	}
+
+	return camel
 }
 
 type Sequence []Node

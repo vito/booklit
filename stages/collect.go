@@ -82,13 +82,17 @@ func (collect *Collect) VisitStyled(con booklit.Styled) error {
 	return con.Content.Visit(collect)
 }
 
+func (collect *Collect) VisitBlock(con booklit.Block) error {
+	return con.Content.Visit(collect)
+}
+
 func (collect *Collect) VisitTarget(con booklit.Target) error {
-	collect.Section.Tags[con.TagName] = booklit.Tag{
+	collect.Section.Tags = append(collect.Section.Tags, booklit.Tag{
 		Name:    con.TagName,
 		Section: collect.Section,
 		Display: con.Display,
 		Anchor:  con.TagName,
-	}
+	})
 
 	return nil
 }

@@ -26,18 +26,18 @@ a:hover {
 
 code, pre {
   font-family: 'Source Code Pro', monospace;
-  font-size: .8em;
+  font-size: .9em;
 }
 
 pre {
   background: #F7E5BF;
-  border-bottom: 1px dotted #EAD2A4;
+  border-bottom: 1px solid #EAD2A4;
   padding: .5rem;
 }
 
 p code {
   background: #F7E5BF;
-  border-bottom: 1px dotted #EAD2A4;
+  border-bottom: 1px solid #EAD2A4;
   padding: .1em .2em;
   white-space: nowrap;
 }
@@ -156,4 +156,31 @@ h2 {
 
 .section-number {
   margin-right: .4rem;
+}
+
+.definition-thumb {
+  background: #F7E5BF;
+  border-bottom: 2px solid #EAD2A4;
+  padding: .2rem .5rem;
+  margin-top: 2em;
+}
+
+.definition-thumb a {
+  color: inherit;
+}
+
+.definition-thumb a:hover {
+  text-decoration: underline;
+}
+
+.definition-content {
+  border-bottom: 1px dotted #EAD2A4;
+  padding: 0 0 1em 1em;
+  margin-bottom: 2rem;
+}
+
+.definition-content:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }

@@ -49,3 +49,35 @@
   </nav>
 </div>
 {{end}}
+
+{{if .HasAnchors}}
+<div class="context">
+  <div class="top">
+    On this page:
+  </div>
+
+  <nav>
+    <div class="children">
+      <table>
+        {{range .AnchorTags}}
+        <tr>
+          <td colspan="2" class="title-cell"><a href="{{. | url}}">{{.Display | render}}</a></td>
+        </tr>
+        {{end}}
+        {{range .Children}}
+        <tr>
+          <td class="number-cell" align="right">{{.Number}}&nbsp;</td>
+          <td class="title-cell">{{template "section-link" walkContext $ .}}</td>
+        </tr>
+          {{range .AnchorTags}}
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="{{. | url}}">{{.Display | render}}</a></td>
+          </tr>
+          {{end}}
+        {{end}}
+      </table>
+    </div>
+  </nav>
+</div>
+{{end}}

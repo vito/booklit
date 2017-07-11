@@ -3,3 +3,81 @@
 Booklit comes with a default plugin called \code{baselit}. It provides the
 basic set of functions needed for authoring Booklit documents, plus many common
 methods useful for writing prose.
+
+\section{
+  \title{Defining Sections}
+
+  \define{\title{text}{tags...}}{
+    Sets the title and optional \italic{tags} as repeated arguments. For
+    example, the \code{title} invocation for this section is:
+
+    \code{{{
+    \title{The \code{baselit} Plugin}{baselit}
+    }}}
+
+    To specify multiple tags, pass multiple arguments:
+
+    \code{{{
+    \title{I'm a taggy section!}{tag-1}{tag-1}
+    }}}
+
+    You can also just specify the title, in which case the section's tag will
+    default to a sanitized form of the title (e.g. \italic{I'm a fancy title!}
+    becomes \code{im-a-fancy-title}).
+  }
+}
+
+\section{
+  \title{Styling Words}
+
+  \define{\code{text}}{
+    Present \italic{text} in a monospace font upon rendering.
+
+    If \italic{text} is a sentence, it is presented as inline code. If it is
+    multi-line, it is presented as its own block.
+
+    This is often used in addition to \code{\{\{two\}\}} braces to preserve
+    whitespace, or \code{\{\{\{three\}\}\}} to ignore escaping (in addition to
+    preserving whitespace).
+
+    For example:
+
+    \code{{{
+    I'm a sentence with some \code{code bits} in it.
+    }}}
+
+    ...renders as:
+
+    I'm a sentence with some \code{code bits} in it.
+
+    While, this example:
+
+    \code{{{
+    \code{
+      This is a code block.
+
+      with
+        wacky
+          whitespace
+    }
+    }}}
+
+    ...renders as:
+
+    \code{{
+    This is a code block.
+
+    with
+      wacky
+        whitespace
+    }}
+  }
+
+  \define{\italic{text}}{
+    Present \italic{text} italicized upon rendering.
+  }
+
+  \define{\bold{text}}{
+    Present \italic{text} in bold upon rendering.
+ }
+}

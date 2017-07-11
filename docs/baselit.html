@@ -60,6 +60,91 @@
 </div>
 
 
+<div class="context">
+  <nav>
+    <div class="top">
+      4&nbsp;
+<a href="baselit.html"  class="self">The <code>baselit</code> Plugin</a>
+
+    </div>
+
+    <input type="checkbox" class="toggle" checked />
+    <span class="arrow"></span>
+    <div class="children">
+      <table>
+      
+        <tr>
+          <td class="number-cell" align="right">4.1&nbsp;</td>
+          <td class="title-cell">
+<a href="baselit.html#defining-sections" >Defining Sections</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">4.2&nbsp;</td>
+          <td class="title-cell">
+<a href="baselit.html#styling-words" >Styling Words</a>
+</td>
+        </tr>
+      
+      </table>
+    </div>
+  </nav>
+</div>
+
+
+
+<div class="context">
+  <div class="top">
+    On this page:
+  </div>
+
+  <nav>
+    <div class="children">
+      <table>
+        
+        
+        <tr>
+          <td class="number-cell" align="right">4.1&nbsp;</td>
+          <td class="title-cell">
+<a href="baselit.html#defining-sections" >Defining Sections</a>
+</td>
+        </tr>
+          
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="baselit.html#title"><code>title</code></a></td>
+          </tr>
+          
+        
+        <tr>
+          <td class="number-cell" align="right">4.2&nbsp;</td>
+          <td class="title-cell">
+<a href="baselit.html#styling-words" >Styling Words</a>
+</td>
+        </tr>
+          
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="baselit.html#code"><code>code</code></a></td>
+          </tr>
+          
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="baselit.html#italic"><code>italic</code></a></td>
+          </tr>
+          
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="baselit.html#bold"><code>bold</code></a></td>
+          </tr>
+          
+        
+      </table>
+    </div>
+  </nav>
+</div>
+
 
     </div>
     <div class="page">
@@ -67,6 +152,32 @@
 
 <p>Booklit comes with a default plugin called <code>baselit</code>. It provides the basic set of functions needed for authoring Booklit documents, plus many common methods useful for writing prose.</p>
 
+
+  
+    <h2 class="section-header"><span class="section-number">4.1 </span>Defining Sections</h2>
+
+<div class="definition-thumb"><a name="title"></a><code>\<a href="baselit.html#title"><strong>title</strong></a>{<em>text</em>}{<em>tags...</em>}</code></div><div class="definition-content"><p>Sets the title and optional <em>tags</em> as repeated arguments. For example, the <code>title</code> invocation for this section is:</p><pre>\title{The \code{baselit} Plugin}{baselit}</pre><p>To specify multiple tags, pass multiple arguments:</p><pre>\title{I&#39;m a taggy section!}{tag-1}{tag-1}</pre><p>You can also just specify the title, in which case the section&#39;s tag will default to a sanitized form of the title (e.g. <em>I&#39;m a fancy title!</em> becomes <code>im-a-fancy-title</code>).</p></div>
+
+
+  
+
+  
+    <h2 class="section-header"><span class="section-number">4.2 </span>Styling Words</h2>
+
+<div class="definition-thumb"><a name="code"></a><code>\<a href="baselit.html#code"><strong>code</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a sentence, it is presented as inline code. If it is multi-line, it is presented as its own block.</p><p>This is often used in addition to <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace).</p><p>For example:</p><pre>I&#39;m a sentence with some \code{code bits} in it.</pre><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><pre>\code{
+  This is a code block.
+
+  with
+    wacky
+      whitespace
+}</pre><p>...renders as:</p><pre>This is a code block.
+
+with
+  wacky
+    whitespace</pre></div><div class="definition-thumb"><a name="italic"></a><code>\<a href="baselit.html#italic"><strong>italic</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> italicized upon rendering.</p></div><div class="definition-thumb"><a name="bold"></a><code>\<a href="baselit.html#bold"><strong>bold</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in bold upon rendering.</p></div>
+
+
+  
 
   
 

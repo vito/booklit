@@ -96,3 +96,7 @@ func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
 func (resolve *Resolve) VisitTarget(con booklit.Target) error {
 	return con.Display.Visit(resolve)
 }
+
+func (resolve *Resolve) VisitBlock(con booklit.Block) error {
+	return con.Content.Visit(resolve)
+}

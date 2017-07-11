@@ -89,17 +89,19 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 }
 
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
+	methodName := invoke.Method()
+
 	var method reflect.Value
 	for _, p := range eval.Plugins {
 		value := reflect.ValueOf(p)
-		method = value.MethodByName(invoke.Method)
+		method = value.MethodByName(methodName)
 		if method.IsValid() {
 			break
 		}
 	}
 
 	if !method.IsValid() {
-		return fmt.Errorf("undefined method: %s", invoke.Method)
+		return fmt.Errorf("undefined method: %s", method)
 	}
 
 	rawArgs := invoke.Arguments
@@ -109,11 +111,11 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		argc--
 
 		if len(rawArgs) < argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", invoke.Method, len(rawArgs), argc)
+			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", methodName, len(rawArgs), argc)
 		}
 	} else {
 		if len(rawArgs) != argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Method, len(rawArgs), argc)
+			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", methodName, len(rawArgs), argc)
 		}
 	}
 
@@ -176,7 +178,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 			return fmt.Errorf("unknown second return type: %T", v)
 		}
 	default:
-		return fmt.Errorf("expected 0-2 return values from %s, got %d", invoke.Method, len(result))
+		return fmt.Errorf("expected 0-2 return values from %s, got %d", methodName, len(result))
 	}
 
 	return nil

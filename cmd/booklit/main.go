@@ -6,6 +6,7 @@ import (
 
 	flags "github.com/jessevdk/go-flags"
 	"github.com/vito/booklit/baselit"
+	"github.com/vito/booklit/booklitdoc"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
 )
@@ -23,6 +24,7 @@ func (cmd *Command) Execute(args []string) error {
 	processor := &load.Processor{}
 	booklitFactory := baselit.PluginFactory{processor}
 	processor.PluginFactories = append(processor.PluginFactories, booklitFactory)
+	processor.PluginFactories = append(processor.PluginFactories, booklitdoc.PluginFactory{})
 
 	section, err := processor.LoadFile(cmd.In)
 	if err != nil {
