@@ -8,9 +8,9 @@ image_resource:
 inputs:
 - name: booklit
   path: gopath/src/github.com/vito/booklit
+- name: version
 
 outputs:
-- name: version
 - name: binary
 
 caches:
