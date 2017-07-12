@@ -5,10 +5,15 @@ import (
 	"os"
 
 	flags "github.com/jessevdk/go-flags"
+	"github.com/vito/booklit"
 )
 
 func Main() {
 	cmd := &Command{}
+	cmd.Version = func() {
+		fmt.Println(booklit.Version)
+		os.Exit(0)
+	}
 
 	parser := flags.NewParser(cmd, flags.Default)
 	parser.NamespaceDelimiter = "-"

@@ -13,6 +13,8 @@ import (
 )
 
 type Command struct {
+	Version func() `short:"v" long:"version" description:"Print the version of Boooklit and exit."`
+
 	In  string `long:"in"  short:"i" required:"true" description:"Input .lit file."`
 	Out string `long:"out" short:"o" required:"true" description:"Output directory in which to render."`
 
