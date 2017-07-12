@@ -1,1 +1,42 @@
-\title{Writing & Using Plugins}{plugins}
+\title{Extending with Plugins}{plugins}
+
+Plugins are what provide the functionality behind function calls like
+\code{\\foo\{bar\}}. Out of the box, Booklit comes with a plugin called
+\reference{baselit}{\code{baselit}} which provides basic primives like
+\reference{title} and \reference{section} in addition to support for basic
+markup like \reference{italic} and \reference{bold}. It also serves as a good
+reference when writing your own plugin.
+
+\section{
+  \title{Writing Plugins}{using-plugins}
+
+  Plugins are implemented in the \link{Go programming
+  language}{https://golang.org}, so if you're planning on writing one, make
+  sure you've got it installed.
+}
+
+\section{
+  \title{Using Plugins}{using-plugins}
+
+  To use a plugin, first run \code{booklit} with its import path provided like
+  so:
+
+  \code{{{
+  booklit -i index.lit -o out --plugin github.com/my/fancyplugin
+  }}}
+
+  The plugin will register itself with Booklit under a certain name
+  (conventionally, the same name as its package). Next, use
+  \reference{use-plugin} in your \code{.lit} document to pull it in:
+
+  \code{{{
+  \title{My Section}
+
+  \use-plugin{fancyplugin}
+
+  Blah blah.
+  }}}
+
+  The \code{--plugin} flag can be specified multiple times, and
+  \reference{use-plugin} can be invoked multiple times.
+}

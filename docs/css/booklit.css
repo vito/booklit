@@ -29,6 +29,14 @@ code, pre {
   font-size: .9em;
 }
 
+a code {
+  color: #432E2B;
+}
+
+a:hover code {
+  text-decoration: underline;
+}
+
 pre {
   background: #F7E5BF;
   border-bottom: 1px solid #EAD2A4;

@@ -27,6 +27,54 @@ methods useful for writing prose.
     default to a sanitized form of the title (e.g. \italic{I'm a fancy title!}
     becomes \code{im-a-fancy-title}).
   }
+
+  \define{\use-plugin{name}}{
+    Construct and use the plugin identified by \italic{name}. See
+    \reference{using-plugins} for more information.
+  }
+
+  \define{\section{content}}{
+    Introduce a sub-section, inheriting plugins of the outer section.
+
+    Each sub-section should conventionally begin with a call to
+    \reference{title} to set its title.
+
+    For example, here's a full section containing a sub-section:
+
+    \code{{{
+    \title{I'm a parent section!}
+
+    Hello, world!
+
+    \section{
+      \title{And I'm a child section!}
+
+      Waaah! Waaaah!
+    }
+    }}}
+
+    Sections can be nested arbitrarily deep, however it is recommended to keep
+    a maximum depth of two on a single page. Sections can be split on to
+    separate pages by invoking \reference{split-sections}.
+  }
+
+  \define{\include-section{path}}{
+    Introduce a sub-section located at \italic{path}, relative to the current
+    section's file. The included section will \bold{not} inherit the plugins of
+    the parent section. Instead, it should explicitly call
+    \reference{use-plugin} on its own, so that it's self-contained.
+  }
+
+  \define{\split-sections}{
+    Configures the renderer to generate a separate page for each sub-section,
+    rather than inlining them under smaller headings.
+  }
+
+  \define{\table-of-contents}{
+    This generates a block element that becomes the table of contents from this
+    section downward upon rendering. Often used in combination with
+    \reference{split-sections}.
+  }
 }
 
 \section{

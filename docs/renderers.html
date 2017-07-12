@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Renderering</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/booklit.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="side">
+      
+
+<div class="context">
+  <nav>
+    <div class="top">
+      
+<a href="index.html" >Booklit</a>
+
+    </div>
+
+    
+    <input type="checkbox" class="toggle" checked />
+    <span class="arrow"></span>
+    <div class="children">
+      <table>
+      
+        <tr>
+          <td class="number-cell" align="right">1&nbsp;</td>
+          <td class="title-cell">
+<a href="why.html" >What &amp; Why</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">2&nbsp;</td>
+          <td class="title-cell">
+<a href="getting-started.html" >Getting Started</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">3&nbsp;</td>
+          <td class="title-cell">
+<a href="renderers.html"  class="self">Renderering</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">4&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html" >Extending with Plugins</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">5&nbsp;</td>
+          <td class="title-cell">
+<a href="baselit.html" >The <code>baselit</code> Plugin</a>
+</td>
+        </tr>
+      
+      </table>
+    </div>
+    
+  </nav>
+</div>
+
+
+<div class="context">
+  <nav>
+    <div class="top">
+      3&nbsp;
+<a href="renderers.html"  class="self">Renderering</a>
+
+    </div>
+
+    <input type="checkbox" class="toggle" checked />
+    <span class="arrow"></span>
+    <div class="children">
+      <table>
+      
+        <tr>
+          <td class="number-cell" align="right">3.1&nbsp;</td>
+          <td class="title-cell">
+<a href="renderers.html#html-renderer" >The HTML Renderer</a>
+</td>
+        </tr>
+      
+      </table>
+    </div>
+  </nav>
+</div>
+
+
+
+
+    </div>
+    <div class="page">
+      <h1 class="section-header"><a name="renderers"></a><span class="section-number">3 </span>Renderering</h1>
+
+<p>A <em>renderer</em> is the function from an evaluated section to some generated content ready for publishing.</p><p>As of right now, there is only one renderer: <a href="renderers.html#html-renderer">HTML</a>.</p>
+
+
+  
+    <h2 class="section-header"><a name="html-renderer"></a><span class="section-number">3.1 </span>The HTML Renderer</h2>
+
+<p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs --html-templates ./html</pre><p>The following template files will be used if present under <code>./html</code>:</p><ul>
+
+  <li><p><code>block.tmpl</code></p></li>
+
+  <li><p><code>bold.tmpl</code></p></li>
+
+  <li><p><code>code-block.tmpl</code></p></li>
+
+  <li><p><code>code-inline.tmpl</code></p></li>
+
+  <li><p><code>italic.tmpl</code></p></li>
+
+  <li><p><code>link.tmpl</code></p></li>
+
+  <li><p><code>list.tmpl</code></p></li>
+
+  <li><p><code>page.tmpl</code></p></li>
+
+  <li><p><code>paragraph.tmpl</code></p></li>
+
+  <li><p><code>preformatted.tmpl</code></p></li>
+
+  <li><p><code>reference.tmpl</code></p></li>
+
+  <li><p><code>section.tmpl</code></p></li>
+
+  <li><p><code>sequence.tmpl</code></p></li>
+
+  <li><p><code>string.tmpl</code></p></li>
+
+  <li><p><code>target.tmpl</code></p></li>
+
+  <li><p><code>toc.tmpl</code></p></li>
+
+</ul><p>The most impactful of these is <code>page.tmpl</code>, which is used for the top-level section for each &#34;page&#34; rendered. This is where you would place assets in <code>&lt;head&gt;</code>, for example.</p><p>The value configured for <code>.</code> when evaluating the template depends on the template.</p>
+
+
+  
+
+  
+
+    </div>
+  </body>
+</html>

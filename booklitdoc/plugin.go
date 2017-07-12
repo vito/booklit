@@ -33,7 +33,7 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Cont
 			Content: booklit.Sequence{
 				booklit.Target{
 					TagName: invoke.Function,
-					Display: plugin.base.Code(booklit.String(invoke.Function)),
+					Display: plugin.base.Code(booklit.String("\\" + invoke.Function)),
 				},
 				plugin.base.Code(plugin.renderInvoke(invoke)),
 			},

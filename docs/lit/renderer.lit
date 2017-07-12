@@ -1,0 +1,65 @@
+\title{Rendering}{rendering}
+
+A \italic{renderer} is the function from an evaluated section to some generated
+content ready for publishing.
+
+As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
+
+\section{
+  \title{The HTML Renderer}{html-renderer}
+
+  The HTML renderer uses Go's built-in
+  \link{\code{html/template}}{https://golang.org/pkg/html/template} package.
+  Booklit comes with some extremely barebones templates that don't include any
+  styling at all. You'll probably want to change that.
+
+  To override templates, first create a directory for your \code{.tmpl} files,
+  and then provide the \code{--html-templates} flag when building your docs:
+
+  \code{{{
+  booklit -i ./index.any -o ./docs --html-templates ./html
+  }}}
+
+  The following template files will be used if present under \code{./html}:
+
+  \list{
+    \code{block.tmpl}
+  }{
+    \code{bold.tmpl}
+  }{
+    \code{code-block.tmpl}
+  }{
+    \code{code-inline.tmpl}
+  }{
+    \code{italic.tmpl}
+  }{
+    \code{link.tmpl}
+  }{
+    \code{list.tmpl}
+  }{
+    \code{page.tmpl}
+  }{
+    \code{paragraph.tmpl}
+  }{
+    \code{preformatted.tmpl}
+  }{
+    \code{reference.tmpl}
+  }{
+    \code{section.tmpl}
+  }{
+    \code{sequence.tmpl}
+  }{
+    \code{string.tmpl}
+  }{
+    \code{target.tmpl}
+  }{
+    \code{toc.tmpl}
+  }
+
+  The most impactful of these is \code{page.tmpl}, which is used for the
+  top-level section for each "page" rendered. This is where you would place
+  assets in \code{<head>}, for example.
+
+  The value configured for \code{.} when evaluating the template depends on the
+  template.
+}

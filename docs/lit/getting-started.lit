@@ -121,3 +121,20 @@
     }
   }}}
 }
+
+\section{
+  \title{Next Steps}
+
+  What to do from here really depends on what you're trying to write.
+
+  \list{
+    To learn all the things you can do in a document out-of-the-box, consult
+    \reference{baselit}.
+  }{
+    To change how your generated content looks, check out the
+    \reference{html-renderer}{HTML renderer}.
+  }{
+    Once you've identified patterns or abstractions that you want to introduce,
+    consult \reference{plugins}.
+  }
+}

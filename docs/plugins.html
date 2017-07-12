@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>Writing &amp; Using Plugins</title>
+    <title>Extending with Plugins</title>
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
@@ -42,14 +42,21 @@
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
+<a href="rendering.html" >Rendering</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">4&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html"  class="self">Writing &amp; Using Plugins</a>
+<a href="plugins.html"  class="self">Extending with Plugins</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">5&nbsp;</td>
+          <td class="title-cell">
+<a href="baselit.html" >The <code>baselit</code> Plugin</a>
 </td>
         </tr>
       
@@ -60,15 +67,67 @@
 </div>
 
 
+<div class="context">
+  <nav>
+    <div class="top">
+      4&nbsp;
+<a href="plugins.html"  class="self">Extending with Plugins</a>
+
+    </div>
+
+    <input type="checkbox" class="toggle" checked />
+    <span class="arrow"></span>
+    <div class="children">
+      <table>
+      
+        <tr>
+          <td class="number-cell" align="right">4.1&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html#using-plugins" >Writing Plugins</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">4.2&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html#using-plugins" >Using Plugins</a>
+</td>
+        </tr>
+      
+      </table>
+    </div>
+  </nav>
+</div>
+
 
 
 
     </div>
     <div class="page">
-      <h1 class="section-header"><a name="plugins"></a><span class="section-number">4 </span>Writing &amp; Using Plugins</h1>
+      <h1 class="section-header"><a name="plugins"></a><span class="section-number">4 </span>Extending with Plugins</h1>
+
+<p>Plugins are what provide the functionality behind function calls like <code>\foo{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code>\title</code></a> and <a href="baselit.html#section"><code>\section</code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code>\italic</code></a> and <a href="baselit.html#bold"><code>\bold</code></a>. It also serves as a good reference when writing your own plugin.</p>
 
 
+  
+    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.1 </span>Writing Plugins</h2>
 
+<p>Plugins are implemented in the <a href="https://golang.org">Go programming   language</a>, so if you&#39;re planning on writing one, make sure you&#39;ve got it installed.</p>
+
+
+  
+
+  
+    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
+
+<p>To use a plugin, first run <code>booklit</code> with its import path provided like so:</p><pre>booklit -i index.lit -o out --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\use-plugin</code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}
+
+\use-plugin{fancyplugin}
+
+Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\use-plugin</code></a> can be invoked multiple times.</p>
+
+
+  
 
   
 
