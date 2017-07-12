@@ -11,5 +11,5 @@ as your documentation grows.
 
 \include-section{why.lit}
 \include-section{getting-started.lit}
-\include-section{plugins.lit}
 \include-section{baselit.lit}
+\include-section{plugins.lit}
