@@ -91,7 +91,8 @@
 
     \split-sections
 
-    I'm a Booklit document! To read further, see \reference{hi-there}.
+    I'm a Booklit document! To read further, see
+    \reference{hi-there}.
 
     \section{
       \title{Hi there!}
@@ -111,8 +112,8 @@
 
     \split-sections
 
-    I'm a Booklit document! Consult \reference{hi-there}{this section}
-    for more information.
+    I'm a Booklit document! Consult
+    \reference{hi-there}{this section} for more.
 
     \section{
       \title{Hi there!}

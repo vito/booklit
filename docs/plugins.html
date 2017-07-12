@@ -60,6 +60,13 @@
 </td>
         </tr>
       
+        <tr>
+          <td class="number-cell" align="right">6&nbsp;</td>
+          <td class="title-cell">
+<a href="thanks.html" >Thanks</a>
+</td>
+        </tr>
+      
       </table>
     </div>
     
@@ -120,7 +127,8 @@
   
     <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
 
-<p>To use a plugin, first run <code>booklit</code> with its import path provided like so:</p><pre>booklit -i index.lit -o out --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}
+<p>To use a plugin, you&#39;ll need to pass it as <code>--plugin</code> to the <code>booklit</code> command when building your docs, like so:</p><pre>booklit -i index.lit -o out \
+    --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}
 
 \use-plugin{fancyplugin}
 

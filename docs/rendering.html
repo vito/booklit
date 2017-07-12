@@ -60,6 +60,13 @@
 </td>
         </tr>
       
+        <tr>
+          <td class="number-cell" align="right">6&nbsp;</td>
+          <td class="title-cell">
+<a href="thanks.html" >Thanks</a>
+</td>
+        </tr>
+      
       </table>
     </div>
     
@@ -105,7 +112,8 @@
   
     <h2 class="section-header"><a name="html-renderer"></a><span class="section-number">3.1 </span>The HTML Renderer</h2>
 
-<p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs --html-templates ./html</pre><p>The following template files will be used if present under <code>./html</code>:</p><ul>
+<p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs \
+    --html-templates ./html</pre><p>The following template files will be used if present under <code>./html</code>:</p><ul>
 
   <li><p><code>block.tmpl</code></p></li>
 

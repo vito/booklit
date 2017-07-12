@@ -17,7 +17,8 @@ As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
   and then provide the \code{--html-templates} flag when building your docs:
 
   \code{{{
-  booklit -i ./index.any -o ./docs --html-templates ./html
+  booklit -i ./index.any -o ./docs \
+      --html-templates ./html
   }}}
 
   The following template files will be used if present under \code{./html}:

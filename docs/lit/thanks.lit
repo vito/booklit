@@ -1,0 +1,6 @@
+\title{Thanks}
+
+Booklit is very heavily inspired by
+\link{Scribble}{https://docs.racket-lang.org/scribble/}, the documentation tool
+for the \link{Racket programming language}{https://racket-lang.org/}. Without
+it, Booklit would not exist.

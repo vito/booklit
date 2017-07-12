@@ -18,11 +18,12 @@ reference when writing your own plugin.
 \section{
   \title{Using Plugins}{using-plugins}
 
-  To use a plugin, first run \code{booklit} with its import path provided like
-  so:
+  To use a plugin, you'll need to pass it as \code{--plugin} to the
+  \code{booklit} command when building your docs, like so:
 
   \code{{{
-  booklit -i index.lit -o out --plugin github.com/my/fancyplugin
+  booklit -i index.lit -o out \
+      --plugin github.com/my/fancyplugin
   }}}
 
   The plugin will register itself with Booklit under a certain name
