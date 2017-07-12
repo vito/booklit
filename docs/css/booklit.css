@@ -29,11 +29,11 @@ code, pre {
   font-size: .9em;
 }
 
-a code {
+p a code {
   color: #432E2B;
 }
 
-a:hover code {
+p a:hover code {
   text-decoration: underline;
 }
 
