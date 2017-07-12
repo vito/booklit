@@ -177,6 +177,12 @@ func (engine *HTMLRenderingEngine) VisitList(con booklit.List) error {
 	return nil
 }
 
+func (engine *HTMLRenderingEngine) VisitLink(con booklit.Link) error {
+	engine.template = engine.tmpl.Lookup("link.tmpl")
+	engine.data = con
+	return nil
+}
+
 func (engine *HTMLRenderingEngine) Render(out io.Writer) error {
 	if engine.template == nil {
 		return fmt.Errorf("unknown template for %T", engine.data)

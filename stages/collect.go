@@ -107,3 +107,7 @@ func (collect *Collect) VisitList(con booklit.List) error {
 
 	return nil
 }
+
+func (collect *Collect) VisitLink(con booklit.Link) error {
+	return con.Content.Visit(collect)
+}

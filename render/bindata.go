@@ -5,6 +5,7 @@
 // render/html/code-block.tmpl
 // render/html/code-inline.tmpl
 // render/html/italic.tmpl
+// render/html/link.tmpl
 // render/html/list.tmpl
 // render/html/page.tmpl
 // render/html/paragraph.tmpl
@@ -178,6 +179,26 @@ func renderHtmlItalicTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/italic.tmpl", size: 24, mode: os.FileMode(420), modTime: time.Unix(1499171452, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlLinkTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\x54\xc8\x28\x4a\x4d\xb3\x55\xaa\xae\xd6\x0b\x49\x2c\x4a\x4f\x2d\xa9\xad\x55\xb2\xab\xae\xd6\x73\xce\xcf\x2b\x49\xcd\x2b\x51\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x4f\xb4\xe3\x02\x04\x00\x00\xff\xff\x30\x04\xce\x2f\x30\x00\x00\x00")
+
+func renderHtmlLinkTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlLinkTmpl,
+		"render/html/link.tmpl",
+	)
+}
+
+func renderHtmlLinkTmpl() (*asset, error) {
+	bytes, err := renderHtmlLinkTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/link.tmpl", size: 48, mode: os.FileMode(420), modTime: time.Unix(1499828141, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -439,6 +460,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/code-block.tmpl": renderHtmlCodeBlockTmpl,
 	"render/html/code-inline.tmpl": renderHtmlCodeInlineTmpl,
 	"render/html/italic.tmpl": renderHtmlItalicTmpl,
+	"render/html/link.tmpl": renderHtmlLinkTmpl,
 	"render/html/list.tmpl": renderHtmlListTmpl,
 	"render/html/page.tmpl": renderHtmlPageTmpl,
 	"render/html/paragraph.tmpl": renderHtmlParagraphTmpl,
@@ -498,6 +520,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"code-block.tmpl": &bintree{renderHtmlCodeBlockTmpl, map[string]*bintree{}},
 			"code-inline.tmpl": &bintree{renderHtmlCodeInlineTmpl, map[string]*bintree{}},
 			"italic.tmpl": &bintree{renderHtmlItalicTmpl, map[string]*bintree{}},
+			"link.tmpl": &bintree{renderHtmlLinkTmpl, map[string]*bintree{}},
 			"list.tmpl": &bintree{renderHtmlListTmpl, map[string]*bintree{}},
 			"page.tmpl": &bintree{renderHtmlPageTmpl, map[string]*bintree{}},
 			"paragraph.tmpl": &bintree{renderHtmlParagraphTmpl, map[string]*bintree{}},

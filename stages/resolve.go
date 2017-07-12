@@ -111,3 +111,7 @@ func (resolve *Resolve) VisitList(con booklit.List) error {
 
 	return nil
 }
+
+func (resolve *Resolve) VisitLink(con booklit.Link) error {
+	return con.Content.Visit(resolve)
+}

@@ -91,6 +91,13 @@ func (plugin Plugin) TableOfContents() booklit.Content {
 	}
 }
 
+func (plugin Plugin) Link(content booklit.Content, target string) booklit.Content {
+	return booklit.Link{
+		Content: content,
+		Target:  target,
+	}
+}
+
 func (plugin Plugin) Code(content booklit.Content) booklit.Content {
 	return booklit.Styled{
 		Content: content,

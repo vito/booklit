@@ -20,6 +20,21 @@ How are you?
 		},
 	}),
 
+	Entry("link", Example{
+		Input: `\title{Hello, world!}
+
+How are \link{you}{https://example.com}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <a href="https://example.com">you</a>?</p>
+</section>`,
+		},
+	}),
+
 	Entry("italics", Example{
 		Input: `\title{Hello, world!}
 

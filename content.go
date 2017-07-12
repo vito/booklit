@@ -12,6 +12,7 @@ type Visitor interface {
 	VisitString(String) error
 	VisitSequence(Sequence) error
 	VisitReference(*Reference) error
+	VisitLink(Link) error
 	VisitSection(*Section) error
 	VisitParagraph(Paragraph) error
 	VisitTableOfContents(TableOfContents) error
