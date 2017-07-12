@@ -53,6 +53,7 @@ resources:
 
 jobs:
 - name: unit
+  public: true
   plan:
   - get: booklit
     trigger: true
@@ -62,6 +63,7 @@ jobs:
       COVERALLS_TOKEN: ((coveralls_token))
 
 - name: rc
+  public: true
   serial_groups: [version]
   plan:
   - get: booklit
@@ -73,6 +75,7 @@ jobs:
     params: {file: version/version}
 
 - name: ship
+  public: true
   serial_groups: [version]
   plan:
   - get: booklit
@@ -128,6 +131,7 @@ jobs:
     params: {file: version/version}
 
 - name: pr-unit
+  public: true
   plan:
   - get: booklit-pr
     version: every
