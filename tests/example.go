@@ -22,9 +22,11 @@ type Example struct {
 type Files map[string]string
 
 func (example Example) Run() {
-	processor := &load.Processor{}
-	baselitFactory := baselit.PluginFactory{processor}
-	processor.PluginFactories = append(processor.PluginFactories, baselitFactory)
+	processor := &load.Processor{
+		PluginFactories: []booklit.PluginFactory{
+			booklit.PluginFactoryFunc(baselit.NewPlugin),
+		},
+	}
 
 	dir, err := ioutil.TempDir("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())

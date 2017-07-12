@@ -19,6 +19,9 @@ type Section struct {
 	Children []*Section
 
 	SplitSections bool
+
+	PluginFactories []PluginFactory
+	Plugins         []Plugin
 }
 
 type Tag struct {
@@ -134,6 +137,11 @@ func (con *Section) Contains(sub *Section) bool {
 
 func (con *Section) FindTag(tagName string) (Tag, bool) {
 	return con.findTag(tagName, true, nil)
+}
+
+func (con *Section) UsePlugin(pf PluginFactory) {
+	con.PluginFactories = append(con.PluginFactories, pf)
+	con.Plugins = append(con.Plugins, pf.NewPlugin(con))
 }
 
 func (con *Section) findTag(tagName string, up bool, exclude *Section) (Tag, bool) {

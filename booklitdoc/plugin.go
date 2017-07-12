@@ -8,13 +8,14 @@ import (
 	"github.com/vito/booklit/baselit"
 )
 
-type PluginFactory struct {
+func init() {
+	booklit.RegisterPlugin("booklitdoc", booklit.PluginFactoryFunc(NewPlugin))
 }
 
-func (pf PluginFactory) NewPlugin(section *booklit.Section) booklit.Plugin {
+func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
 		section: section,
-		base:    baselit.PluginFactory{}.NewPlugin(section).(baselit.Plugin),
+		base:    baselit.NewPlugin(section).(baselit.Plugin),
 	}
 }
 

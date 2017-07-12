@@ -36,13 +36,12 @@ func (processor *Processor) EvaluateSection(path string, node ast.Node) (*bookli
 		Body:  booklit.Empty,
 	}
 
-	plugins := []booklit.Plugin{}
 	for _, pf := range processor.PluginFactories {
-		plugins = append(plugins, pf.NewPlugin(section))
+		section.UsePlugin(pf)
 	}
 
 	evaluator := &stages.Evaluate{
-		Plugins: plugins,
+		Section: section,
 	}
 
 	err := node.Visit(evaluator)

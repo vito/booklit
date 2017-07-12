@@ -9,7 +9,7 @@ import (
 )
 
 type Evaluate struct {
-	Plugins []booklit.Plugin
+	Section *booklit.Section
 
 	Result booklit.Content
 }
@@ -92,7 +92,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	methodName := invoke.Method()
 
 	var method reflect.Value
-	for _, p := range eval.Plugins {
+	for _, p := range eval.Section.Plugins {
 		value := reflect.ValueOf(p)
 		method = value.MethodByName(methodName)
 		if method.IsValid() {
@@ -192,7 +192,7 @@ func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, err
 	}
 
 	argEval := &Evaluate{
-		Plugins: eval.Plugins,
+		Section: eval.Section,
 	}
 
 	err := node.Visit(argEval)

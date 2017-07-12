@@ -1,6 +1,7 @@
 package baselit
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/vito/booklit"
@@ -8,20 +9,29 @@ import (
 	"github.com/vito/booklit/load"
 )
 
-type PluginFactory struct {
-	Processor *load.Processor
+func init() {
+	booklit.RegisterPlugin("base", booklit.PluginFactoryFunc(NewPlugin))
 }
 
-func (pf PluginFactory) NewPlugin(section *booklit.Section) booklit.Plugin {
+func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
-		processor: pf.Processor,
-		section:   section,
+		section: section,
 	}
 }
 
 type Plugin struct {
-	processor *load.Processor
-	section   *booklit.Section
+	section *booklit.Section
+}
+
+func (plugin Plugin) UsePlugin(name string) error {
+	pluginFactory, found := booklit.LookupPlugin(name)
+	if !found {
+		return fmt.Errorf("unknown plugin '%s'", name)
+	}
+
+	plugin.section.UsePlugin(pluginFactory)
+
+	return nil
 }
 
 func (plugin Plugin) Title(title booklit.Content, tags ...string) {
@@ -29,7 +39,11 @@ func (plugin Plugin) Title(title booklit.Content, tags ...string) {
 }
 
 func (plugin Plugin) Section(node ast.Node) error {
-	section, err := plugin.processor.EvaluateSection(plugin.section.Path, node)
+	processor := &load.Processor{
+		PluginFactories: plugin.section.PluginFactories,
+	}
+
+	section, err := processor.EvaluateSection(plugin.section.Path, node)
 	if err != nil {
 		return err
 	}
@@ -49,7 +63,13 @@ func (plugin Plugin) IncludeSection(path string) error {
 		return err
 	}
 
-	section, err := plugin.processor.EvaluateSection(sectionPath, result.(ast.Node))
+	processor := &load.Processor{
+		PluginFactories: []booklit.PluginFactory{
+			booklit.PluginFactoryFunc(NewPlugin),
+		},
+	}
+
+	section, err := processor.EvaluateSection(sectionPath, result.(ast.Node))
 	if err != nil {
 		return err
 	}

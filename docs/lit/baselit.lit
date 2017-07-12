@@ -1,5 +1,7 @@
 \title{The \code{baselit} Plugin}{baselit}
 
+\use-plugin{booklitdoc}
+
 Booklit comes with a default plugin called \code{baselit}. It provides the
 basic set of functions needed for authoring Booklit documents, plus many common
 methods useful for writing prose.
