@@ -1,4 +1,14 @@
 ---
+groups:
+- name: dev
+  jobs: [unit, rc, ship]
+
+- name: semver
+  jobs: [major, minor, patch]
+
+- name: prs
+  jobs: [pr-unit]
+
 resource_types:
 - name: pull-request
   type: docker-image
@@ -10,12 +20,36 @@ resources:
   type: git
   source:
     uri: https://github.com/vito/booklit
+    branch: master
+
+- name: version
+  type: semver
+  source:
+    driver: git
+    initial_version: 0.0.0
+    uri: git@github.com:vito/booklit
+    branch: version
+    file: version
+    private_key: ((repo_private_key))
+
+- name: release-notes
+  type: git
+  source:
+    uri: https://github.com/vito/booklit
+    branch: version
+
+- name: booklit-rel
+  type: github-release
+  source:
+    owner: vito
+    repository: booklit
+    access_token: ((releases_access_token))
 
 - name: booklit-pr
   type: pull-request
   source:
     repo: vito/booklit
-    access_token: ((access_token))
+    access_token: ((prs_access_token))
 
 jobs:
 - name: unit
@@ -26,6 +60,72 @@ jobs:
     file: booklit/ci/test.yml
     params:
       COVERALLS_TOKEN: ((coveralls_token))
+
+- name: rc
+  serial_groups: [version]
+  plan:
+  - get: booklit
+    passed: [unit]
+    trigger: true
+  - get: version
+    params: {pre: rc}
+  - put: version
+    params: {file: version/version}
+
+- name: ship
+  serial_groups: [version]
+  plan:
+  - get: booklit
+    passed: [rc]
+  - get: final-version
+    resource: version
+    passed: [rc]
+    params: {bump: final}
+  - get: release-notes
+  - task: build
+    file: booklit/ci/build.yml
+    input_mapping: {version: final-version}
+  - task: grab-release-notes
+    file: booklit/ci/grab-release-notes.yml
+  - put: version
+    params: {file: final-version/version}
+  - put: booklit-rel
+    params:
+      tag: version/version
+      tag_prefix: v
+      committish: booklit/.git/HEAD
+      name: release-info/name
+      body: release-info/notes.md
+      globs: [binary/*]
+
+- name: major
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: major, pre: rc}
+  - put: version
+    params: {file: version/version}
+
+- name: minor
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: minor, pre: rc}
+  - put: version
+    params: {file: version/version}
+
+- name: patch
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    passed: [ship]
+    params: {bump: patch, pre: rc}
+    trigger: true
+  - put: version
+    params: {file: version/version}
 
 - name: pr-unit
   plan:
