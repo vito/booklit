@@ -5,6 +5,9 @@
 
 ## installation
 
+grab the latest [release](https://github.com/vito/booklit/releases), or build
+from source:
+
 ```bash
 go get github.com/vito/booklit/cmd/booklit
 ```
@@ -20,7 +23,13 @@ booklit -i foo.lit -o ./out
 clone this repo and build its docs:
 
 ```bash
-booklit -i ./docs/lit/index.lit -o ./docs
+booklit \
+  -i ./docs/lit/index.lit \
+  -o ./docs \
+  --html-templates docs/lit/html \
+  --plugin github.com/vito/booklit/booklitdoc
 ```
+
+then, browse from `./docs/index.html`.
 
 you can see the result at https://vito.github.io/docs
