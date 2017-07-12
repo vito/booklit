@@ -33,7 +33,7 @@ p a code {
   color: #432E2B;
 }
 
-p a:hover code {
+p a:hover code strong {
   text-decoration: underline;
 }
 

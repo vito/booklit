@@ -106,7 +106,7 @@
     <div class="page">
       <h1 class="section-header"><a name="plugins"></a><span class="section-number">4 </span>Extending with Plugins</h1>
 
-<p>Plugins are what provide the functionality behind function calls like <code>\foo{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code>\title</code></a> and <a href="baselit.html#section"><code>\section</code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code>\italic</code></a> and <a href="baselit.html#bold"><code>\bold</code></a>. It also serves as a good reference when writing your own plugin.</p>
+<p>Plugins are what provide the functionality behind function calls like <code>\foo{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code>\<strong>title</strong></code></a> and <a href="baselit.html#section"><code>\<strong>section</strong></code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code>\<strong>italic</strong></code></a> and <a href="baselit.html#bold"><code>\<strong>bold</strong></code></a>. It also serves as a good reference when writing your own plugin.</p>
 
 
   
@@ -120,11 +120,11 @@
   
     <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
 
-<p>To use a plugin, first run <code>booklit</code> with its import path provided like so:</p><pre>booklit -i index.lit -o out --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\use-plugin</code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}
+<p>To use a plugin, first run <code>booklit</code> with its import path provided like so:</p><pre>booklit -i index.lit -o out --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}
 
 \use-plugin{fancyplugin}
 
-Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\use-plugin</code></a> can be invoked multiple times.</p>
+Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> can be invoked multiple times.</p>
 
 
   
