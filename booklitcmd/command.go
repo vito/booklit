@@ -45,9 +45,12 @@ func (cmd *Command) Execute(args []string) error {
 	}
 
 	engine := render.NewHTMLRenderingEngine()
-	err = engine.LoadTemplates(cmd.HTMLEngine.Templates)
-	if err != nil {
-		return err
+
+	if cmd.HTMLEngine.Templates != "" {
+		err := engine.LoadTemplates(cmd.HTMLEngine.Templates)
+		if err != nil {
+			return err
+		}
 	}
 
 	writer := render.Writer{
