@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e -u
+
+export GOPATH=$PWD/depspath:$PWD/gopath
+export PATH=$PWD/depspath/bin:$PWD/gopath/bin:$PATH
+
+echo "fetching dependencies..."
+go get -d ./...
+
+echo "building binary..."
+go build \
+  --ldflags "-X github.com/vito/booklit.Version=$(cat version/version)" \
+  -o binary/booklit \
+  github.com/vito/booklit/cmd/booklit
+
+echo "printing version..."
+./binary/booklit --version

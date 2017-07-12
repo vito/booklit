@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: golang}
+
+inputs:
+- name: booklit
+  path: gopath/src/github.com/vito/booklit
+
+outputs:
+- name: version
+- name: binary
+
+caches:
+- path: depspath/
+- path: gopath/pkg/
+
+run:
+  path: gopath/src/github.com/vito/booklit/ci/build
