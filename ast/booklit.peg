@@ -51,6 +51,13 @@ Word <- val:(String / Invoke) {
   return val, nil
 }
 
+SplitSentence <- [ \t]* firstWord:Word words:(Word / Split)* {
+  allWords := append([]interface{}{firstWord}, words.([]interface{})...)
+  return Sequence(ifaceNodes(allWords)), nil
+}
+
+Split <- "\n" { return String(" "), nil }
+
 String <- str:[^\\{}\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
 
 VerbatimString <- str:[^\n}]+ {
@@ -113,7 +120,7 @@ PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
   return node, nil
 }
 
-Arg <- '{' node:(Sentence / Paragraphs) [ \t]* '}' {
+Arg <- '{' node:(SplitSentence / Paragraphs) [ \t]* '}' {
   return node, nil
 }
 

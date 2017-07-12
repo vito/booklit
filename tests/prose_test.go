@@ -85,6 +85,33 @@ I'm good, thanks!
 		},
 	}),
 
+	Entry("word-wrapped sentences", Example{
+		Input: `\title{Hello, world!}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. \italic{Curabitur
+accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.} Sed
+mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id
+pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum
+magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui
+sollicitudin porta.
+
+Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse
+potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex
+varius molestie.
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <em>Curabitur accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.</em> Sed mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui sollicitudin porta.</p>
+
+	<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex varius molestie.</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("word-wrapped paragraphs", Example{
 		Input: `\title{Hello, world!}
 
