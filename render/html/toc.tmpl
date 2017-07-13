@@ -3,7 +3,7 @@
   <ul>
   {{range .Children}}
     <li>
-      <a href="{{.PrimaryTag | url}}">{{.Number}} {{.Title | render}}</a>
+      <a href="{{.PrimaryTag | url}}">{{.Number}} {{.Title | stripAux | render}}</a>
 
       {{template "toc.tmpl" .}}
     </li>

@@ -55,6 +55,10 @@ func (plugin Plugin) Section(node ast.Node) error {
 	return nil
 }
 
+func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
+	return booklit.Aux{content}
+}
+
 func (plugin Plugin) IncludeSection(path string) error {
 	sectionPath := filepath.Join(filepath.Dir(plugin.section.Path), path)
 

@@ -95,13 +95,7 @@ func (collect *Collect) VisitImage(con booklit.Image) error {
 }
 
 func (collect *Collect) VisitTarget(con booklit.Target) error {
-	collect.Section.Tags = append(collect.Section.Tags, booklit.Tag{
-		Name:    con.TagName,
-		Section: collect.Section,
-		Display: con.Display,
-		Anchor:  con.TagName,
-	})
-
+	collect.Section.SetTag(con.TagName, con.Display, con.TagName)
 	return nil
 }
 

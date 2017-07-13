@@ -50,16 +50,26 @@ func (con *Section) SetTitle(title Content, tags ...string) {
 
 	con.Tags = []Tag{}
 	for _, name := range tags {
-		con.Tags = append(con.Tags, Tag{
-			Name:    name,
-			Display: title,
-
-			Section: con,
-		})
+		con.SetTag(name, title)
 	}
 
 	con.Title = title
 	con.PrimaryTag = con.Tags[0]
+}
+
+func (con *Section) SetTag(name string, display Content, optionalAnchor ...string) {
+	anchor := ""
+	if len(optionalAnchor) > 0 {
+		anchor = optionalAnchor[0]
+	}
+
+	con.Tags = append(con.Tags, Tag{
+		Section: con,
+
+		Name:    name,
+		Display: display,
+		Anchor:  anchor,
+	})
 }
 
 func (con *Section) Number() string {
@@ -176,7 +186,7 @@ func (con *Section) defaultTag(title Content) string {
 		specialCharsRegexp.ReplaceAllString(
 			whitespaceRegexp.ReplaceAllString(
 				strings.Replace(
-					title.String(),
+					StripAux(title).String(),
 					" & ",
 					" and ",
 					-1,

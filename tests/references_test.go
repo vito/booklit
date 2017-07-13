@@ -145,4 +145,58 @@ See also \reference{section-c}{the last section}.
 `,
 		},
 	}),
+
+	FEntry("aux", Example{
+		Input: `\title{Hello, world!\aux{: Foo Bar}}
+
+See also \reference{section-c}{the last section}.
+
+\table-of-contents
+
+\section{
+	\title{Section A}
+
+	See also \reference{section-b}.
+}
+
+\section{
+	\title{Section B\aux{aby}}
+
+	See also \reference{some-anchor}.
+}
+
+\section{
+	\title{Section C}
+
+	\target{some-anchor}{I'm an\aux{ awesome} anchor.}See also \reference{hello-world}.
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!: Foo Bar</h1>
+
+	<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
+
+	<ul>
+		<li><a href="hello-world.html#section-a">Section A</a></li>
+		<li><a href="hello-world.html#section-b">Section B</a></li>
+		<li><a href="hello-world.html#section-c">Section C</a></li>
+	</ul>
+
+	<h2>1 Section A</h2>
+
+	<p>See also <a href="hello-world.html#section-b">Section B</a>.</p>
+
+	<h2>2 Section Baby</h2>
+
+	<p>See also <a href="hello-world.html#some-anchor">I'm an anchor.</a>.</p>
+
+	<h2>3 Section C</h2>
+
+	<p><a name="some-anchor"></a>See also <a href="hello-world.html">Hello, world!</a>.</p>
+</section>
+`,
+		},
+	}),
 )

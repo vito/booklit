@@ -23,6 +23,8 @@ func init() {
 	initTmpl = template.New("engine").Funcs(template.FuncMap{
 		"url": tagURLFunc,
 
+		"stripAux": booklit.StripAux,
+
 		"render": func(booklit.Content) (template.HTML, error) {
 			return "", errors.New("render stubbed out")
 		},
