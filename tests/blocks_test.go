@@ -45,6 +45,25 @@ var _ = DescribeTable("Blocks", (Example).Run,
 		},
 	}),
 
+	Entry("note", Example{
+		Input: `\title{Hello, world!}
+
+\note{
+	Hello.
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<blockquote class="note">
+	<p>Hello.</p>
+</blockquote>
+</section>`,
+		},
+	}),
+
 	Entry("ordered lists", Example{
 		Input: `\title{Hello, world!}
 

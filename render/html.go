@@ -164,6 +164,8 @@ func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
 		engine.template = engine.tmpl.Lookup("subscript.tmpl")
 	case booklit.StyleInset:
 		engine.template = engine.tmpl.Lookup("inset.tmpl")
+	case booklit.StyleNote:
+		engine.template = engine.tmpl.Lookup("note.tmpl")
 	case booklit.StyleVerbatim:
 		if con.IsSentence() {
 			engine.template = engine.tmpl.Lookup("code-inline.tmpl")

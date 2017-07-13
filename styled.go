@@ -18,6 +18,7 @@ const (
 	StyleSuperscript Style = "superscript"
 	StyleSubscript   Style = "subscript"
 	StyleInset       Style = "inset"
+	StyleNote        Style = "note"
 )
 
 func (con Styled) Visit(visitor Visitor) error {

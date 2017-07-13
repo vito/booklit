@@ -11,6 +11,7 @@
 // render/html/larger.tmpl
 // render/html/link.tmpl
 // render/html/list.tmpl
+// render/html/note.tmpl
 // render/html/page.tmpl
 // render/html/paragraph.tmpl
 // render/html/preformatted.tmpl
@@ -307,6 +308,26 @@ func renderHtmlListTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/list.tmpl", size: 131, mode: os.FileMode(420), modTime: time.Unix(1499898549, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlNoteTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\xca\xc9\x4f\xce\x2e\x2c\xcd\x2f\x49\x55\x48\xce\x49\x2c\x2e\xb6\x55\xca\xcb\x2f\x49\x55\xb2\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x47\xa8\xb3\xe3\x02\x04\x00\x00\xff\xff\xcb\x2d\x7f\xbd\x35\x00\x00\x00")
+
+func renderHtmlNoteTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlNoteTmpl,
+		"render/html/note.tmpl",
+	)
+}
+
+func renderHtmlNoteTmpl() (*asset, error) {
+	bytes, err := renderHtmlNoteTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/note.tmpl", size: 53, mode: os.FileMode(420), modTime: time.Unix(1499974280, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -634,6 +655,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/larger.tmpl": renderHtmlLargerTmpl,
 	"render/html/link.tmpl": renderHtmlLinkTmpl,
 	"render/html/list.tmpl": renderHtmlListTmpl,
+	"render/html/note.tmpl": renderHtmlNoteTmpl,
 	"render/html/page.tmpl": renderHtmlPageTmpl,
 	"render/html/paragraph.tmpl": renderHtmlParagraphTmpl,
 	"render/html/preformatted.tmpl": renderHtmlPreformattedTmpl,
@@ -702,6 +724,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"larger.tmpl": &bintree{renderHtmlLargerTmpl, map[string]*bintree{}},
 			"link.tmpl": &bintree{renderHtmlLinkTmpl, map[string]*bintree{}},
 			"list.tmpl": &bintree{renderHtmlListTmpl, map[string]*bintree{}},
+			"note.tmpl": &bintree{renderHtmlNoteTmpl, map[string]*bintree{}},
 			"page.tmpl": &bintree{renderHtmlPageTmpl, map[string]*bintree{}},
 			"paragraph.tmpl": &bintree{renderHtmlParagraphTmpl, map[string]*bintree{}},
 			"preformatted.tmpl": &bintree{renderHtmlPreformattedTmpl, map[string]*bintree{}},
