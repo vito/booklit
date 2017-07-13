@@ -20,6 +20,8 @@ type Command struct {
 
 	Plugins []string `long:"plugin" short:"p" description:"Package to import, providing a plugin."`
 
+	AllowBrokenReferences bool `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
+
 	HTMLEngine struct {
 		Templates string `long:"templates" description:"Directory containing .tmpl files to load."`
 	} `group:"HTML Rendering Engine" namespace:"html"`
@@ -31,6 +33,8 @@ func (cmd *Command) Execute(args []string) error {
 	}
 
 	processor := &load.Processor{
+		AllowBrokenReferences: cmd.AllowBrokenReferences,
+
 		PluginFactories: []booklit.PluginFactory{
 			booklit.PluginFactoryFunc(baselit.NewPlugin),
 		},

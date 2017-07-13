@@ -7,6 +7,8 @@ import (
 )
 
 type Resolve struct {
+	AllowBrokenReferences bool
+
 	Section *booklit.Section
 }
 
@@ -49,11 +51,18 @@ func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
 
 func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	tag, found := resolve.Section.FindTag(con.TagName)
-	if !found {
+	if found {
+		con.Tag = &tag
+	} else if resolve.AllowBrokenReferences {
+		con.Tag = &booklit.Tag{
+			Name:    con.TagName,
+			Anchor:  "broken",
+			Display: booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
+			Section: resolve.Section,
+		}
+	} else {
 		return fmt.Errorf("could not find tag '%s' from within section '%s'", con.TagName, resolve.Section.String())
 	}
-
-	con.Tag = &tag
 
 	return nil
 }
@@ -73,7 +82,8 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 	// was loaded via a processor in the first place
 	for _, child := range con.Children {
 		subResolver := &Resolve{
-			Section: child,
+			AllowBrokenReferences: resolve.AllowBrokenReferences,
+			Section:               child,
 		}
 
 		err := child.Visit(subResolver)

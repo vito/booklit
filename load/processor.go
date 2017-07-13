@@ -7,6 +7,8 @@ import (
 )
 
 type Processor struct {
+	AllowBrokenReferences bool
+
 	PluginFactories []booklit.PluginFactory
 }
 
@@ -72,6 +74,8 @@ func (processor *Processor) loadNode(path string, node ast.Node) (*booklit.Secti
 	}
 
 	resolver := &stages.Resolve{
+		AllowBrokenReferences: processor.AllowBrokenReferences,
+
 		Section: section,
 	}
 
