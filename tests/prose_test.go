@@ -296,6 +296,10 @@ I'm a code block.
 	\code{{
 	I'm a code block in a sub-section.
   }}
+
+  \code{{
+    {}   I'm a code block {- in a sub-section -}with a forced indent level.
+  }}
 }
 `,
 
@@ -308,6 +312,8 @@ I'm a code block.
 	<h2>1 Sub-section</h2>
 
 	<pre>I'm a code block in a sub-section.</pre>
+
+	<pre>   I'm a code block with a forced indent level.</pre>
 </section>
 `,
 		},

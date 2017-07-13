@@ -49,14 +49,18 @@ Sentence <- [ \t]* words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
-Word <- Comment? val:(String / Invoke / Comment / Interspersed) Comment? {
+Word <- Comment? val:(String / Invoke / Interspersed) Comment? {
   return val, nil
 }
 
 Comment <- [ \t]* "{-" (Comment / !"-}" .)* "-}"
 
-Interspersed <- '{' word:Word '}' {
-  return word, nil
+Interspersed <- '{' word:Word? '}' {
+  if word == nil {
+    return Sequence{}, nil
+  } else {
+    return word, nil
+  }
 }
 
 SplitSentence <- [ \t]* firstWord:Word words:(Word / Split)* {
@@ -74,7 +78,7 @@ VerbatimString <- str:[^\n}]+ {
   return String(c.text), nil
 }
 
-PreformattedSentence <- indent:Indent words:(String / Invoke)* '\n' {
+PreformattedSentence <- indent:Indent words:Word* '\n' {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
