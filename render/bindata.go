@@ -7,6 +7,7 @@
 // render/html/element.tmpl
 // render/html/image.tmpl
 // render/html/italic.tmpl
+// render/html/larger.tmpl
 // render/html/link.tmpl
 // render/html/list.tmpl
 // render/html/page.tmpl
@@ -15,7 +16,11 @@
 // render/html/reference.tmpl
 // render/html/section.tmpl
 // render/html/sequence.tmpl
+// render/html/smaller.tmpl
+// render/html/strike.tmpl
 // render/html/string.tmpl
+// render/html/subscript.tmpl
+// render/html/superscript.tmpl
 // render/html/target.tmpl
 // render/html/toc.tmpl
 // DO NOT EDIT!
@@ -225,6 +230,26 @@ func renderHtmlItalicTmpl() (*asset, error) {
 	return a, nil
 }
 
+var _renderHtmlLargerTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\x2e\x48\xcc\x53\x28\x2e\xa9\xcc\x49\xb5\x55\x4a\xcb\xcf\x2b\xd1\x2d\xce\xac\x4a\xb5\x52\x30\x34\x32\x50\x55\xb2\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\x29\xb6\xe3\x02\x04\x00\x00\xff\xff\xc0\x67\x23\x56\x34\x00\x00\x00")
+
+func renderHtmlLargerTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlLargerTmpl,
+		"render/html/larger.tmpl",
+	)
+}
+
+func renderHtmlLargerTmpl() (*asset, error) {
+	bytes, err := renderHtmlLargerTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/larger.tmpl", size: 52, mode: os.FileMode(420), modTime: time.Unix(1499971478, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _renderHtmlLinkTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\x54\xc8\x28\x4a\x4d\xb3\x55\xaa\xae\xd6\x0b\x49\x2c\x4a\x4f\x2d\xa9\xad\x55\xb2\xab\xae\xd6\x73\xce\xcf\x2b\x49\xcd\x2b\x51\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x4f\xb4\xe3\x02\x04\x00\x00\xff\xff\x30\x04\xce\x2f\x30\x00\x00\x00")
 
 func renderHtmlLinkTmplBytes() ([]byte, error) {
@@ -385,6 +410,46 @@ func renderHtmlSequenceTmpl() (*asset, error) {
 	return a, nil
 }
 
+var _renderHtmlSmallerTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\x2e\x48\xcc\x53\x28\x2e\xa9\xcc\x49\xb5\x55\x4a\xcb\xcf\x2b\xd1\x2d\xce\xac\x4a\xb5\x52\xb0\x30\x50\x55\xb2\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\xa9\xb5\xe3\x02\x04\x00\x00\xff\xff\xd6\xad\x70\x53\x33\x00\x00\x00")
+
+func renderHtmlSmallerTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlSmallerTmpl,
+		"render/html/smaller.tmpl",
+	)
+}
+
+func renderHtmlSmallerTmpl() (*asset, error) {
+	bytes, err := renderHtmlSmallerTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/smaller.tmpl", size: 51, mode: os.FileMode(420), modTime: time.Unix(1499971488, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlStrikeTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\x2e\x48\xcc\x53\x28\x2e\xa9\xcc\x49\xb5\x55\x2a\x49\xad\x28\xd1\x4d\x49\x4d\xce\x2f\x4a\x2c\xc9\xcc\xcf\xb3\x52\xc8\xc9\xcc\x4b\xd5\x2d\xc9\x28\xca\x2f\x4d\xcf\x50\xb2\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\x69\xb5\xe3\x02\x04\x00\x00\xff\xff\xd1\x8d\xb6\xdb\x42\x00\x00\x00")
+
+func renderHtmlStrikeTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlStrikeTmpl,
+		"render/html/strike.tmpl",
+	)
+}
+
+func renderHtmlStrikeTmpl() (*asset, error) {
+	bytes, err := renderHtmlStrikeTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/strike.tmpl", size: 66, mode: os.FileMode(420), modTime: time.Unix(1499971598, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _renderHtmlStringTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xaa\xae\x56\xd0\x0b\x2e\x29\xca\xcc\x4b\x57\xa8\xad\xe5\x02\x04\x00\x00\xff\xff\xc7\x02\x8e\x75\x0e\x00\x00\x00")
 
 func renderHtmlStringTmplBytes() ([]byte, error) {
@@ -401,6 +466,46 @@ func renderHtmlStringTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/string.tmpl", size: 14, mode: os.FileMode(420), modTime: time.Unix(1499898549, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlSubscriptTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\x2e\x4d\xb2\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\x89\x71\x01\x02\x00\x00\xff\xff\x10\xe7\x39\x53\x1a\x00\x00\x00")
+
+func renderHtmlSubscriptTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlSubscriptTmpl,
+		"render/html/subscript.tmpl",
+	)
+}
+
+func renderHtmlSubscriptTmpl() (*asset, error) {
+	bytes, err := renderHtmlSubscriptTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/subscript.tmpl", size: 26, mode: os.FileMode(420), modTime: time.Unix(1499971574, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlSuperscriptTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\x2e\x2d\xb0\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\x89\x71\x01\x02\x00\x00\xff\xff\xab\xc5\x7f\xa0\x1a\x00\x00\x00")
+
+func renderHtmlSuperscriptTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlSuperscriptTmpl,
+		"render/html/superscript.tmpl",
+	)
+}
+
+func renderHtmlSuperscriptTmpl() (*asset, error) {
+	bytes, err := renderHtmlSuperscriptTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/superscript.tmpl", size: 26, mode: os.FileMode(420), modTime: time.Unix(1499971583, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -504,6 +609,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/element.tmpl": renderHtmlElementTmpl,
 	"render/html/image.tmpl": renderHtmlImageTmpl,
 	"render/html/italic.tmpl": renderHtmlItalicTmpl,
+	"render/html/larger.tmpl": renderHtmlLargerTmpl,
 	"render/html/link.tmpl": renderHtmlLinkTmpl,
 	"render/html/list.tmpl": renderHtmlListTmpl,
 	"render/html/page.tmpl": renderHtmlPageTmpl,
@@ -512,7 +618,11 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/reference.tmpl": renderHtmlReferenceTmpl,
 	"render/html/section.tmpl": renderHtmlSectionTmpl,
 	"render/html/sequence.tmpl": renderHtmlSequenceTmpl,
+	"render/html/smaller.tmpl": renderHtmlSmallerTmpl,
+	"render/html/strike.tmpl": renderHtmlStrikeTmpl,
 	"render/html/string.tmpl": renderHtmlStringTmpl,
+	"render/html/subscript.tmpl": renderHtmlSubscriptTmpl,
+	"render/html/superscript.tmpl": renderHtmlSuperscriptTmpl,
 	"render/html/target.tmpl": renderHtmlTargetTmpl,
 	"render/html/toc.tmpl": renderHtmlTocTmpl,
 }
@@ -566,6 +676,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"element.tmpl": &bintree{renderHtmlElementTmpl, map[string]*bintree{}},
 			"image.tmpl": &bintree{renderHtmlImageTmpl, map[string]*bintree{}},
 			"italic.tmpl": &bintree{renderHtmlItalicTmpl, map[string]*bintree{}},
+			"larger.tmpl": &bintree{renderHtmlLargerTmpl, map[string]*bintree{}},
 			"link.tmpl": &bintree{renderHtmlLinkTmpl, map[string]*bintree{}},
 			"list.tmpl": &bintree{renderHtmlListTmpl, map[string]*bintree{}},
 			"page.tmpl": &bintree{renderHtmlPageTmpl, map[string]*bintree{}},
@@ -574,7 +685,11 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"reference.tmpl": &bintree{renderHtmlReferenceTmpl, map[string]*bintree{}},
 			"section.tmpl": &bintree{renderHtmlSectionTmpl, map[string]*bintree{}},
 			"sequence.tmpl": &bintree{renderHtmlSequenceTmpl, map[string]*bintree{}},
+			"smaller.tmpl": &bintree{renderHtmlSmallerTmpl, map[string]*bintree{}},
+			"strike.tmpl": &bintree{renderHtmlStrikeTmpl, map[string]*bintree{}},
 			"string.tmpl": &bintree{renderHtmlStringTmpl, map[string]*bintree{}},
+			"subscript.tmpl": &bintree{renderHtmlSubscriptTmpl, map[string]*bintree{}},
+			"superscript.tmpl": &bintree{renderHtmlSuperscriptTmpl, map[string]*bintree{}},
 			"target.tmpl": &bintree{renderHtmlTargetTmpl, map[string]*bintree{}},
 			"toc.tmpl": &bintree{renderHtmlTocTmpl, map[string]*bintree{}},
 		}},

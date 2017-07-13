@@ -127,6 +127,41 @@ func (plugin Plugin) Bold(content booklit.Content) booklit.Content {
 	}
 }
 
+func (plugin Plugin) Larger(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleLarger,
+	}
+}
+
+func (plugin Plugin) Smaller(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleSmaller,
+	}
+}
+
+func (plugin Plugin) Strike(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleStrike,
+	}
+}
+
+func (plugin Plugin) Superscript(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleSuperscript,
+	}
+}
+
+func (plugin Plugin) Subscript(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleSubscript,
+	}
+}
+
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
 		TagName: tag,

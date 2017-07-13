@@ -80,6 +80,81 @@ How are \bold{you}?
 		},
 	}),
 
+	Entry("larger", Example{
+		Input: `\title{Hello, world!}
+
+How are \larger{you}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <span style="font-size: 120%">you</span>?</p>
+</section>`,
+		},
+	}),
+
+	Entry("smaller", Example{
+		Input: `\title{Hello, world!}
+
+How are \smaller{you}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <span style="font-size: 80%">you</span>?</p>
+</section>`,
+		},
+	}),
+
+	Entry("strike", Example{
+		Input: `\title{Hello, world!}
+
+How are \strike{you}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <span style="text-decoration: line-through">you</span>?</p>
+</section>`,
+		},
+	}),
+
+	Entry("superscript", Example{
+		Input: `\title{Hello, world!}
+
+How are \superscript{you}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <sup>you</sup>?</p>
+</section>`,
+		},
+	}),
+
+	Entry("subscript", Example{
+		Input: `\title{Hello, world!}
+
+How are \subscript{you}?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are <sub>you</sub>?</p>
+</section>`,
+		},
+	}),
+
 	Entry("multiple paragraphs", Example{
 		Input: `\title{Hello, world!}
 

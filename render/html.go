@@ -152,6 +152,16 @@ func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
 		engine.template = engine.tmpl.Lookup("italic.tmpl")
 	case booklit.StyleBold:
 		engine.template = engine.tmpl.Lookup("bold.tmpl")
+	case booklit.StyleLarger:
+		engine.template = engine.tmpl.Lookup("larger.tmpl")
+	case booklit.StyleSmaller:
+		engine.template = engine.tmpl.Lookup("smaller.tmpl")
+	case booklit.StyleStrike:
+		engine.template = engine.tmpl.Lookup("strike.tmpl")
+	case booklit.StyleSuperscript:
+		engine.template = engine.tmpl.Lookup("superscript.tmpl")
+	case booklit.StyleSubscript:
+		engine.template = engine.tmpl.Lookup("subscript.tmpl")
 	case booklit.StyleVerbatim:
 		if con.IsSentence() {
 			engine.template = engine.tmpl.Lookup("code-inline.tmpl")

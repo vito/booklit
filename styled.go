@@ -9,9 +9,14 @@ type Styled struct {
 type Style string
 
 const (
-	StyleVerbatim Style = "verbatim"
-	StyleItalic   Style = "italic"
-	StyleBold     Style = "bold"
+	StyleVerbatim    Style = "verbatim"
+	StyleItalic      Style = "italic"
+	StyleBold        Style = "bold"
+	StyleLarger      Style = "larger"
+	StyleSmaller     Style = "smaller"
+	StyleStrike      Style = "strike"
+	StyleSuperscript Style = "superscript"
+	StyleSubscript   Style = "subscript"
 )
 
 func (con Styled) Visit(visitor Visitor) error {
