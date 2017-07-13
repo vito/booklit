@@ -185,22 +185,22 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 }
 
 func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, error) {
-	switch reflect.Zero(to).Interface().(type) {
-	case string:
+	switch reflect.New(to).Interface().(type) {
+	case *string:
 		content, err := eval.evalArg(node)
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
 
 		return reflect.ValueOf(content.String()), nil
-	case booklit.Content:
+	case *booklit.Content:
 		content, err := eval.evalArg(node)
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
 
 		return reflect.ValueOf(content), nil
-	case ast.Node:
+	case *ast.Node:
 		return reflect.ValueOf(node), nil
 	default:
 		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %s", to)
