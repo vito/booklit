@@ -86,6 +86,14 @@ func (collect *Collect) VisitBlock(con booklit.Block) error {
 	return con.Content.Visit(collect)
 }
 
+func (collect *Collect) VisitElement(con booklit.Element) error {
+	return con.Content.Visit(collect)
+}
+
+func (collect *Collect) VisitImage(con booklit.Image) error {
+	return nil
+}
+
 func (collect *Collect) VisitTarget(con booklit.Target) error {
 	collect.Section.Tags = append(collect.Section.Tags, booklit.Tag{
 		Name:    con.TagName,

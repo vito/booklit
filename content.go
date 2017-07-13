@@ -20,5 +20,7 @@ type Visitor interface {
 	VisitStyled(Styled) error
 	VisitTarget(Target) error
 	VisitBlock(Block) error
+	VisitElement(Element) error
+	VisitImage(Image) error
 	VisitList(List) error
 }

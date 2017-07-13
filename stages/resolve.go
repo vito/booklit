@@ -101,6 +101,14 @@ func (resolve *Resolve) VisitBlock(con booklit.Block) error {
 	return con.Content.Visit(resolve)
 }
 
+func (resolve *Resolve) VisitElement(con booklit.Element) error {
+	return con.Content.Visit(resolve)
+}
+
+func (resolve *Resolve) VisitImage(con booklit.Image) error {
+	return nil
+}
+
 func (resolve *Resolve) VisitList(con booklit.List) error {
 	for _, c := range con.Items {
 		err := c.Visit(resolve)

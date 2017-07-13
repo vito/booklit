@@ -157,3 +157,15 @@ func (plugin Plugin) OrderedList(items ...booklit.Content) booklit.Content {
 		Ordered: true,
 	}
 }
+
+func (plugin Plugin) Image(path string, description ...string) booklit.Content {
+	img := booklit.Image{
+		Path: path,
+	}
+
+	if len(description) > 0 {
+		img.Description = description[0]
+	}
+
+	return img
+}

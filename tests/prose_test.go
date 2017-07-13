@@ -35,6 +35,21 @@ How are \link{you}{https://example.com}?
 		},
 	}),
 
+	Entry("images", Example{
+		Input: `\title{Hello, world!}
+
+Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>Here's an <img src="foo.png" alt="with alt text" /> and another <img src="without.gif" alt="" />.</p>
+</section>`,
+		},
+	}),
+
 	Entry("italics", Example{
 		Input: `\title{Hello, world!}
 
