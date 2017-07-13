@@ -47,8 +47,12 @@ Sentence <- [ \t]* words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
-Word <- val:(String / Invoke) {
+Word <- val:(String / Invoke / Interspersed) {
   return val, nil
+}
+
+Interspersed <- '{' word:Word '}' {
+  return word, nil
 }
 
 SplitSentence <- [ \t]* firstWord:Word words:(Word / Split)* {

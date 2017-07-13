@@ -85,6 +85,22 @@ I'm good, thanks!
 		},
 	}),
 
+	Entry("invokes interspersed in words", Example{
+		Input: `\title{Hello, world!}
+
+This{\italic{is}}a test.
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>This<em>is</em>a test.</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("word-wrapped sentences", Example{
 		Input: `\title{Hello, world!}
 
