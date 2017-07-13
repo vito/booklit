@@ -162,6 +162,13 @@ func (plugin Plugin) Subscript(content booklit.Content) booklit.Content {
 	}
 }
 
+func (plugin Plugin) Inset(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Content: content,
+		Style:   booklit.StyleInset,
+	}
+}
+
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
 		TagName: tag,

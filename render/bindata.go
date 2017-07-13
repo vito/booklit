@@ -6,6 +6,7 @@
 // render/html/code-inline.tmpl
 // render/html/element.tmpl
 // render/html/image.tmpl
+// render/html/inset.tmpl
 // render/html/italic.tmpl
 // render/html/larger.tmpl
 // render/html/link.tmpl
@@ -206,6 +207,26 @@ func renderHtmlImageTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/image.tmpl", size: 47, mode: os.FileMode(420), modTime: time.Unix(1499948718, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlInsetTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\xc9\x2c\x53\x28\x2e\xa9\xcc\x49\xb5\x55\xca\x4d\x2c\x4a\xcf\xcc\xb3\x52\x30\x50\x30\x4a\xcd\x55\x30\x4c\xcd\x55\x52\x48\xce\x49\x2c\x2e\xb6\x55\xca\xcc\x2b\x4e\x2d\x51\xb2\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x4f\xc9\x2c\xb3\xe3\x02\x04\x00\x00\xff\xff\xaa\x57\xac\x9f\x42\x00\x00\x00")
+
+func renderHtmlInsetTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlInsetTmpl,
+		"render/html/inset.tmpl",
+	)
+}
+
+func renderHtmlInsetTmpl() (*asset, error) {
+	bytes, err := renderHtmlInsetTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/inset.tmpl", size: 66, mode: os.FileMode(420), modTime: time.Unix(1499974064, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -608,6 +629,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/code-inline.tmpl": renderHtmlCodeInlineTmpl,
 	"render/html/element.tmpl": renderHtmlElementTmpl,
 	"render/html/image.tmpl": renderHtmlImageTmpl,
+	"render/html/inset.tmpl": renderHtmlInsetTmpl,
 	"render/html/italic.tmpl": renderHtmlItalicTmpl,
 	"render/html/larger.tmpl": renderHtmlLargerTmpl,
 	"render/html/link.tmpl": renderHtmlLinkTmpl,
@@ -675,6 +697,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"code-inline.tmpl": &bintree{renderHtmlCodeInlineTmpl, map[string]*bintree{}},
 			"element.tmpl": &bintree{renderHtmlElementTmpl, map[string]*bintree{}},
 			"image.tmpl": &bintree{renderHtmlImageTmpl, map[string]*bintree{}},
+			"inset.tmpl": &bintree{renderHtmlInsetTmpl, map[string]*bintree{}},
 			"italic.tmpl": &bintree{renderHtmlItalicTmpl, map[string]*bintree{}},
 			"larger.tmpl": &bintree{renderHtmlLargerTmpl, map[string]*bintree{}},
 			"link.tmpl": &bintree{renderHtmlLinkTmpl, map[string]*bintree{}},

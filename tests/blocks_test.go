@@ -26,6 +26,25 @@ var _ = DescribeTable("Blocks", (Example).Run,
 		},
 	}),
 
+	Entry("inset", Example{
+		Input: `\title{Hello, world!}
+
+\inset{
+	Hello.
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<div style="margin: 0 2em 1em" class="inset">
+	<p>Hello.</p>
+</div>
+</section>`,
+		},
+	}),
+
 	Entry("ordered lists", Example{
 		Input: `\title{Hello, world!}
 
