@@ -22,28 +22,32 @@ type Writer struct {
 }
 
 func (writer Writer) WriteSection(section *booklit.Section) error {
-	name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
-	path := filepath.Join(writer.Destination, name)
+	if section.Parent == nil || section.Parent.SplitSections {
+		name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
+		path := filepath.Join(writer.Destination, name)
 
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		return err
-	}
+		file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			return err
+		}
 
-	var node booklit.Content = section
-	if section.SplitSections {
-		for _, child := range section.Children {
-			err := writer.WriteSection(child)
-			if err != nil {
-				return err
-			}
+		err = section.Visit(writer.Engine)
+		if err != nil {
+			return err
+		}
+
+		err = writer.Engine.Render(file)
+		if err != nil {
+			return err
 		}
 	}
 
-	err = node.Visit(writer.Engine)
-	if err != nil {
-		return err
+	for _, child := range section.Children {
+		err := writer.WriteSection(child)
+		if err != nil {
+			return err
+		}
 	}
 
-	return writer.Engine.Render(file)
+	return nil
 }

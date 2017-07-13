@@ -152,6 +152,46 @@ How are you?
 		},
 	}),
 
+	Entry("split sub-sub-sections", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\section{
+	\title{How I'm Doing}
+
+	\split-sections
+
+	Good, thanks!
+
+	\section{
+		\title{Nested Section}
+
+		Sup.
+	}
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm Doing</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+			"nested-section.html": `<section>
+	<h1>1.1 Nested Section</h1>
+
+	<p>Sup.</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("tables of contents", Example{
 		Input: `\title{Hello, world!}
 
