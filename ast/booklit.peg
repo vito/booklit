@@ -53,7 +53,7 @@ Word <- Comment? val:(String / Invoke / Comment / Interspersed) Comment? {
   return val, nil
 }
 
-Comment <- "{-" (Comment / !"-}" .)* "-}"
+Comment <- [ \t]* "{-" (Comment / !"-}" .)* "-}"
 
 Interspersed <- '{' word:Word '}' {
   return word, nil

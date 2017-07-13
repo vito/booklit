@@ -66,6 +66,18 @@ Goodbye, world!
 -}
 
 I'm another paragraph.
+
+\section{
+	\title{Subsection}
+
+	Sup?
+
+	{-
+		I'm a big old indented block comment.
+	-}
+
+	Not much.
+}
 `,
 
 		Outputs: Files{
@@ -75,6 +87,12 @@ I'm another paragraph.
 <p>Goodbye, world!</p>
 
 <p>I'm another paragraph.</p>
+
+<h2>1 Subsection</h2>
+
+<p>Sup?</p>
+
+<p>Not much.</p>
 </section>`,
 		},
 	}),
