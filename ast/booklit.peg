@@ -35,9 +35,11 @@ Booklit <- node:Paragraphs !. {
   return node, nil
 }
 
-Paragraphs <- "\n"* paragraphs:(p:Paragraph "\n"* { return p, nil })+ {
+Paragraphs <- CommentSpacing* paragraphs:(p:Paragraph CommentSpacing* { return p, nil })+ {
   return Sequence(ifaceNodes(paragraphs)), nil
 }
+
+CommentSpacing <- "\n" / Comment
 
 Paragraph <- sentences:(s:Sentence "\n" { return s, nil })+ {
   return Paragraph(ifaceSequences(sentences)), nil
@@ -47,9 +49,11 @@ Sentence <- [ \t]* words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
-Word <- val:(String / Invoke / Interspersed) {
+Word <- Comment? val:(String / Invoke / Comment / Interspersed) Comment? {
   return val, nil
 }
+
+Comment <- "{-" (Comment / !"-}" .)* "-}"
 
 Interspersed <- '{' word:Word '}' {
   return word, nil
