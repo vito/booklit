@@ -3,7 +3,7 @@
 \split-sections
 
 Booklit is a documentation authoring tool designed to be
-\reference{sections}{flexible} in how you organize your content and
+\reference{flexible}{flexible} in how you organize your content and
 \reference{extending}{extensible} so that patterns can emerge and be optimized
 as your documentation grows.
 
