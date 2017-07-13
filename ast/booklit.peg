@@ -74,23 +74,6 @@ VerbatimString <- str:[^\n}]+ {
   return String(c.text), nil
 }
 
-Indent <- [ \t]* {
-  skip := len(c.text)
-
-  i, found := c.globalStore["indent-skip"]
-  if found {
-    skip = i.(int)
-  } else {
-    c.globalStore["indent-skip"] = skip
-  }
-
-  if skip <= len(c.text) {
-    return string(c.text[skip:]), nil
-  } else {
-    return "", nil
-  }
-}
-
 PreformattedSentence <- indent:Indent words:(String / Invoke)* '\n' {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
@@ -98,7 +81,7 @@ PreformattedSentence <- indent:Indent words:(String / Invoke)* '\n' {
 }
 
 Preformatted <- '\n' sentences:PreformattedSentence* {
-  delete(c.globalStore, "indentation")
+  delete(c.globalStore, "indent-skip")
   return Preformatted(ifaceSequences(sentences)), nil
 }
 
@@ -109,7 +92,7 @@ VerbatimSentence <- indent:Indent words:VerbatimString* '\n' {
 }
 
 Verbatim <- '\n' sentences:VerbatimSentence* {
-  delete(c.globalStore, "indentation")
+  delete(c.globalStore, "indent-skip")
   return Preformatted(ifaceSequences(sentences)), nil
 }
 
@@ -133,3 +116,20 @@ Arg <- '{' node:(SplitSentence / Paragraphs) [ \t]* '}' {
 }
 
 Argument <- VerbatimArg / PreformattedArg / Arg
+
+Indent <- [ \t]* {
+  skip := len(c.text)
+
+  i, found := c.globalStore["indent-skip"]
+  if found {
+    skip = i.(int)
+  } else {
+    c.globalStore["indent-skip"] = skip
+  }
+
+  if skip <= len(c.text) {
+    return string(c.text[skip:]), nil
+  } else {
+    return "", nil
+  }
+}

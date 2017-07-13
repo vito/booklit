@@ -282,4 +282,34 @@ One more line, with meaning.</pre>
 `,
 		},
 	}),
+
+	Entry("code block indent tracking", Example{
+		Input: `\title{Hello, world!}
+
+\code{{
+I'm a code block.
+}}
+
+\section{
+  \title{Sub-section}
+
+	\code{{
+	I'm a code block in a sub-section.
+  }}
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<pre>I'm a code block.</pre>
+
+	<h2>1 Sub-section</h2>
+
+	<pre>I'm a code block in a sub-section.</pre>
+</section>
+`,
+		},
+	}),
 )
