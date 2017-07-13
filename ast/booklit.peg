@@ -63,7 +63,7 @@ Interspersed <- '{' word:Word? '}' {
   }
 }
 
-SplitSentence <- [ \t]* firstWord:Word words:(Word / Split)* {
+SplitSentence <- firstWord:Word words:(Word / Split)* {
   allWords := append([]interface{}{firstWord}, words.([]interface{})...)
   return Sequence(ifaceNodes(allWords)), nil
 }
@@ -115,8 +115,16 @@ PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
   return node, nil
 }
 
-Arg <- '{' node:(SplitSentence / Paragraphs) [ \t]* '}' {
-  return node, nil
+Arg <- '{' node:(SplitSentence / ParaArg)? '}' {
+  if node == nil {
+    return String(""), nil
+  } else {
+    return node, nil
+  }
+}
+
+ParaArg <- paras:Paragraphs [ \t]* {
+  return paras, nil
 }
 
 Argument <- VerbatimArg / PreformattedArg / Arg

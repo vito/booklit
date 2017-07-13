@@ -318,4 +318,26 @@ I'm a code block.
 `,
 		},
 	}),
+
+	Entry("empty arguments", Example{
+		Input: `\title{Hello, world!}
+
+This is an \italic{} empty italic.
+
+This is a \italic{ } space italic.
+
+This is an \italic{  } even more spaced italic.
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>This is an <em></em> empty italic.</p>
+	<p>This is a <em> </em> space italic.</p>
+	<p>This is an <em>  </em> even more spaced italic.</p>
+</section>
+`,
+		},
+	}),
 )
