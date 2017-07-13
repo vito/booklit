@@ -85,6 +85,10 @@ func (plugin Plugin) SplitSections() {
 	plugin.section.SplitSections = true
 }
 
+func (plugin Plugin) OmitChildrenFromTableOfContents() {
+	plugin.section.OmitChildrenFromTableOfContents = true
+}
+
 func (plugin Plugin) TableOfContents() booklit.Content {
 	return booklit.TableOfContents{
 		Section: plugin.section,

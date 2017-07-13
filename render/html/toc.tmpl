@@ -1,4 +1,4 @@
-{{if .Children}}
+{{if and .Children (not .OmitChildrenFromTableOfContents)}}
 <nav>
   <ul>
   {{range .Children}}

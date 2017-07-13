@@ -18,7 +18,8 @@ type Section struct {
 	Parent   *Section
 	Children []*Section
 
-	SplitSections bool
+	SplitSections                   bool
+	OmitChildrenFromTableOfContents bool
 
 	PluginFactories []PluginFactory
 	Plugins         []Plugin
