@@ -206,23 +206,19 @@ This is some more content.
 
 	<p>How are you?</p>
 
-	<nav>
-		<ul>
-			<li>
-				<a href="hello-world.html#top-section-a">1 Top Section A</a>
-				<nav>
-					<ul>
-						<li><a href="hello-world.html#nested-section">1.1 Nested Section</a></li>
-						<li><a href="hello-world.html#another-nested-section">1.2 Another Nested Section</a></li>
-						<li><a href="hello-world.html#section-with-omitted-children">1.3 Section with Omitted Children</a></li>
-					</ul>
-				</nav>
-			</li>
-			<li>
-				<a href="hello-world.html#top-section-b">2 Top Section B</a>
-			</li>
-		</ul>
-	</nav>
+	<ul>
+		<li>
+			<a href="hello-world.html#top-section-a">Top Section A</a>
+			<ul>
+				<li><a href="hello-world.html#nested-section">Nested Section</a></li>
+				<li><a href="hello-world.html#another-nested-section">Another Nested Section</a></li>
+				<li><a href="hello-world.html#section-with-omitted-children">Section with Omitted Children</a></li>
+			</ul>
+		</li>
+		<li>
+			<a href="hello-world.html#top-section-b">Top Section B</a>
+		</li>
+	</ul>
 
 	<p>This is some more content.</p>
 

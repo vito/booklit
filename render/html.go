@@ -2,6 +2,7 @@ package render
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -20,8 +21,12 @@ type WalkContext struct {
 
 func init() {
 	initTmpl = template.New("engine").Funcs(template.FuncMap{
-		"render": renderFunc,
-		"url":    tagURLFunc,
+		"url": tagURLFunc,
+
+		"render": func(booklit.Content) (template.HTML, error) {
+			return "", errors.New("render stubbed out")
+		},
+
 		"walkContext": func(current *booklit.Section, section *booklit.Section) WalkContext {
 			return WalkContext{
 				Current: current,
@@ -200,20 +205,23 @@ func (engine *HTMLRenderingEngine) Render(out io.Writer) error {
 		return fmt.Errorf("unknown template for %T", engine.data)
 	}
 
-	return engine.template.Execute(out, engine.data)
+	return engine.template.Funcs(template.FuncMap{
+		"render": engine.subRender,
+	}).Execute(out, engine.data)
 }
 
-func renderFunc(content booklit.Content) (template.HTML, error) {
+func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.HTML, error) {
 	buf := new(bytes.Buffer)
 
-	engine := NewHTMLRenderingEngine()
+	subEngine := NewHTMLRenderingEngine()
+	subEngine.tmpl = engine.tmpl
 
-	err := content.Visit(engine)
+	err := content.Visit(subEngine)
 	if err != nil {
 		return "", err
 	}
 
-	err = engine.Render(buf)
+	err = subEngine.Render(buf)
 	if err != nil {
 		return "", err
 	}
