@@ -185,29 +185,37 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 }
 
 func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, error) {
-	iface := reflect.New(to).Interface()
+	switch reflect.Zero(to).Interface().(type) {
+	case string:
+		content, err := eval.evalArg(node)
+		if err != nil {
+			return reflect.ValueOf(nil), err
+		}
 
-	if _, ok := iface.(*ast.Node); ok {
+		return reflect.ValueOf(content.String()), nil
+	case booklit.Content:
+		content, err := eval.evalArg(node)
+		if err != nil {
+			return reflect.ValueOf(nil), err
+		}
+
+		return reflect.ValueOf(content), nil
+	case ast.Node:
 		return reflect.ValueOf(node), nil
+	default:
+		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %s", to)
 	}
+}
 
-	argEval := &Evaluate{
+func (eval Evaluate) evalArg(node ast.Node) (booklit.Content, error) {
+	subEval := &Evaluate{
 		Section: eval.Section,
 	}
 
-	err := node.Visit(argEval)
+	err := node.Visit(subEval)
 	if err != nil {
-		return reflect.ValueOf(nil), err
+		return nil, err
 	}
 
-	content := argEval.Result
-
-	switch iface.(type) {
-	case *string:
-		return reflect.ValueOf(content.String()), nil
-	case *booklit.Content:
-		return reflect.ValueOf(content), nil
-	default:
-		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %T", iface)
-	}
+	return subEval.Result, nil
 }
