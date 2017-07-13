@@ -203,7 +203,7 @@ func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, err
 	case *ast.Node:
 		return reflect.ValueOf(node), nil
 	default:
-		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %s", to)
+		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %s.%s", to.PkgPath(), to.Name())
 	}
 }
 
