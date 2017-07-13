@@ -146,7 +146,7 @@ See also \reference{section-c}{the last section}.
 		},
 	}),
 
-	FEntry("aux", Example{
+	Entry("aux", Example{
 		Input: `\title{Hello, world!\aux{: Foo Bar}}
 
 See also \reference{section-c}{the last section}.
