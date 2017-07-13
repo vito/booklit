@@ -60,7 +60,7 @@ SplitSentence <- [ \t]* firstWord:Word words:(Word / Split)* {
   return Sequence(ifaceNodes(allWords)), nil
 }
 
-Split <- "\n" { return String(" "), nil }
+Split <- "\n" [ \t]* { return String(" "), nil }
 
 String <- str:[^\\{}\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
 

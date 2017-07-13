@@ -111,9 +111,13 @@ pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum
 magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui
 sollicitudin porta.
 
-Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse
-potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex
-varius molestie.
+\section{
+	\title{Indented}
+
+	Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse
+	potenti. Maecenas varius iaculis volutpat. \italic{Vestibulum sagittis lacus
+	ut ex varius molestie.}
+}
 `,
 
 		Outputs: Files{
@@ -122,7 +126,9 @@ varius molestie.
 
 	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <em>Curabitur accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.</em> Sed mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui sollicitudin porta.</p>
 
-	<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex varius molestie.</p>
+	<h2>1 Indented</h2>
+
+	<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. <em>Vestibulum sagittis lacus ut ex varius molestie.</em></p>
 </section>
 `,
 		},
