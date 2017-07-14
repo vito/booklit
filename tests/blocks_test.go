@@ -31,6 +31,7 @@ var _ = DescribeTable("Blocks", (Example).Run,
 
 \table{
 	\table-row{a}{1}
+}{
 	\table-row{b}{2}
 }
 `,
@@ -58,6 +59,7 @@ var _ = DescribeTable("Blocks", (Example).Run,
 
 \definitions{
 	\definition{a}{1}
+}{
 	\definition{b}{2}
 }
 `,

@@ -231,46 +231,40 @@ func (plugin Plugin) SetPartial(name string, content booklit.Content) {
 	plugin.section.SetPartial(name, content)
 }
 
-func (plugin Plugin) Table(rowContent booklit.Content) (booklit.Content, error) {
+func (plugin Plugin) Table(rows ...booklit.Content) (booklit.Content, error) {
 	table := booklit.Table{}
 
-	rows, err := toSeq(rowContent)
-	if err != nil {
-		return nil, err
-	}
-
 	for _, row := range rows {
-		cols, err := toSeq(row)
-		if err != nil {
-			return nil, err
+		list, ok := row.(booklit.List)
+		if !ok {
+			return nil, fmt.Errorf("table row is not a list: %s", row)
 		}
 
-		table.Rows = append(table.Rows, cols)
+		table.Rows = append(table.Rows, list.Items)
 	}
 
 	return table, nil
 }
 
 func (plugin Plugin) TableRow(cols ...booklit.Content) booklit.Content {
-	return booklit.Sequence(cols)
+	return plugin.List(cols...)
 }
 
-func (plugin Plugin) Definitions(itemContent booklit.Content) (booklit.Content, error) {
-	items, err := toSeq(itemContent)
-	if err != nil {
-		return nil, err
-	}
-
+func (plugin Plugin) Definitions(items ...booklit.Content) (booklit.Content, error) {
 	defs := booklit.Definitions{}
 	for _, item := range items {
-		cons, err := toSeq(item)
-		if err != nil {
-			return nil, err
+		list, ok := item.(booklit.List)
+		if !ok {
+			return nil, fmt.Errorf("definition item is not a list: %s", item)
+		}
+
+		if len(list.Items) != 2 {
+			return nil, fmt.Errorf("definition item must have two entries: %s", item)
 		}
 
 		defs = append(defs, booklit.Definition{
-			Subject:    cons[0],
-			Definition: cons[1],
+			Subject:    list.Items[0],
+			Definition: list.Items[1],
 		})
 	}
 
@@ -278,16 +272,5 @@ func (plugin Plugin) Definitions(itemContent booklit.Content) (booklit.Content, 
 }
 
 func (plugin Plugin) Definition(subject booklit.Content, definition booklit.Content) booklit.Content {
-	return booklit.Sequence{subject, definition}
-}
-
-func toSeq(con booklit.Content) ([]booklit.Content, error) {
-	switch v := con.(type) {
-	case booklit.Paragraph:
-		return v, nil
-	case booklit.Sequence:
-		return v, nil
-	}
-
-	return nil, fmt.Errorf("content is not a sequence: %T", con)
+	return plugin.List(subject, definition)
 }
