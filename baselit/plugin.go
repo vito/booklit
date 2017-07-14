@@ -52,8 +52,6 @@ func (plugin Plugin) Section(node ast.Node) error {
 		return err
 	}
 
-	section.Parent = plugin.section
-
 	plugin.section.Children = append(plugin.section.Children, section)
 
 	return nil
@@ -77,8 +75,6 @@ func (plugin Plugin) IncludeSection(path string) error {
 	if err != nil {
 		return err
 	}
-
-	section.Parent = plugin.section
 
 	plugin.section.Children = append(plugin.section.Children, section)
 
