@@ -25,6 +25,10 @@ func init() {
 
 		"stripAux": booklit.StripAux,
 
+		"rawHTML": func(con booklit.Content) template.HTML {
+			return template.HTML(con.String())
+		},
+
 		"render": func(booklit.Content) (template.HTML, error) {
 			return "", errors.New("render stubbed out")
 		},
