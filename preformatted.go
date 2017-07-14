@@ -7,6 +7,7 @@ func (con Preformatted) String() string {
 
 	for _, seq := range con {
 		str += seq.String()
+		str += "\n"
 	}
 
 	return str

@@ -2,6 +2,7 @@ package tests
 
 import (
 	. "github.com/onsi/ginkgo/extensions/table"
+	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
 )
 
 var _ = DescribeTable("Booklit", (Example).Run,
@@ -411,6 +412,57 @@ This is an \italic{  } even more spaced italic.
 	<p>This is an <em></em> empty italic.</p>
 	<p>This is a <em> </em> space italic.</p>
 	<p>This is an <em>  </em> even more spaced italic.</p>
+</section>
+`,
+		},
+	}),
+
+	Entry("preformatted string arguments", Example{
+		Input: `\title{Hello, world!}
+
+\use-plugin{stringer}
+
+Here's a code block:
+
+\string{{{
+	I'm a code block.
+
+		I'm indented more.
+
+			I'm indented even more.
+
+I'm indented less.
+
+	\reference{hello-world}
+
+	\\some-method\{Some argument.\}
+
+
+	One more line, with meaning.
+}}}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>Here's a code block:</p>
+
+	<p>I'm a code block.
+
+	I'm indented more.
+
+		I'm indented even more.
+
+I'm indented less.
+
+\reference{hello-world}
+
+\\some-method\{Some argument.\}
+
+
+One more line, with meaning.
+</p>
 </section>
 `,
 		},
