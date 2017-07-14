@@ -15,6 +15,11 @@ resource_types:
   source:
     repository: jtarchie/pr
 
+- name: github-status
+  type: docker-image
+  source:
+    repository: resource/github-status
+
 resources:
 - name: booklit
   type: git
@@ -51,16 +56,30 @@ resources:
     repo: vito/booklit
     access_token: ((prs_access_token))
 
+- name: gh-status
+  type: github-status
+  source:
+    repo: vito/booklit
+    access_token: ((prs_access_token))
+
 jobs:
 - name: unit
   public: true
   plan:
   - get: booklit
     trigger: true
+  - put: gh-status
+    params: {path: booklit, state: pending}
   - task: unit
     file: booklit/ci/test.yml
     params:
       COVERALLS_TOKEN: ((coveralls_token))
+    on_success:
+      put: gh-status
+      params: {path: booklit, state: success}
+    on_failure:
+      put: gh-status
+      params: {path: booklit, state: failure}
 
 - name: rc
   public: true
