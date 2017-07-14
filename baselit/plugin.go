@@ -289,5 +289,5 @@ func toSeq(con booklit.Content) ([]booklit.Content, error) {
 		return v, nil
 	}
 
-	return nil, fmt.Errorf("unknown table content type: %T", con)
+	return nil, fmt.Errorf("content is not a sequence: %T", con)
 }
