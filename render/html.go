@@ -46,6 +46,10 @@ func init() {
 				depth++
 			}
 
+			if con.IsSinglePage() && depth > 1 {
+				depth--
+			}
+
 			if depth > 6 {
 				depth = 6
 			}

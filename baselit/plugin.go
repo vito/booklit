@@ -47,7 +47,7 @@ func (plugin Plugin) Section(node ast.Node) error {
 		PluginFactories: plugin.section.PluginFactories,
 	}
 
-	section, err := processor.EvaluateSection(plugin.section.Path, node)
+	section, err := processor.EvaluateSection(plugin.section, plugin.section.Path, node)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func (plugin Plugin) IncludeSection(path string) error {
 		},
 	}
 
-	section, err := processor.EvaluateSection(sectionPath, result.(ast.Node))
+	section, err := processor.EvaluateSection(plugin.section, sectionPath, result.(ast.Node))
 	if err != nil {
 		return err
 	}
@@ -85,8 +85,14 @@ func (plugin Plugin) IncludeSection(path string) error {
 	return nil
 }
 
+func (plugin Plugin) SinglePage() {
+	plugin.section.ForceSinglePage = true
+}
+
 func (plugin Plugin) SplitSections() {
-	plugin.section.SplitSections = true
+	if !plugin.section.IsSinglePage() {
+		plugin.section.SplitSections = true
+	}
 }
 
 func (plugin Plugin) OmitChildrenFromTableOfContents() {

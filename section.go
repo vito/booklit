@@ -20,7 +20,9 @@ type Section struct {
 
 	Partials Partials
 
-	SplitSections                   bool
+	SplitSections   bool
+	ForceSinglePage bool
+
 	OmitChildrenFromTableOfContents bool
 
 	PluginFactories []PluginFactory
@@ -169,6 +171,18 @@ func (con *Section) Partial(name string) Content {
 func (con *Section) UsePlugin(pf PluginFactory) {
 	con.PluginFactories = append(con.PluginFactories, pf)
 	con.Plugins = append(con.Plugins, pf.NewPlugin(con))
+}
+
+func (con *Section) IsSinglePage() bool {
+	if con.ForceSinglePage {
+		return true
+	}
+
+	if con.Parent != nil && con.Parent.IsSinglePage() {
+		return true
+	}
+
+	return false
 }
 
 func (con *Section) findTag(tagName string, up bool, exclude *Section) (Tag, bool) {

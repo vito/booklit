@@ -30,8 +30,10 @@ func (processor *Processor) LoadSource(path string, source []byte) (*booklit.Sec
 	return processor.loadNode(path, result.(ast.Node))
 }
 
-func (processor *Processor) EvaluateSection(path string, node ast.Node) (*booklit.Section, error) {
+func (processor *Processor) EvaluateSection(parent *booklit.Section, path string, node ast.Node) (*booklit.Section, error) {
 	section := &booklit.Section{
+		Parent: parent,
+
 		Path: path,
 
 		Title: booklit.Empty,
@@ -59,7 +61,7 @@ func (processor *Processor) EvaluateSection(path string, node ast.Node) (*bookli
 }
 
 func (processor *Processor) loadNode(path string, node ast.Node) (*booklit.Section, error) {
-	section, err := processor.EvaluateSection(path, node)
+	section, err := processor.EvaluateSection(nil, path, node)
 	if err != nil {
 		return nil, err
 	}

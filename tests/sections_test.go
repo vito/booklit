@@ -152,6 +152,78 @@ How are you?
 		},
 	}),
 
+	Entry("forcing sections onto one page", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\single-page
+
+\section{
+	\title{Section A}
+
+	\split-sections
+
+	Blah blah in section A.
+
+	\section{
+		\title{Nested Section}
+
+		Good, thanks!
+	}
+}
+
+\section{
+	\title{Section B}
+
+	\split-sections
+
+	Blah blah in section B.
+
+	\section{
+		\title{Nested Section 2}
+
+		Foo bar.
+	}
+
+	\section{
+		\title{Nested Section 3}
+
+		Fizz buzz.
+	}
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h1>1 Section A</h1>
+
+	<p>Blah blah in section A.</p>
+
+	<h2>1.1 Nested Section</h2>
+
+	<p>Good, thanks!</p>
+
+	<h1>2 Section B</h1>
+
+	<p>Blah blah in section B.</p>
+
+	<h2>2.1 Nested Section 2</h2>
+
+	<p>Foo bar.</p>
+
+	<h2>2.2 Nested Section 3</h2>
+
+	<p>Fizz buzz.</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("split sub-sub-sections", Example{
 		Input: `\title{Hello, world!}
 
