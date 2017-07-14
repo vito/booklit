@@ -230,3 +230,64 @@ func (plugin Plugin) Image(path string, description ...string) booklit.Content {
 func (plugin Plugin) SetPartial(name string, content booklit.Content) {
 	plugin.section.SetPartial(name, content)
 }
+
+func (plugin Plugin) Table(rowContent booklit.Content) (booklit.Content, error) {
+	table := booklit.Table{}
+
+	rows, err := toSeq(rowContent)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, row := range rows {
+		cols, err := toSeq(row)
+		if err != nil {
+			return nil, err
+		}
+
+		table.Rows = append(table.Rows, cols)
+	}
+
+	return table, nil
+}
+
+func (plugin Plugin) TableRow(cols ...booklit.Content) booklit.Content {
+	return booklit.Sequence(cols)
+}
+
+func (plugin Plugin) Definitions(itemContent booklit.Content) (booklit.Content, error) {
+	items, err := toSeq(itemContent)
+	if err != nil {
+		return nil, err
+	}
+
+	defs := booklit.Definitions{}
+	for _, item := range items {
+		cons, err := toSeq(item)
+		if err != nil {
+			return nil, err
+		}
+
+		defs = append(defs, booklit.Definition{
+			Subject:    cons[0],
+			Definition: cons[1],
+		})
+	}
+
+	return defs, nil
+}
+
+func (plugin Plugin) Definition(subject booklit.Content, definition booklit.Content) booklit.Content {
+	return booklit.Sequence{subject, definition}
+}
+
+func toSeq(con booklit.Content) ([]booklit.Content, error) {
+	switch v := con.(type) {
+	case booklit.Paragraph:
+		return v, nil
+	case booklit.Sequence:
+		return v, nil
+	}
+
+	return nil, fmt.Errorf("unknown table content type: %T", con)
+}

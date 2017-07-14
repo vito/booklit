@@ -1,0 +1,9 @@
+<table>
+  {{range .Rows}}
+  <tr>
+    {{range .}}
+    <td>{{. | render}}</td>
+    {{end}}
+  </tr>
+  {{end}}
+</table>

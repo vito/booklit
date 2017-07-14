@@ -140,3 +140,32 @@ func (resolve *Resolve) VisitList(con booklit.List) error {
 func (resolve *Resolve) VisitLink(con booklit.Link) error {
 	return con.Content.Visit(resolve)
 }
+
+func (resolve *Resolve) VisitTable(con booklit.Table) error {
+	for _, row := range con.Rows {
+		for _, c := range row {
+			err := c.Visit(resolve)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (resolve *Resolve) VisitDefinitions(con booklit.Definitions) error {
+	for _, def := range con {
+		err := def.Subject.Visit(resolve)
+		if err != nil {
+			return err
+		}
+
+		err = def.Definition.Visit(resolve)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

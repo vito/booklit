@@ -93,6 +93,16 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 	return "html"
 }
 
+func (engine *HTMLRenderingEngine) Render(out io.Writer) error {
+	if engine.template == nil {
+		return fmt.Errorf("unknown template for %T", engine.data)
+	}
+
+	return engine.template.Funcs(template.FuncMap{
+		"render": engine.subRender,
+	}).Execute(out, engine.data)
+}
+
 func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
 	engine.template = engine.tmpl.Lookup("string.tmpl")
 	engine.data = con
@@ -216,14 +226,16 @@ func (engine *HTMLRenderingEngine) VisitLink(con booklit.Link) error {
 	return nil
 }
 
-func (engine *HTMLRenderingEngine) Render(out io.Writer) error {
-	if engine.template == nil {
-		return fmt.Errorf("unknown template for %T", engine.data)
-	}
+func (engine *HTMLRenderingEngine) VisitTable(con booklit.Table) error {
+	engine.template = engine.tmpl.Lookup("table.tmpl")
+	engine.data = con
+	return nil
+}
 
-	return engine.template.Funcs(template.FuncMap{
-		"render": engine.subRender,
-	}).Execute(out, engine.data)
+func (engine *HTMLRenderingEngine) VisitDefinitions(con booklit.Definitions) error {
+	engine.template = engine.tmpl.Lookup("definitions.tmpl")
+	engine.data = con
+	return nil
 }
 
 func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.HTML, error) {

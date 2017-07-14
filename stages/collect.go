@@ -120,3 +120,32 @@ func (collect *Collect) VisitList(con booklit.List) error {
 func (collect *Collect) VisitLink(con booklit.Link) error {
 	return con.Content.Visit(collect)
 }
+
+func (collect *Collect) VisitTable(con booklit.Table) error {
+	for _, row := range con.Rows {
+		for _, c := range row {
+			err := c.Visit(collect)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (collect *Collect) VisitDefinitions(con booklit.Definitions) error {
+	for _, def := range con {
+		err := def.Subject.Visit(collect)
+		if err != nil {
+			return err
+		}
+
+		err = def.Definition.Visit(collect)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

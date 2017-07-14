@@ -22,43 +22,17 @@ func (strip *stripAuxVisitor) VisitString(con String) error {
 }
 
 func (strip *stripAuxVisitor) VisitSequence(con Sequence) error {
-	stripped := Sequence{}
-
-	for _, c := range con {
-		if _, isAux := c.(Aux); isAux {
-			continue
-		}
-
-		stripped = append(stripped, StripAux(c))
-	}
-
-	strip.Result = stripped
+	strip.Result = Sequence(stripAuxSeq(con))
 	return nil
 }
 
 func (strip *stripAuxVisitor) VisitParagraph(con Paragraph) error {
-	stripped := Paragraph{}
-
-	for _, c := range con {
-		if _, isAux := c.(Aux); !isAux {
-			stripped = append(stripped, StripAux(c))
-		}
-	}
-
-	strip.Result = stripped
+	strip.Result = Paragraph(stripAuxSeq(con))
 	return nil
 }
 
 func (strip *stripAuxVisitor) VisitPreformatted(con Preformatted) error {
-	stripped := Preformatted{}
-
-	for _, c := range con {
-		if _, isAux := c.(Aux); !isAux {
-			stripped = append(stripped, StripAux(c))
-		}
-	}
-
-	strip.Result = stripped
+	strip.Result = Preformatted(stripAuxSeq(con))
 	return nil
 }
 
@@ -109,15 +83,7 @@ func (strip *stripAuxVisitor) VisitImage(con Image) error {
 }
 
 func (strip *stripAuxVisitor) VisitList(con List) error {
-	stripped := []Content{}
-
-	for _, c := range con.Items {
-		if _, isAux := c.(Aux); !isAux {
-			stripped = append(stripped, StripAux(c))
-		}
-	}
-
-	con.Items = stripped
+	con.Items = stripAuxSeq(con.Items)
 	strip.Result = con
 	return nil
 }
@@ -126,4 +92,39 @@ func (strip *stripAuxVisitor) VisitLink(con Link) error {
 	con.Content = StripAux(con.Content)
 	strip.Result = con
 	return nil
+}
+
+func (strip *stripAuxVisitor) VisitTable(con Table) error {
+	newTable := Table{}
+	for _, row := range con.Rows {
+		newTable.Rows = append(newTable.Rows, stripAuxSeq(row))
+	}
+
+	strip.Result = newTable
+	return nil
+}
+
+func (strip *stripAuxVisitor) VisitDefinitions(con Definitions) error {
+	stripped := Definitions{}
+	for _, def := range con {
+		stripped = append(stripped, Definition{
+			Subject:    StripAux(def.Subject),
+			Definition: StripAux(def.Definition),
+		})
+	}
+
+	strip.Result = stripped
+	return nil
+}
+
+func stripAuxSeq(seq []Content) []Content {
+	stripped := []Content{}
+
+	for _, c := range seq {
+		if _, isAux := c.(Aux); !isAux {
+			stripped = append(stripped, StripAux(c))
+		}
+	}
+
+	return stripped
 }

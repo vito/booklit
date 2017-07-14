@@ -23,4 +23,6 @@ type Visitor interface {
 	VisitElement(Element) error
 	VisitImage(Image) error
 	VisitList(List) error
+	VisitTable(Table) error
+	VisitDefinitions(Definitions) error
 }

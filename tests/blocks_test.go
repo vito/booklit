@@ -26,6 +26,57 @@ var _ = DescribeTable("Blocks", (Example).Run,
 		},
 	}),
 
+	Entry("tables", Example{
+		Input: `\title{Hello, world!}
+
+\table{
+	\table-row{a}{1}
+	\table-row{b}{2}
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<table>
+	<tr>
+		<td>a</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>b</td>
+		<td>2</td>
+	</tr>
+</table>
+</section>`,
+		},
+	}),
+
+	Entry("definitions", Example{
+		Input: `\title{Hello, world!}
+
+\definitions{
+	\definition{a}{1}
+	\definition{b}{2}
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<dl>
+	<dt>a</dt>
+		<dd>1</dd>
+
+	<dt>b</dt>
+		<dd>2</dd>
+</dl>
+</section>`,
+		},
+	}),
+
 	Entry("inset", Example{
 		Input: `\title{Hello, world!}
 
