@@ -104,10 +104,12 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		return fmt.Errorf("undefined booklit function: %s", invoke.Function)
 	}
 
+	methodType := method.Type()
+
 	rawArgs := invoke.Arguments
 
-	argc := method.Type().NumIn()
-	if method.Type().IsVariadic() {
+	argc := methodType.NumIn()
+	if methodType.IsVariadic() {
 		argc--
 
 		if len(rawArgs) < argc {
@@ -121,7 +123,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 
 	argv := make([]reflect.Value, argc)
 	for i := 0; i < argc; i++ {
-		t := method.Type().In(i)
+		t := methodType.In(i)
 		arg, err := eval.convert(t, rawArgs[i])
 		if err != nil {
 			return err
@@ -130,9 +132,9 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		argv[i] = arg
 	}
 
-	if method.Type().IsVariadic() {
+	if methodType.IsVariadic() {
 		variadic := rawArgs[argc:]
-		variadicType := method.Type().In(argc)
+		variadicType := methodType.In(argc)
 
 		subType := variadicType.Elem()
 		for _, varg := range variadic {
@@ -146,36 +148,43 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	}
 
 	result := method.Call(argv)
-	switch len(result) {
+
+	switch methodType.NumOut() {
 	case 0:
 		return nil
 	case 1:
-		last := result[0]
-		switch v := last.Interface().(type) {
-		case nil:
-		case error:
-			return v
-		case booklit.Content:
-			eval.Result = booklit.Append(eval.Result, v)
+		val := result[0].Interface()
+		valType := methodType.Out(0)
+
+		switch reflect.New(valType).Interface().(type) {
+		case *error:
+			if val != nil {
+				return val.(error)
+			}
+		case *booklit.Content:
+			eval.Result = booklit.Append(eval.Result, val.(booklit.Content))
 		default:
-			return fmt.Errorf("unknown return type: %T", v)
+			return fmt.Errorf("unknown return type: %s", valType)
 		}
 	case 2:
-		first := result[0]
-		switch v := first.Interface().(type) {
-		case booklit.Content:
-			eval.Result = booklit.Append(eval.Result, v)
+		second := result[1].Interface()
+		secondType := methodType.Out(1)
+		switch reflect.New(secondType).Interface().(type) {
+		case *error:
+			if second != nil {
+				return second.(error)
+			}
 		default:
-			return fmt.Errorf("unknown first return type: %T", v)
+			return fmt.Errorf("unknown second return type: %s", secondType)
 		}
 
-		last := result[1]
-		switch v := last.Interface().(type) {
-		case nil:
-		case error:
-			return v
+		first := result[0].Interface()
+		firstType := methodType.Out(0)
+		switch reflect.New(firstType).Interface().(type) {
+		case *booklit.Content:
+			eval.Result = booklit.Append(eval.Result, first.(booklit.Content))
 		default:
-			return fmt.Errorf("unknown second return type: %T", v)
+			return fmt.Errorf("unknown first return type: %s", firstType)
 		}
 	default:
 		return fmt.Errorf("expected 0-2 return values from %s, got %d", invoke.Function, len(result))
