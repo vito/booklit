@@ -157,33 +157,9 @@ func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfConte
 }
 
 func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
-	switch con.Style {
-	case booklit.StyleItalic:
-		engine.template = engine.tmpl.Lookup("italic.tmpl")
-	case booklit.StyleBold:
-		engine.template = engine.tmpl.Lookup("bold.tmpl")
-	case booklit.StyleLarger:
-		engine.template = engine.tmpl.Lookup("larger.tmpl")
-	case booklit.StyleSmaller:
-		engine.template = engine.tmpl.Lookup("smaller.tmpl")
-	case booklit.StyleStrike:
-		engine.template = engine.tmpl.Lookup("strike.tmpl")
-	case booklit.StyleSuperscript:
-		engine.template = engine.tmpl.Lookup("superscript.tmpl")
-	case booklit.StyleSubscript:
-		engine.template = engine.tmpl.Lookup("subscript.tmpl")
-	case booklit.StyleInset:
-		engine.template = engine.tmpl.Lookup("inset.tmpl")
-	case booklit.StyleAside:
-		engine.template = engine.tmpl.Lookup("aside.tmpl")
-	case booklit.StyleVerbatim:
-		if con.IsSentence() {
-			engine.template = engine.tmpl.Lookup("code-inline.tmpl")
-		} else {
-			engine.template = engine.tmpl.Lookup("code-block.tmpl")
-		}
-	default:
-		return fmt.Errorf("unknown style: %s", con.Style)
+	engine.template = engine.tmpl.Lookup(string(con.Style) + ".tmpl")
+	if engine.template == nil {
+		return fmt.Errorf("no template defined for style: %s", con.Style)
 	}
 
 	engine.data = con.Content

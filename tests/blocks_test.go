@@ -2,6 +2,7 @@ package tests
 
 import (
 	. "github.com/onsi/ginkgo/extensions/table"
+	_ "github.com/vito/booklit/tests/fixtures/arbitrary-style-plugin"
 )
 
 var _ = DescribeTable("Blocks", (Example).Run,
@@ -134,6 +135,25 @@ var _ = DescribeTable("Blocks", (Example).Run,
 	<h1>Hello, world!</h1>
 
 <ol><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ol>
+</section>`,
+		},
+	}),
+
+	Entry("arbitrary styles", Example{
+		Input: `\title{Hello, world!}
+
+\use-plugin{arbitrary-style}
+
+\arbitrary-style{
+	Sup!
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<blink><p>Sup!</p></blink>
 </section>`,
 		},
 	}),

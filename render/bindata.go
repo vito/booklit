@@ -3,8 +3,6 @@
 // render/html/aside.tmpl
 // render/html/block.tmpl
 // render/html/bold.tmpl
-// render/html/code-block.tmpl
-// render/html/code-inline.tmpl
 // render/html/definitions.tmpl
 // render/html/element.tmpl
 // render/html/image.tmpl
@@ -27,6 +25,7 @@
 // render/html/table.tmpl
 // render/html/target.tmpl
 // render/html/toc.tmpl
+// render/html/verbatim.tmpl
 // DO NOT EDIT!
 
 package render
@@ -150,46 +149,6 @@ func renderHtmlBoldTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/bold.tmpl", size: 32, mode: os.FileMode(420), modTime: time.Unix(1499953911, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _renderHtmlCodeBlockTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x29\x28\x4a\xb5\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\x89\x71\x01\x02\x00\x00\xff\xff\x76\xaa\x4d\xfe\x1a\x00\x00\x00")
-
-func renderHtmlCodeBlockTmplBytes() ([]byte, error) {
-	return bindataRead(
-		_renderHtmlCodeBlockTmpl,
-		"render/html/code-block.tmpl",
-	)
-}
-
-func renderHtmlCodeBlockTmpl() (*asset, error) {
-	bytes, err := renderHtmlCodeBlockTmplBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "render/html/code-block.tmpl", size: 26, mode: os.FileMode(420), modTime: time.Unix(1499953911, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _renderHtmlCodeInlineTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\xce\x4f\x49\xb5\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x07\x0b\x72\x01\x02\x00\x00\xff\xff\x25\x74\x64\xb1\x1c\x00\x00\x00")
-
-func renderHtmlCodeInlineTmplBytes() ([]byte, error) {
-	return bindataRead(
-		_renderHtmlCodeInlineTmpl,
-		"render/html/code-inline.tmpl",
-	)
-}
-
-func renderHtmlCodeInlineTmpl() (*asset, error) {
-	bytes, err := renderHtmlCodeInlineTmplBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "render/html/code-inline.tmpl", size: 28, mode: os.FileMode(420), modTime: time.Unix(1499953911, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -634,6 +593,26 @@ func renderHtmlTocTmpl() (*asset, error) {
 	return a, nil
 }
 
+var _renderHtmlVerbatimTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xaa\xae\xce\x4c\x53\xd0\xf3\x2c\x0e\x4e\xcd\x2b\x49\xcd\x4b\x4e\xad\xad\xb5\x49\xce\x4f\x49\xb5\xab\xae\xd6\x53\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x87\x0a\xa6\xe6\x14\x83\x94\x14\x14\x61\xaa\x80\x88\xa5\xe6\xa5\xd4\xd6\x72\x01\x02\x00\x00\xff\xff\xf8\x1a\x9a\x90\x56\x00\x00\x00")
+
+func renderHtmlVerbatimTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlVerbatimTmpl,
+		"render/html/verbatim.tmpl",
+	)
+}
+
+func renderHtmlVerbatimTmpl() (*asset, error) {
+	bytes, err := renderHtmlVerbatimTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/verbatim.tmpl", size: 86, mode: os.FileMode(420), modTime: time.Unix(1500043539, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -689,8 +668,6 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/aside.tmpl": renderHtmlAsideTmpl,
 	"render/html/block.tmpl": renderHtmlBlockTmpl,
 	"render/html/bold.tmpl": renderHtmlBoldTmpl,
-	"render/html/code-block.tmpl": renderHtmlCodeBlockTmpl,
-	"render/html/code-inline.tmpl": renderHtmlCodeInlineTmpl,
 	"render/html/definitions.tmpl": renderHtmlDefinitionsTmpl,
 	"render/html/element.tmpl": renderHtmlElementTmpl,
 	"render/html/image.tmpl": renderHtmlImageTmpl,
@@ -713,6 +690,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/table.tmpl": renderHtmlTableTmpl,
 	"render/html/target.tmpl": renderHtmlTargetTmpl,
 	"render/html/toc.tmpl": renderHtmlTocTmpl,
+	"render/html/verbatim.tmpl": renderHtmlVerbatimTmpl,
 }
 
 // AssetDir returns the file names below a certain
@@ -760,8 +738,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"aside.tmpl": &bintree{renderHtmlAsideTmpl, map[string]*bintree{}},
 			"block.tmpl": &bintree{renderHtmlBlockTmpl, map[string]*bintree{}},
 			"bold.tmpl": &bintree{renderHtmlBoldTmpl, map[string]*bintree{}},
-			"code-block.tmpl": &bintree{renderHtmlCodeBlockTmpl, map[string]*bintree{}},
-			"code-inline.tmpl": &bintree{renderHtmlCodeInlineTmpl, map[string]*bintree{}},
 			"definitions.tmpl": &bintree{renderHtmlDefinitionsTmpl, map[string]*bintree{}},
 			"element.tmpl": &bintree{renderHtmlElementTmpl, map[string]*bintree{}},
 			"image.tmpl": &bintree{renderHtmlImageTmpl, map[string]*bintree{}},
@@ -784,6 +760,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"table.tmpl": &bintree{renderHtmlTableTmpl, map[string]*bintree{}},
 			"target.tmpl": &bintree{renderHtmlTargetTmpl, map[string]*bintree{}},
 			"toc.tmpl": &bintree{renderHtmlTocTmpl, map[string]*bintree{}},
+			"verbatim.tmpl": &bintree{renderHtmlVerbatimTmpl, map[string]*bintree{}},
 		}},
 	}},
 }}
