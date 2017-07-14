@@ -38,6 +38,10 @@ func (plugin Plugin) Title(title booklit.Content, tags ...string) {
 	plugin.section.SetTitle(title, tags...)
 }
 
+func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
+	return booklit.Aux{content}
+}
+
 func (plugin Plugin) Section(node ast.Node) error {
 	processor := &load.Processor{
 		PluginFactories: plugin.section.PluginFactories,
@@ -53,10 +57,6 @@ func (plugin Plugin) Section(node ast.Node) error {
 	plugin.section.Children = append(plugin.section.Children, section)
 
 	return nil
-}
-
-func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
-	return booklit.Aux{content}
 }
 
 func (plugin Plugin) IncludeSection(path string) error {
@@ -225,4 +225,8 @@ func (plugin Plugin) Image(path string, description ...string) booklit.Content {
 	}
 
 	return img
+}
+
+func (plugin Plugin) SetPartial(name string, content booklit.Content) {
+	plugin.section.SetPartial(name, content)
 }

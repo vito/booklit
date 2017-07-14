@@ -1,3 +1,7 @@
+{{if eq .PrimaryTag.Name "set-partial-read-template"}}
+{{template "partial-template.tmpl" .}}
+{{else}}
 <section>
   {{template "section.tmpl" .}}
 </section>
+{{end}}

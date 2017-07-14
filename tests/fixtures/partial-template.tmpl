@@ -1,0 +1,15 @@
+{{.Title | render}}
+
+<div>
+  Here's a partial:
+
+  {{.Partial "FooBar" | render}}
+</div>
+
+<div>
+  Here's the partial again:
+
+  {{.Partial "FooBar" | render}}
+</div>
+
+{{.Body | render}}

@@ -78,6 +78,13 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 		return err
 	}
 
+	for _, p := range con.Partials {
+		err = p.Visit(resolve)
+		if err != nil {
+			return err
+		}
+	}
+
 	// TODO: this probably does redundant resolving, since i think the section
 	// was loaded via a processor in the first place
 	for _, child := range con.Children {

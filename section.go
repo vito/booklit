@@ -18,12 +18,16 @@ type Section struct {
 	Parent   *Section
 	Children []*Section
 
+	Partials Partials
+
 	SplitSections                   bool
 	OmitChildrenFromTableOfContents bool
 
 	PluginFactories []PluginFactory
 	Plugins         []Plugin
 }
+
+type Partials map[string]Content
 
 type Tag struct {
 	Name    string
@@ -148,6 +152,18 @@ func (con *Section) Contains(sub *Section) bool {
 
 func (con *Section) FindTag(tagName string) (Tag, bool) {
 	return con.findTag(tagName, true, nil)
+}
+
+func (con *Section) SetPartial(name string, value Content) {
+	if con.Partials == nil {
+		con.Partials = Partials{}
+	}
+
+	con.Partials[name] = value
+}
+
+func (con *Section) Partial(name string) Content {
+	return con.Partials[name]
 }
 
 func (con *Section) UsePlugin(pf PluginFactory) {
