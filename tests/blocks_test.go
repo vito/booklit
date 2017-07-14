@@ -45,10 +45,10 @@ var _ = DescribeTable("Blocks", (Example).Run,
 		},
 	}),
 
-	Entry("note", Example{
+	Entry("aside", Example{
 		Input: `\title{Hello, world!}
 
-\note{
+\aside{
 	Hello.
 }
 `,
@@ -57,7 +57,7 @@ var _ = DescribeTable("Blocks", (Example).Run,
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<blockquote class="note">
+<blockquote class="aside">
 	<p>Hello.</p>
 </blockquote>
 </section>`,

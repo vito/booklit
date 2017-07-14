@@ -169,10 +169,10 @@ func (plugin Plugin) Inset(content booklit.Content) booklit.Content {
 	}
 }
 
-func (plugin Plugin) Note(content booklit.Content) booklit.Content {
+func (plugin Plugin) Aside(content booklit.Content) booklit.Content {
 	return booklit.Styled{
 		Content: content,
-		Style:   booklit.StyleNote,
+		Style:   booklit.StyleAside,
 	}
 }
 
