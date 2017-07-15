@@ -25,8 +25,4 @@ function emit_coveralls() {
 trap emit_coveralls EXIT
 
 echo "running tests..."
-ginkgo -r -p \
-  -cover \
-  -coverpkg $(go list ./... | grep -v /cmd/ | xargs echo | tr ' ' ',') \
-  -covermode atomic \
-  "$@"
+./scripts/test -p "$@"

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e -u
+
+cd $(dirname $0)/..
+
+ginkgo -r \
+  -cover \
+  -coverpkg $(go list ./... | grep -v /cmd/ | xargs echo | tr ' ' ',') \
+  -covermode atomic \
+  "$@"
