@@ -41,15 +41,7 @@ func init() {
 		},
 
 		"headerDepth": func(con *booklit.Section) int {
-			depth := 1
-			for sec := con; sec.Parent != nil && !sec.Parent.SplitSections; sec = sec.Parent {
-				depth++
-			}
-
-			if con.IsSinglePage() && depth > 1 {
-				depth--
-			}
-
+			depth := con.PageDepth() + 1
 			if depth > 6 {
 				depth = 6
 			}

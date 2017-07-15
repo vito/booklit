@@ -82,11 +82,13 @@ func (plugin Plugin) IncludeSection(path string) error {
 }
 
 func (plugin Plugin) SinglePage() {
-	plugin.section.ForceSinglePage = true
+	plugin.section.PreventSplitSections = true
 }
 
 func (plugin Plugin) SplitSections() {
-	if !plugin.section.IsSinglePage() {
+	plugin.section.ResetDepth = true
+
+	if !plugin.section.SplitSectionsPrevented() {
 		plugin.section.SplitSections = true
 	}
 }

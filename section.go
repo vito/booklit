@@ -20,8 +20,10 @@ type Section struct {
 
 	Partials Partials
 
-	SplitSections   bool
-	ForceSinglePage bool
+	SplitSections        bool
+	PreventSplitSections bool
+
+	ResetDepth bool
 
 	OmitChildrenFromTableOfContents bool
 
@@ -173,12 +175,20 @@ func (con *Section) UsePlugin(pf PluginFactory) {
 	con.Plugins = append(con.Plugins, pf.NewPlugin(con))
 }
 
-func (con *Section) IsSinglePage() bool {
-	if con.ForceSinglePage {
+func (con *Section) PageDepth() int {
+	if con.Parent == nil || con.Parent.ResetDepth {
+		return 0
+	}
+
+	return con.Parent.PageDepth() + 1
+}
+
+func (con *Section) SplitSectionsPrevented() bool {
+	if con.PreventSplitSections {
 		return true
 	}
 
-	if con.Parent != nil && con.Parent.IsSinglePage() {
+	if con.Parent != nil && con.Parent.SplitSectionsPrevented() {
 		return true
 	}
 

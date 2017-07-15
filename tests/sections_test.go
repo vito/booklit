@@ -155,9 +155,10 @@ How are you?
 	Entry("forcing sections onto one page", Example{
 		Input: `\title{Hello, world!}
 
-How are you?
+How are you? See \reference{deep-inlined}.
 
 \single-page
+\split-sections
 
 \section{
 	\title{Section A}
@@ -176,8 +177,6 @@ How are you?
 \section{
 	\title{Section B}
 
-	\split-sections
-
 	Blah blah in section B.
 
 	\section{
@@ -189,7 +188,15 @@ How are you?
 	\section{
 		\title{Nested Section 3}
 
+		\split-sections
+
 		Fizz buzz.
+
+		\section{
+			\title{Super Duple Wrapped}{deep-inlined}
+
+			Whoooooa.
+		}
 	}
 }
 `,
@@ -198,13 +205,13 @@ How are you?
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p>How are you?</p>
+	<p>How are you? See <a href="hello-world.html#deep-inlined">Super Duple Wrapped</a>.</p>
 
 	<h1>1 Section A</h1>
 
 	<p>Blah blah in section A.</p>
 
-	<h2>1.1 Nested Section</h2>
+	<h1>1.1 Nested Section</h1>
 
 	<p>Good, thanks!</p>
 
@@ -219,6 +226,10 @@ How are you?
 	<h2>2.2 Nested Section 3</h2>
 
 	<p>Fizz buzz.</p>
+
+	<h1>2.2.1 Super Duple Wrapped</h1>
+
+	<p>Whoooooa.</p>
 </section>
 `,
 		},
