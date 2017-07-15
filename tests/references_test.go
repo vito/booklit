@@ -51,6 +51,52 @@ See also \reference{section-c}{the last section}.
 		},
 	}),
 
+	Entry("references to other sections by title", Example{
+		Input: `\title{Hello, world!}
+
+See also \reference{Section C}{the last section}.
+
+\section{
+	\title{Section A}
+
+	See also \reference{Section B}.
+}
+
+\section{
+	\title{Section B}
+
+	See also \reference{Section A}.
+}
+
+\section{
+	\title{Section C}
+
+	See also \reference{Hello, world!}.
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
+
+	<h2>1 Section A</h2>
+
+	<p>See also <a href="hello-world.html#section-b">Section B</a>.</p>
+
+	<h2>2 Section B</h2>
+
+	<p>See also <a href="hello-world.html#section-a">Section A</a>.</p>
+
+	<h2>3 Section C</h2>
+
+	<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("references to other sections on split pages", Example{
 		Input: `\title{Hello, world!}
 

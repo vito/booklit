@@ -196,6 +196,10 @@ func (con *Section) SplitSectionsPrevented() bool {
 }
 
 func (con *Section) findTag(tagName string, up bool, exclude *Section) (Tag, bool) {
+	if tagName == con.Title.String() {
+		return con.PrimaryTag, true
+	}
+
 	for _, t := range con.Tags {
 		if t.Name == tagName {
 			return t, true
