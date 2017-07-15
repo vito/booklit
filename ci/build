@@ -8,11 +8,18 @@ export PATH=$PWD/depspath/bin:$PWD/gopath/bin:$PATH
 echo "fetching dependencies..."
 go get -d ./...
 
-echo "building binary..."
-go build \
-  --ldflags "-X github.com/vito/booklit.Version=$(cat version/version)" \
-  -o binary/booklit \
-  github.com/vito/booklit/cmd/booklit
+for os in linux darwin windows; do
+  ext=""
+  if [ "$os" = "windows" ]; then
+    ext=".exe"
+  fi
+
+  echo "building $os binary..."
+  GOOS=$os go build \
+    --ldflags "-X github.com/vito/booklit.Version=$(cat version/version)" \
+    -o assets/booklit_${os}_amd64${ext} \
+    github.com/vito/booklit/cmd/booklit
+done
 
 echo "printing version..."
-./binary/booklit --version
+./assets/booklit_linux_amd64 --version

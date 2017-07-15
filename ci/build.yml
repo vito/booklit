@@ -11,7 +11,7 @@ inputs:
 - name: version
 
 outputs:
-- name: binary
+- name: assets
 
 caches:
 - path: depspath/

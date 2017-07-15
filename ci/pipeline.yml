@@ -118,7 +118,7 @@ jobs:
       committish: booklit/.git/HEAD
       name: release-info/name
       body: release-info/notes.md
-      globs: [binary/*]
+      globs: [assets/*]
 
 - name: major
   public: true
