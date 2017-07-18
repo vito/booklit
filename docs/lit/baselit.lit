@@ -277,8 +277,8 @@ methods useful for writing prose.
   \define{\table{rows...}}{
     Render a table with \italic{rows} as its content.
 
-    \target{table-row}{\\\bold{table-row}} The value for each row should be
-    produced by using \reference{table-row} like so:
+    \target{table-row}{\code{\\\bold{table-row}}} The value for each row should
+    be produced by using \reference{table-row} like so:
 
     \code{{{
     \table{
@@ -300,8 +300,8 @@ methods useful for writing prose.
   \define{\definitions{entries...}}{
     Render a definition list with \italic{entries} as its entries.
 
-    \target{definition}{\\\bold{definition}} The value for each entry should be
-    produced by using \reference{definition} like so:
+    \target{definition}{\code{\\\bold{definition}}} The value for each entry
+    should be produced by using \reference{definition} like so:
 
     \code{{{
     \definitions{

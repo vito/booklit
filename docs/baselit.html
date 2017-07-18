@@ -97,7 +97,7 @@
         <tr>
           <td class="number-cell" align="right">4.3&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html#styling-words" >Styling Words</a>
+<a href="baselit.html#flow-content" >Flow Content</a>
 </td>
         </tr>
       
@@ -211,7 +211,7 @@
         <tr>
           <td class="number-cell" align="right">4.3&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html#styling-words" >Styling Words</a>
+<a href="baselit.html#flow-content" >Flow Content</a>
 </td>
         </tr>
           
@@ -255,6 +255,11 @@
             <td class="title-cell"><a href="baselit.html#subscript"><code>\<strong>subscript</strong></code></a></td>
           </tr>
           
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="baselit.html#image"><code>\<strong>image</strong></code></a></td>
+          </tr>
+          
         
         <tr>
           <td class="number-cell" align="right">4.4&nbsp;</td>
@@ -290,7 +295,7 @@
           
           <tr>
             <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#table-row">\<strong>table-row</strong></a></td>
+            <td class="title-cell"><a href="baselit.html#table-row"><code>\<strong>table-row</strong></code></a></td>
           </tr>
           
           <tr>
@@ -300,7 +305,7 @@
           
           <tr>
             <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#definition">\<strong>definition</strong></a></td>
+            <td class="title-cell"><a href="baselit.html#definition"><code>\<strong>definition</strong></code></a></td>
           </tr>
           
         
@@ -360,9 +365,9 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a name="styling-words"></a><span class="section-number">4.3 </span>Styling Words</h2>
+    <h2 class="section-header"><a name="flow-content"></a><span class="section-number">4.3 </span>Flow Content</h2>
 
-<div class="definition-thumb"><a name="code"></a><code>\<a href="baselit.html#code"><strong>code</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a sentence, it is presented as inline code. If it is multi-line, it is presented as its own block.</p><p>This is often used in addition to <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace).</p><p>For example:</p><pre>I&#39;m a sentence with some \code{code bits} in it.</pre><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><pre>\code{
+<p><em>Flow</em> content is anything that forms a <em>sentence</em>, i.e. a string of words or inline elements.</p><div class="definition-thumb"><a name="code"></a><code>\<a href="baselit.html#code"><strong>code</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a sentence, it is presented as inline code. If it is multi-line, it is presented as its own block.</p><p>This is often used in addition to <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace).</p><p>For example:</p><pre>I&#39;m a sentence with some \code{code bits} in it.</pre><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><pre>\code{
   This is a code block.
 
   with
@@ -372,7 +377,7 @@ Hello, world!
 
 with
   wacky
-    whitespace</pre></div><div class="definition-thumb"><a name="italic"></a><code>\<a href="baselit.html#italic"><strong>italic</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <em>italics</em> upon rendering.</p></div><div class="definition-thumb"><a name="bold"></a><code>\<a href="baselit.html#bold"><strong>bold</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <strong>bold</strong> upon rendering.</p></div><div class="definition-thumb"><a name="larger"></a><code>\<a href="baselit.html#larger"><strong>larger</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> ~20% <span style="font-size: 120%">larger</span> upon rendering.</p></div><div class="definition-thumb"><a name="smaller"></a><code>\<a href="baselit.html#smaller"><strong>smaller</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> ~20% <span style="font-size: 80%">smaller</span> upon rendering.</p></div><div class="definition-thumb"><a name="strike"></a><code>\<a href="baselit.html#strike"><strong>strike</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> with a <span style="text-decoration: line-through">strike through it</span> upon rendering.</p></div><div class="definition-thumb"><a name="superscript"></a><code>\<a href="baselit.html#superscript"><strong>superscript</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <sup>superscript</sup> upon rendering.</p></div><div class="definition-thumb"><a name="subscript"></a><code>\<a href="baselit.html#subscript"><strong>subscript</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <sub>subscript</sub> upon rendering.</p></div>
+    whitespace</pre></div><div class="definition-thumb"><a name="italic"></a><code>\<a href="baselit.html#italic"><strong>italic</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <em>italics</em> upon rendering.</p></div><div class="definition-thumb"><a name="bold"></a><code>\<a href="baselit.html#bold"><strong>bold</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <strong>bold</strong> upon rendering.</p></div><div class="definition-thumb"><a name="larger"></a><code>\<a href="baselit.html#larger"><strong>larger</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> ~20% <span style="font-size: 120%">larger</span> upon rendering.</p></div><div class="definition-thumb"><a name="smaller"></a><code>\<a href="baselit.html#smaller"><strong>smaller</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> ~20% <span style="font-size: 80%">smaller</span> upon rendering.</p></div><div class="definition-thumb"><a name="strike"></a><code>\<a href="baselit.html#strike"><strong>strike</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> with a <span style="text-decoration: line-through">strike through it</span> upon rendering.</p></div><div class="definition-thumb"><a name="superscript"></a><code>\<a href="baselit.html#superscript"><strong>superscript</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <sup>superscript</sup> upon rendering.</p></div><div class="definition-thumb"><a name="subscript"></a><code>\<a href="baselit.html#subscript"><strong>subscript</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in <sub>subscript</sub> upon rendering.</p></div><div class="definition-thumb"><a name="image"></a><code>\<a href="baselit.html#image"><strong>image</strong></a>{<em>path</em>}</code></div><div class="definition-content"><p>Renders the image at <em>path</em> inline.</p><p>Currently there is no &#34;magic&#34; that will do anything with the file specified by <em>path</em> - if it&#39;s a local path, you should make sure it&#39;s present in the directory that your documents are being generated into.</p></div>
 
 
   
@@ -380,7 +385,7 @@ with
   
     <h2 class="section-header"><a name="block-content"></a><span class="section-number">4.4 </span>Block Content</h2>
 
-<div class="definition-thumb"><a name="inset"></a><code>\<a href="baselit.html#inset"><strong>inset</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Render <em>content</em> indented a bit.</p><div style="margin: 0 2em 1em" class="inset"><p>Like this!</p></div></div><div class="definition-thumb"><a name="aside"></a><code>\<a href="baselit.html#aside"><strong>aside</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Render <em>content</em> in some way that conveys that it&#39;s a side-note.</p><blockquote class="aside"><p>Here I am!</p></blockquote><p>If you look to your right, you should see one over there:</p><p>This is largely up to how you style them, though. You may want them to just look something like <a href="baselit.html#inset"><code>\<strong>inset</strong></code></a> if you don&#39;t have a &#34;margin&#34; in your design.</p></div><div class="definition-thumb"><a name="list"></a><code>\<a href="baselit.html#list"><strong>list</strong></a>{<em>items...</em>}</code></div><div class="definition-content"><p>Render an unordered list of <em>items</em>.</p><ul>
+<p><em>Block</em> content is anything that forms a <em>paragraph</em>, i.e. a block of text or any element that is standalone.</p><div class="definition-thumb"><a name="inset"></a><code>\<a href="baselit.html#inset"><strong>inset</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Render <em>content</em> indented a bit.</p><div style="margin: 0 2em 1em" class="inset"><p>Like this!</p></div></div><div class="definition-thumb"><a name="aside"></a><code>\<a href="baselit.html#aside"><strong>aside</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Render <em>content</em> in some way that conveys that it&#39;s a side-note.</p><blockquote class="aside"><p>Here I am!</p></blockquote><p>If you look to your right, you should see one over there:</p><p>This is largely up to how you style them, though. You may want them to just look something like <a href="baselit.html#inset"><code>\<strong>inset</strong></code></a> if you don&#39;t have a &#34;margin&#34; in your design.</p></div><div class="definition-thumb"><a name="list"></a><code>\<a href="baselit.html#list"><strong>list</strong></a>{<em>items...</em>}</code></div><div class="definition-content"><p>Render an unordered list of <em>items</em>.</p><ul>
 
   <li>one</li>
 
@@ -396,7 +401,7 @@ with
 
   <li>three!</li>
 
-</ol></div><div class="definition-thumb"><a name="table"></a><code>\<a href="baselit.html#table"><strong>table</strong></a>{<em>rows...</em>}</code></div><div class="definition-content"><p>Render a table with <em>rows</em> as its content.</p><p><a name="table-row"></a> The value for each row should be produced by using <a href="baselit.html#table-row">\<strong>table-row</strong></a> like so:</p><pre>\table{
+</ol></div><div class="definition-thumb"><a name="table"></a><code>\<a href="baselit.html#table"><strong>table</strong></a>{<em>rows...</em>}</code></div><div class="definition-content"><p>Render a table with <em>rows</em> as its content.</p><p><a name="table-row"></a> The value for each row should be produced by using <a href="baselit.html#table-row"><code>\<strong>table-row</strong></code></a> like so:</p><pre>\table{
   \table-row{a}{b}{c}
 }{
   \table-row{1}{2}{3}
@@ -422,7 +427,7 @@ with
     
   </tr>
   
-</table></div><div class="definition-thumb"><a name="definitions"></a><code>\<a href="baselit.html#definitions"><strong>definitions</strong></a>{<em>entries...</em>}</code></div><div class="definition-content"><p>Render a definition list with <em>entries</em> as its entries.</p><p><a name="definition"></a> The value for each entry should be produced by using <a href="baselit.html#definition">\<strong>definition</strong></a> like so:</p><pre>\definitions{
+</table></div><div class="definition-thumb"><a name="definitions"></a><code>\<a href="baselit.html#definitions"><strong>definitions</strong></a>{<em>entries...</em>}</code></div><div class="definition-content"><p>Render a definition list with <em>entries</em> as its entries.</p><p><a name="definition"></a> The value for each entry should be produced by using <a href="baselit.html#definition"><code>\<strong>definition</strong></code></a> like so:</p><pre>\definitions{
   \definition{a}{1}
 }{
   \definition{b}{2}
