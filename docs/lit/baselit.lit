@@ -7,7 +7,7 @@ basic set of functions needed for authoring Booklit documents, plus many common
 methods useful for writing prose.
 
 \section{
-  \title{Defining Sections}
+  \title{Defining Sections}{sections}
 
   \define{\title{text}{tags...}}{
     Sets the title and optional \italic{tags} as repeated arguments. For
@@ -28,9 +28,20 @@ methods useful for writing prose.
     becomes \code{im-a-fancy-title}).
   }
 
-  \define{\use-plugin{name}}{
-    Construct and use the plugin identified by \italic{name}. See
-    \reference{using-plugins} for more information.
+  \define{\aux{content}}{
+    Used within a title declaration to provide content that will show up on the
+    section page itself, but will be omitted when referencing the section. This
+    is handy for sub-titles that you don't care to show anywhere but the
+    section's page itself.
+
+    Example:
+
+    \code{{{
+      \title{Booklit\aux{: a pretty lit authoring system}}
+    }}}
+
+    This section, when referenced, would only show \italic{Booklit}, but its
+    header would include the \italic{content}..
   }
 
   \define{\section{content}}{
@@ -70,15 +81,78 @@ methods useful for writing prose.
     rather than inlining them under smaller headings.
   }
 
+  \define{\single-page}{
+    When declared in a section, it overrules any \reference{split-sections} in
+    the section and any child sections (recursively), in order to force them
+    all on to one page. Each section's header sizing is preserved, however.
+
+    This is useful for having all of your content which is normally split
+    across many pages joined in to an additional "single-page" format, for
+    quick skimming and searching.
+  }
+
   \define{\table-of-contents}{
     This generates a block element that becomes the table of contents from this
     section downward upon rendering. Often used in combination with
     \reference{split-sections}.
   }
+
+  \define{\omit-children-from-table-of-contents}{
+    Configures the section to omit its children from table of contents
+    listings. This is appropriate when the sub-sections within a section are
+    not quite standalone; they may be brief and meant to be consumed all at
+    once, so navigating to them individually would not make sense.
+  }
 }
 
 \section{
-  \title{Styling Words}
+  \title{Links & References}
+
+  \define{\link{display}{target}}{
+    Link to \italic{target} (i.e. a URL), with \italic{display} as the link's
+    text.
+
+    For example, \code{\\link\{Example\}\{https://example.com\}} becomes
+    \link{Example}{https://example.com}.
+
+    Note that the argument order is the reverse of \reference{reference};
+    writing tends to flow more naturally this way without a big URL
+    interrupting the sentence.
+  }
+
+  \define{\reference{tag}{display?}}{
+    Generate a link to the target associated with \italic{tag}. If the optional
+    \italic{display} argument is specified, it will be used as the link's
+    content. Otherwise, the tag's configured display will be rendered.
+
+    For example, \code{\\reference\{links-and-references\}} becomes
+    \reference{links-and-references}.
+  }
+
+  \define{\target{tag}{display?}}{
+    Generate a target element that can be \reference{reference}d by
+    \italic{tag}. If \italic{display} is specified, references will default to
+    showing it as their link. Otherwise, \italic{tag} itself will be the
+    default.
+
+    As an example, we'll create a target element in the following paragraph,
+    with the tag \italic{some-tag} and display \italic{I'm just some tag!}:
+
+    \target{some-tag}{I'm just some tag!} I'm a targetable paragraph.
+
+    Then, we'll reference it with \code{\\reference\{some-tag\}}:
+
+    \reference{some-tag}
+
+    Clicking the above link should take you to the paragraph.
+  }
+}
+
+\section{
+  \title{Flow Content}
+
+  \italic{Flow} content is anything that forms a \italic{sentence}, i.e. a
+  string of words or inline elements.
 
   \define{\code{text}}{
     Present \italic{text} in a monospace font upon rendering.
@@ -124,10 +198,143 @@ methods useful for writing prose.
   }
 
   \define{\italic{text}}{
-    Present \italic{text} italicized upon rendering.
+    Present \italic{text} in \italic{italics} upon rendering.
   }
 
   \define{\bold{text}}{
-    Present \italic{text} in bold upon rendering.
+    Present \italic{text} in \bold{bold} upon rendering.
+  }
+
+  \define{\larger{text}}{
+    Present \italic{text} ~20% \larger{larger} upon rendering.
+  }
+
+  \define{\smaller{text}}{
+    Present \italic{text} ~20% \smaller{smaller} upon rendering.
+  }
+
+  \define{\strike{text}}{
+    Present \italic{text} with a \strike{strike through it} upon rendering.
+  }
+
+  \define{\superscript{text}}{
+    Present \italic{text} in \superscript{superscript} upon rendering.
+  }
+
+  \define{\subscript{text}}{
+    Present \italic{text} in \subscript{subscript} upon rendering.
+  }
+
+  \define{\image{path}}{
+    Renders the image at \italic{path} inline.
+
+    Currently there is no "magic" that will do anything with the file specified
+    by \italic{path} - if it's a local path, you should make sure it's present
+    in the directory that your documents are being generated into.
+  }
+}
+
+\section{
+  \title{Block Content}
+
+  \italic{Block} content is anything that forms a \italic{paragraph}, i.e. a
+  block of text or any element that is standalone.
+
+  \define{\inset{content}}{
+    Render \italic{content} indented a bit.
+
+    \inset{
+      Like this!
+    }
+  }
+
+  \define{\aside{content}}{
+    Render \italic{content} in some way that conveys that it's a side-note.
+
+    \aside{
+      Here I am!
+    }
+
+    If you look to your right, you should see one over there:
+
+    This is largely up to how you style them, though. You may want them to just
+    look something like \reference{inset} if you don't have a "margin" in your
+    design.
+  }
+
+  \define{\list{items...}}{
+    Render an unordered list of \italic{items}.
+
+    \list{one}{two}{three!}
+  }
+
+  \define{\ordered-list{items...}}{
+    Render an ordered list of \italic{items}.
+
+    \ordered-list{one}{two}{three!}
+  }
+
+  \define{\table{rows...}}{
+    Render a table with \italic{rows} as its content.
+
+    \target{table-row}{\\\bold{table-row}} The value for each row should be
+    produced by using \reference{table-row} like so:
+
+    \code{{{
+    \table{
+      \table-row{a}{b}{c}
+    }{
+      \table-row{1}{2}{3}
+    }
+    }}}
+
+    The above example renders as:
+
+    \table{
+      \table-row{a}{b}{c}
+    }{
+      \table-row{1}{2}{3}
+    }
+  }
+
+  \define{\definitions{entries...}}{
+    Render a definition list with \italic{entries} as its entries.
+
+    \target{definition}{\\\bold{definition}} The value for each entry should be
+    produced by using \reference{definition} like so:
+
+    \code{{{
+    \definitions{
+      \definition{a}{1}
+    }{
+      \definition{b}{2}
+    }
+    }}}
+
+    The above example renders as:
+
+    \definitions{
+      \definition{a}{1}
+    }{
+      \definition{b}{2}
+    }
+  }
+}
+
+\section{
+  \title{Plugins & Partials}
+
+  \define{\use-plugin{name}}{
+    Register the plugin identified by \italic{name} in the section. The plugin
+    must be specified by \code{--plugin} on the command-line. See
+    \reference{plugins} for more information.
+  }
+
+  \define{\set-partial{name}{content}}{
+    Define the partial \italic{name} in the section with \italic{content} as
+    its content.
+
+    This is useful for communicating content to either \reference{plugins} or
+    custom templates given to the \reference{rendering}{rendering} stage.
   }
 }

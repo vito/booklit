@@ -1,15 +1,38 @@
 \title{Booklit}{index}
 
+Booklit is a static-site generator where the content is a first-class citizen.
+
+\reference{sections}{Sections} can be nested arbitrarily, either in-line or by
+including them from a separate file. Each section determines whether its
+sub-sections should be on a separate page, or inline. Header sizes will be set
+accordingly, so you're not spending your time adjusting \code{<h1>} and
+\code{<h2>}s.
+
+Inter-section linking is done by \reference{reference}{referencing tags},
+rather than hardcoding URLs. When Booklit compiles your documents, it will
+raise an error if any references are broken. Tags can either point to an entire
+section, or a target element within a section, for example a definition for
+something in reference documentation.
+
+The \reference{plugins}{plugin system} allows you to to define arbitrary
+\code{\\functions} that you can call from your documents to generate
+content. As patterns of repetition emerge in your content, you can optimize
+them away. This allows your content to become more semantically meaningful and
+easier to maintain.
+
+Booklit separates presentation from content by having a separate
+\reference{rendering}{rendering} stage. With the \reference{html-renderer}{HTML
+renderer}, you can bring your own templates via Go's
+\link{\code{html/template}}{https://golang.org/pkg/html/template} package, and
+control exactly how everything should look.
+
+Putting all of these things together, Booklit allows authors to write their
+content however they want to, tailoring the tool for your content, not the
+other way around. Interested? Let's \reference{getting-started}{get started}.
+
 \split-sections
-
-Booklit is a documentation authoring tool designed to be
-\reference{flexible}{flexible} in how you organize your content and
-\reference{extending}{extensible} so that patterns can emerge and be optimized
-as your documentation grows.
-
 \table-of-contents
 
-\include-section{why.lit}
 \include-section{getting-started.lit}
 \include-section{renderer.lit}
 \include-section{plugins.lit}

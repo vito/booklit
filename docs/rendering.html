@@ -28,40 +28,33 @@
         <tr>
           <td class="number-cell" align="right">1&nbsp;</td>
           <td class="title-cell">
-<a href="why.html" >What &amp; Why</a>
+<a href="getting-started.html" >Getting Started</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">2&nbsp;</td>
           <td class="title-cell">
-<a href="getting-started.html" >Getting Started</a>
+<a href="rendering.html"  class="self">Rendering</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="rendering.html"  class="self">Rendering</a>
+<a href="plugins.html" >Extending with Plugins</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">4&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">5&nbsp;</td>
-          <td class="title-cell">
 <a href="baselit.html" >The <code>baselit</code> Plugin</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">6&nbsp;</td>
+          <td class="number-cell" align="right">5&nbsp;</td>
           <td class="title-cell">
 <a href="thanks.html" >Thanks</a>
 </td>
@@ -77,7 +70,7 @@
 <div class="context">
   <nav>
     <div class="top">
-      3&nbsp;
+      2&nbsp;
 <a href="rendering.html"  class="self">Rendering</a>
 
     </div>
@@ -88,7 +81,7 @@
       <table>
       
         <tr>
-          <td class="number-cell" align="right">3.1&nbsp;</td>
+          <td class="number-cell" align="right">2.1&nbsp;</td>
           <td class="title-cell">
 <a href="rendering.html#html-renderer" >The HTML Renderer</a>
 </td>
@@ -104,13 +97,13 @@
 
     </div>
     <div class="page">
-      <h1 class="section-header"><a name="rendering"></a><span class="section-number">3 </span>Rendering</h1>
+      <h1 class="section-header"><a name="rendering"></a><span class="section-number">2 </span>Rendering</h1>
 
 <p>A <em>renderer</em> is the function from an evaluated section to some generated content ready for publishing.</p><p>As of right now, there is only one renderer: <a href="rendering.html#html-renderer">HTML</a>.</p>
 
 
   
-    <h2 class="section-header"><a name="html-renderer"></a><span class="section-number">3.1 </span>The HTML Renderer</h2>
+    <h2 class="section-header"><a name="html-renderer"></a><span class="section-number">2.1 </span>The HTML Renderer</h2>
 
 <p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs \
     --html-templates ./html</pre><p>The following template files will be used if present under <code>./html</code>:</p><ul>
@@ -149,6 +142,14 @@
 
 </ul><p>The most impactful of these is <code>page.tmpl</code>, which is used for the top-level section for each &#34;page&#34; rendered. This is where you would place assets in <code>&lt;head&gt;</code>, for example.</p><p>The value configured for <code>.</code> when evaluating the template depends on the template.</p>
 
+
+  
+    <h3 class="section-header"><a name="custom-templates"></a><span class="section-number">2.1.1 </span>Custom Templates</h3>
+
+
+
+
+  
 
   
 

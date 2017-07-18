@@ -63,4 +63,8 @@ As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
 
   The value configured for \code{.} when evaluating the template depends on the
   template.
+
+  \section{
+    \title{Custom Templates}{custom-templates}
+  }
 }
