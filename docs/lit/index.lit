@@ -1,6 +1,6 @@
 \title{Booklit}{index}
 
-Booklit is a static-site generator where the content is a first-class citizen.
+Booklit is a static-site generator where the content is king.
 
 \reference{sections}{Sections} can be nested arbitrarily, either in-line or by
 including them from a separate file. Each section determines whether its
