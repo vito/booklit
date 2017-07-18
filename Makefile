@@ -1,7 +1,4 @@
-all: ast/booklit.peg.go render/bindata.go docs/index.html
-
-docs/index.html: docs/lit/*.lit docs/lit/html/*.tmpl
-	go run cmd/booklit/*.go -i docs/lit/index.lit -o docs --html-templates docs/lit/html --plugin github.com/vito/booklit/booklitdoc
+all: ast/booklit.peg.go render/bindata.go
 
 ast/booklit.peg.go: ast/booklit.peg
 	pigeon -o ast/booklit.peg.go ast/booklit.peg
