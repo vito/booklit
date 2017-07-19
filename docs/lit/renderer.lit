@@ -71,9 +71,9 @@ As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
   \section{
     \title{Styled Content}
 
-    In addition to the above templates, any use of \godoc{booklit.Styled} will
-    result in using a template named after the style (e.g. \code{bold.tmpl} for
-    \reference{bold}) being executed with the content as \code{.}.
+    In addition to the above templates, using \godoc{booklit.Styled} will
+    result in the renderer using the template named after the style being
+    executed with the content being styled as \code{.}.
 
     For example, \reference{bold} is implemented in the
     \reference{baselit}{\code{baselit}} plugin by returning:
@@ -88,14 +88,13 @@ As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
     ...where \code{booklit.StyleBold} is a \code{const} whose value is
     \code{"bold"}, but could just as easily be any other string.
 
-    The HTML renderer comes with a \code{bold.tmpl} template which has the
-    content:
+    Booklit's base templates include a \code{bold.tmpl} template:
 
     \code{{{
     <strong>{{. | render}}</strong>
     }}}
 
-    Thus, when content is styled with "bold", it will render in \bold{strong
-    tags}.
+    Thus, when content is styled with \code{"bold"}, it will render in
+    \bold{strong tags}.
   }
 }
