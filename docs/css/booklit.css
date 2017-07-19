@@ -29,25 +29,25 @@ code, pre {
   font-size: .9em;
 }
 
-p a code {
-  color: #432E2B;
-}
-
-p a:hover code strong {
-  text-decoration: underline;
-}
-
 pre {
   background: #F7E5BF;
   border-bottom: 1px solid #EAD2A4;
   padding: .5rem;
 }
 
-p code {
+.page code {
   background: #F7E5BF;
   border-bottom: 1px solid #EAD2A4;
   padding: .1em .2em;
   white-space: nowrap;
+}
+
+.page a code {
+  color: #432E2B;
+}
+
+.page a:hover code strong {
+  text-decoration: underline;
 }
 
 h1 code, h2 code, h3 code {

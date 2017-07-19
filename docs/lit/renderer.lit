@@ -1,5 +1,7 @@
 \title{Rendering}{rendering}
 
+\use-plugin{booklitdoc}
+
 A \italic{renderer} is the function from an evaluated section to some generated
 content ready for publishing.
 
@@ -21,50 +23,79 @@ As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
       --html-templates ./html
   }}}
 
-  The following template files will be used if present under \code{./html}:
+  The following template files will be executed if present under \code{./html},
+  with the corresponding data type as \code{.}:
 
-  \list{
-    \code{block.tmpl}
+  \table{
+    \table-row{template}{type for \code{.}}
   }{
-    \code{bold.tmpl}
+    \table-row{\code{page.tmpl}}{\godoc{*booklit.Section}}
   }{
-    \code{code-block.tmpl}
+    \table-row{\code{section.tmpl}}{\godoc{*booklit.Section}}
   }{
-    \code{code-inline.tmpl}
+    \table-row{\code{link.tmpl}}{\godoc{booklit.Link}}
   }{
-    \code{italic.tmpl}
+    \table-row{\code{list.tmpl}}{\godoc{booklit.List}}
   }{
-    \code{link.tmpl}
+    \table-row{\code{paragraph.tmpl}}{\godoc{booklit.Paragraph}}
   }{
-    \code{list.tmpl}
+    \table-row{\code{preformatted.tmpl}}{\godoc{booklit.Preformatted}}
   }{
-    \code{page.tmpl}
+    \table-row{\code{reference.tmpl}}{\godoc{*booklit.Reference}}
   }{
-    \code{paragraph.tmpl}
+    \table-row{\code{sequence.tmpl}}{\godoc{booklit.Sequence}}
   }{
-    \code{preformatted.tmpl}
+    \table-row{\code{string.tmpl}}{\godoc{booklit.String}}
   }{
-    \code{reference.tmpl}
+    \table-row{\code{target.tmpl}}{\godoc{booklit.Target}}
   }{
-    \code{section.tmpl}
+    \table-row{\code{toc.tmpl}}{\godoc{*booklit.Section}}
   }{
-    \code{sequence.tmpl}
+    \table-row{\code{aside.tmpl}}{\godoc{booklit.Aside}}
   }{
-    \code{string.tmpl}
+    \table-row{\code{definitions.tmpl}}{\godoc{booklit.Definitions}}
   }{
-    \code{target.tmpl}
+    \table-row{\code{table.tmpl}}{\godoc{booklit.Table}}
   }{
-    \code{toc.tmpl}
+    \table-row{\code{image.tmpl}}{\godoc{booklit.Image}}
+  }{
+    \table-row{\code{block.tmpl}}{\godoc{booklit.Block}}
+  }{
+    \table-row{\code{element.tmpl}}{\godoc{booklit.Element}}
   }
 
   The most impactful of these is \code{page.tmpl}, which is used for the
   top-level section for each "page" rendered. This is where you would place
   assets in \code{<head>}, for example.
 
-  The value configured for \code{.} when evaluating the template depends on the
-  template.
-
   \section{
-    \title{Custom Templates}{custom-templates}
+    \title{Styled Content}
+
+    In addition to the above templates, any use of \godoc{booklit.Styled} will
+    result in using a template named after the style (e.g. \code{bold.tmpl} for
+    \reference{bold}) being executed with the content as \code{.}.
+
+    For example, \reference{bold} is implemented in the
+    \reference{baselit}{\code{baselit}} plugin by returning:
+
+    \code{{{
+      booklit.Styled{
+        Content: content,
+        Style:   booklit.StyleBold,
+      }
+    }}}
+
+    ...where \code{booklit.StyleBold} is a \code{const} whose value is
+    \code{"bold"}, but could just as easily be any other string.
+
+    The HTML renderer comes with a \code{bold.tmpl} template which has the
+    content:
+
+    \code{{{
+    <strong>{{. | render}}</strong>
+    }}}
+
+    Thus, when content is styled with "bold", it will render in \bold{strong
+    tags}.
   }
 }

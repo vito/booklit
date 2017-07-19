@@ -2,6 +2,7 @@ package booklitdoc
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
@@ -22,6 +23,15 @@ func NewPlugin(section *booklit.Section) booklit.Plugin {
 type Plugin struct {
 	section *booklit.Section
 	base    baselit.Plugin
+}
+
+func (plugin Plugin) Godoc(ref string) booklit.Content {
+	spl := strings.SplitN(ref, ".", 2)
+
+	return plugin.base.Link(
+		plugin.base.Code(booklit.Sequence{booklit.String(spl[0] + "."), plugin.base.Bold(booklit.String(spl[1]))}),
+		"https://godoc.org/github.com/vito/booklit#"+spl[1],
+	)
 }
 
 func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Content {
