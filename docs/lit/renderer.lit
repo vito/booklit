@@ -7,6 +7,8 @@ content ready for publishing.
 
 As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
 
+\split-sections
+
 \section{
   \title{The HTML Renderer}{html-renderer}
 
@@ -23,53 +25,57 @@ As of right now, there is only one renderer: \reference{html-renderer}{HTML}.
       --html-templates ./html
   }}}
 
-  The following template files will be executed if present under \code{./html},
-  with the corresponding data type as \code{.}:
+  \section{
+    \title{Base Templates}
 
-  \table{
-    \table-row{template}{type for \code{.}}
-  }{
-    \table-row{\code{page.tmpl}}{\godoc{*booklit.Section}}
-  }{
-    \table-row{\code{section.tmpl}}{\godoc{*booklit.Section}}
-  }{
-    \table-row{\code{link.tmpl}}{\godoc{booklit.Link}}
-  }{
-    \table-row{\code{list.tmpl}}{\godoc{booklit.List}}
-  }{
-    \table-row{\code{paragraph.tmpl}}{\godoc{booklit.Paragraph}}
-  }{
-    \table-row{\code{preformatted.tmpl}}{\godoc{booklit.Preformatted}}
-  }{
-    \table-row{\code{reference.tmpl}}{\godoc{*booklit.Reference}}
-  }{
-    \table-row{\code{sequence.tmpl}}{\godoc{booklit.Sequence}}
-  }{
-    \table-row{\code{string.tmpl}}{\godoc{booklit.String}}
-  }{
-    \table-row{\code{target.tmpl}}{\godoc{booklit.Target}}
-  }{
-    \table-row{\code{toc.tmpl}}{\godoc{*booklit.Section}}
-  }{
-    \table-row{\code{aside.tmpl}}{\godoc{booklit.Aside}}
-  }{
-    \table-row{\code{definitions.tmpl}}{\godoc{booklit.Definitions}}
-  }{
-    \table-row{\code{table.tmpl}}{\godoc{booklit.Table}}
-  }{
-    \table-row{\code{image.tmpl}}{\godoc{booklit.Image}}
-  }{
-    \table-row{\code{block.tmpl}}{\godoc{booklit.Block}}
-  }{
-    \table-row{\code{element.tmpl}}{\godoc{booklit.Element}}
+    The following template files will be executed if present under \code{./html},
+    with the corresponding data type as \code{.}:
+
+    \table{
+      \table-row{template}{type for \code{.}}
+    }{
+      \table-row{\code{page.tmpl}}{\godoc{*booklit.Section}}
+    }{
+      \table-row{\code{section.tmpl}}{\godoc{*booklit.Section}}
+    }{
+      \table-row{\code{link.tmpl}}{\godoc{booklit.Link}}
+    }{
+      \table-row{\code{list.tmpl}}{\godoc{booklit.List}}
+    }{
+      \table-row{\code{paragraph.tmpl}}{\godoc{booklit.Paragraph}}
+    }{
+      \table-row{\code{preformatted.tmpl}}{\godoc{booklit.Preformatted}}
+    }{
+      \table-row{\code{reference.tmpl}}{\godoc{*booklit.Reference}}
+    }{
+      \table-row{\code{sequence.tmpl}}{\godoc{booklit.Sequence}}
+    }{
+      \table-row{\code{string.tmpl}}{\godoc{booklit.String}}
+    }{
+      \table-row{\code{target.tmpl}}{\godoc{booklit.Target}}
+    }{
+      \table-row{\code{toc.tmpl}}{\godoc{*booklit.Section}}
+    }{
+      \table-row{\code{aside.tmpl}}{\godoc{booklit.Aside}}
+    }{
+      \table-row{\code{definitions.tmpl}}{\godoc{booklit.Definitions}}
+    }{
+      \table-row{\code{table.tmpl}}{\godoc{booklit.Table}}
+    }{
+      \table-row{\code{image.tmpl}}{\godoc{booklit.Image}}
+    }{
+      \table-row{\code{block.tmpl}}{\godoc{booklit.Block}}
+    }{
+      \table-row{\code{element.tmpl}}{\godoc{booklit.Element}}
+    }
+
+    The most impactful of these is \code{page.tmpl}, which is used for the
+    top-level section for each "page" rendered. This is where you would place
+    assets in \code{<head>}, for example.
   }
 
-  The most impactful of these is \code{page.tmpl}, which is used for the
-  top-level section for each "page" rendered. This is where you would place
-  assets in \code{<head>}, for example.
-
   \section{
-    \title{Styled Content}
+    \title{Custom Templates}
 
     In addition to the above templates, using \godoc{booklit.Styled} will
     result in the renderer using the template named after the style being
