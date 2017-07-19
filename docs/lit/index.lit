@@ -2,36 +2,32 @@
 
 Booklit is a static-site generator where the content is king.
 
-\reference{sections}{Sections} can be nested arbitrarily, either in-line or by
-including them from a separate file. Each section determines whether its
-sub-sections should be on a separate page, or inline. Header sizes will be set
-accordingly, so you're not spending your time adjusting \code{<h1>} and
-\code{<h2>}s.
+Documents are organized as a tree of \reference{sections}{sections}. Each
+section decides whether its sub-sections should render inline or standalone.
+Header sizes will be set intelligently, so you're not spending your time
+adjusting \code{<h1>} and \code{<h2>}s.
 
-Inter-section linking is done by \reference{reference}{referencing tags},
-rather than hardcoding URLs. When Booklit compiles your documents, it will
-raise an error if any references are broken. Tags can either point to an entire
-section, or a target element within a section, for example a definition for
-something in reference documentation.
+Linking within your content is done by \reference{reference}{referencing tags},
+rather than hardcoding URLs. An error will be raised if any references are
+broken.
 
-The \reference{plugins}{plugin system} allows you to to define arbitrary
-\code{\\functions} that you can call from your documents to generate
-content. As patterns of repetition emerge in your content, you can optimize
-them away. This allows your content to become more semantically meaningful and
-easier to maintain.
+\reference{plugins}{Plugins} allow you to to define \code{\\functions} for your
+content. As patterns emerge, you can give them meaningful names. This allows
+your writing to become more semantically powerful and easier to maintain.
 
-Booklit separates presentation from content by having a separate
+Presentation is separated from prose by having an explicit
 \reference{rendering}{rendering} stage. With the \reference{html-renderer}{HTML
 renderer}, you can bring your own templates via Go's
 \link{\code{html/template}}{https://golang.org/pkg/html/template} package, and
 control exactly how everything should look.
 
-Putting all of these things together, Booklit allows authors to write their
-content however they want to, tailoring the tool for your content, not the
-other way around. Interested? Let's \reference{getting-started}{get started}.
+This entire website is written with Booklit. The source is available on GitHub
+under
+\link{\code{docs/lit}}{https://github.com/vito/booklit/tree/master/docs/lit}.
+To learn how to start writing your own stuff, head to
+\reference{getting-started}.
 
 \split-sections
-\table-of-contents
 
 \include-section{getting-started.lit}
 \include-section{renderer.lit}
