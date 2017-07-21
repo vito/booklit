@@ -56,6 +56,13 @@
         <tr>
           <td class="number-cell" align="right">5&nbsp;</td>
           <td class="title-cell">
+<a href="syntax.html" >Document Syntax</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">6&nbsp;</td>
+          <td class="title-cell">
 <a href="thanks.html" >Thanks</a>
 </td>
         </tr>
@@ -83,7 +90,7 @@
         <tr>
           <td class="number-cell" align="right">4.1&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html#go-basics" >Go Basics</a>
+<a href="plugins.html#get-going" >Get Going</a>
 </td>
         </tr>
       
@@ -108,6 +115,45 @@
 
 
 
+<div class="context">
+  <div class="top">
+    On this page:
+  </div>
+
+  <nav>
+    <div class="children">
+      <table>
+        
+        
+        <tr>
+          <td class="number-cell" align="right">4.1&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html#get-going" >Get Going</a>
+</td>
+        </tr>
+          
+        
+        <tr>
+          <td class="number-cell" align="right">4.2&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html#using-plugins" >Using Plugins</a>
+</td>
+        </tr>
+          
+        
+        <tr>
+          <td class="number-cell" align="right">4.3&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html#using-plugins" >Writing Plugins</a>
+</td>
+        </tr>
+          
+        
+      </table>
+    </div>
+  </nav>
+</div>
+
 
     </div>
     <div class="page">
@@ -117,9 +163,9 @@
 
 
   
-    <h2 class="section-header"><a name="go-basics"></a><span class="section-number">4.1 </span>Go Basics</h2>
+    <h2 class="section-header"><a name="get-going"></a><span class="section-number">4.1 </span>Get Going</h2>
 
-<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><pre>go get github.com/vito/booklit</pre><p>This should result in a directory existing at <code>$GOPATH/src/github.com/vito/booklit</code>.</p><p>This fetch is necessary even if you already have a binary installed, as plugins make use of Booklit&#39;s Go API.</p>
+<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><pre>go get github.com/vito/booklit</pre><p>This fetch is necessary even if you already have the <code>booklit</code> binary installed, as plugins make use of Booklit&#39;s Go API.</p>
 
 
   
@@ -127,8 +173,8 @@
   
     <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
 
-<p>To use a plugin, you&#39;ll need to pass its Go import path as <code>--plugin</code> to the <code>booklit</code> command when building your docs, like so:</p><pre>booklit -i index.lit -o out \
-    --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to add it to the section:</p><pre>\title{My Section}
+<p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><pre>booklit -i index.lit -o out \
+    --plugin my/fancyplugin</pre><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to add it to the section:</p><pre>\title{My Section}
 
 \use-plugin{fancyplugin}
 
@@ -165,6 +211,98 @@ type Plugin struct {
 Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-plugins.lit -o out \
     --plugin pluglit</pre><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
 
+
+  
+    <h3 class="section-header"><a name="argument-types"></a><span class="section-number">4.3.1 </span>Argument Types</h3>
+
+<p>Functions can be invoked with any number of arguments by appending content wrapped in <code>{curlies}</code> after the function name, like so:</p><pre>\hello-world{arg1}{arg2}</pre><p>Note that there are <a href="syntax.html#argument-forms">a few flavors of the curly braces</a>.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
+  
+  <dt><a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
+    <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
+  
+  <dt><code>string</code></dt>
+    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or a raw sentence. The <a href="baselit.html#title"><code>\<strong>title</strong></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
+  
+  <dt><a href="https://godoc.org/github.com/vito/booklit/ast#Node"><code>booklit/ast.<strong>Node</strong></code></a></dt>
+    <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code>\<strong>section</strong></code></a> which need to control the evaluation context of the content.</p></dd>
+  
+</dl>
+
+
+  
+
+  
+    <h3 class="section-header"><a name="return-values"></a><span class="section-number">4.3.2 </span>Return Values</h3>
+
+<p>Plugin methods can then return one of the following:</p><ul>
+
+  <li><p>nothing</p></li>
+
+  <li><p><code>error</code></p></li>
+
+  <li><p><a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></p></li>
+
+  <li><p><code>(<a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a>, error)</code></p></li>
+
+</ul><p>If a method returns a non-nil <code>error</code> value, it will bubble up and the building will fail.</p>
+
+
+  
+
+  
+    <h3 class="section-header"><a name="a-full-example"></a><span class="section-number">4.3.3 </span>A Full Example</h3>
+
+<p>Putting the pieces together, let&#39;s extend our <code>pluglit</code> plugin from earlier write a real function that does something useful:</p><pre>func (plugin Plugin) DescribeFruit(
+  name string,
+  definition booklit.Content,
+  tags ...string,
+) (booklit.Content, error) {
+  if name == &#34;&#34; {
+    return nil, errors.New(&#34;name cannot be blank&#34;)
+  }
+
+  content := booklit.Sequence{}
+  if len(tags) == 0 {
+    tags = []string{name}
+  }
+
+  for _, tag := range tags {
+    content = append(content, booklit.Target{
+      TagName: tag,
+      Display: booklit.String(name),
+    })
+  }
+
+  content = append(content, booklit.Paragraph{
+    booklit.Styled{
+      Style: booklit.StyleBold,
+      Content: booklit.String(name),
+    },
+  })
+
+  content = append(content, definition)
+
+  return content, nil
+}</pre><p>There are many things to note here:</p><ul>
+
+  <li><p>there are two required arguments; <em>name</em> is a <code>string</code> and <em>value</em> is a <a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></p></li>
+
+  <li><p>there&#39;s a variadic argument, <em>tags</em>, which is of type <code>[]string</code></p></li>
+
+  <li><p>this function generates content, and can raise an error when building</p></li>
+
+  <li><p>the <a href="https://godoc.org/github.com/vito/booklit#Target"><code>booklit.<strong>Target</strong></code></a> elements will result in tags being registered in the section the function is called from</p></li>
+
+  <li><p>the function name, <code>describe-fruit</code>, corresponds to the method name <code>DescribeFruit</code></p></li>
+
+</ul><p>This function would be called like so:</p><pre>\describe-fruit{banana}{
+  A banana is a yellow fruit that only really tastes
+  good in its original form. Banana flavored
+  anything is a pit of dispair.
+}{banana-opinion}</pre><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a name="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code>\reference{banana-opinion}</code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
+
+
+  
 
   
 

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>Booklit</title>
+    <title>Document Syntax</title>
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
@@ -15,7 +15,7 @@
   <nav>
     <div class="top">
       
-<a href="index.html"  class="self">Booklit</a>
+<a href="index.html" >Booklit</a>
 
     </div>
 
@@ -56,7 +56,7 @@
         <tr>
           <td class="number-cell" align="right">5&nbsp;</td>
           <td class="title-cell">
-<a href="syntax.html" >Document Syntax</a>
+<a href="syntax.html"  class="self">Document Syntax</a>
 </td>
         </tr>
       
@@ -74,15 +74,74 @@
 </div>
 
 
+<div class="context">
+  <nav>
+    <div class="top">
+      5&nbsp;
+<a href="syntax.html"  class="self">Document Syntax</a>
+
+    </div>
+
+    <input type="checkbox" class="toggle" checked />
+    <span class="arrow"></span>
+    <div class="children">
+      <table>
+      
+        <tr>
+          <td class="number-cell" align="right">5.1&nbsp;</td>
+          <td class="title-cell">
+<a href="syntax.html#invoking-functions" >Invoking Functions</a>
+</td>
+        </tr>
+      
+      </table>
+    </div>
+  </nav>
+</div>
+
 
 
 
     </div>
-    <div class="page top">
-      <h1 class="section-header"><a name="index"></a>Booklit</h1>
+    <div class="page">
+      <h1 class="section-header"><a name="syntax"></a><span class="section-number">5 </span>Document Syntax</h1>
 
-<p>Booklit is a static-site generator where the content is king.</p><p>Content is organized as a tree of <a href="baselit.html#sections">sections</a>. Each section controls whether its sub-sections should render inline or on their own pages. Header sizes are set intelligently, so you&#39;re not spending your time adjusting <code>&lt;h1&gt;</code> and <code>&lt;h2&gt;</code>s.</p><p>Linking within your content is done by <a href="baselit.html#reference">referencing tags</a>, rather than hardcoding URLs. An error will be raised if any references are broken.</p><p><a href="plugins.html">Plugins</a> bring <code>\functions</code> to your content, allowing you to write with abstractions, not just markup. As patterns emerge, you can give them meaningful names.</p><p>Presentation is separated from prose by having an explicit rendering stage. With the <a href="html-renderer.html">HTML renderer</a>, you can bring your own templates and control exactly how everything should look.</p><p>This website is written with Booklit. The source is available on GitHub under <a href="https://github.com/vito/booklit/tree/master/docs/lit"><code>docs/lit</code></a>. To learn how to start writing your own stuff, head to <a href="getting-started.html">Getting Started</a>.</p>
 
+
+
+  
+    <h2 class="section-header"><a name="invoking-functions"></a><span class="section-number">5.1 </span>Invoking Functions</h2>
+
+
+
+
+  
+    <h3 class="section-header"><a name="argument-forms"></a><span class="section-number">5.1.1 </span>Argument Forms</h3>
+
+<dl>
+  
+  <dt><code>{sentence}</code></dt>
+    <dd><p>With no linebreak after the <code>{</code>, the argument forms a single sentence.</p></dd>
+  
+  <dt><pre>{word wrapped
+sentence}</pre></dt>
+    <dd><p>As above, but the word wrapping point gets converted into a single space, as if it were written as <code>{word wrapped sentence}</code>.</p></dd>
+  
+  <dt><pre>{
+  paragraph 1
+
+  paragraph 2
+}</pre></dt>
+    <dd><p>With a linebreak after the <code>{</code>, the argument forms a block of paragraphs.</p></dd>
+  
+</dl>
+
+
+  
+
+  
+
+  
 
     </div>
   </body>

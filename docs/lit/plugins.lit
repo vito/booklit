@@ -1,3 +1,5 @@
+\use-plugin{booklitdoc}
+
 \title{Extending with Plugins}{plugins}
 
 Plugins are what provide the functionality behind function calls like
@@ -8,7 +10,7 @@ markup like \reference{italic} and \reference{bold}. It also serves as a good
 reference when writing your own plugin.
 
 \section{
-  \title{Go Basics}
+  \title{Get Going}
 
   Plugins are implemented in the \link{Go programming
   language}{https://golang.org}, so if you're planning on writing or using one,
@@ -29,27 +31,25 @@ reference when writing your own plugin.
   go get github.com/vito/booklit
   }}}
 
-  This should result in a directory existing at
-  \code{$GOPATH/src/github.com/vito/booklit}.
-
-  This fetch is necessary even if you already have a binary installed, as
-  plugins make use of Booklit's Go API.
+  This fetch is necessary even if you already have the \code{booklit} binary
+  installed, as plugins make use of Booklit's Go API.
 }
 
 \section{
   \title{Using Plugins}{using-plugins}
 
-  To use a plugin, you'll need to pass its Go import path as \code{--plugin} to
-  the \code{booklit} command when building your docs, like so:
+  To use a plugin, you'll need to pass its Go import path to the \code{booklit}
+  command when building your docs via the \code{--plugin} flag, like so:
 
   \code{{{
   booklit -i index.lit -o out \
-      --plugin github.com/my/fancyplugin
+      --plugin my/fancyplugin
   }}}
 
-  The plugin will register itself with Booklit under a certain name
-  (conventionally, the same name as its package). Next, execute
-  \reference{use-plugin} in your \code{.lit} document to add it to the section:
+  The plugin will then be pulled in at runtime, and it will register itself
+  under a certain name (conventionally, the same name as its package). Next,
+  execute \reference{use-plugin} in your \code{.lit} document to add it to the
+  section:
 
   \code{{{
   \title{My Section}
@@ -61,6 +61,11 @@ reference when writing your own plugin.
 
   The \code{--plugin} flag can be specified multiple times, and
   \reference{use-plugin} can be invoked multiple times.
+
+  {-
+    TODO: having an example plugin bundled with Booklit, other than
+    booklitdoc, would be nice
+  -}
 }
 
 \section{
@@ -129,5 +134,147 @@ reference when writing your own plugin.
 
   \inset{
     Zero args: Hello, world!
+  }
+
+  \section{
+    \title{Argument Types}
+
+    Functions can be invoked with any number of arguments by appending content
+    wrapped in \code{\{curlies\}} after the function name, like so:
+
+    \code{{{
+    \hello-world{arg1}{arg2}
+    }}}
+
+    Note that there are \reference{argument-forms}{a few flavors of the curly
+    braces}.
+
+    Each argument to the function corresponds to an argument for the plugin's
+    method, which may be variadic.
+
+    The plugin's arguments must each be one of the following types:
+
+    \definitions{
+      \definition{\godoc{booklit.Content}}{
+        The evaluated content. This can be just about anything from a word to a
+        sentence to a series of paragraphs, depending on how the function is
+        invoked. It is typically used unmodified.
+      }
+    }{
+      \definition{\code{string}}{
+        The evaluated content, converted into a string. This is useful when the
+        content is expected to be something simple, like a word or a raw
+        sentence. The \reference{title} function, for example, uses this type
+        for its variadic \italic{tags} argument.
+      }
+    }{
+      \definition{\godoc{booklit/ast.Node}}{
+        The unevaluated syntax tree for the content. This is useful when doing
+        meta-level things like \reference{section} which need to control the
+        evaluation context of the content.
+      }
+    }
+  }
+
+  \section{
+    \title{Return Values}
+
+    Plugin methods can then return one of the following:
+
+    \list{
+      nothing
+    }{
+      \code{error}
+    }{
+      \godoc{booklit.Content}
+    }{
+      \code{(\godoc{booklit.Content}, error)}
+    }
+
+    If a method returns a non-nil \code{error} value, it will bubble up and
+    the building will fail.
+  }
+
+  \section{
+    \title{A Full Example}
+
+    Putting the pieces together, let's extend our \code{pluglit} plugin from
+    earlier write a real function that does something useful:
+
+    \code{{{
+      func (plugin Plugin) DescribeFruit(
+        name string,
+        definition booklit.Content,
+        tags ...string,
+      ) (booklit.Content, error) {
+        if name == "" {
+          return nil, errors.New("name cannot be blank")
+        }
+
+        content := booklit.Sequence{}
+        if len(tags) == 0 {
+          tags = []string{name}
+        }
+
+        for _, tag := range tags {
+          content = append(content, booklit.Target{
+            TagName: tag,
+            Display: booklit.String(name),
+          })
+        }
+
+        content = append(content, booklit.Paragraph{
+          booklit.Styled{
+            Style: booklit.StyleBold,
+            Content: booklit.String(name),
+          },
+        })
+
+        content = append(content, definition)
+
+        return content, nil
+      }
+    }}}
+
+    There are many things to note here:
+
+    \list{
+      there are two required arguments; \italic{name} is a \code{string} and
+      \italic{value} is a \godoc{booklit.Content}
+    }{
+      there's a variadic argument, \italic{tags}, which is of type
+      \code{[]string}
+    }{
+      this function generates content, and can raise an error when building
+    }{
+      the \godoc{booklit.Target} elements will result in tags being registered
+      in the section the function is called from
+    }{
+      the function name, \code{describe-fruit}, corresponds to the method name
+      \code{DescribeFruit}
+    }
+
+    This function would be called like so:
+
+    \code{{{
+    \describe-fruit{banana}{
+      A banana is a yellow fruit that only really tastes
+      good in its original form. Banana flavored
+      anything is a pit of dispair.
+    }{banana-opinion}
+    }}}
+
+    ...and will result in something like the following:
+
+    \inset{
+      \describe-fruit{banana}{
+        A banana is a yellow fruit that only really tastes
+        good in its original form. Banana flavored
+        anything is a pit of dispair.
+      }{banana-opinion}
+    }
+
+    ...which can be referenced as \code{\\reference\{banana-opinion\}}, which
+    results in a link like this: \reference{banana-opinion}.
   }
 }

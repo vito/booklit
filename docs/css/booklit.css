@@ -35,11 +35,20 @@ pre {
   padding: .5rem;
 }
 
+code code {
+  font-size: 1em;
+}
+
 .page code {
   background: #F7E5BF;
   border-bottom: 1px solid #EAD2A4;
   padding: .1em .2em;
   white-space: nowrap;
+}
+
+.page code code {
+  border: 0;
+  padding: 0;
 }
 
 .page a code {
@@ -59,7 +68,7 @@ nav ul {
   list-style-type: none;
 }
 
-h1, h2 {
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto Slab', serif;
   font-weight: normal;
 }
@@ -72,6 +81,13 @@ h1 {
 h2 {
   font-size: 20px;
   border-bottom: 1px dotted #BFCDB4;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h2, h3 {
   margin-top: 2rem;
 }
 

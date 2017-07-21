@@ -1,0 +1,35 @@
+\title{Document Syntax}{syntax}
+
+\section{
+  \title{Invoking Functions}
+
+  \section{
+    \title{Argument Forms}{argument-forms}
+
+    \definitions{
+      \definition{\code{\{sentence\}}}{
+        With no linebreak after the \code{\{}, the argument forms a single
+        sentence.
+      }
+    }{
+      \definition{\code{{{
+        {word wrapped
+sentence}
+      }}}}{
+        As above, but the word wrapping point gets converted into a single
+        space, as if it were written as \code{\{word wrapped sentence\}}.
+      }
+    }{
+      \definition{\code{{{
+        {
+          paragraph 1
+
+          paragraph 2
+        }
+      }}}}{
+        With a linebreak after the \code{\{}, the argument forms a block of
+        paragraphs.
+      }
+    }
+  }
+}

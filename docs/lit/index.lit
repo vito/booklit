@@ -30,4 +30,5 @@ To learn how to start writing your own stuff, head to
 \include-section{baselit.lit}
 \include-section{html-renderer.lit}
 \include-section{plugins.lit}
+\include-section{syntax.lit}
 \include-section{thanks.lit}

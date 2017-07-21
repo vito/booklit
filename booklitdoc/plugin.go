@@ -1,6 +1,7 @@
 package booklitdoc
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -82,4 +83,37 @@ func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {
 	}
 
 	return str
+}
+
+func (plugin Plugin) DescribeFruit(
+	name string,
+	definition booklit.Content,
+	tags ...string,
+) (booklit.Content, error) {
+	if name == "" {
+		return nil, errors.New("name cannot be blank")
+	}
+
+	content := booklit.Sequence{}
+	if len(tags) == 0 {
+		tags = []string{name}
+	}
+
+	for _, tag := range tags {
+		content = append(content, booklit.Target{
+			TagName: tag,
+			Display: booklit.String(name),
+		})
+	}
+
+	content = append(content, booklit.Paragraph{
+		booklit.Styled{
+			Style:   booklit.StyleBold,
+			Content: booklit.String(name),
+		},
+	})
+
+	content = append(content, definition)
+
+	return content, nil
 }
