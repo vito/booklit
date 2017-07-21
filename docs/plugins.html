@@ -83,7 +83,7 @@
         <tr>
           <td class="number-cell" align="right">4.1&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html#using-plugins" >Writing Plugins</a>
+<a href="plugins.html#go-basics" >Go Basics</a>
 </td>
         </tr>
       
@@ -91,6 +91,13 @@
           <td class="number-cell" align="right">4.2&nbsp;</td>
           <td class="title-cell">
 <a href="plugins.html#using-plugins" >Using Plugins</a>
+</td>
+        </tr>
+      
+        <tr>
+          <td class="number-cell" align="right">4.3&nbsp;</td>
+          <td class="title-cell">
+<a href="plugins.html#using-plugins" >Writing Plugins</a>
 </td>
         </tr>
       
@@ -110,9 +117,9 @@
 
 
   
-    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.1 </span>Writing Plugins</h2>
+    <h2 class="section-header"><a name="go-basics"></a><span class="section-number">4.1 </span>Go Basics</h2>
 
-<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing one, make sure you&#39;ve got it installed.</p>
+<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><pre>go get github.com/vito/booklit</pre><p>This should result in a directory existing at <code>$GOPATH/src/github.com/vito/booklit</code>.</p><p>This fetch is necessary even if you already have a binary installed, as plugins make use of Booklit&#39;s Go API.</p>
 
 
   
@@ -120,12 +127,43 @@
   
     <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
 
-<p>To use a plugin, you&#39;ll need to pass it as <code>--plugin</code> to the <code>booklit</code> command when building your docs, like so:</p><pre>booklit -i index.lit -o out \
-    --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}
+<p>To use a plugin, you&#39;ll need to pass its Go import path as <code>--plugin</code> to the <code>booklit</code> command when building your docs, like so:</p><pre>booklit -i index.lit -o out \
+    --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to add it to the section:</p><pre>\title{My Section}
 
 \use-plugin{fancyplugin}
 
 Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> can be invoked multiple times.</p>
+
+
+  
+
+  
+    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.3 </span>Writing Plugins</h2>
+
+<p>To write a new plugin, first you&#39;ll need to create a directory for your plugin&#39;s package in your <code>$GOPATH</code>. Let&#39;s just call it something cute like <code>pluglit</code>.</p><pre>mkdir $GOPATH/src/pluglit</pre><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>$GOPATH/src/pluglit/plugin.go</code>:</p><pre>package pluglit
+
+import (
+  &#34;github.com/vito/booklit&#34;
+)
+
+func init() {
+  booklit.RegisterPlugin(&#34;pluglit&#34;, NewPlugin)
+}
+
+func NewPlugin(sec *booklit.Section) booklit.Plugin {
+  return Plugin{
+    section: sec,
+  }
+}
+
+type Plugin struct {
+  section *booklit.Section
+}</pre><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><pre>func (plugin Plugin) HelloWorld() booklit.Content {
+  return booklit.String(&#34;Hello, world!&#34;)
+}</pre><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><pre>\use-plugin{pluglit}
+
+Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-plugins.lit -o out \
+    --plugin pluglit</pre><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
 
 
   
