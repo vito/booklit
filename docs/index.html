@@ -35,21 +35,21 @@
         <tr>
           <td class="number-cell" align="right">2&nbsp;</td>
           <td class="title-cell">
-<a href="rendering.html" >Rendering</a>
+<a href="baselit.html" >The <code>baselit</code> Plugin</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
+<a href="html-renderer.html" >The HTML Renderer</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">4&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
+<a href="plugins.html" >Extending with Plugins</a>
 </td>
         </tr>
       
@@ -74,7 +74,7 @@
     <div class="page top">
       <h1 class="section-header"><a name="index"></a>Booklit</h1>
 
-<p>Booklit is a static-site generator where the content is king.</p><p>Documents are organized as a tree of <a href="baselit.html#sections">sections</a>. Each section decides whether its sub-sections should render inline or standalone. Header sizes will be set intelligently, so you&#39;re not spending your time adjusting <code>&lt;h1&gt;</code> and <code>&lt;h2&gt;</code>s.</p><p>Linking within your content is done by <a href="baselit.html#reference">referencing tags</a>, rather than hardcoding URLs. An error will be raised if any references are broken.</p><p><a href="plugins.html">Plugins</a> allow you to to define <code>\functions</code> for your content. As patterns emerge, you can give them meaningful names. This allows your writing to become more semantically powerful and easier to maintain.</p><p>Presentation is separated from prose by having an explicit <a href="rendering.html">rendering</a> stage. With the <a href="html-renderer.html">HTML renderer</a>, you can bring your own templates via Go&#39;s <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package, and control exactly how everything should look.</p><p>This entire website is written with Booklit. The source is available on GitHub under <a href="https://github.com/vito/booklit/tree/master/docs/lit"><code>docs/lit</code></a>. To learn how to start writing your own stuff, head to <a href="getting-started.html">Getting Started</a>.</p>
+<p>Booklit is a static-site generator where the content is king.</p><p>Content is organized as a tree of <a href="baselit.html#sections">sections</a>. Each section controls whether its sub-sections should render inline or on their own pages. Header sizes are set intelligently, so you&#39;re not spending your time adjusting <code>&lt;h1&gt;</code> and <code>&lt;h2&gt;</code>s.</p><p>Linking within your content is done by <a href="baselit.html#reference">referencing tags</a>, rather than hardcoding URLs. An error will be raised if any references are broken.</p><p><a href="plugins.html">Plugins</a> bring <code>\functions</code> to your content, allowing you to write with abstractions, not just markup. As patterns emerge, you can give them meaningful names.</p><p>Presentation is separated from prose by having an explicit rendering stage. With the <a href="html-renderer.html">HTML renderer</a>, you can bring your own templates and control exactly how everything should look.</p><p>This website is written with Booklit. The source is available on GitHub under <a href="https://github.com/vito/booklit/tree/master/docs/lit"><code>docs/lit</code></a>. To learn how to start writing your own stuff, head to <a href="getting-started.html">Getting Started</a>.</p>
 
 
     </div>

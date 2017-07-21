@@ -35,21 +35,21 @@
         <tr>
           <td class="number-cell" align="right">2&nbsp;</td>
           <td class="title-cell">
-<a href="rendering.html" >Rendering</a>
+<a href="baselit.html"  class="self">The <code>baselit</code> Plugin</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
+<a href="html-renderer.html" >The HTML Renderer</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">4&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html"  class="self">The <code>baselit</code> Plugin</a>
+<a href="plugins.html" >Extending with Plugins</a>
 </td>
         </tr>
       
@@ -70,7 +70,7 @@
 <div class="context">
   <nav>
     <div class="top">
-      4&nbsp;
+      2&nbsp;
 <a href="baselit.html"  class="self">The <code>baselit</code> Plugin</a>
 
     </div>
@@ -81,35 +81,35 @@
       <table>
       
         <tr>
-          <td class="number-cell" align="right">4.1&nbsp;</td>
+          <td class="number-cell" align="right">2.1&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#sections" >Defining Sections</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">4.2&nbsp;</td>
+          <td class="number-cell" align="right">2.2&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#links-and-references" >Links &amp; References</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">4.3&nbsp;</td>
+          <td class="number-cell" align="right">2.3&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#flow-content" >Flow Content</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">4.4&nbsp;</td>
+          <td class="number-cell" align="right">2.4&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#block-content" >Block Content</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">4.5&nbsp;</td>
+          <td class="number-cell" align="right">2.5&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#plugins-and-partials" >Plugins &amp; Partials</a>
 </td>
@@ -133,7 +133,7 @@
         
         
         <tr>
-          <td class="number-cell" align="right">4.1&nbsp;</td>
+          <td class="number-cell" align="right">2.1&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#sections" >Defining Sections</a>
 </td>
@@ -181,7 +181,7 @@
           
         
         <tr>
-          <td class="number-cell" align="right">4.2&nbsp;</td>
+          <td class="number-cell" align="right">2.2&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#links-and-references" >Links &amp; References</a>
 </td>
@@ -209,7 +209,7 @@
           
         
         <tr>
-          <td class="number-cell" align="right">4.3&nbsp;</td>
+          <td class="number-cell" align="right">2.3&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#flow-content" >Flow Content</a>
 </td>
@@ -262,7 +262,7 @@
           
         
         <tr>
-          <td class="number-cell" align="right">4.4&nbsp;</td>
+          <td class="number-cell" align="right">2.4&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#block-content" >Block Content</a>
 </td>
@@ -310,7 +310,7 @@
           
         
         <tr>
-          <td class="number-cell" align="right">4.5&nbsp;</td>
+          <td class="number-cell" align="right">2.5&nbsp;</td>
           <td class="title-cell">
 <a href="baselit.html#plugins-and-partials" >Plugins &amp; Partials</a>
 </td>
@@ -335,13 +335,13 @@
 
     </div>
     <div class="page">
-      <h1 class="section-header"><a name="baselit"></a><span class="section-number">4 </span>The <code>baselit</code> Plugin</h1>
+      <h1 class="section-header"><a name="baselit"></a><span class="section-number">2 </span>The <code>baselit</code> Plugin</h1>
 
 <p>Booklit comes with a default plugin called <code>baselit</code>. It provides the basic set of functions needed for authoring Booklit documents, plus many common methods useful for writing prose.</p>
 
 
   
-    <h2 class="section-header"><a name="sections"></a><span class="section-number">4.1 </span>Defining Sections</h2>
+    <h2 class="section-header"><a name="sections"></a><span class="section-number">2.1 </span>Defining Sections</h2>
 
 <div class="definition-thumb"><a name="title"></a><code>\<a href="baselit.html#title"><strong>title</strong></a>{<em>text</em>}{<em>tags...</em>}</code></div><div class="definition-content"><p>Sets the title and optional <em>tags</em> as repeated arguments. For example, the <code>title</code> invocation for this section is:</p><pre>\title{The \code{baselit} Plugin}{baselit}</pre><p>To specify multiple tags, pass multiple arguments:</p><pre>\title{I&#39;m a taggy section!}{tag-1}{tag-1}</pre><p>You can also just specify the title, in which case the section&#39;s tag will default to a sanitized form of the title (e.g. <em>I&#39;m a fancy title!</em> becomes <code>im-a-fancy-title</code>).</p></div><div class="definition-thumb"><a name="aux"></a><code>\<a href="baselit.html#aux"><strong>aux</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Used within a title declaration to provide content that will show up on the section page itself, but will be omitted when referencing the section. This is handy for sub-titles that you don&#39;t care to show anywhere but the section&#39;s page itself.</p><p>Example:</p><pre>\title{Booklit\aux{: a pretty lit authoring system}}</pre><p>This section, when referenced, would only show <em>Booklit</em>, but its header would include the <em>content</em>..</p></div><div class="definition-thumb"><a name="section"></a><code>\<a href="baselit.html#section"><strong>section</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Introduce a sub-section, inheriting plugins of the outer section.</p><p>Each sub-section should conventionally begin with a call to <a href="baselit.html#title"><code>\<strong>title</strong></code></a> to set its title.</p><p>For example, here&#39;s a full section containing a sub-section:</p><pre>\title{I&#39;m a parent section!}
 
@@ -357,7 +357,7 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a name="links-and-references"></a><span class="section-number">4.2 </span>Links &amp; References</h2>
+    <h2 class="section-header"><a name="links-and-references"></a><span class="section-number">2.2 </span>Links &amp; References</h2>
 
 <div class="definition-thumb"><a name="link"></a><code>\<a href="baselit.html#link"><strong>link</strong></a>{<em>display</em>}{<em>target</em>}</code></div><div class="definition-content"><p>Link to <em>target</em> (i.e. a URL), with <em>display</em> as the link&#39;s text.</p><p>For example, <code>\link{Example}{https://example.com}</code> becomes <a href="https://example.com">Example</a>.</p><p>Note that the argument order is the reverse of <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>; writing tends to flow more naturally this way without a big URL interrupting the sentence.</p></div><div class="definition-thumb"><a name="reference"></a><code>\<a href="baselit.html#reference"><strong>reference</strong></a>{<em>tag</em>}{<em>display?</em>}</code></div><div class="definition-content"><p>Generate a link to the target associated with <em>tag</em>. If the optional <em>display</em> argument is specified, it will be used as the link&#39;s content. Otherwise, the tag&#39;s configured display will be rendered.</p><p>For example, <code>\reference{links-and-references}</code> becomes <a href="baselit.html#links-and-references">Links &amp; References</a>.</p></div><div class="definition-thumb"><a name="target"></a><code>\<a href="baselit.html#target"><strong>target</strong></a>{<em>tag</em>}{<em>display?</em>}</code></div><div class="definition-content"><p>Generate a target element that can be <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>d by <em>tag</em>. If <em>display</em> is specified, references will default to showing it as their link. Otherwise, <em>tag</em> itself will be the default.</p><p>As an example, we&#39;ll create a target element in the following paragraph, with the tag <em>some-tag</em> and display <em>I&#39;m just some tag!</em>:</p><p><a name="some-tag"></a> I&#39;m a targetable paragraph.</p><p>Then, we&#39;ll reference it with <code>\reference{some-tag}</code>:</p><p><a href="baselit.html#some-tag">I&#39;m just some tag!</a></p><p>Clicking the above link should take you to the paragraph.</p></div>
 
@@ -365,7 +365,7 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a name="flow-content"></a><span class="section-number">4.3 </span>Flow Content</h2>
+    <h2 class="section-header"><a name="flow-content"></a><span class="section-number">2.3 </span>Flow Content</h2>
 
 <p><em>Flow</em> content is anything that forms a <em>sentence</em>, i.e. a string of words or inline elements.</p><div class="definition-thumb"><a name="code"></a><code>\<a href="baselit.html#code"><strong>code</strong></a>{<em>text</em>}</code></div><div class="definition-content"><p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a sentence, it is presented as inline code. If it is multi-line, it is presented as its own block.</p><p>This is often used in addition to <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace).</p><p>For example:</p><pre>I&#39;m a sentence with some \code{code bits} in it.</pre><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><pre>\code{
   This is a code block.
@@ -383,7 +383,7 @@ with
   
 
   
-    <h2 class="section-header"><a name="block-content"></a><span class="section-number">4.4 </span>Block Content</h2>
+    <h2 class="section-header"><a name="block-content"></a><span class="section-number">2.4 </span>Block Content</h2>
 
 <p><em>Block</em> content is anything that forms a <em>paragraph</em>, i.e. a block of text or any element that is standalone.</p><div class="definition-thumb"><a name="inset"></a><code>\<a href="baselit.html#inset"><strong>inset</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Render <em>content</em> indented a bit.</p><div style="margin: 0 2em 1em" class="inset"><p>Like this!</p></div></div><div class="definition-thumb"><a name="aside"></a><code>\<a href="baselit.html#aside"><strong>aside</strong></a>{<em>content</em>}</code></div><div class="definition-content"><p>Render <em>content</em> in some way that conveys that it&#39;s a side-note.</p><blockquote class="aside"><p>Here I am!</p></blockquote><p>If you look to your right, you should see one over there:</p><p>This is largely up to how you style them, though. You may want them to just look something like <a href="baselit.html#inset"><code>\<strong>inset</strong></code></a> if you don&#39;t have a &#34;margin&#34; in your design.</p></div><div class="definition-thumb"><a name="list"></a><code>\<a href="baselit.html#list"><strong>list</strong></a>{<em>items...</em>}</code></div><div class="definition-content"><p>Render an unordered list of <em>items</em>.</p><ul>
 
@@ -445,9 +445,9 @@ with
   
 
   
-    <h2 class="section-header"><a name="plugins-and-partials"></a><span class="section-number">4.5 </span>Plugins &amp; Partials</h2>
+    <h2 class="section-header"><a name="plugins-and-partials"></a><span class="section-number">2.5 </span>Plugins &amp; Partials</h2>
 
-<div class="definition-thumb"><a name="use-plugin"></a><code>\<a href="baselit.html#use-plugin"><strong>use-plugin</strong></a>{<em>name</em>}</code></div><div class="definition-content"><p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Extending with Plugins</a> for more information.</p></div><div class="definition-thumb"><a name="set-partial"></a><code>\<a href="baselit.html#set-partial"><strong>set-partial</strong></a>{<em>name</em>}{<em>content</em>}</code></div><div class="definition-content"><p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Extending with Plugins</a> or custom templates given to the <a href="rendering.html">rendering</a> stage.</p></div>
+<div class="definition-thumb"><a name="use-plugin"></a><code>\<a href="baselit.html#use-plugin"><strong>use-plugin</strong></a>{<em>name</em>}</code></div><div class="definition-content"><p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Extending with Plugins</a> for more information.</p></div><div class="definition-thumb"><a name="set-partial"></a><code>\<a href="baselit.html#set-partial"><strong>set-partial</strong></a>{<em>name</em>}{<em>content</em>}</code></div><div class="definition-content"><p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Extending with Plugins</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p></div>
 
 
   

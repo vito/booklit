@@ -35,21 +35,21 @@
         <tr>
           <td class="number-cell" align="right">2&nbsp;</td>
           <td class="title-cell">
-<a href="rendering.html" >Rendering</a>
+<a href="baselit.html" >The <code>baselit</code> Plugin</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
+<a href="html-renderer.html"  class="self">The HTML Renderer</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">4&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
+<a href="plugins.html" >Extending with Plugins</a>
 </td>
         </tr>
       
@@ -70,7 +70,7 @@
 <div class="context">
   <nav>
     <div class="top">
-      2.1&nbsp;
+      3&nbsp;
 <a href="html-renderer.html"  class="self">The HTML Renderer</a>
 
     </div>
@@ -81,14 +81,14 @@
       <table>
       
         <tr>
-          <td class="number-cell" align="right">2.1.1&nbsp;</td>
+          <td class="number-cell" align="right">3.1&nbsp;</td>
           <td class="title-cell">
 <a href="html-renderer.html#base-templates" >Base Templates</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">2.1.2&nbsp;</td>
+          <td class="number-cell" align="right">3.2&nbsp;</td>
           <td class="title-cell">
 <a href="html-renderer.html#custom-templates" >Custom Templates</a>
 </td>
@@ -104,14 +104,14 @@
 
     </div>
     <div class="page">
-      <h1 class="section-header"><a name="html-renderer"></a><span class="section-number">2.1 </span>The HTML Renderer</h1>
+      <h1 class="section-header"><a name="html-renderer"></a><span class="section-number">3 </span>The HTML Renderer</h1>
 
-<p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs \
+<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs \
     --html-templates ./html</pre>
 
 
   
-    <h2 class="section-header"><a name="base-templates"></a><span class="section-number">2.1.1 </span>Base Templates</h2>
+    <h2 class="section-header"><a name="base-templates"></a><span class="section-number">3.1 </span>Base Templates</h2>
 
 <p>The following template files will be executed if present under <code>./html</code>, with the corresponding data type as <code>.</code>:</p><table>
   
@@ -265,7 +265,7 @@
   
 
   
-    <h2 class="section-header"><a name="custom-templates"></a><span class="section-number">2.1.2 </span>Custom Templates</h2>
+    <h2 class="section-header"><a name="custom-templates"></a><span class="section-number">3.2 </span>Custom Templates</h2>
 
 <p>In addition to the above templates, using <a href="https://godoc.org/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a> will result in the renderer using the template named after the style being executed with the content being styled as <code>.</code>.</p><p>For example, <a href="baselit.html#bold"><code>\<strong>bold</strong></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><pre>booklit.Styled{
   Content: content,

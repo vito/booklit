@@ -35,21 +35,21 @@
         <tr>
           <td class="number-cell" align="right">2&nbsp;</td>
           <td class="title-cell">
-<a href="rendering.html" >Rendering</a>
+<a href="baselit.html" >The <code>baselit</code> Plugin</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">3&nbsp;</td>
           <td class="title-cell">
-<a href="plugins.html"  class="self">Extending with Plugins</a>
+<a href="html-renderer.html" >The HTML Renderer</a>
 </td>
         </tr>
       
         <tr>
           <td class="number-cell" align="right">4&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
+<a href="plugins.html"  class="self">Extending with Plugins</a>
 </td>
         </tr>
       
@@ -70,7 +70,7 @@
 <div class="context">
   <nav>
     <div class="top">
-      3&nbsp;
+      4&nbsp;
 <a href="plugins.html"  class="self">Extending with Plugins</a>
 
     </div>
@@ -81,14 +81,14 @@
       <table>
       
         <tr>
-          <td class="number-cell" align="right">3.1&nbsp;</td>
+          <td class="number-cell" align="right">4.1&nbsp;</td>
           <td class="title-cell">
 <a href="plugins.html#using-plugins" >Writing Plugins</a>
 </td>
         </tr>
       
         <tr>
-          <td class="number-cell" align="right">3.2&nbsp;</td>
+          <td class="number-cell" align="right">4.2&nbsp;</td>
           <td class="title-cell">
 <a href="plugins.html#using-plugins" >Using Plugins</a>
 </td>
@@ -104,13 +104,13 @@
 
     </div>
     <div class="page">
-      <h1 class="section-header"><a name="plugins"></a><span class="section-number">3 </span>Extending with Plugins</h1>
+      <h1 class="section-header"><a name="plugins"></a><span class="section-number">4 </span>Extending with Plugins</h1>
 
 <p>Plugins are what provide the functionality behind function calls like <code>\foo{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code>\<strong>title</strong></code></a> and <a href="baselit.html#section"><code>\<strong>section</strong></code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code>\<strong>italic</strong></code></a> and <a href="baselit.html#bold"><code>\<strong>bold</strong></code></a>. It also serves as a good reference when writing your own plugin.</p>
 
 
   
-    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">3.1 </span>Writing Plugins</h2>
+    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.1 </span>Writing Plugins</h2>
 
 <p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing one, make sure you&#39;ve got it installed.</p>
 
@@ -118,7 +118,7 @@
   
 
   
-    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">3.2 </span>Using Plugins</h2>
+    <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
 
 <p>To use a plugin, you&#39;ll need to pass it as <code>--plugin</code> to the <code>booklit</code> command when building your docs, like so:</p><pre>booklit -i index.lit -o out \
     --plugin github.com/my/fancyplugin</pre><p>The plugin will register itself with Booklit under a certain name (conventionally, the same name as its package). Next, use <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to pull it in:</p><pre>\title{My Section}

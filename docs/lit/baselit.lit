@@ -335,6 +335,6 @@ methods useful for writing prose.
     its content.
 
     This is useful for communicating content to either \reference{plugins} or
-    custom templates given to the \reference{rendering}{rendering} stage.
+    custom templates given to the \reference{html-renderer}{HTML renderer}.
   }
 }
