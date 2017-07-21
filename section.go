@@ -42,7 +42,7 @@ type Tag struct {
 }
 
 func (con *Section) String() string {
-	return fmt.Sprintf("{section: %s}", con.Title)
+	return fmt.Sprintf("{section (%s): %s}", con.Path, con.Title)
 }
 
 func (con *Section) IsSentence() bool { return false }
