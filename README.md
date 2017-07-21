@@ -32,4 +32,4 @@ booklit \
 
 then, browse from `./docs/index.html`.
 
-you can see the result at https://vito.github.io/docs
+you can see the result at https://vito.github.io/booklit
