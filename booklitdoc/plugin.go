@@ -28,9 +28,14 @@ type Plugin struct {
 func (plugin Plugin) Godoc(ref string) booklit.Content {
 	spl := strings.SplitN(ref, ".", 2)
 
+	pkg := strings.TrimLeft(spl[0], "*")
+
 	return plugin.base.Link(
-		plugin.base.Code(booklit.Sequence{booklit.String(spl[0] + "."), plugin.base.Bold(booklit.String(spl[1]))}),
-		"https://godoc.org/github.com/vito/booklit#"+spl[1],
+		plugin.base.Code(booklit.Sequence{
+			booklit.String(spl[0] + "."),
+			plugin.base.Bold(booklit.String(spl[1])),
+		}),
+		"https://godoc.org/github.com/vito/"+pkg+"#"+spl[1],
 	)
 }
 
