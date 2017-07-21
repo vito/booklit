@@ -3,7 +3,7 @@ package baselit
 import "github.com/vito/booklit"
 
 func init() {
-	booklit.RegisterPlugin("stringer", booklit.PluginFactoryFunc(NewPlugin))
+	booklit.RegisterPlugin("stringer", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {

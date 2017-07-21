@@ -3,7 +3,7 @@ package baselit
 import "github.com/vito/booklit"
 
 func init() {
-	booklit.RegisterPlugin("arbitrary-style", booklit.PluginFactoryFunc(NewPlugin))
+	booklit.RegisterPlugin("arbitrary-style", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {

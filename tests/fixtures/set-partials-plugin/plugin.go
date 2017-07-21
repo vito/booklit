@@ -3,7 +3,7 @@ package baselit
 import "github.com/vito/booklit"
 
 func init() {
-	booklit.RegisterPlugin("set-partials", booklit.PluginFactoryFunc(NewPlugin))
+	booklit.RegisterPlugin("set-partials", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {

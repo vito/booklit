@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	booklit.RegisterPlugin("base", booklit.PluginFactoryFunc(NewPlugin))
+	booklit.RegisterPlugin("base", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {
@@ -67,7 +67,7 @@ func (plugin Plugin) IncludeSection(path string) error {
 
 	processor := &load.Processor{
 		PluginFactories: []booklit.PluginFactory{
-			booklit.PluginFactoryFunc(NewPlugin),
+			NewPlugin,
 		},
 	}
 

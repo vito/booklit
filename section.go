@@ -172,7 +172,7 @@ func (con *Section) Partial(name string) Content {
 
 func (con *Section) UsePlugin(pf PluginFactory) {
 	con.PluginFactories = append(con.PluginFactories, pf)
-	con.Plugins = append(con.Plugins, pf.NewPlugin(con))
+	con.Plugins = append(con.Plugins, pf(con))
 }
 
 func (con *Section) PageDepth() int {

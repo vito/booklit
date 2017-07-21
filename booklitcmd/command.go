@@ -36,7 +36,7 @@ func (cmd *Command) Execute(args []string) error {
 		AllowBrokenReferences: cmd.AllowBrokenReferences,
 
 		PluginFactories: []booklit.PluginFactory{
-			booklit.PluginFactoryFunc(baselit.NewPlugin),
+			baselit.NewPlugin,
 		},
 	}
 

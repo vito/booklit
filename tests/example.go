@@ -24,7 +24,7 @@ type Files map[string]string
 func (example Example) Run() {
 	processor := &load.Processor{
 		PluginFactories: []booklit.PluginFactory{
-			booklit.PluginFactoryFunc(baselit.NewPlugin),
+			baselit.NewPlugin,
 		},
 	}
 

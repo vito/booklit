@@ -1,8 +1,10 @@
 package booklit
 
-type PluginFactory interface {
-	NewPlugin(*Section) Plugin
+type Plugin interface {
+	// methods are dynamically invoked
 }
+
+type PluginFactory func(*Section) Plugin
 
 var plugins = map[string]PluginFactory{}
 
@@ -13,12 +15,4 @@ func RegisterPlugin(name string, factory PluginFactory) {
 func LookupPlugin(name string) (PluginFactory, bool) {
 	plugin, found := plugins[name]
 	return plugin, found
-}
-
-type PluginFactoryFunc func(*Section) Plugin
-
-func (f PluginFactoryFunc) NewPlugin(s *Section) Plugin { return f(s) }
-
-type Plugin interface {
-	// methods are dynamically invoked
 }

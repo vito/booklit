@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	booklit.RegisterPlugin("booklitdoc", booklit.PluginFactoryFunc(NewPlugin))
+	booklit.RegisterPlugin("booklitdoc", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {
