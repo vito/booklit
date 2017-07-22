@@ -4,3 +4,10 @@ Booklit is very heavily inspired by
 \link{Scribble}{https://docs.racket-lang.org/scribble/}, the documentation tool
 for the \link{Racket programming language}{https://racket-lang.org/}. Without
 it, Booklit would not exist.
+
+The color scheme for this website is based on \link{I'm a
+BookWorm}{http://www.colourlovers.com/palette/2767765/Im_a_BookWorm}.
+
+The favicon is based on the Google Noto Emoji font, and is licensed under the
+\link{SIL Open Font License, Version
+1.1}{http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL}.
