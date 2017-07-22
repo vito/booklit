@@ -37,7 +37,15 @@
 
   Upon building this you should see something like:
 
-  (TODO: image)
+  \inset{
+    \larger{\larger{\larger{Hello, world!}}}
+
+    I'm a Booklit document!
+
+    \larger{\larger{Hi there!}}
+
+    I'm so organized!
+  }
 }
 
 \section{
