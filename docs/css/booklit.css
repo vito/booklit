@@ -214,11 +214,18 @@ h2, h3 {
 }
 
 .aside {
-  box-sizing: border-box;
-  margin: 0;
-  width: 200px;
-  background: rgba(255, 255, 255, .25);
-  position: absolute;
-  right: -200px;
-  padding: 0 1rem;
+  border-left: 2px solid #EFB198;
+  padding: 0 1em;
+}
+
+@media (min-width: 961px) {
+  .aside {
+    border: none;
+    box-sizing: border-box;
+    margin: 0;
+    width: 200px;
+    background: rgba(255, 255, 255, .25);
+    position: absolute;
+    right: -200px;
+  }
 }

@@ -255,7 +255,8 @@ methods useful for writing prose.
       Here I am!
     }
 
-    If you look to your right, you should see one over there:
+    Depending on your screen size, you should either see it to the right or
+    above this line.
 
     This is largely up to how you style them, though. You may want them to just
     look something like \reference{inset} if you don't have a "margin" in your
