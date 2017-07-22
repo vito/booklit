@@ -46,7 +46,7 @@ code code {
   white-space: nowrap;
 }
 
-.page code code {
+.page code code, .definition-thumb code {
   border: 0;
   padding: 0;
 }
