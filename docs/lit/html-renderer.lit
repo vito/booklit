@@ -69,6 +69,42 @@ booklit -i ./index.any -o ./docs \
 }
 
 \section{
+  \title{Template Functions}
+
+  Templates are executed with the following functions available:
+
+  \definitions{
+    \definition{\code{\{\{tag | url\}\}}}{
+      generate a URL for the tag
+    }
+  }{
+    \definition{\code{\{\{content | stripAux\}\}}}{
+      strip \reference{aux} elements from the content
+    }
+  }{
+    \definition{\code{\{\{string | rawHTML\}\}}}{
+      render the string as raw HTML, unescaped
+    }
+  }{
+    \definition{\code{\{\{content | render\}\}}}{
+      render the content
+    }
+  }{
+    \definition{\code{\{\{walkContext currentSection subSection\}\}}}{
+      generate a convenience struct with fields \code{.Current} and
+      \code{.Section}, useful for traversing a tree of sections while retaining
+      the "current" section, e.g. so it can be marked as "active" in a
+      navigation tree
+    }
+  }{
+    \definition{\code{\{\{section | headerDepth\}\}}}{
+      return the number that should be used for the section's header, i.e.
+      \code{<hN>}
+    }
+  }
+}
+
+\section{
   \title{Styled Content}
 
   In addition to the above templates, using \godoc{booklit.Styled} will

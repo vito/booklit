@@ -122,23 +122,23 @@
     <div class="page">
       <h1 class="section-header"><a name="syntax"></a><span class="section-number">5 </span>Document Syntax</h1>
 
-
+<p>Booklit documents are basically just text files with special syntax for <a href="syntax.html#function-syntax">function calls</a>. Aside from those, everything is either text or a comment.</p>
 
 
   
     <h2 class="section-header"><a name="prose-syntax"></a><span class="section-number">5.1 </span>Prose Syntax</h2>
 
-<p>Booklit documents are basically just text files with special syntax for <a href="syntax.html#function-syntax">function calls</a>. Aside from those, everything is either text or a comment.</p><p>Text files are bit more complicated than they sound, though, so here are the rules:</p><ul>
+<p>Text files are bit more complicated than they sound, though, so here are the rules:</p><ul>
 
   <li><p>The top-level of a document is a series of <em>paragraphs</em>, separated by one or more blank lines.</p></li>
 
   <li><p>A <em>paragraph</em> is a series of <em>lines</em>, separated by linebreaks.</p></li>
 
-  <li><p>A <em>line</em> is a series of <em>words</em>, separated by spaces.</p></li>
+  <li><p>A <em>line</em> is a series of <em>words</em>.</p></li>
 
   <li><p>A <em>word</em> is either a <em>string</em>, an <em>invoke</em>, or an <em>interpolated word</em>.</p></li>
 
-  <li><p>A <em>string</em> is a series of characters other than <code>{}\</code>, or a <code>\</code> followed by one of those characters.</p></li>
+  <li><p>A <em>string</em> is a series of characters other than <code>{}\</code>, or a <code>\</code> followed by one of those characters, all within one line.</p></li>
 
   <li><p>An <em>invoke</em> is a <a href="syntax.html#function-syntax">function call</a>.</p></li>
 
