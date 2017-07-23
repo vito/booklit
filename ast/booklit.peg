@@ -49,13 +49,13 @@ Line <- [ \t]* words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
-Word <- Comment? val:(String / Invoke / Interspersed) Comment? {
+Word <- Comment? val:(String / Invoke / Interpolated) Comment? {
   return val, nil
 }
 
 Comment <- [ \t]* "{-" (Comment / !"-}" .)* "-}"
 
-Interspersed <- '{' word:Word? '}' {
+Interpolated <- '{' word:Word? '}' {
   if word == nil {
     return Sequence{}, nil
   } else {

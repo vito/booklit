@@ -241,7 +241,7 @@ var g = &grammar{
 									},
 									&ruleRefExpr{
 										pos:  position{line: 52, col: 41, offset: 1031},
-										name: "Interspersed",
+										name: "Interpolated",
 									},
 								},
 							},
@@ -315,11 +315,11 @@ var g = &grammar{
 			},
 		},
 		{
-			name: "Interspersed",
+			name: "Interpolated",
 			pos:  position{line: 58, col: 1, offset: 1127},
 			expr: &actionExpr{
 				pos: position{line: 58, col: 17, offset: 1143},
-				run: (*parser).callonInterspersed1,
+				run: (*parser).callonInterpolated1,
 				expr: &seqExpr{
 					pos: position{line: 58, col: 17, offset: 1143},
 					exprs: []interface{}{
@@ -958,7 +958,7 @@ func (p *parser) callonWord1() (interface{}, error) {
 	return p.cur.onWord1(stack["val"])
 }
 
-func (c *current) onInterspersed1(word interface{}) (interface{}, error) {
+func (c *current) onInterpolated1(word interface{}) (interface{}, error) {
 	if word == nil {
 		return Sequence{}, nil
 	} else {
@@ -966,10 +966,10 @@ func (c *current) onInterspersed1(word interface{}) (interface{}, error) {
 	}
 }
 
-func (p *parser) callonInterspersed1() (interface{}, error) {
+func (p *parser) callonInterpolated1() (interface{}, error) {
 	stack := p.vstack[len(p.vstack)-1]
 	_ = stack
-	return p.cur.onInterspersed1(stack["word"])
+	return p.cur.onInterpolated1(stack["word"])
 }
 
 func (c *current) onWrappedLine1(firstWord, words interface{}) (interface{}, error) {
