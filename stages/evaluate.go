@@ -34,10 +34,10 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	previous := eval.Result
 
 	para := booklit.Paragraph{}
-	for _, sentence := range node {
+	for _, line := range node {
 		eval.Result = nil
 
-		err := sentence.Visit(eval)
+		err := line.Visit(eval)
 		if err != nil {
 			return err
 		}
@@ -55,7 +55,7 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 		return nil
 	}
 
-	if len(para) == 1 && !para[0].IsSentence() {
+	if len(para) == 1 && !para[0].IsFlow() {
 		// paragraph resulted in block content (e.g. a section)
 		eval.Result = booklit.Append(previous, para[0])
 		return nil
@@ -70,10 +70,10 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 	previous := eval.Result
 
 	pre := booklit.Preformatted{}
-	for _, sentence := range node {
+	for _, line := range node {
 		eval.Result = nil
 
-		err := sentence.Visit(eval)
+		err := line.Visit(eval)
 		if err != nil {
 			return err
 		}

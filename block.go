@@ -8,7 +8,7 @@ type Block struct {
 	Class string
 }
 
-func (con Block) IsSentence() bool {
+func (con Block) IsFlow() bool {
 	return false
 }
 

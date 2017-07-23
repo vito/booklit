@@ -7,7 +7,7 @@ type Image struct {
 	Description string
 }
 
-func (con Image) IsSentence() bool {
+func (con Image) IsFlow() bool {
 	return true
 }
 

@@ -45,7 +45,9 @@ func (con *Section) String() string {
 	return fmt.Sprintf("{section (%s): %s}", con.Path, con.Title)
 }
 
-func (con *Section) IsSentence() bool { return false }
+func (con *Section) IsFlow() bool {
+	return false
+}
 
 func (con *Section) Visit(visitor Visitor) error {
 	return visitor.VisitSection(con)

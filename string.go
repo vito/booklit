@@ -4,7 +4,9 @@ type String string
 
 var Empty String
 
-func (str String) IsSentence() bool { return true }
+func (str String) IsFlow() bool {
+	return true
+}
 
 func (str String) String() string {
 	return string(str)

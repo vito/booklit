@@ -12,7 +12,7 @@ func (con Paragraph) String() string {
 	return str
 }
 
-func (con Paragraph) IsSentence() bool {
+func (con Paragraph) IsFlow() bool {
 	return false
 }
 

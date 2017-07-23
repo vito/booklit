@@ -223,7 +223,7 @@ Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-p
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
   
   <dt><code>string</code></dt>
-    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or a raw sentence. The <a href="baselit.html#title"><code>\<strong>title</strong></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
+    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or line of text. The <a href="baselit.html#title"><code>\<strong>title</strong></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
   
   <dt><a href="https://godoc.org/github.com/vito/booklit/ast#Node"><code>booklit/ast.<strong>Node</strong></code></a></dt>
     <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code>\<strong>section</strong></code></a> which need to control the evaluation context of the content.</p></dd>

@@ -6,7 +6,7 @@ type Table struct {
 	Rows [][]Content
 }
 
-func (con Table) IsSentence() bool {
+func (con Table) IsFlow() bool {
 	return false
 }
 

@@ -2,9 +2,9 @@ package booklit
 
 type Sequence []Content
 
-func (con Sequence) IsSentence() bool {
+func (con Sequence) IsFlow() bool {
 	for _, c := range con {
-		if !c.IsSentence() {
+		if !c.IsFlow() {
 			return false
 		}
 	}

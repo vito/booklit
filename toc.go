@@ -6,7 +6,7 @@ type TableOfContents struct {
 	Section *Section
 }
 
-func (con TableOfContents) IsSentence() bool {
+func (con TableOfContents) IsFlow() bool {
 	return false
 }
 

@@ -3,7 +3,7 @@ package booklit
 type Content interface {
 	String() string
 
-	IsSentence() bool
+	IsFlow() bool
 
 	Visit(Visitor) error
 }

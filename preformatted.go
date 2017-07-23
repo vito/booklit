@@ -13,7 +13,7 @@ func (con Preformatted) String() string {
 	return str
 }
 
-func (con Preformatted) IsSentence() bool {
+func (con Preformatted) IsFlow() bool {
 	return false
 }
 

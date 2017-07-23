@@ -13,12 +13,12 @@
   }
 
   func ifaceSequences(val interface{}) []Sequence {
-    sentences := []Sequence{}
+    seq := []Sequence{}
     for _, node := range val.([]interface{}) {
-      sentences = append(sentences, node.(Sequence))
+      seq = append(seq, node.(Sequence))
     }
 
-    return sentences
+    return seq
   }
 
   func ifaceNodes(val interface{}) []Node {
@@ -41,11 +41,11 @@ Paragraphs <- CommentSpacing* paragraphs:(p:Paragraph CommentSpacing* { return p
 
 CommentSpacing <- "\n" / Comment
 
-Paragraph <- sentences:(s:Sentence "\n" { return s, nil })+ {
-  return Paragraph(ifaceSequences(sentences)), nil
+Paragraph <- lines:(l:Line "\n" { return l, nil })+ {
+  return Paragraph(ifaceSequences(lines)), nil
 }
 
-Sentence <- [ \t]* words:(Word)+ {
+Line <- [ \t]* words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
@@ -63,7 +63,7 @@ Interspersed <- '{' word:Word? '}' {
   }
 }
 
-SplitSentence <- firstWord:Word words:(Word / Split)* {
+WrappedLine <- firstWord:Word words:(Word / Split)* {
   allWords := append([]interface{}{firstWord}, words.([]interface{})...)
   return Sequence(ifaceNodes(allWords)), nil
 }
@@ -78,26 +78,26 @@ VerbatimString <- str:[^\n}]+ {
   return String(c.text), nil
 }
 
-PreformattedSentence <- indent:Indent words:Word* '\n' {
+PreformattedLine <- indent:Indent words:Word* '\n' {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
 }
 
-Preformatted <- '\n' sentences:PreformattedSentence* {
+Preformatted <- '\n' lines:PreformattedLine* {
   delete(c.globalStore, "indent-skip")
-  return Preformatted(ifaceSequences(sentences)), nil
+  return Preformatted(ifaceSequences(lines)), nil
 }
 
-VerbatimSentence <- indent:Indent words:VerbatimString* '\n' {
+VerbatimLine <- indent:Indent words:VerbatimString* '\n' {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
 }
 
-Verbatim <- '\n' sentences:VerbatimSentence* {
+Verbatim <- '\n' lines:VerbatimLine* {
   delete(c.globalStore, "indent-skip")
-  return Preformatted(ifaceSequences(sentences)), nil
+  return Preformatted(ifaceSequences(lines)), nil
 }
 
 Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
@@ -115,7 +115,7 @@ PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
   return node, nil
 }
 
-Arg <- '{' node:(SplitSentence / ParaArg)? '}' {
+Arg <- '{' node:(WrappedLine / ParaArg)? '}' {
   if node == nil {
     return String(""), nil
   } else {

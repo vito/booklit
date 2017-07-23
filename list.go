@@ -8,7 +8,7 @@ type List struct {
 	Ordered bool
 }
 
-func (con List) IsSentence() bool {
+func (con List) IsFlow() bool {
 	return false
 }
 

@@ -1,23 +1,77 @@
 \title{Document Syntax}{syntax}
 
 \section{
-  \title{Invoking Functions}
+  \title{Prose}{prose-syntax}
+
+  Booklit documents are basically just text files with special syntax for
+  \reference{function-syntax}{function calls}. Aside from those, everything is
+  either text or a comment.
+
+  Text files are bit more complicated than they sound, though, so here are the
+  rules:
+
+  \list{
+    The top-level of a document is a series of \italic{paragraphs}, separated
+    by one or more blank lines.
+  }{
+    A \italic{paragraph} is a series of \italic{lines}, separated by
+    linebreaks.
+  }{
+    A \italic{line} is a series of \italic{words}, separated by spaces.
+  }{
+    A \italic{word} is either a \italic{string}, an \italic{invoke}, or an
+    \italic{interpolated word}.
+  }{
+    A \italic{string} is a series of characters other than \code{\{\}\\}, or a
+    \code{\\} followed by one of those characters.
+  }{
+    An \italic{invoke} is a \reference{function-syntax}{function call}.
+  }{
+    An \italic{interpolated word} is a \italic{word} wrapped in curly braces
+    (\code{\{\}}). This is useful for cases where a zero-argument
+    \italic{invoke} has to be smashed in the middle of a word,
+    \code{just\{\\like\}this}.
+  }
+}
+
+\section{
+  \title{Comments}{comment-syntax}
+
+  Comments are delimited by \code{\{-} and \code{-\}}. They can be multi-line,
+  appear in between words, and they can also be nested. This makes commenting
+  out large blocks of content easy:
+
+  \code{{{
+  Hi, I'm{- a secret comment -} in the middle of a sentence!
+
+  {-
+    I'm hanging out at the top level,
+
+    {- being nested and stuff -}
+
+    with multiple lines.
+  -}
+  }}}
+}
+
+\section{
+  \title{Functions}{function-syntax}
 
   \section{
     \title{Argument Forms}{argument-forms}
 
     \definitions{
-      \definition{\code{\{sentence\}}}{
+      \definition{\code{\{line\}}}{
         With no linebreak after the \code{\{}, the argument forms a single
-        sentence.
+        line.
       }
     }{
       \definition{\code{{{
         {word wrapped
-sentence}
+line}
       }}}}{
         As above, but the word wrapping point gets converted into a single
-        space, as if it were written as \code{\{word wrapped sentence\}}.
+        space, as if it were written as \code{\{word wrapped line\}}.
       }
     }{
       \definition{\code{{{

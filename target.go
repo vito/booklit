@@ -7,7 +7,7 @@ type Target struct {
 	Display Content
 }
 
-func (con Target) IsSentence() bool {
+func (con Target) IsFlow() bool {
 	return true
 }
 

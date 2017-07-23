@@ -9,7 +9,7 @@ type Definition struct {
 	Definition Content
 }
 
-func (con Definitions) IsSentence() bool {
+func (con Definitions) IsFlow() bool {
 	return false
 }
 

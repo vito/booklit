@@ -192,7 +192,7 @@ This{\italic{is}}a test.
 		},
 	}),
 
-	Entry("word-wrapped sentences", Example{
+	Entry("word-wrapped lines", Example{
 		Input: `\title{Hello, world!}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. \italic{Curabitur

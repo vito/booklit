@@ -163,9 +163,9 @@ reference when writing your own plugin.
     }{
       \definition{\code{string}}{
         The evaluated content, converted into a string. This is useful when the
-        content is expected to be something simple, like a word or a raw
-        sentence. The \reference{title} function, for example, uses this type
-        for its variadic \italic{tags} argument.
+        content is expected to be something simple, like a word or line of
+        text. The \reference{title} function, for example, uses this type for
+        its variadic \italic{tags} argument.
       }
     }{
       \definition{\godoc{booklit/ast.Node}}{

@@ -8,7 +8,7 @@ type Element struct {
 	Class string
 }
 
-func (con Element) IsSentence() bool {
+func (con Element) IsFlow() bool {
 	return true
 }
 

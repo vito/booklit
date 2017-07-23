@@ -9,7 +9,7 @@ type Reference struct {
 	Tag *Tag
 }
 
-func (con *Reference) IsSentence() bool {
+func (con *Reference) IsFlow() bool {
 	return true
 }
 

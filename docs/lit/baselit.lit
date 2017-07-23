@@ -155,10 +155,13 @@ methods useful for writing prose.
   string of words or inline elements.
 
   \define{\code{text}}{
+    {- TODO: this can be Block content depending on the arg -}
+
     Present \italic{text} in a monospace font upon rendering.
 
-    If \italic{text} is a sentence, it is presented as inline code. If it is
-    multi-line, it is presented as its own block.
+    If \italic{text} is a single line, it is presented as inline code. If it is
+    in paragraph form, it is presented as its own block. See
+    \reference{function-syntax} for more information.
 
     This is often used in addition to \code{\{\{two\}\}} braces to preserve
     whitespace, or \code{\{\{\{three\}\}\}} to ignore escaping (in addition to
