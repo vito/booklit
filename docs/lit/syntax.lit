@@ -1,11 +1,11 @@
 \title{Document Syntax}{syntax}
 
-\section{
-  \title{Prose}{prose-syntax}
+Booklit documents are basically just text files with special syntax for
+\reference{function-syntax}{function calls}. Aside from those, everything is
+either text or a comment.
 
-  Booklit documents are basically just text files with special syntax for
-  \reference{function-syntax}{function calls}. Aside from those, everything is
-  either text or a comment.
+\section{
+  \title{Prose Syntax}{prose-syntax}
 
   Text files are bit more complicated than they sound, though, so here are the
   rules:
@@ -17,13 +17,13 @@
     A \italic{paragraph} is a series of \italic{lines}, separated by
     linebreaks.
   }{
-    A \italic{line} is a series of \italic{words}, separated by spaces.
+    A \italic{line} is a series of \italic{words}.
   }{
     A \italic{word} is either a \italic{string}, an \italic{invoke}, or an
     \italic{interpolated word}.
   }{
     A \italic{string} is a series of characters other than \code{\{\}\\}, or a
-    \code{\\} followed by one of those characters.
+    \code{\\} followed by one of those characters, all within one line.
   }{
     An \italic{invoke} is a \reference{function-syntax}{function call}.
   }{
@@ -35,14 +35,14 @@
 }
 
 \section{
-  \title{Comments}{comment-syntax}
+  \title{Comment Syntax}{comment-syntax}
 
   Comments are delimited by \code{\{-} and \code{-\}}. They can be multi-line,
   appear in between words, and they can also be nested. This makes commenting
   out large blocks of content easy:
 
   \code{{{
-  Hi, I'm{- a secret comment -} in the middle of a sentence!
+  Hi, I'm{- a comment -} in the middle of a sentence!
 
   {-
     I'm hanging out at the top level,
@@ -55,35 +55,68 @@
 }
 
 \section{
-  \title{Functions}{function-syntax}
+  \title{Function Syntax}{function-syntax}
 
-  \section{
-    \title{Argument Forms}{argument-forms}
+  Function calls are denoted by a single backslash (\code{\\}), followed by
+  series of alphanumeric characters and hyphens (\code{foo-bar}), forming the
+  function \italic{name}.
 
-    \definitions{
-      \definition{\code{\{line\}}}{
-        With no linebreak after the \code{\{}, the argument forms a single
-        line.
-      }
-    }{
-      \definition{\code{{{
-        {word wrapped
+  Following the name, there may be any number of \italic{arguments}, which can
+  come in a few different forms:
+
+  \definitions{
+    \definition{\code{\{line\}}}{
+      With no linebreak after the \code{\{}, the argument forms a single
+      line.
+    }
+  }{
+    \definition{\code{{{
+      {word wrapped
 line}
-      }}}}{
-        As above, but the word wrapping point gets converted into a single
-        space, as if it were written as \code{\{word wrapped line\}}.
-      }
-    }{
-      \definition{\code{{{
-        {
-          paragraph 1
+    }}}}{
+      As above, but the word wrapping point gets converted into a single
+      space, as if it were written as \code{\{word wrapped line\}}.
+    }
+  }{
+    \definition{\code{{{
+      {
+        paragraph 1
 
-          paragraph 2
-        }
-      }}}}{
-        With a linebreak after the \code{\{}, the argument forms a block of
-        paragraphs.
+        paragraph 2
       }
+    }}}}{
+      With a linebreak after the \code{\{}, the argument forms a block of
+      paragraphs.
+    }
+  }{
+    \definition{\code{{{
+      {{
+        paragraph 1
+
+          indented paragraph 2
+      }}
+    }}}}{
+      With doubled-up curly braces, whitespace is preserved in the content,
+      rather than being parsed into paragraphs.
+
+      Note that the first line of the content determines an indentation level
+      that is then skipped for all lines. It is the only whitespace that is
+      ignored.
+    }
+  }{
+    \definition{\code{{
+      \{\{\{
+        paragraph 1
+
+          indented \{paragraph\} 2
+
+        \\with\{no-syntax\}
+      \}\}\}
+    }}}{
+      Tripled-up curly braces behave the same as double, except there is no
+      interpreting or parsing of Booklit syntax within. This is useful for
+      large code blocks where the content may contain special characters that
+      Booklit normally may interpret (e.g. \code{\\}, \code{\{}, \code{\}}).
     }
   }
 }

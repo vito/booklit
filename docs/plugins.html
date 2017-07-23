@@ -217,7 +217,7 @@ Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-p
   
     <h3 class="section-header"><a name="argument-types"></a><span class="section-number">4.3.1 </span>Argument Types</h3>
 
-<p>Functions can be invoked with any number of arguments by appending content wrapped in <code>{curlies}</code> after the function name, like so:</p><pre>\hello-world{arg1}{arg2}</pre><p>Note that there are <a href="syntax.html#argument-forms">a few flavors of the curly braces</a>.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
+<p>Functions can be invoked with any number of arguments, like so:</p><pre>\hello-world{arg1}{arg2}</pre><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
   <dt><a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
