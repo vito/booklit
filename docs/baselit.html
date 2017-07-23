@@ -120,7 +120,7 @@
         <tr>
           <td class="number-cell" align="right">2.5&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html#plugins-and-partials" >Plugins &amp; Partials</a>
+<a href="baselit.html#customizing-sections" >Customizing Sections</a>
 </td>
         </tr>
       
@@ -321,7 +321,7 @@
         <tr>
           <td class="number-cell" align="right">2.5&nbsp;</td>
           <td class="title-cell">
-<a href="baselit.html#plugins-and-partials" >Plugins &amp; Partials</a>
+<a href="baselit.html#customizing-sections" >Customizing Sections</a>
 </td>
         </tr>
           
@@ -333,6 +333,11 @@
           <tr>
             <td class="number-cell" align="right"></td>
             <td class="title-cell"><a href="baselit.html#set-partial"><code>\<strong>set-partial</strong></code></a></td>
+          </tr>
+          
+          <tr>
+            <td class="number-cell" align="right"></td>
+            <td class="title-cell"><a href="baselit.html#styled"><code>\<strong>styled</strong></code></a></td>
           </tr>
           
         
@@ -454,9 +459,9 @@ with
   
 
   
-    <h2 class="section-header"><a name="plugins-and-partials"></a><span class="section-number">2.5 </span>Plugins &amp; Partials</h2>
+    <h2 class="section-header"><a name="customizing-sections"></a><span class="section-number">2.5 </span>Customizing Sections</h2>
 
-<div class="definition-thumb"><a name="use-plugin"></a><code>\<a href="baselit.html#use-plugin"><strong>use-plugin</strong></a>{<em>name</em>}</code></div><div class="definition-content"><p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Extending with Plugins</a> for more information.</p></div><div class="definition-thumb"><a name="set-partial"></a><code>\<a href="baselit.html#set-partial"><strong>set-partial</strong></a>{<em>name</em>}{<em>content</em>}</code></div><div class="definition-content"><p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Extending with Plugins</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p></div>
+<div class="definition-thumb"><a name="use-plugin"></a><code>\<a href="baselit.html#use-plugin"><strong>use-plugin</strong></a>{<em>name</em>}</code></div><div class="definition-content"><p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Extending with Plugins</a> for more information.</p></div><div class="definition-thumb"><a name="set-partial"></a><code>\<a href="baselit.html#set-partial"><strong>set-partial</strong></a>{<em>name</em>}{<em>content</em>}</code></div><div class="definition-content"><p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Extending with Plugins</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p></div><div class="definition-thumb"><a name="styled"></a><code>\<a href="baselit.html#styled"><strong>styled</strong></a>{<em>name</em>}</code></div><div class="definition-content"><p>Set the template&#39;s style to <em>name</em>. The renderer may then use this to present the section in a different way. See <a href="html-renderer.html#styled-sections">Styled Sections</a>.</p></div>
 
 
   

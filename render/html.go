@@ -112,8 +112,8 @@ func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error 
 }
 
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
-	if con.Template != "" {
-		engine.template = engine.tmpl.Lookup(con.Template + ".tmpl")
+	if con.Style != "" {
+		engine.template = engine.tmpl.Lookup(con.Style + ".tmpl")
 	} else {
 		engine.template = engine.tmpl.Lookup("section.tmpl")
 	}

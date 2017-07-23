@@ -34,8 +34,8 @@ func (plugin Plugin) UsePlugin(name string) error {
 	return nil
 }
 
-func (plugin Plugin) Template(name string) {
-	plugin.section.Template = name
+func (plugin Plugin) Styled(name string) {
+	plugin.section.Style = name
 }
 
 func (plugin Plugin) Title(title booklit.Content, tags ...string) {

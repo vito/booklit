@@ -326,7 +326,7 @@ methods useful for writing prose.
 }
 
 \section{
-  \title{Plugins & Partials}
+  \title{Customizing Sections}
 
   \define{\use-plugin{name}}{
     Register the plugin identified by \italic{name} in the section. The plugin
@@ -340,5 +340,10 @@ methods useful for writing prose.
 
     This is useful for communicating content to either \reference{plugins} or
     custom templates given to the \reference{html-renderer}{HTML renderer}.
+  }
+
+  \define{\styled{name}}{
+    Set the template's style to \italic{name}. The renderer may then use this
+    to present the section in a different way. See \reference{styled-sections}.
   }
 }

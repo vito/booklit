@@ -381,7 +381,7 @@ How are you?
 \section{
 	\title{How I'm doing}
 
-	\template{custom-template}
+	\styled{custom-template}
 
 	Good, thanks! And you?
 
