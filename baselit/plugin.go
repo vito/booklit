@@ -34,6 +34,10 @@ func (plugin Plugin) UsePlugin(name string) error {
 	return nil
 }
 
+func (plugin Plugin) Template(name string) {
+	plugin.section.Template = name
+}
+
 func (plugin Plugin) Title(title booklit.Content, tags ...string) {
 	plugin.section.SetTitle(title, tags...)
 }

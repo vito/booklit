@@ -12,7 +12,7 @@ type RenderingEngine interface {
 	booklit.Visitor
 
 	FileExtension() string
-	Render(io.Writer) error
+	RenderSection(io.Writer, *booklit.Section) error
 }
 
 type Writer struct {
@@ -31,12 +31,7 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 			return err
 		}
 
-		err = section.Visit(writer.Engine)
-		if err != nil {
-			return err
-		}
-
-		err = writer.Engine.Render(file)
+		err = writer.Engine.RenderSection(file, section)
 		if err != nil {
 			return err
 		}

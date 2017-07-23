@@ -18,6 +18,7 @@ type Section struct {
 	Parent   *Section
 	Children []*Section
 
+	Template string
 	Partials Partials
 
 	SplitSections        bool

@@ -93,14 +93,10 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 	return "html"
 }
 
-func (engine *HTMLRenderingEngine) Render(out io.Writer) error {
-	if engine.template == nil {
-		return fmt.Errorf("unknown template for %T", engine.data)
-	}
-
-	return engine.template.Funcs(template.FuncMap{
-		"render": engine.subRender,
-	}).Execute(out, engine.data)
+func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
+	engine.template = engine.tmpl.Lookup("page.tmpl")
+	engine.data = con
+	return engine.render(out)
 }
 
 func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
@@ -116,17 +112,12 @@ func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error 
 }
 
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
-	var pageTemplate *template.Template
-
-	if con.Parent == nil || con.Parent.SplitSections {
-		pageTemplate = engine.tmpl.Lookup("page.tmpl")
+	if con.Template != "" {
+		engine.template = engine.tmpl.Lookup(con.Template + ".tmpl")
+	} else {
+		engine.template = engine.tmpl.Lookup("section.tmpl")
 	}
 
-	if pageTemplate == nil {
-		pageTemplate = engine.tmpl.Lookup("section.tmpl")
-	}
-
-	engine.template = pageTemplate
 	engine.data = con
 
 	return nil
@@ -214,6 +205,16 @@ func (engine *HTMLRenderingEngine) VisitDefinitions(con booklit.Definitions) err
 	return nil
 }
 
+func (engine *HTMLRenderingEngine) render(out io.Writer) error {
+	if engine.template == nil {
+		return fmt.Errorf("unknown template for %T", engine.data)
+	}
+
+	return engine.template.Funcs(template.FuncMap{
+		"render": engine.subRender,
+	}).Execute(out, engine.data)
+}
+
 func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.HTML, error) {
 	buf := new(bytes.Buffer)
 
@@ -225,7 +226,7 @@ func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.
 		return "", err
 	}
 
-	err = subEngine.Render(buf)
+	err = subEngine.render(buf)
 	if err != nil {
 		return "", err
 	}

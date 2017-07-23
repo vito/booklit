@@ -2,6 +2,6 @@
 {{template "partial-template.tmpl" .}}
 {{else}}
 <section>
-  {{template "section.tmpl" .}}
+  {{. | render}}
 </section>
 {{end}}

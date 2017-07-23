@@ -1,6 +1,10 @@
 <h{{headerDepth .}}>{{ if .Parent }}{{.Number}} {{ end }}{{.Title | render }}</h{{headerDepth .}}>
 
-{{.Body | render}}
+I'm a custom template! Here's my body:
+
+<div class="custom-body">
+  {{.Body | render}}
+</div>
 
 {{if not .SplitSections}}
   {{range .Children}}

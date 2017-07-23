@@ -372,4 +372,56 @@ This is some more content.
 `,
 		},
 	}),
+
+	Entry("custom templates", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\section{
+	\title{How I'm doing}
+
+	\template{custom-template}
+
+	Good, thanks! And you?
+
+	\section{
+		\title{After Much Deliberation}
+
+		I have decided that I'm doing well. How about you?
+	}
+}
+
+\section{
+	\title{Their Reply}
+
+	Good, thanks!
+}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm doing</h2>
+
+	I'm a custom template! Here's my body:
+
+	<div class="custom-body">
+		<p>Good, thanks! And you?</p>
+	</div>
+
+	<h3>1.1 After Much Deliberation</h3>
+
+	<p>I have decided that I'm doing well. How about you?</p>
+
+	<h2>2 Their Reply</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+		},
+	}),
 )
