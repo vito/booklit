@@ -136,7 +136,7 @@
     <div class="page">
       <h1 class="section-header"><a name="getting-started"></a><span class="section-number">1 </span>Getting Started</h1>
 
-
+<p>First you&#39;ll need to grab the <code>booklit</code> CLI. This can be fetched from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>. Download the appropriate binary for your platform, <code>chmod &#43;x</code> it, and drop it somewhere in your <code>$PATH</code>.</p><p>The <code>chmod</code>ing and copying can be done in one fell swoop with <code>install</code>, like so:</p><pre>$ install ~/Downloads/booklit_* ~/bin/booklit</pre><p>Then, run <code>booklit -v</code>. You should see the version number printed out, assuming <code>~/bin</code> is in your <code>$PATH</code>.</p>
 
 
   
@@ -178,7 +178,7 @@ I&#39;m a Booklit document!
   \title{Hi there!}
 
   I&#39;m so organized!
-}</pre><p>You may want to use this in combination with <code>\table-of-contents</code>, which generates a...table of contents:</p><pre>\title{Hello, world!}{hello}
+}</pre><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done generally with <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a>:</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
@@ -190,7 +190,7 @@ I&#39;m a Booklit document!
   \title{Hi there!}
 
   I&#39;m so organized!
-}</pre>
+}</pre><p>Note that when viewing the sub-section, its header is now a <code>&lt;h1&gt;</code> rather than the <code>&lt;h2&gt;</code> it was before, since it stands on its own page.</p>
 
 
   
@@ -198,7 +198,7 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a name="references-and-tagging"></a><span class="section-number">1.4 </span>References &amp; Tagging</h2>
 
-<p>Having separate pages isn&#39;t very useful without a way to link to them. For this, use <code>\reference</code>:</p><pre>\title{Hello, world!}{hello}
+<p>Having a <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
@@ -209,7 +209,7 @@ I&#39;m a Booklit document! To read further, see
   \title{Hi there!}
 
   I&#39;m so organized!
-}</pre><p>The first argument to <code>\reference</code> is the name of a tag to reference. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <code>\reference</code>:</p><pre>\title{Hello, world!}{hello}
+}</pre><p>The first argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
@@ -228,9 +228,9 @@ I&#39;m a Booklit document! Consult
   
     <h2 class="section-header"><a name="next-steps"></a><span class="section-number">1.5 </span>Next Steps</h2>
 
-<p>What to do from here really depends on what you&#39;re trying to write.</p><ul>
+<p>What we&#39;ve gone over should carry you pretty far. But you&#39;ll likely want to know a lot more.</p><ul>
 
-  <li><p>To learn all the things you can do in a document out-of-the-box, consult <a href="baselit.html">The <code>baselit</code> Plugin</a>.</p></li>
+  <li><p>To learn all the <code>\functions</code> you can call in a document out-of-the-box, consult <a href="baselit.html">The <code>baselit</code> Plugin</a>.</p></li>
 
   <li><p>To change how your generated content looks, check out the <a href="html-renderer.html">HTML renderer</a>.</p></li>
 

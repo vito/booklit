@@ -1,5 +1,20 @@
 \title{Getting Started}
 
+First you'll need to grab the \code{booklit} CLI. This can be fetched from the
+latest \link{GitHub release}{https://github.com/vito/booklit/releases/latest}.
+Download the appropriate binary for your platform, \code{chmod +x} it, and drop
+it somewhere in your \code{$PATH}.
+
+The \code{chmod}ing and copying can be done in one fell swoop with
+\code{install}, like so:
+
+\code{{{
+$ install ~/Downloads/booklit_* ~/bin/booklit
+}}}
+
+Then, run \code{booklit -v}. You should see the version number printed out,
+assuming \code{~/bin} is in your \code{$PATH}.
+
 \section{
   \title{Hello, world!}
 
