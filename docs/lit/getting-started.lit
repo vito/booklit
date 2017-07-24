@@ -6,7 +6,7 @@
   First, create a file called \code{hello.lit} with the following content:
 
   \code{{{
-    \title{Hello, world!}
+    \title{Hello, world!}{hello}
 
     I'm a Booklit document!
   }}}
@@ -27,8 +27,10 @@
   $ booklit -i hello.lit -o docs -s 8000
   }}
 
-  Then, browse to \link{127.0.0.1:8000}{http://127.0.0.1:8000}. When you change
-  anything, just refresh and your content will be rebuilt and served.
+  Then, browse to
+  \link{http://127.0.0.1:8000/hello.html}{http://127.0.0.1:8000/hello.html}.
+  When you change anything, just refresh and your content will be rebuilt and
+  served.
 }
 
 \section{
@@ -37,7 +39,7 @@
   Next, let's try adding a section within our document:
 
   \code{{{
-    \title{Hello, world!}
+    \title{Hello, world!}{hello}
 
     I'm a Booklit document!
 
@@ -55,10 +57,15 @@
 
     I'm a Booklit document!
 
-    \larger{\larger{Hi there!}}
+    \larger{\larger{1 Hi there!}}
 
     I'm so organized!
   }
+
+  That number "1" might look a bit weird at the moment, but it's the section
+  number, and will be something like "3.2" for a nested section. You can always
+  remove it by specifying your own template (more on that later), but for now
+  let's leave it.
 }
 
 \section{
@@ -68,7 +75,7 @@
   \code{\\split-sections} somewhere in the section.
 
   \code{{{
-    \title{Hello, world!}
+    \title{Hello, world!}{hello}
 
     \split-sections
 
@@ -81,11 +88,12 @@
     }
   }}}
 
-  You may want to use this in combination with \code{\\table-of-contents},
-  which generates a...table of contents:
+  So far we've just made the section disappear, which isn't very helpful. Let's
+  at least make it so we can browse to it! This can be done generally with
+  \reference{table-of-contents}:
 
   \code{{{
-    \title{Hello, world!}
+    \title{Hello, world!}{hello}
 
     \split-sections
 
@@ -99,16 +107,20 @@
       I'm so organized!
     }
   }}}
+
+  Note that when viewing the sub-section, its header is now a \code{<h1>}
+  rather than the \code{<h2>} it was before, since it stands on its own page.
 }
 
 \section{
   \title{References & Tagging}
 
-  Having separate pages isn't very useful without a way to link to them. For
-  this, use \code{\\reference}:
+  Having a \reference{table-of-contents} is great and all, but more often
+  you'll want to reference sections from each other directly and in context.
+  This can be done with \reference{reference}:
 
   \code{{{
-    \title{Hello, world!}
+    \title{Hello, world!}{hello}
 
     \split-sections
 
@@ -122,14 +134,14 @@
     }
   }}}
 
-  The first argument to \code{\\reference} is the name of a tag to reference.
-  At build time, references will \italic{resolve} to their tag, and generate
-  a link to it. By default, the name of the link is determined by the tag, so
-  for a section it'll be the section's title. This can be overridden by
-  passing a second argument to \code{\\reference}:
+  The first argument to \reference{reference} is the name of a tag to link. At
+  build time, references will \italic{resolve} to their tag, and generate a
+  link to it. By default, the name of the link is determined by the tag, so for
+  a section it'll be the section's title. This can be overridden by passing a
+  second argument to \reference{reference}:
 
   \code{{{
-    \title{Hello, world!}
+    \title{Hello, world!}{hello}
 
     \split-sections
 
@@ -147,11 +159,12 @@
 \section{
   \title{Next Steps}
 
-  What to do from here really depends on what you're trying to write.
+  What we've gone over should carry you pretty far. But you'll likely want to
+  know a lot more.
 
   \list{
-    To learn all the things you can do in a document out-of-the-box, consult
-    \reference{baselit}.
+    To learn all the \code{\\functions} you can call in a document
+    out-of-the-box, consult \reference{baselit}.
   }{
     To change how your generated content looks, check out the
     \reference{html-renderer}{HTML renderer}.

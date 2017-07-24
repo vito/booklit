@@ -142,9 +142,9 @@
   
     <h2 class="section-header"><a name="hello-world"></a><span class="section-number">1.1 </span>Hello, world!</h2>
 
-<p>First, create a file called <code>hello.lit</code> with the following content:</p><pre>\title{Hello, world!}
+<p>First, create a file called <code>hello.lit</code> with the following content:</p><pre>\title{Hello, world!}{hello}
 
-I&#39;m a Booklit document!</pre><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><pre>$ booklit -i hello.lit -o docs</pre><p>Each of the changes in the following sections will necessitate re-building. This can be done by running the above command again.</p><p>Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server showing your generated content:</p><pre>$ booklit -i hello.lit -o docs -s 8000</pre><p>Then, browse to <a href="http://127.0.0.1:8000">127.0.0.1:8000</a>. When you change anything, just refresh and your content will be rebuilt and served.</p>
+I&#39;m a Booklit document!</pre><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><pre>$ booklit -i hello.lit -o docs</pre><p>Each of the changes in the following sections will necessitate re-building. This can be done by running the above command again.</p><p>Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server showing your generated content:</p><pre>$ booklit -i hello.lit -o docs -s 8000</pre><p>Then, browse to <a href="http://127.0.0.1:8000/hello.html">http://127.0.0.1:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and served.</p>
 
 
   
@@ -152,7 +152,7 @@ I&#39;m a Booklit document!</pre><p>Then, run the following to build it as <code
   
     <h2 class="section-header"><a name="organizing-with-sections"></a><span class="section-number">1.2 </span>Organizing with Sections</h2>
 
-<p>Next, let&#39;s try adding a section within our document:</p><pre>\title{Hello, world!}
+<p>Next, let&#39;s try adding a section within our document:</p><pre>\title{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
 
@@ -160,7 +160,7 @@ I&#39;m a Booklit document!
   \title{Hi there!}
 
   I&#39;m so organized!
-}</pre><p>Upon building this you should see something like:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">Hi there!</span></span></p><p>I&#39;m so organized!</p></div>
+}</pre><p>Upon building this you should see something like:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and will be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it.</p>
 
 
   
@@ -168,7 +168,7 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a name="splitting-sections"></a><span class="section-number">1.3 </span>Splitting Sections</h2>
 
-<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><pre>\title{Hello, world!}
+<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
@@ -178,7 +178,7 @@ I&#39;m a Booklit document!
   \title{Hi there!}
 
   I&#39;m so organized!
-}</pre><p>You may want to use this in combination with <code>\table-of-contents</code>, which generates a...table of contents:</p><pre>\title{Hello, world!}
+}</pre><p>You may want to use this in combination with <code>\table-of-contents</code>, which generates a...table of contents:</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
@@ -198,7 +198,7 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a name="references-and-tagging"></a><span class="section-number">1.4 </span>References &amp; Tagging</h2>
 
-<p>Having separate pages isn&#39;t very useful without a way to link to them. For this, use <code>\reference</code>:</p><pre>\title{Hello, world!}
+<p>Having separate pages isn&#39;t very useful without a way to link to them. For this, use <code>\reference</code>:</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
@@ -209,7 +209,7 @@ I&#39;m a Booklit document! To read further, see
   \title{Hi there!}
 
   I&#39;m so organized!
-}</pre><p>The first argument to <code>\reference</code> is the name of a tag to reference. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <code>\reference</code>:</p><pre>\title{Hello, world!}
+}</pre><p>The first argument to <code>\reference</code> is the name of a tag to reference. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <code>\reference</code>:</p><pre>\title{Hello, world!}{hello}
 
 \split-sections
 
