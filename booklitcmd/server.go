@@ -24,7 +24,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	server.buildLock.Lock()
 
 	if server.shouldBuild() {
-		paths, err := server.Command.build(false)
+		paths, err := server.Command.Build(false)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to build:\n\n%s", err), http.StatusInternalServerError)
 			server.buildLock.Unlock()
@@ -33,6 +33,8 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		server.builtPaths = paths
 		server.lastBuilt = time.Now()
+
+		logrus.Info("build complete")
 	}
 
 	server.buildLock.Unlock()
@@ -65,12 +67,12 @@ func (server *Server) shouldBuild() bool {
 
 		info, err := os.Stat(path)
 		if err != nil {
-			log.Infof("removed; rebuilding")
+			log.Infof("file removed; rebuilding")
 			return true
 		}
 
 		if info.ModTime().After(server.lastBuilt) {
-			log.Infof("changed; rebuilding")
+			log.Infof("change detected; rebuilding")
 			return true
 		}
 	}

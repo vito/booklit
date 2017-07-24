@@ -144,7 +144,7 @@
 
 <p>First, create a file called <code>hello.lit</code> with the following content:</p><pre>\title{Hello, world!}
 
-I&#39;m a Booklit document!</pre><p>Then, run the following to build it in to <code>./docs/hello.html</code>:</p><pre>$ booklit -i hello.lit -o docs</pre>
+I&#39;m a Booklit document!</pre><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><pre>$ booklit -i hello.lit -o docs</pre><p>Each of the changes in the following sections will necessitate re-building. This can be done by running the above command again.</p><p>Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server showing your generated content:</p><pre>$ booklit -i hello.lit -o docs -s 8000</pre><p>Then, browse to <a href="http://127.0.0.1:8000">127.0.0.1:8000</a>. When you change anything, just refresh and your content will be rebuilt and served.</p>
 
 
   

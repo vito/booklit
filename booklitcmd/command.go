@@ -38,9 +38,9 @@ func (cmd *Command) Execute(args []string) error {
 	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
 
 	if cmd.ServerPort != 0 && !isReexec {
-		return cmd.serve()
+		return cmd.Serve()
 	} else {
-		paths, err := cmd.build(isReexec)
+		paths, err := cmd.Build(isReexec)
 		if isReexec {
 			err = json.NewEncoder(os.Stdout).Encode(reexecOutput{
 				Paths: paths,
@@ -54,7 +54,7 @@ func (cmd *Command) Execute(args []string) error {
 	}
 }
 
-func (cmd *Command) serve() error {
+func (cmd *Command) Serve() error {
 	http.Handle("/", &Server{
 		Command:    cmd,
 		FileServer: http.FileServer(http.Dir(cmd.Out)),
@@ -67,7 +67,7 @@ type reexecOutput struct {
 	Paths []string
 }
 
-func (cmd *Command) build(isReexec bool) ([]string, error) {
+func (cmd *Command) Build(isReexec bool) ([]string, error) {
 	if len(cmd.Plugins) > 0 && !isReexec {
 		return cmd.reexec()
 	}

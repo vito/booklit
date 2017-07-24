@@ -11,11 +11,24 @@
     I'm a Booklit document!
   }}}
 
-  Then, run the following to build it in to \code{./docs/hello.html}:
+  Then, run the following to build it as \code{./docs/hello.html}:
 
   \code{{
   $ booklit -i hello.lit -o docs
   }}
+
+  Each of the changes in the following sections will necessitate re-building.
+  This can be done by running the above command again.
+
+  Alternatively, you can run \code{booklit} with the \code{-s} flag to start a
+  HTTP server showing your generated content:
+
+  \code{{
+  $ booklit -i hello.lit -o docs -s 8000
+  }}
+
+  Then, browse to \link{127.0.0.1:8000}{http://127.0.0.1:8000}. When you change
+  anything, just refresh and your content will be rebuilt and served.
 }
 
 \section{
