@@ -5,7 +5,7 @@ Booklit is a static-site generator where the content is king.
 Content is organized as a tree of \reference{sections}{sections}. Each section
 controls whether its sub-sections should render inline or on their own pages.
 Header sizes are set intelligently, so you're not spending your time adjusting
-\code{<h1>} and \code{<h2>}s.
+\code{<h1>}s to \code{<h2>}s.
 
 Linking within your content is done by \reference{reference}{referencing tags},
 rather than hardcoding URLs. An error will be raised if any references are
