@@ -2,6 +2,7 @@ package baselit
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/vito/booklit"
@@ -64,7 +65,17 @@ func (plugin Plugin) Section(node ast.Node) error {
 func (plugin Plugin) IncludeSection(path string) error {
 	sectionPath := filepath.Join(filepath.Dir(plugin.section.Path), path)
 
-	result, err := ast.ParseFile(sectionPath)
+	file, err := os.Open(sectionPath)
+	if err != nil {
+		return err
+	}
+
+	result, err := ast.ParseReader(sectionPath, file)
+	if err != nil {
+		return err
+	}
+
+	err = file.Close()
 	if err != nil {
 		return err
 	}

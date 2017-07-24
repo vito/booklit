@@ -1,6 +1,8 @@
 package load
 
 import (
+	"os"
+
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/stages"
@@ -13,7 +15,17 @@ type Processor struct {
 }
 
 func (processor *Processor) LoadFile(path string) (*booklit.Section, error) {
-	result, err := ast.ParseFile(path)
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := ast.ParseReader(path, file)
+	if err != nil {
+		return nil, err
+	}
+
+	err = file.Close()
 	if err != nil {
 		return nil, err
 	}
