@@ -113,7 +113,8 @@ line}
         \\with\{no-syntax\}
       \}\}\}
     }}}{
-      Tripled-up curly braces behave the same as double, except there is no
+      Tripled-up curly braces form a verbatim argument. Similar to
+      preformatted, whitespace is preserved. In addition, there is no
       interpreting or parsing of Booklit syntax within. This is useful for
       large code blocks where the content may contain special characters that
       Booklit normally may interpret (e.g. \code{\\}, \code{\{}, \code{\}}).
