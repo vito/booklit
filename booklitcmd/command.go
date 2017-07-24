@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/load"
@@ -27,6 +28,8 @@ type Command struct {
 
 	Plugins []string `long:"plugin" short:"p" description:"Package to import, providing a plugin."`
 
+	Debug bool `long:"debug" short:"d" description:"Log at debug level."`
+
 	AllowBrokenReferences bool `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
 
 	HTMLEngine struct {
@@ -35,6 +38,10 @@ type Command struct {
 }
 
 func (cmd *Command) Execute(args []string) error {
+	if cmd.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
 
 	if cmd.ServerPort != 0 && !isReexec {

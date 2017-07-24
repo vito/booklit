@@ -21,6 +21,8 @@ type Server struct {
 }
 
 func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	logrus.Debugln("serving", r.URL.Path)
+
 	server.buildLock.Lock()
 
 	if server.shouldBuild() {
