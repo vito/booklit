@@ -22,7 +22,7 @@ templates and control exactly how everything should look.
 This website is written with Booklit. The source is available on GitHub under
 \link{\code{docs/lit}}{https://github.com/vito/booklit/tree/master/docs/lit}.
 To learn how to start writing your own stuff, head to
-\reference{getting-started}.
+\reference{getting-started}!
 
 \split-sections
 
