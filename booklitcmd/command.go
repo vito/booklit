@@ -3,6 +3,7 @@ package booklitcmd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"go/build"
 	"io/ioutil"
@@ -48,8 +49,12 @@ func (cmd *Command) Execute(args []string) error {
 		return cmd.Serve()
 	} else {
 		paths, err := cmd.Build(isReexec)
+		if err != nil {
+			return err
+		}
+
 		if isReexec {
-			err = json.NewEncoder(os.Stdout).Encode(reexecOutput{
+			err := json.NewEncoder(os.Stdout).Encode(reexecOutput{
 				Paths: paths,
 			})
 			if err != nil {
@@ -57,7 +62,7 @@ func (cmd *Command) Execute(args []string) error {
 			}
 		}
 
-		return err
+		return nil
 	}
 }
 
