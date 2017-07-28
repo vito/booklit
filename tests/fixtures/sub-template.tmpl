@@ -1,8 +1,8 @@
 <h{{headerDepth .}}>{{ if .Parent }}{{.Number}} {{ end }}{{.Title | render }}</h{{headerDepth .}}>
 
-I'm a custom template! Here's my body:
+<p>I'm a sub template! Here's my body:</p>
 
-<div class="custom-body">
+<div class="custom-sub-body">
   {{.Body | render}}
 </div>
 

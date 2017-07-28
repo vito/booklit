@@ -1,0 +1,13 @@
+<h{{headerDepth .}}>{{ if .Parent }}{{.Number}} {{ end }}{{.Title | render }}</h{{headerDepth .}}>
+
+<p>I'm a toplevel template! Here's my body:</p>
+
+<div class="custom-top-body">
+  {{.Body | render}}
+</div>
+
+{{if not .SplitSections}}
+  {{range .Children}}
+    {{. | render}}
+  {{end}}
+{{end}}

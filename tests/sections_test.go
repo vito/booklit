@@ -373,15 +373,17 @@ This is some more content.
 		},
 	}),
 
-	Entry("custom templates", Example{
+	Entry("styled sections", Example{
 		Input: `\title{Hello, world!}
+
+\styled{top-template}
 
 How are you?
 
 \section{
 	\title{How I'm doing}
 
-	\styled{custom-template}
+	\styled{sub-template}
 
 	Good, thanks! And you?
 
@@ -400,16 +402,20 @@ How are you?
 `,
 
 		Outputs: Files{
-			"hello-world.html": `<section>
+			"hello-world.html": `<section class="custom-top-page">
 	<h1>Hello, world!</h1>
 
-	<p>How are you?</p>
+	<p>I'm a toplevel template! Here's my body:</p>
+
+	<div class="custom-top-body">
+		<p>How are you?</p>
+	</div>
 
 	<h2>1 How I'm doing</h2>
 
-	I'm a custom template! Here's my body:
+	<p>I'm a sub template! Here's my body:</p>
 
-	<div class="custom-body">
+	<div class="custom-sub-body">
 		<p>Good, thanks! And you?</p>
 	</div>
 

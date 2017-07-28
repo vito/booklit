@@ -94,8 +94,14 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 }
 
 func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
-	engine.template = engine.tmpl.Lookup("page.tmpl")
+	if con.Style != "" {
+		engine.template = engine.tmpl.Lookup(con.Style + "-page.tmpl")
+	} else {
+		engine.template = engine.tmpl.Lookup("page.tmpl")
+	}
+
 	engine.data = con
+
 	return engine.render(out)
 }
 
