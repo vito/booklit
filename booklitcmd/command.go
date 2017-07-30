@@ -200,21 +200,29 @@ func (cmd *Command) reexec() ([]string, error) {
 	}
 
 	build := exec.Command("go", "build", "-o", bin, src)
-	build.Stdout = os.Stdout
-	build.Stderr = os.Stderr
-	err = build.Run()
+
+	buildOutput, err := build.CombinedOutput()
 	if err != nil {
-		return nil, err
+		if _, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("compilation failed:\n\n%s", string(buildOutput))
+		} else {
+			return nil, err
+		}
 	}
 
 	buf := new(bytes.Buffer)
+	errBuf := new(bytes.Buffer)
 	run := exec.Command(bin, os.Args[1:]...)
 	run.Env = append(os.Environ(), "BOOKLIT_REEXEC=1")
 	run.Stdout = buf
-	run.Stderr = os.Stderr
+	run.Stderr = errBuf
 	err = run.Run()
 	if err != nil {
-		return nil, err
+		if _, ok := err.(*exec.ExitError); ok {
+			return nil, errors.New(errBuf.String())
+		} else {
+			return nil, err
+		}
 	}
 
 	var res reexecOutput

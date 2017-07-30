@@ -1,7 +1,6 @@
 package booklitcmd
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -28,7 +27,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if server.shouldBuild() {
 		paths, err := server.Command.Build(false)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to build:\n\n%s", err), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			server.buildLock.Unlock()
 			return
 		}
