@@ -54,8 +54,14 @@ func (strip *stripAuxVisitor) VisitTableOfContents(con TableOfContents) error {
 }
 
 func (strip *stripAuxVisitor) VisitStyled(con Styled) error {
-	con.Content = StripAux(con.Content)
-	strip.Result = con
+	stripped, err := con.Walk(func(c Content) (Content, error) {
+		return StripAux(c), nil
+	})
+	if err != nil {
+		return err
+	}
+
+	strip.Result = stripped
 	return nil
 }
 

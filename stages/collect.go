@@ -86,7 +86,10 @@ func (collect *Collect) VisitTableOfContents(booklit.TableOfContents) error {
 }
 
 func (collect *Collect) VisitStyled(con booklit.Styled) error {
-	return con.Content.Visit(collect)
+	_, err := con.Walk(func(c booklit.Content) (booklit.Content, error) {
+		return c, c.Visit(collect)
+	})
+	return err
 }
 
 func (collect *Collect) VisitBlock(con booklit.Block) error {

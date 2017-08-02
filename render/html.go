@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"path/filepath"
 	"strings"
 
@@ -79,12 +80,24 @@ func NewHTMLRenderingEngine() *HTMLRenderingEngine {
 }
 
 func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
-	tmpl, err := engine.tmpl.ParseGlob(filepath.Join(templatesDir, "*.tmpl"))
+	templates, err := filepath.Glob(filepath.Join(templatesDir, "*.tmpl"))
 	if err != nil {
 		return err
 	}
 
-	engine.tmpl = tmpl
+	for _, path := range templates {
+		content, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		trimmed := strings.TrimRight(string(content), "\n")
+
+		_, err = engine.tmpl.New(filepath.Base(path)).Parse(trimmed)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -159,7 +172,12 @@ func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
 		return fmt.Errorf("no template defined for style: %s", con.Style)
 	}
 
-	engine.data = con.Content
+	if con.Content != nil {
+		engine.data = con.Content
+	} else {
+		engine.data = con.Data
+	}
+
 	return nil
 }
 
