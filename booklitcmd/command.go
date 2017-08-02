@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"go/build"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -215,7 +216,7 @@ func (cmd *Command) reexec() ([]string, error) {
 	run := exec.Command(bin, os.Args[1:]...)
 	run.Env = append(os.Environ(), "BOOKLIT_REEXEC=1")
 	run.Stdout = buf
-	run.Stderr = errBuf
+	run.Stderr = io.MultiWriter(os.Stderr, errBuf)
 	err = run.Run()
 	if err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
