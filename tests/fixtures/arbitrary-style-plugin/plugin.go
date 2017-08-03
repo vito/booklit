@@ -1,4 +1,4 @@
-package baselit
+package plugin
 
 import "github.com/vito/booklit"
 

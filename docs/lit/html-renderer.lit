@@ -127,7 +127,7 @@ booklit -i ./index.any -o ./docs \
   Booklit's base templates then include a \code{bold.tmpl} template:
 
   \code{{{
-  <strong>{{. | render}}</strong>
+  <strong>{{.Content | render}}</strong>
   }}}
 
   Thus, when content is styled with \code{"bold"}, it will render in

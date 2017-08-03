@@ -2,31 +2,43 @@ package tests
 
 import (
 	. "github.com/onsi/ginkgo/extensions/table"
-	_ "github.com/vito/booklit/tests/fixtures/data-style-plugin"
+	_ "github.com/vito/booklit/tests/fixtures/partials-style-plugin"
 )
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("styling with custom data", Example{
 		Input: `\title{Hello, world!}
 
-\use-plugin{data-style}
+\use-plugin{partial-style}
 
-\struct-style{Hello, \target{target-a}{some target} \reference{target-b}!}
+\block-style{Title A}{
+	Hello, \target{target-a}{some target} \reference{target-b}!
+}
 
-\map-style{Hello again, \target{target-b}{some other target} \reference{target-a}!}
+\block-style{Title B}{
+	Hello again, \target{target-b}{some other target} \reference{target-a}!
+}
 
-This is an \inline-style{inline style}!
+This is an \inline-style{Title C}{inline style}!
 `,
 
 		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-  <div class="data-style">Hello, <a name="target-a"></a> <a href="hello-world.html#target-b">some other target</a>!</div>
+  <div class="custom-style">
+		<h3>Title A</h3>
 
-  <div class="data-style">Hello again, <a name="target-b"></a> <a href="hello-world.html#target-a">some target</a>!</div>
+		<p>Hello, <a name="target-a"></a> <a href="hello-world.html#target-b">some other target</a>!</p>
+	</div>
 
-  <p>This is an <span class="inline-style">inline style</span>!</p>
+  <div class="custom-style">
+		<h3>Title B</h3>
+
+		<p>Hello again, <a name="target-b"></a> <a href="hello-world.html#target-a">some target</a>!</p>
+	</div>
+
+	<p>This is an <span class="inline-style"><strong>Title C</strong>: inline style</span>!</p>
 </section>
 `,
 		},

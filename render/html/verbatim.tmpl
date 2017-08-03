@@ -1,1 +1,1 @@
-{{if .IsFlow}}<code>{{. | render}}</code>{{else}}<pre>{{. | render}}</pre>{{end}}
+{{if .IsFlow}}<code>{{.Content | render}}</code>{{else}}<pre>{{.Content | render}}</pre>{{end}}

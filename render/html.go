@@ -172,11 +172,7 @@ func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
 		return fmt.Errorf("no template defined for style: %s", con.Style)
 	}
 
-	if con.Content != nil {
-		engine.data = con.Content
-	} else {
-		engine.data = con.Data
-	}
+	engine.data = con
 
 	return nil
 }

@@ -107,10 +107,19 @@ func (resolve *Resolve) VisitTableOfContents(booklit.TableOfContents) error {
 }
 
 func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
-	_, err := con.Walk(func(c booklit.Content) (booklit.Content, error) {
-		return c, c.Visit(resolve)
-	})
-	return err
+	err := con.Content.Visit(resolve)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range con.Partials {
+		err := v.Visit(resolve)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (resolve *Resolve) VisitTarget(con booklit.Target) error {

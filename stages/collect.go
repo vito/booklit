@@ -86,10 +86,19 @@ func (collect *Collect) VisitTableOfContents(booklit.TableOfContents) error {
 }
 
 func (collect *Collect) VisitStyled(con booklit.Styled) error {
-	_, err := con.Walk(func(c booklit.Content) (booklit.Content, error) {
-		return c, c.Visit(collect)
-	})
-	return err
+	err := con.Content.Visit(collect)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range con.Partials {
+		err := v.Visit(collect)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (collect *Collect) VisitBlock(con booklit.Block) error {
