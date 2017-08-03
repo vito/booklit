@@ -92,6 +92,10 @@ func (collect *Collect) VisitStyled(con booklit.Styled) error {
 	}
 
 	for _, v := range con.Partials {
+		if v == nil {
+			continue
+		}
+
 		err := v.Visit(collect)
 		if err != nil {
 			return err

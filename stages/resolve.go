@@ -113,6 +113,10 @@ func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
 	}
 
 	for _, v := range con.Partials {
+		if v == nil {
+			continue
+		}
+
 		err := v.Visit(resolve)
 		if err != nil {
 			return err

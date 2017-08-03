@@ -58,6 +58,10 @@ func (strip *stripAuxVisitor) VisitStyled(con Styled) error {
 
 	strippedPartials := Partials{}
 	for k, v := range con.Partials {
+		if v == nil {
+			continue
+		}
+
 		strippedPartials[k] = StripAux(v)
 	}
 
