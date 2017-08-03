@@ -107,17 +107,18 @@ booklit -i ./index.any -o ./docs \
 \section{
   \title{Styled Content}
 
-  In addition to the above templates, using \godoc{booklit.Styled} will
-  result in the renderer using the template named after the style being
-  executed with the content being styled as \code{.}.
+  In addition to the above templates, using \godoc{booklit.Styled} will result
+  in the renderer using the template named after the style being executed with
+  the content being styled as \code{.Content}.
 
   For example, \reference{bold} is implemented in the
   \reference{baselit}{\code{baselit}} plugin by returning:
 
   \code{{{
     booklit.Styled{
-      Content: content,
       Style:   booklit.StyleBold,
+
+      Content: content,
     }
   }}}
 
@@ -132,6 +133,38 @@ booklit -i ./index.any -o ./docs \
 
   Thus, when content is styled with \code{"bold"}, it will render in
   \bold{strong tags}.
+
+  \section{
+    \title{Styles with Partials}
+
+    Additional bits of content can be propagated to the template by setting
+    them as \code{Partials}:
+
+    \code{{{
+      booklit.Styled{
+        Style: "my-wackadoo-style",
+
+        Content: content,
+
+        Partials: booklit.Partials{
+          "Title": title,
+        },
+      }
+    }}}
+
+    Then, with \code{my-wackadoo-style.tmpl} as the following:
+
+    \code{{{
+    <div class="wack">
+      <h1>{{.Partial "Title" | render}}</h1>
+
+      {{.Content | render}}
+    </div>
+    }}}
+
+    This would result with \code{title} rendered in between the \code{<h1>}
+    tags, and \code{content} rendered below.
+  }
 }
 
 \section{
