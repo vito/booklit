@@ -1,4 +1,5 @@
 \use-plugin{booklitdoc}
+\use-plugin{pygments}
 
 \title{Extending with Plugins}{plugins}
 
@@ -75,14 +76,14 @@ reference when writing your own plugin.
   plugin's package in your \code{$GOPATH}. Let's just call it something cute
   like \code{pluglit}.
 
-  \code{{{
+  \syntax{bash}{{{
   mkdir $GOPATH/src/pluglit
   }}}
 
   Then, we'll create the initial skeleton for our plugin at
   \code{$GOPATH/src/pluglit/plugin.go}:
 
-  \code{{{
+  \syntax{go}{{{
   package pluglit
 
   import (
@@ -109,7 +110,7 @@ reference when writing your own plugin.
   Let's define some document functions! Functions work by simply defining
   methods on the plugin. Let's define a basic one with no arguments:
 
-  \code{{{
+  \syntax{go}{{{
   func (plugin Plugin) HelloWorld() booklit.Content {
     return booklit.String("Hello, world!")
   }
@@ -199,7 +200,7 @@ reference when writing your own plugin.
     Putting the pieces together, let's extend our \code{pluglit} plugin from
     earlier write a real function that does something useful:
 
-    \code{{{
+    \syntax{go}{{{
       func (plugin Plugin) DescribeFruit(
         name string,
         definition booklit.Content,

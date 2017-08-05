@@ -6,6 +6,7 @@
     <title>Extending with Plugins</title>
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
   </head>
@@ -187,27 +188,30 @@ Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple time
   
     <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.3 </span>Writing Plugins</h2>
 
-<p>To write a new plugin, first you&#39;ll need to create a directory for your plugin&#39;s package in your <code>$GOPATH</code>. Let&#39;s just call it something cute like <code>pluglit</code>.</p><pre>mkdir $GOPATH/src/pluglit</pre><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>$GOPATH/src/pluglit/plugin.go</code>:</p><pre>package pluglit
+<p>To write a new plugin, first you&#39;ll need to create a directory for your plugin&#39;s package in your <code>$GOPATH</code>. Let&#39;s just call it something cute like <code>pluglit</code>.</p><p><pre class="highlight"><span></span>mkdir <span class="nv">$GOPATH</span>/src/pluglit
+</pre></p><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>$GOPATH/src/pluglit/plugin.go</code>:</p><p><pre class="highlight"><span></span><span class="kn">package</span> <span class="nx">pluglit</span>
 
-import (
-  &#34;github.com/vito/booklit&#34;
-)
+<span class="kn">import</span> <span class="p">(</span>
+  <span class="s">&quot;github.com/vito/booklit&quot;</span>
+<span class="p">)</span>
 
-func init() {
-  booklit.RegisterPlugin(&#34;pluglit&#34;, NewPlugin)
-}
+<span class="kd">func</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">booklit</span><span class="p">.</span><span class="nx">RegisterPlugin</span><span class="p">(</span><span class="s">&quot;pluglit&quot;</span><span class="p">,</span> <span class="nx">NewPlugin</span><span class="p">)</span>
+<span class="p">}</span>
 
-func NewPlugin(sec *booklit.Section) booklit.Plugin {
-  return Plugin{
-    section: sec,
-  }
-}
+<span class="kd">func</span> <span class="nx">NewPlugin</span><span class="p">(</span><span class="nx">sec</span> <span class="o">*</span><span class="nx">booklit</span><span class="p">.</span><span class="nx">Section</span><span class="p">)</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Plugin</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Plugin</span><span class="p">{</span>
+    <span class="nx">section</span><span class="p">:</span> <span class="nx">sec</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 
-type Plugin struct {
-  section *booklit.Section
-}</pre><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><pre>func (plugin Plugin) HelloWorld() booklit.Content {
-  return booklit.String(&#34;Hello, world!&#34;)
-}</pre><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><pre>\use-plugin{pluglit}
+<span class="kd">type</span> <span class="nx">Plugin</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">section</span> <span class="o">*</span><span class="nx">booklit</span><span class="p">.</span><span class="nx">Section</span>
+<span class="p">}</span>
+</pre></p><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><p><pre class="highlight"><span></span><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="nx">Plugin</span><span class="p">)</span> <span class="nx">HelloWorld</span><span class="p">()</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Content</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></p><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><pre>\use-plugin{pluglit}
 
 Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-plugins.lit -o out \
     --plugin pluglit</pre><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
@@ -253,38 +257,39 @@ Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-p
   
     <h3 class="section-header"><a name="a-full-example"></a><span class="section-number">4.3.3 </span>A Full Example</h3>
 
-<p>Putting the pieces together, let&#39;s extend our <code>pluglit</code> plugin from earlier write a real function that does something useful:</p><pre>func (plugin Plugin) DescribeFruit(
-  name string,
-  definition booklit.Content,
-  tags ...string,
-) (booklit.Content, error) {
-  if name == &#34;&#34; {
-    return nil, errors.New(&#34;name cannot be blank&#34;)
-  }
+<p>Putting the pieces together, let&#39;s extend our <code>pluglit</code> plugin from earlier write a real function that does something useful:</p><p><pre class="highlight"><span></span><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="nx">Plugin</span><span class="p">)</span> <span class="nx">DescribeFruit</span><span class="p">(</span>
+  <span class="nx">name</span> <span class="kt">string</span><span class="p">,</span>
+  <span class="nx">definition</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Content</span><span class="p">,</span>
+  <span class="nx">tags</span> <span class="o">...</span><span class="kt">string</span><span class="p">,</span>
+<span class="p">)</span> <span class="p">(</span><span class="nx">booklit</span><span class="p">.</span><span class="nx">Content</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">name</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;name cannot be blank&quot;</span><span class="p">)</span>
+  <span class="p">}</span>
 
-  content := booklit.Sequence{}
-  if len(tags) == 0 {
-    tags = []string{name}
-  }
+  <span class="nx">content</span> <span class="o">:=</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Sequence</span><span class="p">{}</span>
+  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">tags</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nx">tags</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span>
+  <span class="p">}</span>
 
-  for _, tag := range tags {
-    content = append(content, booklit.Target{
-      TagName: tag,
-      Display: booklit.String(name),
-    })
-  }
+  <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tag</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tags</span> <span class="p">{</span>
+    <span class="nx">content</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">content</span><span class="p">,</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Target</span><span class="p">{</span>
+      <span class="nx">TagName</span><span class="p">:</span> <span class="nx">tag</span><span class="p">,</span>
+      <span class="nx">Display</span><span class="p">:</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="nx">name</span><span class="p">),</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
 
-  content = append(content, booklit.Paragraph{
-    booklit.Styled{
-      Style: booklit.StyleBold,
-      Content: booklit.String(name),
-    },
-  })
+  <span class="nx">content</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">content</span><span class="p">,</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Paragraph</span><span class="p">{</span>
+    <span class="nx">booklit</span><span class="p">.</span><span class="nx">Styled</span><span class="p">{</span>
+      <span class="nx">Style</span><span class="p">:</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">StyleBold</span><span class="p">,</span>
+      <span class="nx">Content</span><span class="p">:</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="nx">name</span><span class="p">),</span>
+    <span class="p">},</span>
+  <span class="p">})</span>
 
-  content = append(content, definition)
+  <span class="nx">content</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">content</span><span class="p">,</span> <span class="nx">definition</span><span class="p">)</span>
 
-  return content, nil
-}</pre><p>There are many things to note here:</p><ul>
+  <span class="k">return</span> <span class="nx">content</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</pre></p><p>There are many things to note here:</p><ul>
 
   <li><p>there are two required arguments; <em>name</em> is a <code>string</code> and <em>value</em> is a <a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></p></li>
 
