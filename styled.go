@@ -1,10 +1,10 @@
 package booklit
 
 type Styled struct {
-	Content
-
 	Style Style
+	Block bool
 
+	Content  Content
 	Partials Partials
 }
 
@@ -22,6 +22,18 @@ const (
 	StyleInset       Style = "inset"
 	StyleAside       Style = "aside"
 )
+
+func (con Styled) String() string {
+	return con.Content.String()
+}
+
+func (con Styled) IsFlow() bool {
+	if con.Block {
+		return false
+	}
+
+	return con.Content.IsFlow()
+}
 
 func (con Styled) Visit(visitor Visitor) error {
 	return visitor.VisitStyled(con)

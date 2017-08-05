@@ -6,7 +6,7 @@ import (
 )
 
 var _ = DescribeTable("Booklit", (Example).Run,
-	Entry("styling with custom data", Example{
+	Entry("styling with partials", Example{
 		Input: `\title{Hello, world!}
 
 \use-plugin{partial-style}
@@ -20,6 +20,8 @@ var _ = DescribeTable("Booklit", (Example).Run,
 }
 
 This is an \inline-style{Title C}{inline style}!
+
+\block-style{Title D}{This is a line forced into block style!}
 `,
 
 		Outputs: Files{
@@ -39,6 +41,12 @@ This is an \inline-style{Title C}{inline style}!
 	</div>
 
 	<p>This is an <span class="inline-style"><strong>Title C</strong>: inline style</span>!</p>
+
+	<div class="custom-style">
+		<h3>Title D</h3>
+
+		This is a line forced into block style!
+	</div>
 </section>
 `,
 		},

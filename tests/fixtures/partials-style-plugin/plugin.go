@@ -23,6 +23,7 @@ type MyStruct struct {
 func (plugin Plugin) BlockStyle(title, content booklit.Content) booklit.Content {
 	return booklit.Styled{
 		Style: "custom-style",
+		Block: true,
 
 		Content: content,
 
