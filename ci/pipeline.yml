@@ -67,6 +67,7 @@ jobs:
   public: true
   plan:
   - get: booklit
+    version: every
     trigger: true
   - put: gh-status
     params: {path: booklit, state: pending}
