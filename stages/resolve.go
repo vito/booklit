@@ -130,14 +130,6 @@ func (resolve *Resolve) VisitTarget(con booklit.Target) error {
 	return con.Display.Visit(resolve)
 }
 
-func (resolve *Resolve) VisitBlock(con booklit.Block) error {
-	return con.Content.Visit(resolve)
-}
-
-func (resolve *Resolve) VisitElement(con booklit.Element) error {
-	return con.Content.Visit(resolve)
-}
-
 func (resolve *Resolve) VisitImage(con booklit.Image) error {
 	return nil
 }

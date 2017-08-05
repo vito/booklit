@@ -57,10 +57,6 @@ booklit -i ./index.any -o ./docs \
     \table-row{\code{table.tmpl}}{\godoc{booklit.Table}}
   }{
     \table-row{\code{image.tmpl}}{\godoc{booklit.Image}}
-  }{
-    \table-row{\code{block.tmpl}}{\godoc{booklit.Block}}
-  }{
-    \table-row{\code{element.tmpl}}{\godoc{booklit.Element}}
   }
 
   The most impactful of these is \code{page.tmpl}, which is used for the

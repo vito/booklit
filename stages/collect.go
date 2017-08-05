@@ -105,14 +105,6 @@ func (collect *Collect) VisitStyled(con booklit.Styled) error {
 	return nil
 }
 
-func (collect *Collect) VisitBlock(con booklit.Block) error {
-	return con.Content.Visit(collect)
-}
-
-func (collect *Collect) VisitElement(con booklit.Element) error {
-	return con.Content.Visit(collect)
-}
-
 func (collect *Collect) VisitImage(con booklit.Image) error {
 	return nil
 }

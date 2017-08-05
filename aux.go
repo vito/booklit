@@ -77,18 +77,6 @@ func (strip *stripAuxVisitor) VisitTarget(con Target) error {
 	return nil
 }
 
-func (strip *stripAuxVisitor) VisitBlock(con Block) error {
-	con.Content = StripAux(con.Content)
-	strip.Result = con
-	return nil
-}
-
-func (strip *stripAuxVisitor) VisitElement(con Element) error {
-	con.Content = StripAux(con.Content)
-	strip.Result = con
-	return nil
-}
-
 func (strip *stripAuxVisitor) VisitImage(con Image) error {
 	strip.Result = con
 	return nil

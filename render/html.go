@@ -183,18 +183,6 @@ func (engine *HTMLRenderingEngine) VisitTarget(con booklit.Target) error {
 	return nil
 }
 
-func (engine *HTMLRenderingEngine) VisitBlock(con booklit.Block) error {
-	engine.template = engine.tmpl.Lookup("block.tmpl")
-	engine.data = con
-	return nil
-}
-
-func (engine *HTMLRenderingEngine) VisitElement(con booklit.Element) error {
-	engine.template = engine.tmpl.Lookup("element.tmpl")
-	engine.data = con
-	return nil
-}
-
 func (engine *HTMLRenderingEngine) VisitImage(con booklit.Image) error {
 	engine.template = engine.tmpl.Lookup("image.tmpl")
 	engine.data = con
