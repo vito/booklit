@@ -43,10 +43,13 @@ func (plugin Plugin) Godoc(ref string) booklit.Content {
 func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Content {
 	invoke := node.(ast.Sequence)[0].(ast.Invoke)
 
-	return booklit.Sequence{
-		booklit.Block{
-			Class: "definition-thumb",
-			Content: booklit.Sequence{
+	return booklit.Styled{
+		Style: "definition",
+
+		Content: content,
+
+		Partials: booklit.Partials{
+			"Thumb": booklit.Sequence{
 				booklit.Target{
 					TagName: invoke.Function,
 					Display: plugin.base.Code(booklit.Sequence{
@@ -56,10 +59,6 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Cont
 				},
 				plugin.base.Code(plugin.renderInvoke(invoke)),
 			},
-		},
-		booklit.Block{
-			Class:   "definition-content",
-			Content: content,
 		},
 	}
 }
