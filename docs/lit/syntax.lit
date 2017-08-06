@@ -1,3 +1,5 @@
+\use-plugin{pygments}
+
 \title{Document Syntax}{syntax}
 
 Booklit documents are basically just text files with special syntax for
@@ -41,7 +43,7 @@ either text or a comment.
   appear in between words, and they can also be nested. This makes commenting
   out large blocks of content easy:
 
-  \code{{{
+  \syntax{booklit}{{{
   Hi, I'm{- a comment -} in the middle of a sentence!
 
   {-
@@ -70,7 +72,7 @@ either text or a comment.
       line.
     }
   }{
-    \definition{\code{{{
+    \definition{\syntax{booklit}{{{
       {word wrapped
 line}
     }}}}{
@@ -78,7 +80,7 @@ line}
       space, as if it were written as \code{\{word wrapped line\}}.
     }
   }{
-    \definition{\code{{{
+    \definition{\syntax{booklit}{{{
       {
         paragraph 1
 
@@ -89,11 +91,13 @@ line}
       paragraphs.
     }
   }{
-    \definition{\code{{{
+    \definition{\syntax{booklit}{{{
       {{
         paragraph 1
 
           indented paragraph 2
+
+        \with{syntax}
       }}
     }}}}{
       With doubled-up curly braces, whitespace is preserved in the content,
@@ -104,7 +108,7 @@ line}
       ignored.
     }
   }{
-    \definition{\code{{
+    \definition{\syntax{booklit}{{
       \{\{\{
         paragraph 1
 

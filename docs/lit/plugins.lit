@@ -28,7 +28,7 @@ reference when writing your own plugin.
 
   For starters, let's fetch Booklit itself into your \code{$GOPATH}:
 
-  \code{{{
+  \syntax{bash}{{{
   go get github.com/vito/booklit
   }}}
 
@@ -42,7 +42,7 @@ reference when writing your own plugin.
   To use a plugin, you'll need to pass its Go import path to the \code{booklit}
   command when building your docs via the \code{--plugin} flag, like so:
 
-  \code{{{
+  \syntax{bash}{{{
   booklit -i index.lit -o out \
       --plugin my/fancyplugin
   }}}
@@ -52,7 +52,7 @@ reference when writing your own plugin.
   execute \reference{use-plugin} in your \code{.lit} document to add it to the
   section:
 
-  \code{{{
+  \syntax{booklit}{{{
   \title{My Section}
 
   \use-plugin{fancyplugin}
@@ -118,7 +118,7 @@ reference when writing your own plugin.
 
   Now let's create a Booklit document that uses it as \code{hello-plugins.lit}:
 
-  \code{{{
+  \syntax{booklit}{{{
   \use-plugin{pluglit}
 
   Zero args: \hello-world
@@ -126,7 +126,7 @@ reference when writing your own plugin.
 
   And build it like so:
 
-  \code{{{
+  \syntax{bash}{{{
   booklit -i hello-plugins.lit -o out \
       --plugin pluglit
   }}}
@@ -142,7 +142,7 @@ reference when writing your own plugin.
 
     Functions can be invoked with any number of arguments, like so:
 
-    \code{{{
+    \syntax{booklit}{{{
     \hello-world{arg1}{arg2}
     }}}
 
@@ -255,7 +255,7 @@ reference when writing your own plugin.
 
     This function would be called like so:
 
-    \code{{{
+    \syntax{booklit}{{{
     \describe-fruit{banana}{
       A banana is a yellow fruit that only really tastes
       good in its original form. Banana flavored

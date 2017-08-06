@@ -25,7 +25,7 @@
 .highlight .sc { font-style: italic } /* Literal.String.Char */
 .highlight .sd { font-style: italic } /* Literal.String.Doc */
 .highlight .s2 { font-style: italic } /* Literal.String.Double */
-.highlight .se { font-weight: bold; font-style: italic } /* Literal.String.Escape */
+.highlight .se { font-weight: bold } /* Literal.String.Escape */
 .highlight .sh { font-style: italic } /* Literal.String.Heredoc */
 .highlight .si { font-weight: bold; font-style: italic } /* Literal.String.Interpol */
 .highlight .sx { font-style: italic } /* Literal.String.Other */

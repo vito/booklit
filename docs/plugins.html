@@ -167,7 +167,8 @@
   
     <h2 class="section-header"><a name="get-going"></a><span class="section-number">4.1 </span>Get Going</h2>
 
-<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><pre>go get github.com/vito/booklit</pre><p>This fetch is necessary even if you already have the <code>booklit</code> binary installed, as plugins make use of Booklit&#39;s Go API.</p>
+<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><p><pre class="highlight"><span></span>go get github.com/vito/booklit
+</pre></p><p>This fetch is necessary even if you already have the <code>booklit</code> binary installed, as plugins make use of Booklit&#39;s Go API.</p>
 
 
   
@@ -175,12 +176,14 @@
   
     <h2 class="section-header"><a name="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
 
-<p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><pre>booklit -i index.lit -o out \
-    --plugin my/fancyplugin</pre><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to add it to the section:</p><pre>\title{My Section}
+<p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><p><pre class="highlight"><span></span>booklit -i index.lit -o out <span class="se">\</span>
+    --plugin my/fancyplugin
+</pre></p><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to add it to the section:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>My Section<span class="nb">}</span>
 
-\use-plugin{fancyplugin}
+<span class="k">\use-plugin</span><span class="nb">{</span>fancyplugin<span class="nb">}</span>
 
-Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> can be invoked multiple times.</p>
+Blah blah.
+</pre></p><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> can be invoked multiple times.</p>
 
 
   
@@ -211,16 +214,19 @@ Blah blah.</pre><p>The <code>--plugin</code> flag can be specified multiple time
 </pre></p><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><p><pre class="highlight"><span></span><span class="kd">func</span> <span class="p">(</span><span class="nx">plugin</span> <span class="nx">Plugin</span><span class="p">)</span> <span class="nx">HelloWorld</span><span class="p">()</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Content</span> <span class="p">{</span>
   <span class="k">return</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">)</span>
 <span class="p">}</span>
-</pre></p><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><pre>\use-plugin{pluglit}
+</pre></p><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><p><pre class="highlight"><span></span><span class="k">\use-plugin</span><span class="nb">{</span>pluglit<span class="nb">}</span>
 
-Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-plugins.lit -o out \
-    --plugin pluglit</pre><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
+Zero args: <span class="k">\hello-world</span>
+</pre></p><p>And build it like so:</p><p><pre class="highlight"><span></span>booklit -i hello-plugins.lit -o out <span class="se">\</span>
+    --plugin pluglit
+</pre></p><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
 
 
   
     <h3 class="section-header"><a name="argument-types"></a><span class="section-number">4.3.1 </span>Argument Types</h3>
 
-<p>Functions can be invoked with any number of arguments, like so:</p><pre>\hello-world{arg1}{arg2}</pre><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
+<p>Functions can be invoked with any number of arguments, like so:</p><p><pre class="highlight"><span></span><span class="k">\hello-world</span><span class="nb">{</span>arg1<span class="nb">}{</span>arg2<span class="nb">}</span>
+</pre></p><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
   <dt><a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
@@ -301,11 +307,12 @@ Zero args: \hello-world</pre><p>And build it like so:</p><pre>booklit -i hello-p
 
   <li><p>the function name, <code>describe-fruit</code>, corresponds to the method name <code>DescribeFruit</code></p></li>
 
-</ul><p>This function would be called like so:</p><pre>\describe-fruit{banana}{
+</ul><p>This function would be called like so:</p><p><pre class="highlight"><span></span><span class="k">\describe-fruit</span><span class="nb">{</span>banana<span class="nb">}{</span>
   A banana is a yellow fruit that only really tastes
   good in its original form. Banana flavored
   anything is a pit of dispair.
-}{banana-opinion}</pre><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a name="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code>\reference{banana-opinion}</code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
+<span class="nb">}{</span>banana-opinion<span class="nb">}</span>
+</pre></p><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a name="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code>\reference{banana-opinion}</code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
 
 
   

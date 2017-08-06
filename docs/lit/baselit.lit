@@ -1,6 +1,7 @@
-\title{The \code{baselit} Plugin}{baselit}
-
 \use-plugin{booklitdoc}
+\use-plugin{pygments}
+
+\title{The \code{baselit} Plugin}{baselit}
 
 Booklit comes with a default plugin called \code{baselit}. It provides the
 basic set of functions needed for authoring Booklit documents, plus many common
@@ -13,13 +14,13 @@ methods useful for writing prose.
     Sets the title and optional \italic{tags} as repeated arguments. For
     example, the \code{title} invocation for this section is:
 
-    \code{{{
+    \syntax{booklit}{{{
     \title{The \code{baselit} Plugin}{baselit}
     }}}
 
     To specify multiple tags, pass multiple arguments:
 
-    \code{{{
+    \syntax{booklit}{{{
     \title{I'm a taggy section!}{tag-1}{tag-1}
     }}}
 
@@ -36,7 +37,7 @@ methods useful for writing prose.
 
     Example:
 
-    \code{{{
+    \syntax{booklit}{{{
       \title{Booklit\aux{: a pretty lit authoring system}}
     }}}
 
@@ -52,7 +53,7 @@ methods useful for writing prose.
 
     For example, here's a full section containing a sub-section:
 
-    \code{{{
+    \syntax{booklit}{{{
     \title{I'm a parent section!}
 
     Hello, world!
@@ -163,13 +164,13 @@ methods useful for writing prose.
     in paragraph form, it is presented as its own block. See
     \reference{function-syntax} for more information.
 
-    This is often used in addition to \code{\{\{two\}\}} braces to preserve
-    whitespace, or \code{\{\{\{three\}\}\}} to ignore escaping (in addition to
-    preserving whitespace).
+    This is often used with \code{\{\{two\}\}} braces to preserve whitespace,
+    or \code{\{\{\{three\}\}\}} to ignore escaping (in addition to preserving
+    whitespace). See \reference{function-syntax} for more information.
 
     For example:
 
-    \code{{{
+    \syntax{booklit}{{{
     I'm a sentence with some \code{code bits} in it.
     }}}
 
@@ -179,24 +180,16 @@ methods useful for writing prose.
 
     While, this example:
 
-    \code{{{
-    \code{
+    \syntax{booklit}{{{
+    \code{{
       This is a code block.
-
-      with
-        wacky
-          whitespace
-    }
+    }}
     }}}
 
     ...renders as:
 
     \code{{
     This is a code block.
-
-    with
-      wacky
-        whitespace
     }}
   }
 
@@ -284,7 +277,7 @@ methods useful for writing prose.
     \target{table-row}{\code{\\\bold{table-row}}} The value for each row should
     be produced by using \reference{table-row} like so:
 
-    \code{{{
+    \syntax{booklit}{{{
     \table{
       \table-row{a}{b}{c}
     }{
@@ -307,7 +300,7 @@ methods useful for writing prose.
     \target{definition}{\code{\\\bold{definition}}} The value for each entry
     should be produced by using \reference{definition} like so:
 
-    \code{{{
+    \syntax{booklit}{{{
     \definitions{
       \definition{a}{1}
     }{

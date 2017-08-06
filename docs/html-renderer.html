@@ -129,8 +129,9 @@
     <div class="page">
       <h1 class="section-header"><a name="html-renderer"></a><span class="section-number">3 </span>The HTML Renderer</h1>
 
-<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><pre>booklit -i ./index.any -o ./docs \
-    --html-templates ./html</pre>
+<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><p><pre class="highlight"><span></span>booklit -i ./index.any -o ./docs <span class="se">\</span>
+    --html-templates ./html
+</pre></p>
 
 
   
@@ -302,29 +303,33 @@
   
     <h2 class="section-header"><a name="styled-content"></a><span class="section-number">3.3 </span>Styled Content</h2>
 
-<p>In addition to the above templates, using <a href="https://godoc.org/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a> will result in the renderer using the template named after the style being executed with the content being styled as <code>.Content</code>.</p><p>For example, <a href="baselit.html#bold"><code>\<strong>bold</strong></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><pre>booklit.Styled{
-  Style:   booklit.StyleBold,
+<p>In addition to the above templates, using <a href="https://godoc.org/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a> will result in the renderer using the template named after the style being executed with the content being styled as <code>.Content</code>.</p><p>For example, <a href="baselit.html#bold"><code>\<strong>bold</strong></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><p><pre class="highlight"><span></span><span class="nx">booklit</span><span class="p">.</span><span class="nx">Styled</span><span class="p">{</span>
+  <span class="nx">Style</span><span class="p">:</span>   <span class="nx">booklit</span><span class="p">.</span><span class="nx">StyleBold</span><span class="p">,</span>
 
-  Content: content,
-}</pre><p>...where <code>booklit.StyleBold</code> is a <code>const</code> whose value is <code>&#34;bold&#34;</code>, but could just as easily be any other string.</p><p>Booklit&#39;s base templates then include a <code>bold.tmpl</code> template:</p><pre>&lt;strong&gt;{{.Content | render}}&lt;/strong&gt;</pre><p>Thus, when content is styled with <code>&#34;bold&#34;</code>, it will render in <strong>strong tags</strong>.</p>
+  <span class="nx">Content</span><span class="p">:</span> <span class="nx">content</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></p><p>...where <code>booklit.StyleBold</code> is a <code>const</code> whose value is <code>&#34;bold&#34;</code>, but could just as easily be any other string.</p><p>Booklit&#39;s base templates then include a <code>bold.tmpl</code> template:</p><p><pre class="highlight"><span></span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>{{.Content | render}}<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span>
+</pre></p><p>Thus, when content is styled with <code>&#34;bold&#34;</code>, it will render in <strong>strong tags</strong>.</p>
 
 
   
     <h3 class="section-header"><a name="styles-with-partials"></a><span class="section-number">3.3.1 </span>Styles with Partials</h3>
 
-<p>Additional bits of content can be propagated to the template by setting them as <code>Partials</code>:</p><pre>booklit.Styled{
-  Style: &#34;my-wackadoo-style&#34;,
+<p>Additional bits of content can be propagated to the template by setting them as <code>Partials</code>:</p><p><pre class="highlight"><span></span><span class="nx">booklit</span><span class="p">.</span><span class="nx">Styled</span><span class="p">{</span>
+  <span class="nx">Style</span><span class="p">:</span> <span class="s">&quot;my-wackadoo-style&quot;</span><span class="p">,</span>
 
-  Content: content,
+  <span class="nx">Content</span><span class="p">:</span> <span class="nx">content</span><span class="p">,</span>
 
-  Partials: booklit.Partials{
-    &#34;Title&#34;: title,
-  },
-}</pre><p>Then, with <code>my-wackadoo-style.tmpl</code> as the following:</p><pre>&lt;div class=&#34;wack&#34;&gt;
-  &lt;h1&gt;{{.Partial &#34;Title&#34; | render}}&lt;/h1&gt;
+  <span class="nx">Partials</span><span class="p">:</span> <span class="nx">booklit</span><span class="p">.</span><span class="nx">Partials</span><span class="p">{</span>
+    <span class="s">&quot;Title&quot;</span><span class="p">:</span> <span class="nx">title</span><span class="p">,</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</pre></p><p>Then, with <code>my-wackadoo-style.tmpl</code> as the following:</p><p><pre class="highlight"><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;wack&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>{{.Partial &quot;Title&quot; | render}}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
 
   {{.Content | render}}
-&lt;/div&gt;</pre><p>This would result with <code>title</code> rendered in between the <code>&lt;h1&gt;</code> tags, and <code>content</code> rendered below.</p>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></p><p>This would result with <code>title</code> rendered in between the <code>&lt;h1&gt;</code> tags, and <code>content</code> rendered below.</p>
 
 
   
@@ -334,18 +339,19 @@
   
     <h2 class="section-header"><a name="styled-sections"></a><span class="section-number">3.4 </span>Styled Sections</h2>
 
-<p>Sections can set their own style by invoking <a href="baselit.html#styled"><code>\<strong>styled</strong></code></a> with the name of a template. For the HTML renderer, this name corresponds to the template files <code><em>(name)</em>.tmpl</code> and/or <code><em>(name)</em>-page.tmpl</code> under the given templates path.</p><p>This behaves very similarly to <a href="https://godoc.org/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a>, except the section can set it directly on itself, rather than being used for content generated by plugins.</p><p>So, given the following example:</p><pre>\title{Fancy Section}
+<p>Sections can set their own style by invoking <a href="baselit.html#styled"><code>\<strong>styled</strong></code></a> with the name of a template. For the HTML renderer, this name corresponds to the template files <code><em>(name)</em>.tmpl</code> and/or <code><em>(name)</em>-page.tmpl</code> under the given templates path.</p><p>This behaves very similarly to <a href="https://godoc.org/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a>, except the section can set it directly on itself, rather than being used for content generated by plugins.</p><p>So, given the following example:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Fancy Section<span class="nb">}</span>
 
-\styled{fancy}
+<span class="k">\styled</span><span class="nb">{</span>fancy<span class="nb">}</span>
 
 I&#39;m a fancy section!
 
-\section{
-  \title{Sub-section}
+<span class="k">\section</span><span class="nb">{</span>
+  <span class="k">\title</span><span class="nb">{</span>Sub-section<span class="nb">}</span>
 
   I&#39;m a normal sub-section!
-}</pre><p>...and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><pre>&lt;div class=&#34;fancy&#34;&gt;
-  &lt;em&gt;&lt;strong&gt;{{.Title | render}}&lt;/strong&gt;&lt;/em&gt;
+<span class="nb">}</span>
+</pre></p><p>...and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><p><pre class="highlight"><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fancy&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">em</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>{{.Title | render}}<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;/</span><span class="nt">em</span><span class="p">&gt;</span>
 
   {{.Body | render}}
 
@@ -354,15 +360,17 @@ I&#39;m a fancy section!
       {{. | render}}
     {{end}}
   {{end}}
-&lt;/div&gt;</pre><p>...the following will be the rendered HTML for the section:</p><pre>&lt;div class=&#34;fancy&#34;&gt;
-  &lt;em&gt;&lt;strong&gt;Fancy Section&lt;/strong&gt;&lt;/em&gt;
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></p><p>...the following will be the rendered HTML for the section:</p><p><pre class="highlight"><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fancy&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">em</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Fancy Section<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;/</span><span class="nt">em</span><span class="p">&gt;</span>
 
-  &lt;p&gt;I&#39;m a fancy section!&lt;/p&gt;
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>I&#39;m a fancy section!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
 
-  &lt;h2&gt;Sub-section&lt;/h2&gt;
+  <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Sub-section<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
 
-  &lt;p&gt;I&#39;m a normal sub-section!&lt;/p&gt;
-&lt;/div&gt;</pre><p>Note that the styling only applies to the section that declares it; it does not propagate to its children.</p><p>For a toplevel section, <code><em>(name)</em>-page.tmpl</code> will be used if present. This overrides the default <code>page.tmpl</code>.</p>
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>I&#39;m a normal sub-section!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></p><p>Note that the styling only applies to the section that declares it; it does not propagate to its children.</p><p>For a toplevel section, <code><em>(name)</em>-page.tmpl</code> will be used if present. This overrides the default <code>page.tmpl</code>.</p>
 
 
   

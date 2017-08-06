@@ -1,3 +1,5 @@
+\use-plugin{pygments}
+
 \title{Getting Started}
 
 First you'll need to grab the \code{booklit} CLI. This can be fetched from the
@@ -8,7 +10,7 @@ it somewhere in your \code{$PATH}.
 The \code{chmod}ing and copying can be done in one fell swoop with
 \code{install}, like so:
 
-\code{{{
+\syntax{bash}{{{
 $ install ~/Downloads/booklit_* ~/bin/booklit
 }}}
 
@@ -20,7 +22,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
 
   First, create a file called \code{hello.lit} with the following content:
 
-  \code{{{
+  \syntax{booklit}{{{
     \title{Hello, world!}{hello}
 
     I'm a Booklit document!
@@ -28,9 +30,9 @@ assuming \code{~/bin} is in your \code{$PATH}.
 
   Then, run the following to build it as \code{./docs/hello.html}:
 
-  \code{{
+  \syntax{bash}{{{
   $ booklit -i hello.lit -o docs
-  }}
+  }}}
 
   Each of the changes in the following sections will necessitate re-building.
   This can be done by running the above command again.
@@ -53,7 +55,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
 
   Next, let's try adding a section within our document:
 
-  \code{{{
+  \syntax{booklit}{{{
     \title{Hello, world!}{hello}
 
     I'm a Booklit document!
@@ -89,7 +91,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   To render each sub-section on its own page, simply call
   \code{\\split-sections} somewhere in the section.
 
-  \code{{{
+  \syntax{booklit}{{{
     \title{Hello, world!}{hello}
 
     \split-sections
@@ -107,7 +109,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   at least make it so we can browse to it! This can be done generally with
   \reference{table-of-contents}:
 
-  \code{{{
+  \syntax{booklit}{{{
     \title{Hello, world!}{hello}
 
     \split-sections
@@ -134,7 +136,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   you'll want to reference sections from each other directly and in context.
   This can be done with \reference{reference}:
 
-  \code{{{
+  \syntax{booklit}{{{
     \title{Hello, world!}{hello}
 
     \split-sections
@@ -155,7 +157,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   a section it'll be the section's title. This can be overridden by passing a
   second argument to \reference{reference}:
 
-  \code{{{
+  \syntax{booklit}{{{
     \title{Hello, world!}{hello}
 
     \split-sections
