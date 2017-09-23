@@ -1,5 +1,5 @@
 \use-plugin{booklitdoc}
-\use-plugin{pygments}
+\use-plugin{chroma}
 
 \title{Extending with Plugins}{plugins}
 

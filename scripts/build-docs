@@ -5,5 +5,5 @@ go run cmd/booklit/*.go \
   -o docs \
   --html-templates docs/lit/html \
   --plugin github.com/vito/booklit/booklitdoc \
-  --plugin github.com/vito/booklit/pygments \
+  --plugin github.com/vito/booklit/chroma \
   "$@"

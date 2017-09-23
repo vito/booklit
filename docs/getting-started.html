@@ -136,18 +136,24 @@
     <div class="page">
       <h1 class="section-header"><a name="getting-started"></a><span class="section-number">1 </span>Getting Started</h1>
 
-<p>First you&#39;ll need to grab the <code>booklit</code> CLI. This can be fetched from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>. Download the appropriate binary for your platform, <code>chmod &#43;x</code> it, and drop it somewhere in your <code>$PATH</code>.</p><p>The <code>chmod</code>ing and copying can be done in one fell swoop with <code>install</code>, like so:</p><p><pre class="highlight"><span></span>$ install ~/Downloads/booklit_* ~/bin/booklit
-</pre></p><p>Then, run <code>booklit -v</code>. You should see the version number printed out, assuming <code>~/bin</code> is in your <code>$PATH</code>.</p>
+<p>First you&#39;ll need to grab the <code>booklit</code> CLI. This can be fetched from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>. Download the appropriate binary for your platform, <code>chmod &#43;x</code> it, and drop it somewhere in your <code>$PATH</code>.</p><p>The <code>chmod</code>ing and copying can be done in one fell swoop with <code>install</code>, like so:</p><p><div class="highlight"><pre style="">
+$ install ~/Downloads/booklit_* ~/bin/booklit
+</pre>
+</div></p><p>Then, run <code>booklit -v</code>. You should see the version number printed out, assuming <code>~/bin</code> is in your <code>$PATH</code>.</p>
 
 
   
     <h2 class="section-header"><a name="hello-world"></a><span class="section-number">1.1 </span>Hello, world!</h2>
 
-<p>First, create a file called <code>hello.lit</code> with the following content:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Hello, world!<span class="nb">}{</span>hello<span class="nb">}</span>
+<p>First, create a file called <code>hello.lit</code> with the following content:</p><p><div class="highlight"><pre style="">
+<span style="font-weight:bold">\title</span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
-</pre></p><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><p><pre class="highlight"><span></span>$ booklit -i hello.lit -o docs
-</pre></p><p>Each of the changes in the following sections will necessitate re-building. This can be done by running the above command again.</p><p>Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server showing your generated content:</p><pre>$ booklit -i hello.lit -o docs -s 8000</pre><p>Then, browse to <a href="http://127.0.0.1:8000/hello.html">http://127.0.0.1:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and served.</p>
+</pre>
+</div></p><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><p><div class="highlight"><pre style="">
+$ booklit -i hello.lit -o docs
+</pre>
+</div></p><p>Each of the changes in the following sections will necessitate re-building. This can be done by running the above command again.</p><p>Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server showing your generated content:</p><pre>$ booklit -i hello.lit -o docs -s 8000</pre><p>Then, browse to <a href="http://127.0.0.1:8000/hello.html">http://127.0.0.1:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and served.</p>
 
 
   
@@ -155,16 +161,18 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a name="organizing-with-sections"></a><span class="section-number">1.2 </span>Organizing with Sections</h2>
 
-<p>Next, let&#39;s try adding a section within our document:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Hello, world!<span class="nb">}{</span>hello<span class="nb">}</span>
+<p>Next, let&#39;s try adding a section within our document:</p><p><div class="highlight"><pre style="">
+<span style="font-weight:bold">\title</span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
 
-<span class="k">\section</span><span class="nb">{</span>
-  <span class="k">\title</span><span class="nb">{</span>Hi there!<span class="nb">}</span>
+<span style="font-weight:bold">\section</span>{
+  <span style="font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
-<span class="nb">}</span>
-</pre></p><p>Upon building this you should see something like:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and will be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it.</p>
+}
+</pre>
+</div></p><p>Upon building this you should see something like:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and will be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it.</p>
 
 
   
@@ -172,31 +180,35 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a name="splitting-sections"></a><span class="section-number">1.3 </span>Splitting Sections</h2>
 
-<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Hello, world!<span class="nb">}{</span>hello<span class="nb">}</span>
+<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><p><div class="highlight"><pre style="">
+<span style="font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span class="k">\split-sections</span>
-
-I&#39;m a Booklit document!
-
-<span class="k">\section</span><span class="nb">{</span>
-  <span class="k">\title</span><span class="nb">{</span>Hi there!<span class="nb">}</span>
-
-  I&#39;m so organized!
-<span class="nb">}</span>
-</pre></p><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done generally with <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a>:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Hello, world!<span class="nb">}{</span>hello<span class="nb">}</span>
-
-<span class="k">\split-sections</span>
+<span style="font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document!
 
-<span class="k">\table-of-contents</span>
-
-<span class="k">\section</span><span class="nb">{</span>
-  <span class="k">\title</span><span class="nb">{</span>Hi there!<span class="nb">}</span>
+<span style="font-weight:bold">\section</span>{
+  <span style="font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
-<span class="nb">}</span>
-</pre></p><p>Note that when viewing the sub-section, its header is now a <code>&lt;h1&gt;</code> rather than the <code>&lt;h2&gt;</code> it was before, since it stands on its own page.</p>
+}
+</pre>
+</div></p><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done generally with <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a>:</p><p><div class="highlight"><pre style="">
+<span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+
+<span style="font-weight:bold">\split-sections</span>
+
+I&#39;m a Booklit document!
+
+<span style="font-weight:bold">\table-of-contents</span>
+
+<span style="font-weight:bold">\section</span>{
+  <span style="font-weight:bold">\title</span>{Hi there!}
+
+  I&#39;m so organized!
+}
+</pre>
+</div></p><p>Note that when viewing the sub-section, its header is now a <code>&lt;h1&gt;</code> rather than the <code>&lt;h2&gt;</code> it was before, since it stands on its own page.</p>
 
 
   
@@ -204,31 +216,35 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a name="references-and-tagging"></a><span class="section-number">1.4 </span>References &amp; Tagging</h2>
 
-<p>Having a <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Hello, world!<span class="nb">}{</span>hello<span class="nb">}</span>
+<p>Having a <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><p><div class="highlight"><pre style="">
+<span style="font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span class="k">\split-sections</span>
+<span style="font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document! To read further, see
-<span class="k">\reference</span><span class="nb">{</span>hi-there<span class="nb">}</span>.
+<span style="font-weight:bold">\reference</span>{hi-there}.
 
-<span class="k">\section</span><span class="nb">{</span>
-  <span class="k">\title</span><span class="nb">{</span>Hi there!<span class="nb">}</span>
+<span style="font-weight:bold">\section</span>{
+  <span style="font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
-<span class="nb">}</span>
-</pre></p><p>The first argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><p><pre class="highlight"><span></span><span class="k">\title</span><span class="nb">{</span>Hello, world!<span class="nb">}{</span>hello<span class="nb">}</span>
+}
+</pre>
+</div></p><p>The first argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><p><div class="highlight"><pre style="">
+<span style="font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span class="k">\split-sections</span>
+<span style="font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document! Consult
-<span class="k">\reference</span><span class="nb">{</span>hi-there<span class="nb">}{</span>this section<span class="nb">}</span> for more.
+<span style="font-weight:bold">\reference</span>{hi-there}{this section} for more.
 
-<span class="k">\section</span><span class="nb">{</span>
-  <span class="k">\title</span><span class="nb">{</span>Hi there!<span class="nb">}</span>
+<span style="font-weight:bold">\section</span>{
+  <span style="font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
-<span class="nb">}</span>
-</pre></p>
+}
+</pre>
+</div></p>
 
 
   

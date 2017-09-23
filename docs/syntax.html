@@ -152,16 +152,18 @@
   
     <h2 class="section-header"><a name="comment-syntax"></a><span class="section-number">5.2 </span>Comment Syntax</h2>
 
-<p>Comments are delimited by <code>{-</code> and <code>-}</code>. They can be multi-line, appear in between words, and they can also be nested. This makes commenting out large blocks of content easy:</p><p><pre class="highlight"><span></span>Hi, I&#39;m<span class="cm">{- a comment -}</span> in the middle of a sentence!
+<p>Comments are delimited by <code>{-</code> and <code>-}</code>. They can be multi-line, appear in between words, and they can also be nested. This makes commenting out large blocks of content easy:</p><p><div class="highlight"><pre style="">
+Hi, I&#39;m<span style="font-style:italic">{-</span><span style="font-style:italic"> a comment </span><span style="font-style:italic">-}</span> in the middle of a sentence!
 
-<span class="cm">{-</span>
-<span class="cm">  I&#39;m hanging out at the top level,</span>
-
-<span class="cm">  {- being nested and stuff -}</span>
-
-<span class="cm">  with multiple lines.</span>
-<span class="cm">-}</span>
-</pre></p>
+<span style="font-style:italic">{-</span><span style="font-style:italic">
+</span><span style="font-style:italic">  I&#39;m hanging out at the top level,
+</span><span style="font-style:italic">
+</span><span style="font-style:italic">  </span><span style="font-style:italic">{-</span><span style="font-style:italic"> being nested and stuff </span><span style="font-style:italic">-}</span><span style="font-style:italic">
+</span><span style="font-style:italic">
+</span><span style="font-style:italic">  with multiple lines.
+</span><span style="font-style:italic"></span><span style="font-style:italic">-}</span>
+</pre>
+</div></p>
 
 
   
@@ -174,37 +176,45 @@
   <dt><code>{line}</code></dt>
     <dd><p>With no linebreak after the <code>{</code>, the argument forms a single line.</p></dd>
   
-  <dt><pre class="highlight"><span></span><span class="nb">{</span>word wrapped
-line<span class="nb">}</span>
-</pre></dt>
+  <dt><div class="highlight"><pre style="">
+{word wrapped
+line}
+</pre>
+</div></dt>
     <dd><p>As above, but the word wrapping point gets converted into a single space, as if it were written as <code>{word wrapped line}</code>.</p></dd>
   
-  <dt><pre class="highlight"><span></span><span class="nb">{</span>
+  <dt><div class="highlight"><pre style="">
+{
   paragraph 1
 
   paragraph 2
-<span class="nb">}</span>
-</pre></dt>
+}
+</pre>
+</div></dt>
     <dd><p>With a linebreak after the <code>{</code>, the argument forms a block of paragraphs.</p></dd>
   
-  <dt><pre class="highlight"><span></span><span class="nb">{{</span>
+  <dt><div class="highlight"><pre style="">
+{{
   paragraph 1
 
     indented paragraph 2
 
-  <span class="k">\with</span><span class="nb">{</span>syntax<span class="nb">}</span>
-<span class="nb">}}</span>
-</pre></dt>
+  <span style="font-weight:bold">\with</span>{syntax}
+}}
+</pre>
+</div></dt>
     <dd><p>With doubled-up curly braces, whitespace is preserved in the content, rather than being parsed into paragraphs.</p><p>Note that the first line of the content determines an indentation level that is then skipped for all lines. It is the only whitespace that is ignored.</p></dd>
   
-  <dt><pre class="highlight"><span></span><span class="s2">{{{</span>
-<span class="s2">  paragraph 1</span>
-
-<span class="s2">    indented {paragraph} 2</span>
-
-<span class="s2">  \with{no-syntax}</span>
-<span class="s2">}}}</span>
-</pre></dt>
+  <dt><div class="highlight"><pre style="">
+<span style="font-style:italic">{{{</span><span style="font-style:italic">
+</span><span style="font-style:italic">  paragraph 1
+</span><span style="font-style:italic">
+</span><span style="font-style:italic">    indented {paragraph</span><span style="font-style:italic">} </span><span style="font-style:italic">2
+</span><span style="font-style:italic">
+</span><span style="font-style:italic">  \with{no-syntax</span><span style="font-style:italic">}
+</span><span style="font-style:italic"></span><span style="font-style:italic">}}}</span>
+</pre>
+</div></dt>
     <dd><p>Tripled-up curly braces form a verbatim argument. Similar to preformatted, whitespace is preserved. In addition, there is no interpreting or parsing of Booklit syntax within. This is useful for large code blocks where the content may contain special characters that Booklit normally may interpret (e.g. <code>\</code>, <code>{</code>, <code>}</code>).</p></dd>
   
 </dl>

@@ -1,4 +1,4 @@
-\use-plugin{pygments}
+\use-plugin{chroma}
 
 \title{Document Syntax}{syntax}
 

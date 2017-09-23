@@ -1,5 +1,5 @@
 \use-plugin{booklitdoc}
-\use-plugin{pygments}
+\use-plugin{chroma}
 
 \title{The \code{baselit} Plugin}{baselit}
 
