@@ -1,8 +1,10 @@
 package stages
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 )
 
@@ -49,22 +51,51 @@ func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
 	return nil
 }
 
+var ErrBrokenReference = errors.New("broken reference")
+
 func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
-	tag, found := resolve.Section.FindTag(con.TagName)
-	if found {
-		con.Tag = &tag
-	} else if resolve.AllowBrokenReferences {
+	tags := resolve.Section.FindTag(con.TagName)
+
+	var err error
+	switch len(tags) {
+	case 0:
+		logrus.WithFields(logrus.Fields{
+			"section": resolve.Section.Path,
+		}).Warnf("broken reference: %s", con.TagName)
+
+		err = ErrBrokenReference
+	case 1:
+		con.Tag = &tags[0]
+	default:
+		paths := []string{}
+		for _, t := range tags {
+			paths = append(paths, t.Section.Path)
+		}
+
+		logrus.WithFields(logrus.Fields{
+			"section":    resolve.Section.Path,
+			"defined-in": paths,
+		}).Warnf("ambiguous reference: %s", con.TagName)
+
+		err = ErrBrokenReference
+	}
+
+	if err == nil {
+		return nil
+	}
+
+	if resolve.AllowBrokenReferences {
 		con.Tag = &booklit.Tag{
 			Name:    con.TagName,
 			Anchor:  "broken",
 			Display: booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
 			Section: resolve.Section,
 		}
-	} else {
-		return fmt.Errorf("could not find tag '%s' from within section '%s'", con.TagName, resolve.Section.String())
+
+		return nil
 	}
 
-	return nil
+	return err
 }
 
 func (resolve *Resolve) VisitSection(con *booklit.Section) error {

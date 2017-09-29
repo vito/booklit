@@ -157,7 +157,7 @@ func (con *Section) Contains(sub *Section) bool {
 	return false
 }
 
-func (con *Section) FindTag(tagName string) (Tag, bool) {
+func (con *Section) FindTag(tagName string) []Tag {
 	return con.findTag(tagName, true, nil)
 }
 
@@ -198,31 +198,30 @@ func (con *Section) SplitSectionsPrevented() bool {
 	return false
 }
 
-func (con *Section) findTag(tagName string, up bool, exclude *Section) (Tag, bool) {
+func (con *Section) findTag(tagName string, up bool, exclude *Section) []Tag {
+	tags := []Tag{}
+
 	if tagName == con.Title.String() {
-		return con.PrimaryTag, true
+		tags = append(tags, con.PrimaryTag)
 	}
 
 	for _, t := range con.Tags {
 		if t.Name == tagName {
-			return t, true
+			tags = append(tags, t)
 		}
 	}
 
 	for _, sub := range con.Children {
 		if sub != exclude {
-			tag, found := sub.findTag(tagName, false, nil)
-			if found {
-				return tag, true
-			}
+			tags = append(tags, sub.findTag(tagName, false, nil)...)
 		}
 	}
 
 	if up && con.Parent != nil {
-		return con.Parent.findTag(tagName, true, con)
+		tags = append(tags, con.Parent.findTag(tagName, true, con)...)
 	}
 
-	return Tag{}, false
+	return tags
 }
 
 var whitespaceRegexp = regexp.MustCompile(`\s+`)
