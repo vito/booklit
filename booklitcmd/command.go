@@ -1,6 +1,7 @@
 package booklitcmd
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -45,6 +46,12 @@ func (cmd *Command) Execute(args []string) error {
 	}
 
 	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
+
+	if isReexec {
+		logrus.SetFormatter(&logrus.JSONFormatter{
+			DisableTimestamp: true,
+		})
+	}
 
 	if cmd.ServerPort != 0 && !isReexec {
 		return cmd.Serve()
@@ -212,12 +219,25 @@ func (cmd *Command) reexec() ([]string, error) {
 		}
 	}
 
-	buf := new(bytes.Buffer)
+	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
+	cmdProxyR, cmdProxyW := io.Pipe()
+	errProxyR, errProxyW := io.Pipe()
 	run := exec.Command(bin, os.Args[1:]...)
 	run.Env = append(os.Environ(), "BOOKLIT_REEXEC=1")
-	run.Stdout = buf
-	run.Stderr = io.MultiWriter(os.Stderr, errBuf)
+	run.Stdout = outBuf
+	run.Stderr = io.MultiWriter(cmdProxyW, errProxyW)
+
+	cmdLogger := logrus.StandardLogger()
+
+	errLogger := logrus.New()
+	errLogger.Formatter = &logrus.TextFormatter{}
+	errLogger.Out = errBuf
+	errLogger.Level = cmdLogger.Level
+
+	go cmd.proxyLogrus(cmdLogger, os.Stderr, cmdProxyR)
+	go cmd.proxyLogrus(errLogger, errBuf, errProxyR)
+
 	err = run.Run()
 	if err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
@@ -228,10 +248,63 @@ func (cmd *Command) reexec() ([]string, error) {
 	}
 
 	var res reexecOutput
-	err = json.Unmarshal(buf.Bytes(), &res)
+	err = json.Unmarshal(outBuf.Bytes(), &res)
 	if err != nil {
 		return nil, err
 	}
 
 	return res.Paths, nil
+}
+
+func (cmd *Command) proxyLogrus(logger *logrus.Logger, nonJSON io.Writer, from io.Reader) {
+	buf := bufio.NewReader(from)
+
+	var prefix []byte
+
+	for {
+		line, isPrefix, err := buf.ReadLine()
+		if err == io.EOF {
+			return
+		}
+
+		if isPrefix {
+			prefix = append(prefix, line...)
+			continue
+		} else {
+			line = append(prefix, line...)
+			prefix = nil
+		}
+
+		fields := logrus.Fields{}
+		err = json.Unmarshal(line, &fields)
+		if err != nil {
+			// not JSON; pass on through
+			fmt.Fprintln(nonJSON, string(line))
+			continue
+		}
+
+		msg := fields["msg"]
+		delete(fields, "msg")
+
+		level := fields["level"]
+		delete(fields, "level")
+
+		entry := logrus.WithFields(fields)
+		entry.Logger = logger
+
+		switch level {
+		case "debug":
+			entry.Debug(msg)
+		case "info":
+			entry.Info(msg)
+		case "warning":
+			entry.Warn(msg)
+		case "error":
+			entry.Error(msg)
+		case "fatal":
+			entry.Fatal(msg)
+		case "panic":
+			entry.Panic(msg)
+		}
+	}
 }
