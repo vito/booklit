@@ -37,20 +37,12 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 		}
 	}
 
-	errs := make(chan error, len(section.Children))
 	for _, child := range section.Children {
-		go func() {
-			errs <- writer.WriteSection(child)
-		}()
-	}
-
-	var anyErr error
-	for i := 0; i < len(section.Children); i++ {
-		err := <-errs
+		err := writer.WriteSection(child)
 		if err != nil {
-			anyErr = err
+			return err
 		}
 	}
 
-	return anyErr
+	return nil
 }
