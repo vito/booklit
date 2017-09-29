@@ -74,9 +74,15 @@ type HTMLRenderingEngine struct {
 }
 
 func NewHTMLRenderingEngine() *HTMLRenderingEngine {
-	return &HTMLRenderingEngine{
+	engine := &HTMLRenderingEngine{
 		tmpl: template.Must(initTmpl.Clone()),
 	}
+
+	engine.tmpl.Funcs(template.FuncMap{
+		"render": engine.subRender,
+	})
+
+	return engine
 }
 
 func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
@@ -218,9 +224,7 @@ func (engine *HTMLRenderingEngine) render(out io.Writer) error {
 		return fmt.Errorf("unknown template for %T", engine.data)
 	}
 
-	return engine.template.Funcs(template.FuncMap{
-		"render": engine.subRender,
-	}).Execute(out, engine.data)
+	return engine.template.Execute(out, engine.data)
 }
 
 func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.HTML, error) {
