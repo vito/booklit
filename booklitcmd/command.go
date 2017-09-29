@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"go/build"
 	"io"
@@ -13,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
@@ -58,7 +58,11 @@ func (cmd *Command) Execute(args []string) error {
 	} else {
 		paths, err := cmd.Build(isReexec)
 		if err != nil {
-			return err
+			if reexecErr, ok := err.(ReexecError); ok {
+				os.Exit(reexecErr.ExitStatus)
+			} else {
+				return err
+			}
 		}
 
 		if isReexec {
@@ -240,8 +244,11 @@ func (cmd *Command) reexec() ([]string, error) {
 
 	err = run.Run()
 	if err != nil {
-		if _, ok := err.(*exec.ExitError); ok {
-			return nil, errors.New(errBuf.String())
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return nil, ReexecError{
+				ExitStatus: exitErr.Sys().(syscall.WaitStatus).ExitStatus(),
+				Output:     errBuf.String(),
+			}
 		} else {
 			return nil, err
 		}
@@ -307,4 +314,13 @@ func (cmd *Command) proxyLogrus(logger *logrus.Logger, nonJSON io.Writer, from i
 			entry.Panic(msg)
 		}
 	}
+}
+
+type ReexecError struct {
+	ExitStatus int
+	Output     string
+}
+
+func (err ReexecError) Error() string {
+	return fmt.Sprintf("reexec failed (exit status %d); logs:\n\n%s", err.ExitStatus, err.Output)
 }
