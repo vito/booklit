@@ -184,7 +184,7 @@ func (cmd *Command) reexec() ([]string, error) {
 	}()
 
 	src := filepath.Join(tmpdir, "main.go")
-	bin := filepath.Join(tmpdir, "booklit")
+	bin := filepath.Join(tmpdir, "main")
 
 	goSrc := "package main\n"
 	goSrc += "import \"github.com/vito/booklit/booklitcmd\"\n"
@@ -200,7 +200,8 @@ func (cmd *Command) reexec() ([]string, error) {
 		return nil, err
 	}
 
-	build := exec.Command("go", "build", "-o", bin, src)
+	build := exec.Command("go", "install", src)
+	build.Env = append(os.Environ(), "GOBIN="+tmpdir)
 
 	buildOutput, err := build.CombinedOutput()
 	if err != nil {
