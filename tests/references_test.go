@@ -2,6 +2,7 @@ package tests
 
 import (
 	. "github.com/onsi/ginkgo/extensions/table"
+	"github.com/vito/booklit"
 )
 
 var _ = DescribeTable("Booklit", (Example).Run,
@@ -244,5 +245,35 @@ See also \reference{section-c}{the last section}.
 </section>
 `,
 		},
+	}),
+
+	Entry("ambiguous references", Example{
+		Input: `\title{Hello, world!}
+
+See also \reference{dupe-tag}{this tag}.
+
+\section{
+	\title{First Tag}
+
+	\target{dupe-tag}{I'm the first tag.}
+}
+
+\section{
+	\title{Second Tag}
+
+	\target{dupe-tag}{I'm the second tag.}
+}
+`,
+
+		Err: booklit.ErrBrokenReference,
+	}),
+
+	Entry("missing references", Example{
+		Input: `\title{Hello, world!}
+
+See also \reference{missing-tag}{this tag}.
+`,
+
+		Err: booklit.ErrBrokenReference,
 	}),
 )

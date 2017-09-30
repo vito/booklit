@@ -17,6 +17,7 @@ type Example struct {
 	Input   string
 	Inputs  Files
 	Outputs Files
+	Err     error
 }
 
 type Files map[string]string
@@ -38,6 +39,11 @@ func (example Example) Run() {
 
 	fakePath := filepath.Join(dir, ginkgo.CurrentGinkgoTestDescription().TestText+".lit")
 	section, err := processor.LoadSource(fakePath, []byte(example.Input))
+	if example.Err != nil {
+		Expect(err).To(MatchError(err))
+		return
+	}
+
 	Expect(err).ToNot(HaveOccurred())
 
 	engine := render.NewHTMLRenderingEngine()

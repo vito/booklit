@@ -1,7 +1,6 @@
 package stages
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/sirupsen/logrus"
@@ -51,8 +50,6 @@ func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
 	return nil
 }
 
-var ErrBrokenReference = errors.New("broken reference")
-
 func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	tags := resolve.Section.FindTag(con.TagName)
 
@@ -63,7 +60,7 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 			"section": resolve.Section.Path,
 		}).Warnf("broken reference: %s", con.TagName)
 
-		err = ErrBrokenReference
+		err = booklit.ErrBrokenReference
 	case 1:
 		con.Tag = &tags[0]
 	default:
@@ -77,7 +74,7 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 			"defined-in": paths,
 		}).Warnf("ambiguous reference: %s", con.TagName)
 
-		err = ErrBrokenReference
+		err = booklit.ErrBrokenReference
 	}
 
 	if err == nil {
