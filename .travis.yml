@@ -1,7 +1,9 @@
 language: go
+
 install: |
   go get -t ./...
   go install github.com/onsi/ginkgo/ginkgo
+
 jobs:
   include:
   - stage: test
@@ -28,7 +30,7 @@ jobs:
       secret_access_key:
         secure: Huvk2UgNzNHv//W7/rqP4WV+1ELCVpJltnrOIf6BW7uKG/jjglrmgk5htvzoaiiyRSPGe+ocSz/305SKVIpGADMQE7VtixrFbTRm94RMZ179vC/pe97UevOAHA58PGO98Fiw2TWDQxUkfANQVsBvYxxgcBmNMyw424ul6BE4lvDs02PEc0pqJASVuCv59+sAKsFt07jhNxuha3ueT7E4MGxFA7OuyKGGC0kug5bz73PoBZhtB2mvjq2WjE4gIiGDEX1FjeorLYmoxZDyl7N05b1tTo+8G5gvczqH0MMfiKy9l1LuIhsnLo7+W2CbkcRTl2Trt6Zxg3gaXfXkNerfCmE80SjKW7rZRmAABPVjeOTHB+NgsmNAOKJNP1N2BoiFfzidhzH/o6ExqpnWPzJb5hNAq6ARQndyjp6C1jod/7BCT5M0kF19nCgZiQ1LF4PeOVhUF1KA9ys/lfeeVJ4TwuPeXBeGapCBzvx21fW/aaCXYEjBWlX3Rt8EW4V7mMamQLf7EW0MwyMzfc7yrinpudGlOqp9sN69QgR0XlFPVl9V6hx2fQfmiPNA1sqntV1r7W8FStt0oUZtgLu1tIzMGYa8NXJ9EOCNhmvGPYq258fcmh38fzImfnxEwhqDWhdiUB06veTjNwskHuo1a4GomhF+nDdNk+4RjHsIGZO3ADc=
       skip_cleanup: true
-      region: us-west-1
+      region: us-west-2
       local_dir: assets
       on:
         branch: travis
