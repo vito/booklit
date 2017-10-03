@@ -26,6 +26,8 @@ jobs:
       deploy:
         provider: s3
         bucket: concurse-rulez-test-bucket
+        access_key_id: ""
+        secret_access_key: ""
         skip_cleanup: true
         region: us-west-1
         local_dir: assets
