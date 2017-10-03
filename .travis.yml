@@ -9,7 +9,7 @@ jobs:
   include:
     - stage: test
       script: ginkgo -r -p
-    - state: build
+    - stage: build
       script: |
         for os in linux darwin windows; do
           ext=""
