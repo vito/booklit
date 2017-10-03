@@ -22,7 +22,7 @@ jobs:
       done
     deploy:
       provider: s3
-      bucket: concurse-rulez-test-bucket
+      bucket: concourse-rulez-test-bucket
       access_key_id:
         secure: lgqSZKUMjFKABpCa+clOQ70yQ+5HvFpRI9cDhdy0sbn0XJVil2HhkSLeEf0EM5Mgxs0eXN4lqpOMWiiuOoQm7mb89gX31uFcAA0ERoN4T8WX7xuU+EUKilzoS82coBFn5CXAuKnMGzxiPgx8KXE0lRZJa0Awf8bdxSpdjZx3nlyQpFooAaoPVsPpeF+Yvo2hzeejNdz3geqYUH1OHExrVrNkutUT2o7CbJUSF6ctWjd88KVpBYwBizGu8GPCNqSlOrGiCfDCRGOrhhT6y7Zq0dNSVKp303KINm7AF+OSgvJGi+TFcflXo3knnOSmKNC/svBbzkddopBlYScfu0YNdPM9arp3uefJQR6q86mSMXEdwJjp+/tHnZZIr41Sm27aRueQnzXt3XYvUBONulujOkBBOM1/f8KnRkNtYPkN1XQp3yxfGyNOv5oYa0Bqy99LDHXU0YI1Wx7xCI0wDHCWRO3TAG2+1PKjLHa2fYMqQi58UDSUbgo979SVdtxtI4hWUJFoYVUswUy23JcecaJBeT54u3WRFXXOSopLlx7E3r7rv4Z8zaFZCGUaxhqJVfEThT2bUCC2kfMBnw6nDVr7sMHv2+3M8rSMGEM8zjhut4BN0OLhzBgE6xsJX67R6z18k6csIPOZjx2LXMWBMN2FqO+wDH22fKgvPAUlT1Ieg8w=
       secret_access_key:
