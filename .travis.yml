@@ -19,7 +19,7 @@ jobs:
 
           echo "building $os binary..."
           GOOS=$os go build \
-            --ldflags "-X github.com/vito/booklit.Version=$(cat version/version)" \
+            --ldflags "-X github.com/vito/booklit.Version=1.2.3" \
             -o assets/booklit_${os}_amd64${ext} \
             github.com/vito/booklit/cmd/booklit
         done
@@ -29,3 +29,5 @@ jobs:
         skip_cleanup: true
         region: us-west-1
         local_dir: assets
+        on:
+          branch: travis
