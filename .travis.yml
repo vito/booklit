@@ -1,35 +1,34 @@
----
 language: go
-
 install: |
   go get -t ./...
   go install github.com/onsi/ginkgo/ginkgo
-
 jobs:
   include:
-    - stage: test
-      script: ginkgo -r -p
-    - stage: build
-      script: |
-        for os in linux darwin windows; do
-          ext=""
-          if [ "$os" = "windows" ]; then
-            ext=".exe"
-          fi
+  - stage: test
+    script: ginkgo -r -p
+  - stage: build
+    script: |
+      for os in linux darwin windows; do
+        ext=""
+        if [ "$os" = "windows" ]; then
+          ext=".exe"
+        fi
 
-          echo "building $os binary..."
-          GOOS=$os go build \
-            --ldflags "-X github.com/vito/booklit.Version=1.2.3" \
-            -o assets/booklit_${os}_amd64${ext} \
-            github.com/vito/booklit/cmd/booklit
-        done
-      deploy:
-        provider: s3
-        bucket: concurse-rulez-test-bucket
-        access_key_id: "KIAJSJT3NA5GJBOZKPA"
-        secret_access_key: "IC48oPGWJ4wZIU6xMb3eIsf9USWnzuwYXT38hvZ3"
-        skip_cleanup: true
-        region: us-west-1
-        local_dir: assets
-        on:
-          branch: travis
+        echo "building $os binary..."
+        GOOS=$os go build \
+          --ldflags "-X github.com/vito/booklit.Version=1.2.3" \
+          -o assets/booklit_${os}_amd64${ext} \
+          github.com/vito/booklit/cmd/booklit
+      done
+    deploy:
+      provider: s3
+      bucket: concurse-rulez-test-bucket
+      access_key_id:
+        secure: lgqSZKUMjFKABpCa+clOQ70yQ+5HvFpRI9cDhdy0sbn0XJVil2HhkSLeEf0EM5Mgxs0eXN4lqpOMWiiuOoQm7mb89gX31uFcAA0ERoN4T8WX7xuU+EUKilzoS82coBFn5CXAuKnMGzxiPgx8KXE0lRZJa0Awf8bdxSpdjZx3nlyQpFooAaoPVsPpeF+Yvo2hzeejNdz3geqYUH1OHExrVrNkutUT2o7CbJUSF6ctWjd88KVpBYwBizGu8GPCNqSlOrGiCfDCRGOrhhT6y7Zq0dNSVKp303KINm7AF+OSgvJGi+TFcflXo3knnOSmKNC/svBbzkddopBlYScfu0YNdPM9arp3uefJQR6q86mSMXEdwJjp+/tHnZZIr41Sm27aRueQnzXt3XYvUBONulujOkBBOM1/f8KnRkNtYPkN1XQp3yxfGyNOv5oYa0Bqy99LDHXU0YI1Wx7xCI0wDHCWRO3TAG2+1PKjLHa2fYMqQi58UDSUbgo979SVdtxtI4hWUJFoYVUswUy23JcecaJBeT54u3WRFXXOSopLlx7E3r7rv4Z8zaFZCGUaxhqJVfEThT2bUCC2kfMBnw6nDVr7sMHv2+3M8rSMGEM8zjhut4BN0OLhzBgE6xsJX67R6z18k6csIPOZjx2LXMWBMN2FqO+wDH22fKgvPAUlT1Ieg8w=
+      secret_access_key:
+        secure: Huvk2UgNzNHv//W7/rqP4WV+1ELCVpJltnrOIf6BW7uKG/jjglrmgk5htvzoaiiyRSPGe+ocSz/305SKVIpGADMQE7VtixrFbTRm94RMZ179vC/pe97UevOAHA58PGO98Fiw2TWDQxUkfANQVsBvYxxgcBmNMyw424ul6BE4lvDs02PEc0pqJASVuCv59+sAKsFt07jhNxuha3ueT7E4MGxFA7OuyKGGC0kug5bz73PoBZhtB2mvjq2WjE4gIiGDEX1FjeorLYmoxZDyl7N05b1tTo+8G5gvczqH0MMfiKy9l1LuIhsnLo7+W2CbkcRTl2Trt6Zxg3gaXfXkNerfCmE80SjKW7rZRmAABPVjeOTHB+NgsmNAOKJNP1N2BoiFfzidhzH/o6ExqpnWPzJb5hNAq6ARQndyjp6C1jod/7BCT5M0kF19nCgZiQ1LF4PeOVhUF1KA9ys/lfeeVJ4TwuPeXBeGapCBzvx21fW/aaCXYEjBWlX3Rt8EW4V7mMamQLf7EW0MwyMzfc7yrinpudGlOqp9sN69QgR0XlFPVl9V6hx2fQfmiPNA1sqntV1r7W8FStt0oUZtgLu1tIzMGYa8NXJ9EOCNhmvGPYq258fcmh38fzImfnxEwhqDWhdiUB06veTjNwskHuo1a4GomhF+nDdNk+4RjHsIGZO3ADc=
+      skip_cleanup: true
+      region: us-west-1
+      local_dir: assets
+      on:
+        branch: travis
