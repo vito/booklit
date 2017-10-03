@@ -22,4 +22,4 @@ for os in linux darwin windows; do
 done
 
 echo "printing version..."
-./assets/booklit_linux_amd64 --version
+./assets/booklit_$(go env GOOS)_$(go env GOARCH) --version
