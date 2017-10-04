@@ -1,4 +1,4 @@
-version: 2
+version: 2.0
 
 jobs:
   build:
@@ -32,11 +32,11 @@ jobs:
       - run: ls -al
 
 workflows:
-  version: 2
+  version: 2.0
   build_and_test:
     jobs:
     - build
     - publish:
       requires:
-      - build
+        - build
 
