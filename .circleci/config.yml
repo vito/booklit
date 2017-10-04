@@ -15,9 +15,10 @@ jobs:
       - run: mkdir -p artifacts
       - run: go build -o artifacts/blah github.com/vito/booklit/cmd/booklit
 
-      - save_cache:
-          key: booklit-artifact
-          paths: [artifacts/blah]
+      - persist_to_workspace:
+          root: artifacts
+          paths:
+            - blah
 
   publish:
     docker:
@@ -26,8 +27,8 @@ jobs:
     working_directory: /tmp
 
     steps:
-      - restore_cache:
-          keys: [booklit-artifact]
+      - attach_workspace:
+          at: /tmp/workspace
 
       - run: find .
 
