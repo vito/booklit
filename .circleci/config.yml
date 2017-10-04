@@ -26,7 +26,7 @@ jobs:
       - run: go test -v ./...
 
       - run: mkdir -p artifacts
-      - run: go build * -o artifacts/blah
+      - run: go build ./... -o artifacts/blah
 
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
