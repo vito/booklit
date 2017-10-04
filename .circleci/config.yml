@@ -1,4 +1,4 @@
-version: 2.0
+version: 2
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
       - run: ls -al
 
 workflows:
-  version: 2.0
+  version: 2
   build_and_test:
     jobs:
     - build
