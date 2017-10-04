@@ -21,8 +21,8 @@ jobs:
             - blah
 
       - save_cache:
-        key: booklit-{{ .Environment.CIRCLE_SHA1 }}
-        paths: [ artifacts/blah ]
+          key: booklit-{{ .Environment.CIRCLE_SHA1 }}
+          paths: [ artifacts/blah ]
 
 
   publish:
