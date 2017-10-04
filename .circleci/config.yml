@@ -21,7 +21,7 @@ jobs:
             - blah
 
       - save_cache:
-        key: booklit-{{ checksum artifacts/blah }}
+        key: booklit-{{ .Environment.CIRCLE_SHA1 }}
         paths: [ artifacts/blah ]
 
 
@@ -36,7 +36,8 @@ jobs:
           at: /tmp/workspace
 
       - restore_cache:
-          keys: [ booklit-{{ checksum workspace/blah }} ]
+          keys:
+          - booklit-{{ .Environment.CIRCLE_SHA1 }}
 
       - run: find .
 
