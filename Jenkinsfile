@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker 'golang' }
+    agent any
 
     environment {
       PATH = '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin'
