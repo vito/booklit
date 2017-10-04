@@ -35,8 +35,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
 
-      - restor_cache:
-        keys: [ booklit-{{ checksum workspace/blah }} ]
+      - restore_cache:
+          keys: [ booklit-{{ checksum workspace/blah }} ]
 
       - run: find .
 
