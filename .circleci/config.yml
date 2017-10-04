@@ -20,6 +20,11 @@ jobs:
           paths:
             - blah
 
+      - save_cache:
+        key: booklit-{{ checksum artifacts/blah }}
+        paths: [ artifacts/blah ]
+
+
   publish:
     docker:
       - image: circleci/golang:1.8
@@ -29,6 +34,9 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
+
+      - restor_cache:
+        keys: [ booklit-{{ checksum workspace/blah }} ]
 
       - run: find .
 
