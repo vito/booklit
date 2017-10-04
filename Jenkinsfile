@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'which docker'
+                sh 'env'
             }
         }
     }
