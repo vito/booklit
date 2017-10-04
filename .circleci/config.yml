@@ -42,7 +42,7 @@ jobs:
     working_directory: /tmp
     steps:
       - attach_workspace:
-        at: /tmp/workspace
+          at: /tmp/workspace
       - run: ls /tmp/workspace
 
 workflows:
