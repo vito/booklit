@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - restore_cache:
-        keys: [booklit-artifact]
+          keys: [booklit-artifact]
 
       - run: ls -al
 
