@@ -49,6 +49,30 @@ build:
 
 publish:
   steps:
+    - setup-go-workspace
+
+    # Gets the dependencies
+    - script:
+        name: go get
+        code: |
+          go get ./...
+          hostname
+    - script:
+        name: go build
+        code: |
+          go build ./...
+          hostname
+
+publish2:
+  steps:
+    - setup-go-workspace
+
+    # Gets the dependencies
+    - script:
+        name: go get
+        code: |
+          go get ./...
+          hostname
     - script:
         name: go build
         code: |
