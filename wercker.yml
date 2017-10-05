@@ -78,3 +78,19 @@ publish2:
         code: |
           go build ./...
           hostname
+
+finalize:
+  steps:
+    - setup-go-workspace
+
+    # Gets the dependencies
+    - script:
+        name: go get
+        code: |
+          go get ./...
+          hostname
+    - script:
+        name: go build
+        code: |
+          go build ./...
+          hostname
