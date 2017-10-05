@@ -46,3 +46,11 @@ build:
         code: |
           go test ./...
           hostname
+
+publish:
+  steps:
+    - script:
+        name: go build
+        code: |
+          go build ./...
+          hostname
