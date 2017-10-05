@@ -31,15 +31,18 @@ build:
         name: go get
         code: |
           go get ./...
+          hostname
 
     # Build the project
     - script:
         name: go build
         code: |
           go build ./...
+          hostname
 
     # Test the project
     - script:
         name: go test
         code: |
           go test ./...
+          hostname
