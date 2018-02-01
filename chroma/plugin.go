@@ -56,6 +56,7 @@ func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...
 
 	return booklit.Styled{
 		Style:   style,
+		Block:   !code.IsFlow(),
 		Content: booklit.String(buf.String()),
 	}, nil
 }
