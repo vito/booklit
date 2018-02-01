@@ -157,6 +157,20 @@ func (con *Section) Contains(sub *Section) bool {
 	return false
 }
 
+func (con *Section) IsOrHasChild(sub *Section) bool {
+	if con == sub {
+		return true
+	}
+
+	for _, child := range con.Children {
+		if child == sub {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (con *Section) FindTag(tagName string) []Tag {
 	return con.findTag(tagName, true, nil)
 }
