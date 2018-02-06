@@ -9,6 +9,7 @@ inputs:
 - name: booklit
   path: gopath/src/github.com/vito/booklit
 - name: version
+  optional: true
 
 outputs:
 - name: assets

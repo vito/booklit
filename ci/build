@@ -8,6 +8,11 @@ export PATH=$PWD/depspath/bin:$PWD/gopath/bin:$PATH
 echo "fetching dependencies..."
 go get -d ./...
 
+version="0.0.0-dev"
+if [ -d version ]; then
+  version="$(cat version/version)"
+fi
+
 for os in linux darwin windows; do
   ext=""
   if [ "$os" = "windows" ]; then
@@ -16,7 +21,7 @@ for os in linux darwin windows; do
 
   echo "building $os binary..."
   GOOS=$os go build \
-    --ldflags "-X github.com/vito/booklit.Version=$(cat version/version)" \
+    --ldflags "-X github.com/vito/booklit.Version=${version}" \
     -o assets/booklit_${os}_amd64${ext} \
     github.com/vito/booklit/cmd/booklit
 done
