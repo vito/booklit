@@ -27,6 +27,8 @@ type Command struct {
 	In  string `long:"in"  short:"i" required:"true" description:"Input .lit file."`
 	Out string `long:"out" short:"o" required:"true" description:"Output directory in which to render."`
 
+	SaveSearchIndex bool `long:"save-search-index" description:"Save a search index JSON file in the destination."`
+
 	ServerPort int `long:"serve" short:"s" description:"Start an HTTP server on the given port."`
 
 	Plugins []string `long:"plugin" short:"p" description:"Package to import, providing a plugin."`
@@ -124,8 +126,9 @@ func (cmd *Command) Build(isReexec bool) ([]string, error) {
 	}
 
 	writer := render.Writer{
-		Engine:      engine,
-		Destination: cmd.Out,
+		Engine:          engine,
+		Destination:     cmd.Out,
+		SaveSearchIndex: cmd.SaveSearchIndex,
 	}
 
 	err = writer.WriteSection(section)

@@ -72,7 +72,8 @@ func (strip *stripAuxVisitor) VisitStyled(con Styled) error {
 }
 
 func (strip *stripAuxVisitor) VisitTarget(con Target) error {
-	con.Display = StripAux(con.Display)
+	con.Title = StripAux(con.Title)
+	con.Content = StripAux(con.Content)
 	strip.Result = con
 	return nil
 }

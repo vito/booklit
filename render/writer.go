@@ -1,6 +1,7 @@
 package render
 
 import (
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
@@ -13,12 +14,25 @@ type RenderingEngine interface {
 
 	FileExtension() string
 	RenderSection(io.Writer, *booklit.Section) error
+	URL(booklit.Tag) string
 }
 
 type Writer struct {
 	Engine RenderingEngine
 
 	Destination string
+
+	SaveSearchIndex bool
+}
+
+const SearchIndexFilename = "search_index.json"
+
+type SearchIndex map[string]SearchDocument
+
+type SearchDocument struct {
+	Location string `json:"location"`
+	Title    string `json:"title"`
+	Text     string `json:"text"`
 }
 
 func (writer Writer) WriteSection(section *booklit.Section) error {
@@ -32,6 +46,56 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 		}
 
 		err = writer.Engine.RenderSection(file, section)
+		if err != nil {
+			return err
+		}
+	}
+
+	if writer.SaveSearchIndex {
+		indexPath := filepath.Join(writer.Destination, SearchIndexFilename)
+
+		indexFile, err := os.OpenFile(indexPath, os.O_RDWR|os.O_CREATE, 0644)
+		if err != nil {
+			return err
+		}
+
+		index := SearchIndex{}
+		err = json.NewDecoder(indexFile).Decode(&index)
+		if err != nil && err != io.EOF {
+			return err
+		}
+
+		for _, tag := range section.Tags {
+			var text string
+			if tag.Content != nil {
+				text = tag.Content.String()
+			} else {
+				text = tag.Section.Body.String()
+			}
+
+			index[tag.Name] = SearchDocument{
+				Location: writer.Engine.URL(tag),
+				Title:    tag.Title.String(),
+				Text:     text,
+			}
+		}
+
+		err = indexFile.Truncate(0)
+		if err != nil {
+			return err
+		}
+
+		_, err = indexFile.Seek(0, 0)
+		if err != nil {
+			return err
+		}
+
+		err = json.NewEncoder(indexFile).Encode(index)
+		if err != nil {
+			return err
+		}
+
+		err = indexFile.Close()
 		if err != nil {
 			return err
 		}

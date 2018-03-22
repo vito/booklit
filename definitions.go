@@ -14,7 +14,14 @@ func (con Definitions) IsFlow() bool {
 }
 
 func (con Definitions) String() string {
-	return fmt.Sprintf("{definitions: %s}", []Definition(con))
+	var text string
+	for _, def := range con {
+		text += fmt.Sprintf("%s: %s\n", def.Subject, def.Definition)
+	}
+
+	text += "\n"
+
+	return text
 }
 
 func (con Definitions) Visit(visitor Visitor) error {

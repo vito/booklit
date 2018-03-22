@@ -77,10 +77,11 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Cont
 			"Thumb": booklit.Sequence{
 				booklit.Target{
 					TagName: invoke.Function,
-					Display: plugin.base.Code(booklit.Sequence{
+					Title: plugin.base.Code(booklit.Sequence{
 						booklit.String("\\"),
 						plugin.base.Bold(booklit.String(invoke.Function)),
 					}),
+					Content: content,
 				},
 				plugin.base.Code(plugin.renderInvoke(invoke)),
 			},
@@ -126,7 +127,8 @@ func (plugin Plugin) DescribeFruit(
 	for _, tag := range tags {
 		content = append(content, booklit.Target{
 			TagName: tag,
-			Display: booklit.String(name),
+			Title:   booklit.String(name),
+			Content: definition,
 		})
 	}
 

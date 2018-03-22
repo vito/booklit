@@ -1,7 +1,5 @@
 package booklit
 
-import "fmt"
-
 type TableOfContents struct {
 	Section *Section
 }
@@ -11,7 +9,7 @@ func (con TableOfContents) IsFlow() bool {
 }
 
 func (con TableOfContents) String() string {
-	return fmt.Sprintf("{toc: %s}", con.Section)
+	return ""
 }
 
 func (con TableOfContents) Visit(visitor Visitor) error {

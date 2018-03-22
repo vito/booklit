@@ -85,7 +85,7 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 		con.Tag = &booklit.Tag{
 			Name:    con.TagName,
 			Anchor:  "broken",
-			Display: booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
+			Title:   booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
 			Section: resolve.Section,
 		}
 
@@ -155,7 +155,19 @@ func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
 }
 
 func (resolve *Resolve) VisitTarget(con booklit.Target) error {
-	return con.Display.Visit(resolve)
+	err := con.Title.Visit(resolve)
+	if err != nil {
+		return err
+	}
+
+	if con.Content != nil {
+		err := con.Content.Visit(resolve)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (resolve *Resolve) VisitImage(con booklit.Image) error {

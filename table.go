@@ -1,7 +1,5 @@
 package booklit
 
-import "fmt"
-
 type Table struct {
 	Rows [][]Content
 }
@@ -11,7 +9,19 @@ func (con Table) IsFlow() bool {
 }
 
 func (con Table) String() string {
-	return fmt.Sprintf("{table: %s}", con.Rows)
+	var text string
+	for _, cols := range con.Rows {
+		row := "|"
+		for _, col := range cols {
+			row += " " + col.String() + " |"
+		}
+
+		text += row + "\n"
+	}
+
+	text += "\n"
+
+	return text
 }
 
 func (con Table) Visit(visitor Visitor) error {

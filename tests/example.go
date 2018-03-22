@@ -14,10 +14,11 @@ import (
 )
 
 type Example struct {
-	Input   string
-	Inputs  Files
-	Outputs Files
-	Err     error
+	Input       string
+	Inputs      Files
+	Outputs     Files
+	SearchIndex string
+	Err         error
 }
 
 type Files map[string]string
@@ -52,8 +53,9 @@ func (example Example) Run() {
 	Expect(err).ToNot(HaveOccurred())
 
 	writer := render.Writer{
-		Engine:      engine,
-		Destination: dir,
+		Engine:          engine,
+		Destination:     dir,
+		SaveSearchIndex: example.SearchIndex != "",
 	}
 
 	err = writer.WriteSection(section)
@@ -63,6 +65,12 @@ func (example Example) Run() {
 		fileContents, err := ioutil.ReadFile(filepath.Join(dir, file))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchXML(contents))
+	}
+
+	if example.SearchIndex != "" {
+		fileContents, err := ioutil.ReadFile(filepath.Join(dir, render.SearchIndexFilename))
+		Expect(err).ToNot(HaveOccurred())
+		Expect(string(fileContents)).To(MatchJSON(example.SearchIndex))
 	}
 
 	Expect(stringifyEverything(section)).ToNot(BeEmpty())

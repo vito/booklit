@@ -35,11 +35,13 @@ type Section struct {
 type Partials map[string]Content
 
 type Tag struct {
-	Name    string
-	Display Content
+	Name  string
+	Title Content
 
 	Section *Section
 	Anchor  string
+
+	Content Content
 }
 
 func (con *Section) String() string {
@@ -68,7 +70,7 @@ func (con *Section) SetTitle(title Content, tags ...string) {
 	con.PrimaryTag = con.Tags[0]
 }
 
-func (con *Section) SetTag(name string, display Content, optionalAnchor ...string) {
+func (con *Section) SetTag(name string, title Content, optionalAnchor ...string) {
 	anchor := ""
 	if len(optionalAnchor) > 0 {
 		anchor = optionalAnchor[0]
@@ -77,9 +79,21 @@ func (con *Section) SetTag(name string, display Content, optionalAnchor ...strin
 	con.Tags = append(con.Tags, Tag{
 		Section: con,
 
-		Name:    name,
-		Display: display,
-		Anchor:  anchor,
+		Name:   name,
+		Title:  title,
+		Anchor: anchor,
+	})
+}
+
+func (con *Section) SetTagAnchored(name string, title Content, content Content, anchor string) {
+	con.Tags = append(con.Tags, Tag{
+		Section: con,
+
+		Name:   name,
+		Title:  title,
+		Anchor: anchor,
+
+		Content: content,
 	})
 }
 

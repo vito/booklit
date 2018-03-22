@@ -112,6 +112,10 @@ func (engine *HTMLRenderingEngine) FileExtension() string {
 	return "html"
 }
 
+func (engine *HTMLRenderingEngine) URL(tag booklit.Tag) string {
+	return tagURLFunc(tag)
+}
+
 func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
 	if con.Style != "" {
 		engine.template = engine.tmpl.Lookup(con.Style + "-page.tmpl")

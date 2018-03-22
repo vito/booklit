@@ -19,7 +19,7 @@ func (con *Reference) String() string {
 	}
 
 	if con.Tag != nil {
-		return con.Tag.Display.String()
+		return con.Tag.Title.String()
 	}
 
 	return fmt.Sprintf("{reference: %s}", con.TagName)
@@ -34,5 +34,5 @@ func (con *Reference) Display() Content {
 		return con.Content
 	}
 
-	return con.Tag.Display
+	return con.Tag.Title
 }

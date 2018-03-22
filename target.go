@@ -1,10 +1,9 @@
 package booklit
 
-import "fmt"
-
 type Target struct {
 	TagName string
-	Display Content
+	Title   Content
+	Content Content
 }
 
 func (con Target) IsFlow() bool {
@@ -12,7 +11,7 @@ func (con Target) IsFlow() bool {
 }
 
 func (con Target) String() string {
-	return fmt.Sprintf("{target: %s}", con.TagName)
+	return ""
 }
 
 func (con Target) Visit(visitor Visitor) error {

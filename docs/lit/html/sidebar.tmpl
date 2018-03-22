@@ -61,7 +61,7 @@
       <table>
         {{range .AnchorTags}}
         <tr>
-          <td colspan="2" class="title-cell"><a href="{{. | url}}">{{.Display | render}}</a></td>
+          <td colspan="2" class="title-cell"><a href="{{. | url}}">{{.Title | render}}</a></td>
         </tr>
         {{end}}
         {{range .Children}}
@@ -72,7 +72,7 @@
           {{range .AnchorTags}}
           <tr>
             <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="{{. | url}}">{{.Display | render}}</a></td>
+            <td class="title-cell"><a href="{{. | url}}">{{.Title | render}}</a></td>
           </tr>
           {{end}}
         {{end}}

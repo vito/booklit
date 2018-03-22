@@ -20,6 +20,7 @@ func Main() {
 
 	args, err := parser.Parse()
 	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
