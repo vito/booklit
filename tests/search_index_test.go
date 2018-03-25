@@ -29,17 +29,23 @@ Here's another paragraph.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's another paragraph.\n\n"
+				"text": "How are you?\n\nHere's another paragraph.\n\n",
+				"depth": 0,
+				"section_tag": "hello-world"
 			},
 			"how-im-doing": {
 				"location": "hello-world.html#how-im-doing",
 				"title": "How I'm doing",
-				"text": "Good, thanks! And you?\n\n"
+				"text": "Good, thanks! And you?\n\n",
+				"depth": 1,
+				"section_tag": "how-im-doing"
 			},
 			"their-reply": {
 				"location": "hello-world.html#their-reply",
 				"title": "Their Reply",
-				"text": "Good, thanks!\n\n"
+				"text": "Good, thanks!\n\n",
+				"depth": 1,
+				"section_tag": "their-reply"
 			}
 		}`,
 	}),
@@ -66,17 +72,23 @@ Here's another paragraph.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's another paragraph.\n\n"
+				"text": "How are you?\n\nHere's another paragraph.\n\n",
+				"depth": 0,
+				"section_tag": "hello-world"
 			},
 			"sub-section": {
 				"location": "hello-world.html#sub-section",
 				"title": "Sub-Section",
-				"text": "Sub-section content.\n\n"
+				"text": "Sub-section content.\n\n",
+				"depth": 1,
+				"section_tag": "sub-section"
 			},
 			"some-target": {
 				"location": "hello-world.html#some-target",
 				"title": "Some Target",
-				"text": "This is more information about some-target.\n\n"
+				"text": "This is more information about some-target.\n\n",
+				"depth": 1,
+				"section_tag": "sub-section"
 			}
 		}`,
 	}),
@@ -133,12 +145,16 @@ and a \reference{sub-section}.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\n* Item 1\n\n  Another line\n\n* Item 2\n\n1. Ordered Item 1\n\n2. Ordered Item 2\n\nline 1\nline 2\n| a | 1 |\n| b | 2 |\n\na: 1\nb: 2\n\n"
+				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\n* Item 1\n\n  Another line\n\n* Item 2\n\n1. Ordered Item 1\n\n2. Ordered Item 2\n\nline 1\nline 2\n| a | 1 |\n| b | 2 |\n\na: 1\nb: 2\n\n",
+				"depth": 0,
+				"section_tag": "hello-world"
 			},
 			"sub-section": {
 				"location": "hello-world.html#sub-section",
 				"title": "Sub-Section",
-				"text": "Sub-section content.\n\n"
+				"text": "Sub-section content.\n\n",
+				"depth": 1,
+				"section_tag": "sub-section"
 			}
 		}`,
 	}),

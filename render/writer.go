@@ -30,9 +30,11 @@ const SearchIndexFilename = "search_index.json"
 type SearchIndex map[string]SearchDocument
 
 type SearchDocument struct {
-	Location string `json:"location"`
-	Title    string `json:"title"`
-	Text     string `json:"text"`
+	Location   string `json:"location"`
+	Title      string `json:"title"`
+	Text       string `json:"text"`
+	Depth      int    `json:"depth"`
+	SectionTag string `json:"section_tag"`
 }
 
 func (writer Writer) WriteSection(section *booklit.Section) error {
@@ -74,9 +76,11 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 			}
 
 			index[tag.Name] = SearchDocument{
-				Location: writer.Engine.URL(tag),
-				Title:    tag.Title.String(),
-				Text:     text,
+				Location:   writer.Engine.URL(tag),
+				Title:      tag.Title.String(),
+				Text:       text,
+				Depth:      tag.Section.Depth(),
+				SectionTag: tag.Section.PrimaryTag.Name,
 			}
 		}
 

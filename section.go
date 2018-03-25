@@ -206,6 +206,14 @@ func (con *Section) UsePlugin(pf PluginFactory) {
 	con.Plugins = append(con.Plugins, pf(con))
 }
 
+func (con *Section) Depth() int {
+	if con.Parent == nil {
+		return 0
+	}
+
+	return con.Parent.Depth() + 1
+}
+
 func (con *Section) PageDepth() int {
 	if con.Parent == nil || con.Parent.ResetDepth {
 		return 0
