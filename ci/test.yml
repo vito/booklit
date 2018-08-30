@@ -7,15 +7,13 @@ image_resource:
 
 inputs:
 - name: booklit
-  path: gopath/src/github.com/vito/booklit
 
 caches:
-- path: depspath/
-- path: gopath/pkg/
+- path: gopath/
 
 params:
   COVERALLS_TOKEN:
   GIT_BRANCH: master
 
 run:
-  path: gopath/src/github.com/vito/booklit/ci/test
+  path: booklit/ci/test

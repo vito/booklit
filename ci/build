@@ -2,29 +2,30 @@
 
 set -e -u
 
-export GOPATH=$PWD/depspath:$PWD/gopath
-export PATH=$PWD/depspath/bin:$PWD/gopath/bin:$PATH
+export GOPATH=$PWD/gopath
+export PATH=$PWD/gopath/bin:$PATH
 
-echo "fetching dependencies..."
-go get -d ./...
+assets=$PWD/assets
 
 version="0.0.0-dev"
 if [ -d version ]; then
   version="$(cat version/version)"
 fi
 
-for os in linux darwin windows; do
-  ext=""
-  if [ "$os" = "windows" ]; then
-    ext=".exe"
-  fi
+pushd booklit
+  for os in linux darwin windows; do
+    ext=""
+    if [ "$os" = "windows" ]; then
+      ext=".exe"
+    fi
 
-  echo "building $os binary..."
-  GOOS=$os go build \
-    --ldflags "-X github.com/vito/booklit.Version=${version}" \
-    -o assets/booklit_${os}_amd64${ext} \
-    github.com/vito/booklit/cmd/booklit
-done
+    echo "building $os binary..."
+    GOOS=$os go build \
+      --ldflags "-X github.com/vito/booklit.Version=${version}" \
+      -o $assets/booklit_${os}_amd64${ext} \
+      github.com/vito/booklit/cmd/booklit
+  done
+popd
 
 echo "printing version..."
 ./assets/booklit_$(go env GOOS)_$(go env GOARCH) --version

@@ -7,7 +7,6 @@ image_resource:
 
 inputs:
 - name: booklit
-  path: gopath/src/github.com/vito/booklit
 - name: version
   optional: true
 
@@ -15,8 +14,7 @@ outputs:
 - name: assets
 
 caches:
-- path: depspath/
-- path: gopath/pkg/
+- path: gopath/
 
 run:
-  path: gopath/src/github.com/vito/booklit/ci/build
+  path: booklit/ci/build
