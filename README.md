@@ -30,6 +30,6 @@ booklit \
   --plugin github.com/vito/booklit/booklitdoc
 ```
 
-then, browse from `./docs/index.html`.
+then browse the generated docs from `./docs/index.html`.
 
 you can see the result at https://vito.github.io/booklit
