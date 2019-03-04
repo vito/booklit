@@ -185,6 +185,52 @@ func (con *Section) IsOrHasChild(sub *Section) bool {
 	return false
 }
 
+func (con *Section) Prev() *Section {
+	if con.Parent == nil {
+		return nil
+	}
+
+	var lastChild *Section
+	for _, child := range con.Parent.Children {
+		if lastChild != nil && child == con {
+			return lastChild
+		}
+
+		lastChild = child
+	}
+
+	return con.Parent
+}
+
+func (con *Section) Next() *Section {
+	if con.SplitSections {
+		if len(con.Children) > 0 {
+			return con.Children[0]
+		}
+	}
+
+	return con.NextSibling()
+}
+
+func (con *Section) NextSibling() *Section {
+	if con.Parent == nil {
+		return nil
+	}
+
+	var sawSelf bool
+	for _, child := range con.Parent.Children {
+		if sawSelf {
+			return child
+		}
+
+		if child == con {
+			sawSelf = true
+		}
+	}
+
+	return con.Parent.NextSibling()
+}
+
 func (con *Section) FindTag(tagName string) []Tag {
 	return con.findTag(tagName, true, nil)
 }
