@@ -106,6 +106,13 @@ func (cmd *Command) Build(isReexec bool) ([]string, error) {
 		},
 	}
 
+	engine := render.NewHTMLRenderingEngine()
+
+	writer := render.Writer{
+		Engine:      engine,
+		Destination: cmd.Out,
+	}
+
 	section, err := processor.LoadFile(cmd.In)
 	if err != nil {
 		return nil, err
@@ -116,8 +123,6 @@ func (cmd *Command) Build(isReexec bool) ([]string, error) {
 		return nil, err
 	}
 
-	engine := render.NewHTMLRenderingEngine()
-
 	if cmd.HTMLEngine.Templates != "" {
 		err := engine.LoadTemplates(cmd.HTMLEngine.Templates)
 		if err != nil {
@@ -125,15 +130,16 @@ func (cmd *Command) Build(isReexec bool) ([]string, error) {
 		}
 	}
 
-	writer := render.Writer{
-		Engine:          engine,
-		Destination:     cmd.Out,
-		SaveSearchIndex: cmd.SaveSearchIndex,
-	}
-
 	err = writer.WriteSection(section)
 	if err != nil {
 		return nil, err
+	}
+
+	if cmd.SaveSearchIndex {
+		err = writer.WriteSearchIndex(section)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return cmd.pathsToWatch(section)

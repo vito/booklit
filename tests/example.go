@@ -53,9 +53,8 @@ func (example Example) Run() {
 	Expect(err).ToNot(HaveOccurred())
 
 	writer := render.Writer{
-		Engine:          engine,
-		Destination:     dir,
-		SaveSearchIndex: example.SearchIndex != "",
+		Engine:      engine,
+		Destination: dir,
 	}
 
 	err = writer.WriteSection(section)
@@ -68,6 +67,9 @@ func (example Example) Run() {
 	}
 
 	if example.SearchIndex != "" {
+		err := writer.WriteSearchIndex(section)
+		Expect(err).ToNot(HaveOccurred())
+
 		fileContents, err := ioutil.ReadFile(filepath.Join(dir, render.SearchIndexFilename))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchJSON(example.SearchIndex))

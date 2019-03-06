@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 )
 
@@ -21,8 +22,6 @@ type Writer struct {
 	Engine RenderingEngine
 
 	Destination string
-
-	SaveSearchIndex bool
 }
 
 const SearchIndexFilename = "search_index.json"
@@ -39,67 +38,7 @@ type SearchDocument struct {
 
 func (writer Writer) WriteSection(section *booklit.Section) error {
 	if section.Parent == nil || section.Parent.SplitSections {
-		name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
-		path := filepath.Join(writer.Destination, name)
-
-		file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-		if err != nil {
-			return err
-		}
-
-		err = writer.Engine.RenderSection(file, section)
-		if err != nil {
-			return err
-		}
-	}
-
-	if writer.SaveSearchIndex {
-		indexPath := filepath.Join(writer.Destination, SearchIndexFilename)
-
-		indexFile, err := os.OpenFile(indexPath, os.O_RDWR|os.O_CREATE, 0644)
-		if err != nil {
-			return err
-		}
-
-		index := SearchIndex{}
-		err = json.NewDecoder(indexFile).Decode(&index)
-		if err != nil && err != io.EOF {
-			return err
-		}
-
-		for _, tag := range section.Tags {
-			var text string
-			if tag.Content != nil {
-				text = tag.Content.String()
-			} else {
-				text = tag.Section.Body.String()
-			}
-
-			index[tag.Name] = SearchDocument{
-				Location:   writer.Engine.URL(tag),
-				Title:      tag.Title.String(),
-				Text:       text,
-				Depth:      tag.Section.Depth(),
-				SectionTag: tag.Section.PrimaryTag.Name,
-			}
-		}
-
-		err = indexFile.Truncate(0)
-		if err != nil {
-			return err
-		}
-
-		_, err = indexFile.Seek(0, 0)
-		if err != nil {
-			return err
-		}
-
-		err = json.NewEncoder(indexFile).Encode(index)
-		if err != nil {
-			return err
-		}
-
-		err = indexFile.Close()
+		err := writer.writeSingleSection(section)
 		if err != nil {
 			return err
 		}
@@ -110,6 +49,76 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (writer Writer) WriteSearchIndex(section *booklit.Section) error {
+	logrus.Infoln("writing search index")
+
+	indexPath := filepath.Join(writer.Destination, SearchIndexFilename)
+
+	index := SearchIndex{}
+	writer.loadTags(index, section)
+
+	indexFile, err := os.Create(indexPath)
+	if err != nil {
+		return err
+	}
+
+	err = json.NewEncoder(indexFile).Encode(index)
+	if err != nil {
+		return err
+	}
+
+	err = indexFile.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (writer Writer) loadTags(index SearchIndex, section *booklit.Section) {
+	for _, tag := range section.Tags {
+		var text string
+		if tag.Content != nil {
+			text = tag.Content.String()
+		} else {
+			text = tag.Section.Body.String()
+		}
+
+		index[tag.Name] = SearchDocument{
+			Location:   writer.Engine.URL(tag),
+			Title:      tag.Title.String(),
+			Text:       text,
+			Depth:      tag.Section.Depth(),
+			SectionTag: tag.Section.PrimaryTag.Name,
+		}
+	}
+
+	for _, child := range section.Children {
+		writer.loadTags(index, child)
+	}
+}
+
+func (writer Writer) writeSingleSection(section *booklit.Section) error {
+	name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
+	path := filepath.Join(writer.Destination, name)
+
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	logrus.Infoln("rendering", path)
+
+	err = writer.Engine.RenderSection(file, section)
+	if err != nil {
+		return err
 	}
 
 	return nil
