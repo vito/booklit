@@ -14,6 +14,7 @@ type RenderingEngine interface {
 	booklit.Visitor
 
 	FileExtension() string
+	NeedsRender(*booklit.Section, string) bool
 	RenderSection(io.Writer, *booklit.Section) error
 	URL(booklit.Tag) string
 }
@@ -106,6 +107,11 @@ func (writer Writer) loadTags(index SearchIndex, section *booklit.Section) {
 func (writer Writer) writeSingleSection(section *booklit.Section) error {
 	name := section.PrimaryTag.Name + "." + writer.Engine.FileExtension()
 	path := filepath.Join(writer.Destination, name)
+
+	if !writer.Engine.NeedsRender(section, path) {
+		logrus.Debugln("render up-to-date; not rendering", path)
+		return nil
+	}
 
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {

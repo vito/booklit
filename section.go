@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/vito/booklit/ast"
 )
 
 type Section struct {
-	Path string
+	Path    string
+	ModTime time.Time
 
 	Title Content
 	Body  Content
@@ -28,11 +32,17 @@ type Section struct {
 
 	OmitChildrenFromTableOfContents bool
 
+	Processor       SectionProcessor
 	PluginFactories []PluginFactory
 	Plugins         []Plugin
 }
 
 type Partials map[string]Content
+
+type SectionProcessor interface {
+	EvaluateFile(*Section, string, []PluginFactory) (*Section, error)
+	EvaluateNode(*Section, ast.Node, []PluginFactory) (*Section, error)
+}
 
 type Tag struct {
 	Name  string

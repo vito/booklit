@@ -2,6 +2,7 @@ package tests
 
 import (
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/onsi/ginkgo"
@@ -24,13 +25,20 @@ type Example struct {
 type Files map[string]string
 
 func (example Example) Run() {
-	processor := &load.Processor{
-		PluginFactories: []booklit.PluginFactory{
-			baselit.NewPlugin,
-		},
+	processor := &load.Processor{}
+
+	pluginFactories := []booklit.PluginFactory{
+		baselit.NewPlugin,
 	}
 
 	dir, err := ioutil.TempDir("", "booklit-tests")
+	Expect(err).ToNot(HaveOccurred())
+
+	defer os.RemoveAll(dir)
+
+	sectionPath := filepath.Join(dir, ginkgo.CurrentGinkgoTestDescription().TestText+".lit")
+
+	err = ioutil.WriteFile(sectionPath, []byte(example.Input), 0644)
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Inputs {
@@ -38,8 +46,7 @@ func (example Example) Run() {
 		Expect(err).ToNot(HaveOccurred())
 	}
 
-	fakePath := filepath.Join(dir, ginkgo.CurrentGinkgoTestDescription().TestText+".lit")
-	section, err := processor.LoadSource(fakePath, []byte(example.Input))
+	section, err := processor.LoadFile(sectionPath, pluginFactories)
 	if example.Err != nil {
 		Expect(err).To(MatchError(err))
 		return
