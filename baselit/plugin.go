@@ -2,12 +2,10 @@ package baselit
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
-	"github.com/vito/booklit/load"
 )
 
 func init() {
@@ -48,11 +46,7 @@ func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
 }
 
 func (plugin Plugin) Section(node ast.Node) error {
-	processor := &load.Processor{
-		PluginFactories: plugin.section.PluginFactories,
-	}
-
-	section, err := processor.EvaluateSection(plugin.section, plugin.section.Path, node)
+	section, err := plugin.section.Processor.EvaluateNode(plugin.section, node, plugin.section.PluginFactories)
 	if err != nil {
 		return err
 	}
@@ -65,28 +59,7 @@ func (plugin Plugin) Section(node ast.Node) error {
 func (plugin Plugin) IncludeSection(path string) error {
 	sectionPath := filepath.Join(filepath.Dir(plugin.section.Path), path)
 
-	file, err := os.Open(sectionPath)
-	if err != nil {
-		return err
-	}
-
-	result, err := ast.ParseReader(sectionPath, file)
-	if err != nil {
-		return err
-	}
-
-	err = file.Close()
-	if err != nil {
-		return err
-	}
-
-	processor := &load.Processor{
-		PluginFactories: []booklit.PluginFactory{
-			NewPlugin,
-		},
-	}
-
-	section, err := processor.EvaluateSection(plugin.section, sectionPath, result.(ast.Node))
+	section, err := plugin.section.Processor.EvaluateFile(plugin.section, sectionPath, []booklit.PluginFactory{NewPlugin})
 	if err != nil {
 		return err
 	}

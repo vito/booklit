@@ -9,10 +9,6 @@ import (
 	"github.com/vito/booklit"
 )
 
-func init() {
-	booklit.RegisterPlugin("chroma", NewPlugin)
-}
-
 func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
 		section: section,

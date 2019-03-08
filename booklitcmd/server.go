@@ -2,81 +2,97 @@ package booklitcmd
 
 import (
 	"net/http"
-	"os"
 	"path/filepath"
+	"strings"
 	"sync"
-	"time"
 
 	"github.com/sirupsen/logrus"
+	"github.com/vito/booklit"
+	"github.com/vito/booklit/load"
+	"github.com/vito/booklit/render"
 )
 
 type Server struct {
-	Command    *Command
+	In        string
+	Processor *load.Processor
+
+	Templates string
+	Engine    *render.HTMLRenderingEngine
+
 	FileServer http.Handler
 
-	lastBuilt  time.Time
-	builtPaths []string
-	buildLock  sync.Mutex
+	buildLock sync.Mutex
 }
 
 func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	logrus.Debugln("serving", r.URL.Path)
+	log := logrus.WithFields(logrus.Fields{
+		"request": r.URL.Path,
+	})
+
+	log.Debugln("serving")
+
+	section, found, err := server.loadRequestedSection(r.URL.Path)
+	if err != nil {
+		log.Errorf("failed to load section: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if !found {
+		server.FileServer.ServeHTTP(w, r)
+		return
+	}
 
 	server.buildLock.Lock()
+	defer server.buildLock.Unlock()
 
-	if server.shouldBuild() {
-		paths, err := server.Command.Build(false)
+	if server.Templates != "" {
+		err := server.Engine.LoadTemplates(server.Templates)
 		if err != nil {
+			log.Errorf("failed to load templates: %s", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			server.buildLock.Unlock()
 			return
 		}
-
-		server.builtPaths = paths
-		server.lastBuilt = time.Now()
-
-		logrus.Info("build complete")
 	}
 
-	server.buildLock.Unlock()
+	log = log.WithFields(logrus.Fields{
+		"section": section.Path,
+	})
 
-	server.FileServer.ServeHTTP(w, r)
+	log.Info("rendering")
+
+	err = server.Engine.RenderSection(w, section)
+	if err != nil {
+		log.Errorf("failed to render: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	return
 }
 
-func (server *Server) shouldBuild() bool {
-	if server.builtPaths == nil {
-		logrus.Info("initial build")
-		return true
+func (server *Server) loadRequestedSection(path string) (*booklit.Section, bool, error) {
+	ext := server.Engine.FileExtension()
+
+	if !strings.HasSuffix(path, "."+ext) {
+		return nil, false, nil
 	}
 
-	wd, _ := os.Getwd()
+	tagName := strings.TrimSuffix(filepath.Base(path), "."+ext)
 
-	for _, path := range server.builtPaths {
-		logPath := path
-		if filepath.IsAbs(path) {
-			relPath, err := filepath.Rel(wd, path)
-			if err != nil {
-				logrus.Errorf("failed to resolve relative path for %s: %s", path, err)
-			} else {
-				logPath = relPath
-			}
-		}
+	logrus.WithFields(logrus.Fields{
+		"section": server.In,
+	}).Info("loading root section")
 
-		log := logrus.WithFields(logrus.Fields{
-			"path": logPath,
-		})
-
-		info, err := os.Stat(path)
-		if err != nil {
-			log.Infof("file removed; rebuilding")
-			return true
-		}
-
-		if info.ModTime().After(server.lastBuilt) {
-			log.Infof("change detected; rebuilding")
-			return true
-		}
+	rootSection, err := server.Processor.LoadFile(server.In, basePluginFactories)
+	if err != nil {
+		return nil, false, err
 	}
 
-	return false
+	tags := rootSection.FindTag(tagName)
+	if len(tags) == 0 {
+		return nil, false, nil
+	}
+
+	return tags[0].Section, true, nil
 }

@@ -1,4 +1,4 @@
-package booklitdoc
+package main
 
 import (
 	"errors"

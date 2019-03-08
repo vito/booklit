@@ -7,8 +7,10 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/vito/booklit"
 )
@@ -67,7 +69,8 @@ func init() {
 }
 
 type HTMLRenderingEngine struct {
-	tmpl *template.Template
+	tmpl         *template.Template
+	tmplModTimes map[string]time.Time
 
 	template *template.Template
 	data     interface{}
@@ -75,14 +78,19 @@ type HTMLRenderingEngine struct {
 
 func NewHTMLRenderingEngine() *HTMLRenderingEngine {
 	engine := &HTMLRenderingEngine{
-		tmpl: template.Must(initTmpl.Clone()),
+		tmplModTimes: map[string]time.Time{},
 	}
 
+	engine.resetTmpl()
+
+	return engine
+}
+
+func (engine *HTMLRenderingEngine) resetTmpl() {
+	engine.tmpl = template.Must(initTmpl.Clone())
 	engine.tmpl.Funcs(template.FuncMap{
 		"render": engine.subRender,
 	})
-
-	return engine
 }
 
 func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
@@ -90,6 +98,29 @@ func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
 	if err != nil {
 		return err
 	}
+
+	var shouldReload bool
+	for _, path := range templates {
+		info, err := os.Stat(path)
+		if err != nil {
+			return err
+		}
+
+		modTime := info.ModTime()
+
+		lastModTime, found := engine.tmplModTimes[path]
+		if !found || modTime.After(lastModTime) {
+			shouldReload = true
+		}
+
+		engine.tmplModTimes[path] = modTime
+	}
+
+	if !shouldReload {
+		return nil
+	}
+
+	engine.resetTmpl()
 
 	for _, path := range templates {
 		content, err := ioutil.ReadFile(path)

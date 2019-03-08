@@ -1,18 +1,13 @@
 package booklitcmd
 
 import (
-	"bufio"
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"go/build"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"syscall"
+	"plugin"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
@@ -47,289 +42,116 @@ func (cmd *Command) Execute(args []string) error {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
-
-	if isReexec {
-		logrus.SetFormatter(&logrus.JSONFormatter{
-			DisableTimestamp: true,
-		})
+	err := cmd.loadPlugins()
+	if err != nil {
+		return err
 	}
 
-	if cmd.ServerPort != 0 && !isReexec {
+	if cmd.ServerPort != 0 {
 		return cmd.Serve()
 	} else {
-		paths, err := cmd.Build(isReexec)
-		if err != nil {
-			if reexecErr, ok := err.(ReexecError); ok {
-				os.Exit(reexecErr.ExitStatus)
-			} else {
-				return err
-			}
-		}
-
-		if isReexec {
-			err := json.NewEncoder(os.Stdout).Encode(reexecOutput{
-				Paths: paths,
-			})
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
+		return cmd.Build()
 	}
 }
 
 func (cmd *Command) Serve() error {
 	http.Handle("/", &Server{
-		Command:    cmd,
+		In: cmd.In,
+		Processor: &load.Processor{
+			AllowBrokenReferences: cmd.AllowBrokenReferences,
+		},
+
+		Templates:  cmd.HTMLEngine.Templates,
+		Engine:     render.NewHTMLRenderingEngine(),
 		FileServer: http.FileServer(http.Dir(cmd.Out)),
 	})
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", cmd.ServerPort), nil)
 }
 
-type reexecOutput struct {
-	Paths []string
+var basePluginFactories = []booklit.PluginFactory{
+	baselit.NewPlugin,
 }
 
-func (cmd *Command) Build(isReexec bool) ([]string, error) {
-	if len(cmd.Plugins) > 0 && !isReexec {
-		return cmd.reexec()
-	}
-
+func (cmd *Command) Build() error {
 	processor := &load.Processor{
 		AllowBrokenReferences: cmd.AllowBrokenReferences,
-
-		PluginFactories: []booklit.PluginFactory{
-			baselit.NewPlugin,
-		},
 	}
 
 	engine := render.NewHTMLRenderingEngine()
+
+	if cmd.HTMLEngine.Templates != "" {
+		err := engine.LoadTemplates(cmd.HTMLEngine.Templates)
+		if err != nil {
+			return err
+		}
+	}
+
+	section, err := processor.LoadFile(cmd.In, basePluginFactories)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(cmd.Out, 0755)
+	if err != nil {
+		return err
+	}
 
 	writer := render.Writer{
 		Engine:      engine,
 		Destination: cmd.Out,
 	}
 
-	section, err := processor.LoadFile(cmd.In)
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.MkdirAll(cmd.Out, 0755)
-	if err != nil {
-		return nil, err
-	}
-
-	if cmd.HTMLEngine.Templates != "" {
-		err := engine.LoadTemplates(cmd.HTMLEngine.Templates)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	err = writer.WriteSection(section)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if cmd.SaveSearchIndex {
-		err = writer.WriteSearchIndex(section)
+		err = writer.WriteSearchIndex(section, "search_index.json")
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	return cmd.pathsToWatch(section)
+	return nil
 }
 
-func (cmd *Command) pathsToWatch(section *booklit.Section) ([]string, error) {
-	paths := cmd.sectionPaths(section)
-
-	for _, plug := range cmd.Plugins {
-		pkg, err := build.Import(plug, ".", 0)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, file := range pkg.GoFiles {
-			paths = append(paths, filepath.Join(pkg.Dir, file))
-		}
-
-		paths = append(paths, pkg.Dir)
-	}
-
-	templatesDir := cmd.HTMLEngine.Templates
-	if templatesDir != "" {
-		files, err := filepath.Glob(filepath.Join(templatesDir, "*.tmpl"))
-		if err != nil {
-			return nil, err
-		}
-
-		paths = append(paths, files...)
-
-		paths = append(paths, templatesDir)
-	}
-
-	return paths, nil
-}
-
-func (cmd *Command) sectionPaths(section *booklit.Section) []string {
-	pathsUniq := map[string]struct{}{section.Path: struct{}{}}
-
-	for _, child := range section.Children {
-		for _, path := range cmd.sectionPaths(child) {
-			pathsUniq[path] = struct{}{}
-		}
-	}
-
-	paths := []string{}
-	for path, _ := range pathsUniq {
-		paths = append(paths, path)
-	}
-
-	return paths
-}
-
-func (cmd *Command) reexec() ([]string, error) {
+func (cmd *Command) loadPlugins() error {
 	tmpdir, err := ioutil.TempDir("", "booklit-reexec")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer func() {
 		_ = os.RemoveAll(tmpdir)
 	}()
 
-	src := filepath.Join(tmpdir, "main.go")
-	bin := filepath.Join(tmpdir, "main")
+	for i, p := range cmd.Plugins {
+		log := logrus.WithFields(logrus.Fields{
+			"plugin": p,
+		})
 
-	goSrc := "package main\n"
-	goSrc += "import \"github.com/vito/booklit/booklitcmd\"\n"
-	for _, p := range cmd.Plugins {
-		goSrc += "import _ \"" + p + "\"\n"
-	}
-	goSrc += "func main() {\n"
-	goSrc += "	booklitcmd.Main()\n"
-	goSrc += "}\n"
+		pluginPath := filepath.Join(tmpdir, fmt.Sprintf("plugin-%d.so", i))
 
-	err = ioutil.WriteFile(src, []byte(goSrc), 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	build := exec.Command("go", "install", src)
-	build.Env = append(os.Environ(), "GOBIN="+tmpdir)
-
-	buildOutput, err := build.CombinedOutput()
-	if err != nil {
-		if _, ok := err.(*exec.ExitError); ok {
-			return nil, fmt.Errorf("compilation failed:\n\n%s", string(buildOutput))
-		} else {
-			return nil, err
-		}
-	}
-
-	outBuf := new(bytes.Buffer)
-	errBuf := new(bytes.Buffer)
-	cmdProxyR, cmdProxyW := io.Pipe()
-	errProxyR, errProxyW := io.Pipe()
-	run := exec.Command(bin, os.Args[1:]...)
-	run.Env = append(os.Environ(), "BOOKLIT_REEXEC=1")
-	run.Stdout = outBuf
-	run.Stderr = io.MultiWriter(cmdProxyW, errProxyW)
-
-	cmdLogger := logrus.StandardLogger()
-
-	errLogger := logrus.New()
-	errLogger.Formatter = &logrus.TextFormatter{}
-	errLogger.Out = errBuf
-	errLogger.Level = cmdLogger.Level
-
-	go cmd.proxyLogrus(cmdLogger, os.Stderr, cmdProxyR)
-	go cmd.proxyLogrus(errLogger, errBuf, errProxyR)
-
-	err = run.Run()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			return nil, ReexecError{
-				ExitStatus: exitErr.Sys().(syscall.WaitStatus).ExitStatus(),
-				Output:     errBuf.String(),
-			}
-		} else {
-			return nil, err
-		}
-	}
-
-	var res reexecOutput
-	err = json.Unmarshal(outBuf.Bytes(), &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Paths, nil
-}
-
-func (cmd *Command) proxyLogrus(logger *logrus.Logger, nonJSON io.Writer, from io.Reader) {
-	buf := bufio.NewReader(from)
-
-	var prefix []byte
-
-	for {
-		line, isPrefix, err := buf.ReadLine()
-		if err == io.EOF {
-			return
-		}
-
-		if isPrefix {
-			prefix = append(prefix, line...)
-			continue
-		} else {
-			line = append(prefix, line...)
-			prefix = nil
-		}
-
-		fields := logrus.Fields{}
-		err = json.Unmarshal(line, &fields)
+		build := exec.Command("go", "build", "-buildmode=plugin", "-o", pluginPath, p)
+		build.Env = append(os.Environ(), "GOBIN="+tmpdir)
+		buildOutput, err := build.CombinedOutput()
 		if err != nil {
-			// not JSON; pass on through
-			fmt.Fprintln(nonJSON, string(line))
-			continue
+			if _, ok := err.(*exec.ExitError); ok {
+				return fmt.Errorf("failed to compile plugin '%s':\n\n%s", p, string(buildOutput))
+			} else {
+				return err
+			}
 		}
 
-		msg := fields["msg"]
-		delete(fields, "msg")
-
-		level := fields["level"]
-		delete(fields, "level")
-
-		entry := logrus.WithFields(fields)
-		entry.Logger = logger
-
-		switch level {
-		case "debug":
-			entry.Debug(msg)
-		case "info":
-			entry.Info(msg)
-		case "warning":
-			entry.Warn(msg)
-		case "error":
-			entry.Error(msg)
-		case "fatal":
-			entry.Fatal(msg)
-		case "panic":
-			entry.Panic(msg)
+		_, err = plugin.Open(pluginPath)
+		if err != nil {
+			return fmt.Errorf("failed to load plugin '%s': %s", p, err)
 		}
+
+		log.Info("loaded plugin")
 	}
-}
 
-type ReexecError struct {
-	ExitStatus int
-	Output     string
-}
-
-func (err ReexecError) Error() string {
-	return fmt.Sprintf("reexec failed (exit status %d); logs:\n\n%s", err.ExitStatus, err.Output)
+	return nil
 }

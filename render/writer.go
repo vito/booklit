@@ -24,8 +24,6 @@ type Writer struct {
 	Destination string
 }
 
-const SearchIndexFilename = "search_index.json"
-
 type SearchIndex map[string]SearchDocument
 
 type SearchDocument struct {
@@ -54,10 +52,12 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 	return nil
 }
 
-func (writer Writer) WriteSearchIndex(section *booklit.Section) error {
-	logrus.Infoln("writing search index")
+func (writer Writer) WriteSearchIndex(section *booklit.Section, path string) error {
+	logrus.WithFields(logrus.Fields{
+		"path": path,
+	}).Infoln("writing search index")
 
-	indexPath := filepath.Join(writer.Destination, SearchIndexFilename)
+	indexPath := filepath.Join(writer.Destination, path)
 
 	index := SearchIndex{}
 	writer.loadTags(index, section)
@@ -114,7 +114,10 @@ func (writer Writer) writeSingleSection(section *booklit.Section) error {
 
 	defer file.Close()
 
-	logrus.Infoln("rendering", path)
+	logrus.WithFields(logrus.Fields{
+		"section":  section.Path,
+		"rendered": path,
+	}).Info("rendering")
 
 	err = writer.Engine.RenderSection(file, section)
 	if err != nil {
