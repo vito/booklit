@@ -74,6 +74,10 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (server *Server) loadRequestedSection(path string) (*booklit.Section, bool, error) {
 	ext := server.Engine.FileExtension()
 
+	if path == "/" {
+		path = "/index." + ext
+	}
+
 	if !strings.HasSuffix(path, "."+ext) {
 		return nil, false, nil
 	}
