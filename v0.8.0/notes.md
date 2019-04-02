@@ -25,5 +25,4 @@ Windows is now dependent on upstream Go changes. sorry about that.
 ## misc
 
 generally, the switch from compiling and re-exec'ing to Go plugins cleaned
-things up quite a bit and made the above optimizations much easier to reason
-about.
+things up quite a bit and made the above optimizations possible to implement.
