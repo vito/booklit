@@ -99,7 +99,7 @@ func (cmd *Command) Build() error {
 		if cmd.Tag != "" {
 			tags := section.FindTag(cmd.Tag)
 			if len(tags) == 0 {
-				logrus.Errorf("unknown tag: %s", cmd.Tag)
+				return fmt.Errorf("unknown tag: %s", cmd.Tag)
 			}
 
 			sectionToRender = tags[0].Section
