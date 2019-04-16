@@ -37,6 +37,11 @@ type Command struct {
 	HTMLEngine struct {
 		Templates string `long:"templates" description:"Directory containing .tmpl files to load."`
 	} `group:"HTML Rendering Engine" namespace:"html"`
+
+	TextEngine struct {
+		FileExtension string `long:"file-extension" description:"File extension to use for generated files."`
+		Templates     string `long:"templates"      description:"Directory containing .tmpl files to load."`
+	} `group:"Text Rendering Engine" namespace:"text"`
 }
 
 func (cmd *Command) Execute(args []string) error {
@@ -80,13 +85,29 @@ func (cmd *Command) Build() error {
 		AllowBrokenReferences: cmd.AllowBrokenReferences,
 	}
 
-	engine := render.NewHTMLRenderingEngine()
+	var engine render.RenderingEngine
+	if cmd.TextEngine.FileExtension != "" {
+		textEngine := render.NewTextRenderingEngine(cmd.TextEngine.FileExtension)
 
-	if cmd.HTMLEngine.Templates != "" {
-		err := engine.LoadTemplates(cmd.HTMLEngine.Templates)
-		if err != nil {
-			return err
+		if cmd.TextEngine.Templates != "" {
+			err := textEngine.LoadTemplates(cmd.TextEngine.Templates)
+			if err != nil {
+				return err
+			}
 		}
+
+		engine = textEngine
+	} else {
+		htmlEngine := render.NewHTMLRenderingEngine()
+
+		if cmd.HTMLEngine.Templates != "" {
+			err := htmlEngine.LoadTemplates(cmd.HTMLEngine.Templates)
+			if err != nil {
+				return err
+			}
+		}
+
+		engine = htmlEngine
 	}
 
 	section, err := processor.LoadFile(cmd.In, basePluginFactories)

@@ -1,0 +1,9 @@
+{{if .Parent}}{{.Number}} {{end}}{{.Title | render -}}
+
+{{.Body | render}}
+
+{{if not .SplitSections}}
+{{range .Children}}
+{{. | render}}
+{{end}}
+{{end}}

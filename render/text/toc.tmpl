@@ -1,0 +1,7 @@
+{{if and .Children (not .OmitChildrenFromTableOfContents)}}
+{{range .Children}}
+{{.Number}} {{.Title | stripAux | render}}
+
+{{template "toc.tmpl" .}}
+{{end}}
+{{end}}

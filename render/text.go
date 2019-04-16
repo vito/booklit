@@ -4,33 +4,29 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/vito/booklit"
-	"github.com/vito/booklit/render/html"
+	"github.com/vito/booklit/render/text"
 )
 
-var initHTMLTmpl *template.Template
+var initTextTmpl *template.Template
 
 func init() {
-	initHTMLTmpl = template.New("engine").Funcs(template.FuncMap{
-		"url": func(tag booklit.Tag) string {
-			return sectionURL("html", tag.Section, tag.Anchor)
+	initTextTmpl = template.New("engine").Funcs(template.FuncMap{
+		"url": func(tag booklit.Tag) (string, error) {
+			return "", errors.New("url stubbed out")
 		},
 
 		"stripAux": booklit.StripAux,
 
-		"rawHTML": func(con booklit.Content) template.HTML {
-			return template.HTML(con.String())
-		},
-
-		"render": func(booklit.Content) (template.HTML, error) {
+		"render": func(booklit.Content) (string, error) {
 			return "", errors.New("render stubbed out")
 		},
 
@@ -49,24 +45,30 @@ func init() {
 
 			return depth
 		},
+
+		"joinLines": func(prefix string, str string) string {
+			return strings.Join(strings.Split(str, "\n"), "\n"+prefix)
+		},
 	})
 
-	for _, asset := range html.AssetNames() {
-		info, err := html.AssetInfo(asset)
+	for _, asset := range text.AssetNames() {
+		info, err := text.AssetInfo(asset)
 		if err != nil {
 			panic(err)
 		}
 
-		content := strings.TrimRight(string(html.MustAsset(asset)), "\n")
+		content := strings.TrimRight(string(text.MustAsset(asset)), "\n")
 
-		_, err = initHTMLTmpl.New(filepath.Base(info.Name())).Parse(content)
+		_, err = initTextTmpl.New(filepath.Base(info.Name())).Parse(content)
 		if err != nil {
 			panic(err)
 		}
 	}
 }
 
-type HTMLRenderingEngine struct {
+type TextRenderingEngine struct {
+	fileExtension string
+
 	tmpl         *template.Template
 	tmplModTimes map[string]time.Time
 
@@ -74,8 +76,10 @@ type HTMLRenderingEngine struct {
 	data     interface{}
 }
 
-func NewHTMLRenderingEngine() *HTMLRenderingEngine {
-	engine := &HTMLRenderingEngine{
+func NewTextRenderingEngine(fileExtension string) *TextRenderingEngine {
+	engine := &TextRenderingEngine{
+		fileExtension: fileExtension,
+
 		tmplModTimes: map[string]time.Time{},
 	}
 
@@ -84,14 +88,17 @@ func NewHTMLRenderingEngine() *HTMLRenderingEngine {
 	return engine
 }
 
-func (engine *HTMLRenderingEngine) resetTmpl() {
-	engine.tmpl = template.Must(initHTMLTmpl.Clone())
+func (engine *TextRenderingEngine) resetTmpl() {
+	engine.tmpl = template.Must(initTextTmpl.Clone())
 	engine.tmpl.Funcs(template.FuncMap{
 		"render": engine.subRender,
+		"url": func(tag booklit.Tag) string {
+			return sectionURL(engine.FileExtension(), tag.Section, tag.Anchor)
+		},
 	})
 }
 
-func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
+func (engine *TextRenderingEngine) LoadTemplates(templatesDir string) error {
 	templates, err := filepath.Glob(filepath.Join(templatesDir, "*.tmpl"))
 	if err != nil {
 		return err
@@ -137,15 +144,15 @@ func (engine *HTMLRenderingEngine) LoadTemplates(templatesDir string) error {
 	return nil
 }
 
-func (engine *HTMLRenderingEngine) FileExtension() string {
-	return "html"
+func (engine *TextRenderingEngine) FileExtension() string {
+	return engine.fileExtension
 }
 
-func (engine *HTMLRenderingEngine) URL(tag booklit.Tag) string {
+func (engine *TextRenderingEngine) URL(tag booklit.Tag) string {
 	return sectionURL(engine.FileExtension(), tag.Section, tag.Anchor)
 }
 
-func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
+func (engine *TextRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
 	tmpl := "page"
 	if con.Style != "" {
 		tmpl = con.Style + "-page"
@@ -161,17 +168,17 @@ func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Sec
 	return engine.render(out)
 }
 
-func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
+func (engine *TextRenderingEngine) VisitString(con booklit.String) error {
 	engine.data = con
 	return engine.setTmpl("string")
 }
 
-func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error {
+func (engine *TextRenderingEngine) VisitReference(con *booklit.Reference) error {
 	engine.data = con
 	return engine.setTmpl("reference")
 }
 
-func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
+func (engine *TextRenderingEngine) VisitSection(con *booklit.Section) error {
 	tmpl := "section"
 	if con.Style != "" {
 		tmpl = con.Style
@@ -181,62 +188,62 @@ func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
 	return engine.setTmpl(tmpl)
 }
 
-func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) error {
+func (engine *TextRenderingEngine) VisitSequence(con booklit.Sequence) error {
 	engine.data = con
 	return engine.setTmpl("sequence")
 }
 
-func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
+func (engine *TextRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
 	engine.data = con
 	return engine.setTmpl("paragraph")
 }
 
-func (engine *HTMLRenderingEngine) VisitPreformatted(con booklit.Preformatted) error {
+func (engine *TextRenderingEngine) VisitPreformatted(con booklit.Preformatted) error {
 	engine.data = con
 	return engine.setTmpl("preformatted")
 }
 
-func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
+func (engine *TextRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
 	engine.data = con.Section
 	return engine.setTmpl("toc")
 }
 
-func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
+func (engine *TextRenderingEngine) VisitStyled(con booklit.Styled) error {
 	engine.data = con
 	return engine.setTmpl(string(con.Style))
 }
 
-func (engine *HTMLRenderingEngine) VisitTarget(con booklit.Target) error {
+func (engine *TextRenderingEngine) VisitTarget(con booklit.Target) error {
 	engine.data = con
 	return engine.setTmpl("target")
 }
 
-func (engine *HTMLRenderingEngine) VisitImage(con booklit.Image) error {
+func (engine *TextRenderingEngine) VisitImage(con booklit.Image) error {
 	engine.data = con
 	return engine.setTmpl("image")
 }
 
-func (engine *HTMLRenderingEngine) VisitList(con booklit.List) error {
+func (engine *TextRenderingEngine) VisitList(con booklit.List) error {
 	engine.data = con
 	return engine.setTmpl("list")
 }
 
-func (engine *HTMLRenderingEngine) VisitLink(con booklit.Link) error {
+func (engine *TextRenderingEngine) VisitLink(con booklit.Link) error {
 	engine.data = con
 	return engine.setTmpl("link")
 }
 
-func (engine *HTMLRenderingEngine) VisitTable(con booklit.Table) error {
+func (engine *TextRenderingEngine) VisitTable(con booklit.Table) error {
 	engine.data = con
 	return engine.setTmpl("table")
 }
 
-func (engine *HTMLRenderingEngine) VisitDefinitions(con booklit.Definitions) error {
+func (engine *TextRenderingEngine) VisitDefinitions(con booklit.Definitions) error {
 	engine.data = con
 	return engine.setTmpl("definitions")
 }
 
-func (engine *HTMLRenderingEngine) setTmpl(name string) error {
+func (engine *TextRenderingEngine) setTmpl(name string) error {
 	tmpl := engine.tmpl.Lookup(name + ".tmpl")
 
 	if tmpl == nil {
@@ -248,7 +255,7 @@ func (engine *HTMLRenderingEngine) setTmpl(name string) error {
 	return nil
 }
 
-func (engine *HTMLRenderingEngine) render(out io.Writer) error {
+func (engine *TextRenderingEngine) render(out io.Writer) error {
 	if engine.template == nil {
 		return fmt.Errorf("unknown template for '%s' (%T)", engine.data, engine.data)
 	}
@@ -256,10 +263,10 @@ func (engine *HTMLRenderingEngine) render(out io.Writer) error {
 	return engine.template.Execute(out, engine.data)
 }
 
-func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.HTML, error) {
+func (engine *TextRenderingEngine) subRender(content booklit.Content) (string, error) {
 	buf := new(bytes.Buffer)
 
-	subEngine := NewHTMLRenderingEngine()
+	subEngine := NewTextRenderingEngine(engine.fileExtension)
 	subEngine.tmpl = engine.tmpl
 
 	err := content.Visit(subEngine)
@@ -272,5 +279,5 @@ func (engine *HTMLRenderingEngine) subRender(content booklit.Content) (template.
 		return "", err
 	}
 
-	return template.HTML(buf.String()), nil
+	return buf.String(), nil
 }

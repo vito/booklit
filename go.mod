@@ -8,6 +8,7 @@ require (
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964 // indirect
 	github.com/dlclark/regexp2 v1.1.6 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
+	github.com/go-bindata/go-bindata v3.1.1+incompatible
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/jessevdk/go-flags v1.4.0
