@@ -19,8 +19,10 @@ import (
 type Command struct {
 	Version func() `short:"v" long:"version" description:"Print the version of Boooklit and exit."`
 
-	In  string `long:"in"  short:"i" required:"true" description:"Input .lit file."`
-	Out string `long:"out" short:"o" required:"true" description:"Output directory in which to render."`
+	In string `long:"in"  short:"i" required:"true" description:"Input .lit file to load."`
+
+	Out string `long:"out" short:"o" description:"Directory into which sections will be rendered."`
+	Tag string `long:"tag" short:"t" description:"Section tag to render."`
 
 	SaveSearchIndex bool `long:"save-search-index" description:"Save a search index JSON file in the destination."`
 
@@ -90,6 +92,20 @@ func (cmd *Command) Build() error {
 	section, err := processor.LoadFile(cmd.In, basePluginFactories)
 	if err != nil {
 		return err
+	}
+
+	if cmd.Out == "" {
+		sectionToRender := section
+		if cmd.Tag != "" {
+			tags := section.FindTag(cmd.Tag)
+			if len(tags) == 0 {
+				logrus.Errorf("unknown tag: %s", cmd.Tag)
+			}
+
+			sectionToRender = tags[0].Section
+		}
+
+		return engine.RenderSection(os.Stdout, sectionToRender)
 	}
 
 	err = os.MkdirAll(cmd.Out, 0755)
