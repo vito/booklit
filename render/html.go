@@ -256,7 +256,7 @@ func (engine *HTMLRenderingEngine) VisitDefinitions(con booklit.Definitions) err
 
 func (engine *HTMLRenderingEngine) render(out io.Writer) error {
 	if engine.template == nil {
-		return fmt.Errorf("unknown template for %T", engine.data)
+		return fmt.Errorf("unknown template for '%s' (%T)", engine.data, engine.data)
 	}
 
 	return engine.template.Execute(out, engine.data)
