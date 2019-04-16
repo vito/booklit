@@ -94,17 +94,17 @@ func (cmd *Command) Build() error {
 		return err
 	}
 
-	if cmd.Out == "" {
-		sectionToRender := section
-		if cmd.Tag != "" {
-			tags := section.FindTag(cmd.Tag)
-			if len(tags) == 0 {
-				return fmt.Errorf("unknown tag: %s", cmd.Tag)
-			}
-
-			sectionToRender = tags[0].Section
+	sectionToRender := section
+	if cmd.Tag != "" {
+		tags := section.FindTag(cmd.Tag)
+		if len(tags) == 0 {
+			return fmt.Errorf("unknown tag: %s", cmd.Tag)
 		}
 
+		sectionToRender = tags[0].Section
+	}
+
+	if cmd.Out == "" {
 		return engine.RenderSection(os.Stdout, sectionToRender)
 	}
 
@@ -118,7 +118,7 @@ func (cmd *Command) Build() error {
 		Destination: cmd.Out,
 	}
 
-	err = writer.WriteSection(section)
+	err = writer.WriteSection(sectionToRender)
 	if err != nil {
 		return err
 	}
