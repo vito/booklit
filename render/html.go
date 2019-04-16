@@ -51,6 +51,10 @@ func init() {
 
 			return depth
 		},
+
+		"joinLines": func(html template.HTML, prefix string) template.HTML {
+			return template.HTML(strings.Join(strings.Split(string(html), "\n"), "\n"+prefix))
+		},
 	})
 
 	for _, asset := range AssetNames() {
