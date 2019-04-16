@@ -55,7 +55,8 @@ func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...
 		Block:   !code.IsFlow(),
 		Content: code,
 		Partials: booklit.Partials{
-			"HTML": booklit.String(buf.String()),
+			"Language": booklit.String(language),
+			"HTML":     booklit.String(buf.String()),
 		},
 	}, nil
 }
