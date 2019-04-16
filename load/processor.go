@@ -36,7 +36,6 @@ func (processor *Processor) LoadFile(path string, pluginFactories []booklit.Plug
 func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		println("oops")
 		return nil, err
 	}
 
