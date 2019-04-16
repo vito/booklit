@@ -148,113 +148,105 @@ func (engine *HTMLRenderingEngine) URL(tag booklit.Tag) string {
 }
 
 func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
+	tmpl := "page"
 	if con.Style != "" {
-		engine.template = engine.tmpl.Lookup(con.Style + "-page.tmpl")
-	} else {
-		engine.template = engine.tmpl.Lookup("page.tmpl")
+		tmpl = con.Style + "-page"
 	}
 
 	engine.data = con
+
+	err := engine.setTmpl(tmpl)
+	if err != nil {
+		return err
+	}
 
 	return engine.render(out)
 }
 
 func (engine *HTMLRenderingEngine) VisitString(con booklit.String) error {
-	engine.template = engine.tmpl.Lookup("string.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("string")
 }
 
 func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error {
-	engine.template = engine.tmpl.Lookup("reference.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("reference")
 }
 
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
+	tmpl := "section"
 	if con.Style != "" {
-		engine.template = engine.tmpl.Lookup(con.Style + ".tmpl")
-
-		if engine.template == nil {
-			return fmt.Errorf("no '%s.tmpl' template defined for section: %s", con.Style, con.PrimaryTag.Name)
-		}
-	} else {
-		engine.template = engine.tmpl.Lookup("section.tmpl")
+		tmpl = con.Style
 	}
 
 	engine.data = con
-
-	return nil
+	return engine.setTmpl(tmpl)
 }
 
 func (engine *HTMLRenderingEngine) VisitSequence(con booklit.Sequence) error {
-	engine.template = engine.tmpl.Lookup("sequence.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("sequence")
 }
 
 func (engine *HTMLRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
-	engine.template = engine.tmpl.Lookup("paragraph.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("paragraph")
 }
 
 func (engine *HTMLRenderingEngine) VisitPreformatted(con booklit.Preformatted) error {
-	engine.template = engine.tmpl.Lookup("preformatted.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("preformatted")
 }
 
 func (engine *HTMLRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
-	engine.template = engine.tmpl.Lookup("toc.tmpl")
 	engine.data = con.Section
-	return nil
+	return engine.setTmpl("toc")
 }
 
 func (engine *HTMLRenderingEngine) VisitStyled(con booklit.Styled) error {
-	engine.template = engine.tmpl.Lookup(string(con.Style) + ".tmpl")
-	if engine.template == nil {
-		return fmt.Errorf("no template defined for style: %s", con.Style)
-	}
-
 	engine.data = con
-
-	return nil
+	return engine.setTmpl(string(con.Style))
 }
 
 func (engine *HTMLRenderingEngine) VisitTarget(con booklit.Target) error {
-	engine.template = engine.tmpl.Lookup("target.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("target")
 }
 
 func (engine *HTMLRenderingEngine) VisitImage(con booklit.Image) error {
-	engine.template = engine.tmpl.Lookup("image.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("image")
 }
 
 func (engine *HTMLRenderingEngine) VisitList(con booklit.List) error {
-	engine.template = engine.tmpl.Lookup("list.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("list")
 }
 
 func (engine *HTMLRenderingEngine) VisitLink(con booklit.Link) error {
-	engine.template = engine.tmpl.Lookup("link.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("link")
 }
 
 func (engine *HTMLRenderingEngine) VisitTable(con booklit.Table) error {
-	engine.template = engine.tmpl.Lookup("table.tmpl")
 	engine.data = con
-	return nil
+	return engine.setTmpl("table")
 }
 
 func (engine *HTMLRenderingEngine) VisitDefinitions(con booklit.Definitions) error {
-	engine.template = engine.tmpl.Lookup("definitions.tmpl")
 	engine.data = con
+	return engine.setTmpl("definitions")
+}
+
+func (engine *HTMLRenderingEngine) setTmpl(name string) error {
+	tmpl := engine.tmpl.Lookup(name+".tmpl")
+
+	if tmpl == nil {
+		return fmt.Errorf("template '%s.tmpl' not found", name)
+	}
+
+	engine.template = tmpl
+
 	return nil
 }
 
