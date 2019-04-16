@@ -58,7 +58,7 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 		log.Debug("already parsed section")
 		node = parsed.Node
 	} else {
-		log.Info("parsing section")
+		log.Debug("parsing section")
 
 		file, err := os.Open(path)
 		if err != nil {
