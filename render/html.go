@@ -243,7 +243,7 @@ func (engine *HTMLRenderingEngine) VisitDefinitions(con booklit.Definitions) err
 }
 
 func (engine *HTMLRenderingEngine) setTmpl(name string) error {
-	tmpl := engine.tmpl.Lookup(name+".tmpl")
+	tmpl := engine.tmpl.Lookup(name + ".tmpl")
 
 	if tmpl == nil {
 		return fmt.Errorf("template '%s.tmpl' not found", name)
