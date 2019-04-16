@@ -174,6 +174,10 @@ func (engine *HTMLRenderingEngine) VisitReference(con *booklit.Reference) error 
 func (engine *HTMLRenderingEngine) VisitSection(con *booklit.Section) error {
 	if con.Style != "" {
 		engine.template = engine.tmpl.Lookup(con.Style + ".tmpl")
+
+		if engine.template == nil {
+			return fmt.Errorf("no '%s.tmpl' template defined for section: %s", con.Style, con.PrimaryTag.Name)
+		}
 	} else {
 		engine.template = engine.tmpl.Lookup("section.tmpl")
 	}
