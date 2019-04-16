@@ -112,7 +112,11 @@ func (con *Section) Number() string {
 
 	parentNumber := con.Parent.Number()
 	selfIndex := 1
-	for i := 0; con.Parent.Children[i] != con; i++ {
+	for _, child := range con.Parent.Children {
+		if child == con {
+			break
+		}
+
 		selfIndex++
 	}
 

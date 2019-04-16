@@ -25,7 +25,11 @@ type parsedNode struct {
 }
 
 func (processor *Processor) LoadFile(path string, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
-	section, err := processor.EvaluateFile(nil, path, pluginFactories)
+	return processor.LoadFileIn(nil, path, pluginFactories)
+}
+
+func (processor *Processor) LoadFileIn(parent *booklit.Section, path string, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
+	section, err := processor.EvaluateFile(parent, path, pluginFactories)
 	if err != nil {
 		return nil, err
 	}

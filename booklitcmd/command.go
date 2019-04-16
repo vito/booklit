@@ -19,10 +19,11 @@ import (
 type Command struct {
 	Version func() `short:"v" long:"version" description:"Print the version of Boooklit and exit."`
 
-	In string `long:"in"  short:"i" required:"true" description:"Input .lit file to load."`
-
+	In  string `long:"in"  short:"i" required:"true" description:"Input .lit file to load."`
 	Out string `long:"out" short:"o" description:"Directory into which sections will be rendered."`
-	Tag string `long:"tag" short:"t" description:"Section tag to render."`
+
+	SectionTag  string `long:"section-tag"  description:"Section tag to render."`
+	SectionPath string `long:"section-path" description:"Section path to load and render with --in as its parent."`
 
 	SaveSearchIndex bool `long:"save-search-index" description:"Save a search index JSON file in the destination."`
 
@@ -116,13 +117,18 @@ func (cmd *Command) Build() error {
 	}
 
 	sectionToRender := section
-	if cmd.Tag != "" {
-		tags := section.FindTag(cmd.Tag)
+	if cmd.SectionTag != "" {
+		tags := section.FindTag(cmd.SectionTag)
 		if len(tags) == 0 {
-			return fmt.Errorf("unknown tag: %s", cmd.Tag)
+			return fmt.Errorf("unknown tag: %s", cmd.SectionTag)
 		}
 
 		sectionToRender = tags[0].Section
+	} else if cmd.SectionPath != "" {
+		sectionToRender, err = processor.LoadFileIn(section, cmd.SectionPath, basePluginFactories)
+		if err != nil {
+			return err
+		}
 	}
 
 	if cmd.Out == "" {
