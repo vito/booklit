@@ -20,8 +20,12 @@ var initTextTmpl *template.Template
 
 func init() {
 	initTextTmpl = template.New("engine").Funcs(template.FuncMap{
-		"url": func(tag booklit.Tag) (string, error) {
+		"url": func(ext string, tag booklit.Tag) (string, error) {
 			return "", errors.New("url stubbed out")
+		},
+
+		"htmlURL": func(tag booklit.Tag) string {
+			return sectionURL("html", tag.Section, tag.Anchor)
 		},
 
 		"stripAux": booklit.StripAux,
