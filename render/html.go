@@ -52,7 +52,7 @@ func init() {
 			return depth
 		},
 
-		"joinLines": func(html template.HTML, prefix string) template.HTML {
+		"joinLines": func(prefix string, html template.HTML) template.HTML {
 			return template.HTML(strings.Join(strings.Split(string(html), "\n"), "\n"+prefix))
 		},
 	})
