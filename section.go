@@ -38,6 +38,7 @@ type Section struct {
 type Partials map[string]Content
 
 type SectionProcessor interface {
+	LoadPlugin(importPath string) (PluginFactory, error)
 	EvaluateFile(*Section, string, []PluginFactory) (*Section, error)
 	EvaluateNode(*Section, ast.Node, []PluginFactory) (*Section, error)
 }

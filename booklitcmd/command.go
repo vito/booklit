@@ -2,12 +2,8 @@ package booklitcmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
-	"plugin"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
@@ -29,8 +25,6 @@ type Command struct {
 
 	ServerPort int `long:"serve" short:"s" description:"Start an HTTP server on the given port."`
 
-	Plugins []string `long:"plugin" short:"p" description:"Package to import, providing a plugin."`
-
 	Debug bool `long:"debug" short:"d" description:"Log at debug level."`
 
 	AllowBrokenReferences bool `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
@@ -48,11 +42,6 @@ type Command struct {
 func (cmd *Command) Execute(args []string) error {
 	if cmd.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
-	}
-
-	err := cmd.loadPlugins()
-	if err != nil {
-		return err
 	}
 
 	if cmd.ServerPort != 0 {
@@ -155,45 +144,6 @@ func (cmd *Command) Build() error {
 		if err != nil {
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (cmd *Command) loadPlugins() error {
-	tmpdir, err := ioutil.TempDir("", "booklit-reexec")
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		_ = os.RemoveAll(tmpdir)
-	}()
-
-	for i, p := range cmd.Plugins {
-		log := logrus.WithFields(logrus.Fields{
-			"plugin": p,
-		})
-
-		pluginPath := filepath.Join(tmpdir, fmt.Sprintf("plugin-%d.so", i))
-
-		build := exec.Command("go", "build", "-buildmode=plugin", "-o", pluginPath, p)
-		build.Env = append(os.Environ(), "GOBIN="+tmpdir)
-		buildOutput, err := build.CombinedOutput()
-		if err != nil {
-			if _, ok := err.(*exec.ExitError); ok {
-				return fmt.Errorf("failed to compile plugin '%s':\n\n%s", p, string(buildOutput))
-			} else {
-				return err
-			}
-		}
-
-		_, err = plugin.Open(pluginPath)
-		if err != nil {
-			return fmt.Errorf("failed to load plugin '%s': %s", p, err)
-		}
-
-		log.Info("loaded plugin")
 	}
 
 	return nil

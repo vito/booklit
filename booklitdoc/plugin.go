@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	booklit.RegisterPlugin("booklitdoc", NewPlugin)
+	booklit.RegisterPlugin("github.com/vito/booklit/booklitdoc", NewPlugin)
 
 	styles.Fallback = chroma.MustNewStyle("booklitdoc", chroma.StyleEntries{
 		chroma.Comment:               "italic",

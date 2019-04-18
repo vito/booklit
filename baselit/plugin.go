@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	booklit.RegisterPlugin("base", NewPlugin)
+	booklit.RegisterPlugin("github.com/vito/booklit/baselit", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {
@@ -22,10 +22,10 @@ type Plugin struct {
 	section *booklit.Section
 }
 
-func (plugin Plugin) UsePlugin(name string) error {
-	pluginFactory, found := booklit.LookupPlugin(name)
-	if !found {
-		return fmt.Errorf("unknown plugin '%s'", name)
+func (plugin Plugin) UsePlugin(importPath string) error {
+	pluginFactory, err := plugin.section.Processor.LoadPlugin(importPath)
+	if err != nil {
+		return err
 	}
 
 	plugin.section.UsePlugin(pluginFactory)

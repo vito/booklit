@@ -1,7 +1,12 @@
 package load
 
 import (
+	"fmt"
+	"io/ioutil"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"plugin"
 	"sync"
 	"time"
 
@@ -17,6 +22,9 @@ type Processor struct {
 
 	parsed  map[string]parsedNode
 	parsedL sync.Mutex
+
+	loadedPlugins  map[string]booklit.PluginFactory
+	loadedPluginsL sync.Mutex
 }
 
 type parsedNode struct {
@@ -123,6 +131,56 @@ func (processor *Processor) EvaluateNode(parent *booklit.Section, node ast.Node,
 	}
 
 	return section, nil
+}
+
+func (processor *Processor) LoadPlugin(importPath string) (booklit.PluginFactory, error) {
+	processor.loadedPluginsL.Lock()
+	defer processor.loadedPluginsL.Unlock()
+
+	if processor.loadedPlugins == nil {
+		processor.loadedPlugins = map[string]booklit.PluginFactory{}
+	}
+
+	pf, found := processor.loadedPlugins[importPath]
+	if found {
+		return pf, nil
+	}
+
+	tmpdir, err := ioutil.TempDir("", "booklit-load-plugin")
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		_ = os.RemoveAll(tmpdir)
+	}()
+
+	pluginPath := filepath.Join(tmpdir, "plugin.so")
+
+	build := exec.Command("go", "build", "-buildmode=plugin", "-o", pluginPath, importPath)
+	build.Env = append(os.Environ(), "GOBIN="+tmpdir)
+	buildOutput, err := build.CombinedOutput()
+	if err != nil {
+		if _, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("failed to compile plugin '%s':\n\n%s", importPath, string(buildOutput))
+		} else {
+			return nil, err
+		}
+	}
+
+	_, err = plugin.Open(pluginPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open plugin '%s': %s", importPath, err)
+	}
+
+	pf, found = booklit.LookupPlugin(importPath)
+	if !found {
+		return nil, fmt.Errorf("plugin loaded but did not register as '%s'", importPath)
+	}
+
+	processor.loadedPlugins[importPath] = pf
+
+	return pf, nil
 }
 
 func (processor *Processor) evaluateSection(section *booklit.Section, node ast.Node, pluginFactories []booklit.PluginFactory) error {

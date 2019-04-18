@@ -1,5 +1,5 @@
-\use-plugin{booklitdoc}
-\use-plugin{chroma}
+\use-plugin{github.com/vito/booklit/booklitdoc}
+\use-plugin{github.com/vito/booklit/chroma/plugin}
 
 \title{The HTML Renderer}{html-renderer}
 

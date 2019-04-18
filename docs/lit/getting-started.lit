@@ -1,4 +1,4 @@
-\use-plugin{chroma}
+\use-plugin{github.com/vito/booklit/chroma/plugin}
 
 \title{Getting Started}
 

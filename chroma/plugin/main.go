@@ -6,5 +6,5 @@ import (
 )
 
 func init() {
-	booklit.RegisterPlugin("chroma", chroma.NewPlugin)
+	booklit.RegisterPlugin("github.com/vito/booklit/chroma/plugin", chroma.NewPlugin)
 }
