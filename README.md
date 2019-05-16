@@ -24,10 +24,11 @@ clone this repo and build its docs:
 
 ```bash
 booklit \
-  -i ./docs/lit/index.lit \
-  -o ./docs \
+  -i docs/lit/index.lit \
+  -o docs \
   --html-templates docs/lit/html \
-  --plugin github.com/vito/booklit/booklitdoc
+  --plugin github.com/vito/booklit/booklitdoc \
+  --plugin github.com/vito/booklit/chroma/plugin
 ```
 
 then browse the generated docs from `./docs/index.html`.
