@@ -186,8 +186,8 @@ See also \reference{section-c}{the last section}.
 	<h2>1 Some Section</h2>
 
 	<p>Foo bar.</p>
-	<p><a name="target-a"></a> Here's target A.</p>
-	<p><a name="target-without-display"></a> Here's another target.</p>
+	<p><a id="target-a"></a> Here's target A.</p>
+	<p><a id="target-without-display"></a> Here's another target.</p>
 </section>
 `,
 		},
@@ -241,7 +241,7 @@ See also \reference{section-c}{the last section}.
 
 	<h2>3 Section C</h2>
 
-	<p><a name="some-anchor"></a>See also <a href="hello-world.html">Hello, world!</a>.</p>
+	<p><a id="some-anchor"></a>See also <a href="hello-world.html">Hello, world!</a>.</p>
 </section>
 `,
 		},

@@ -58,7 +58,7 @@ Some more body. \reference{some-target}
 			"set-partial-read-template.html": `<div>
 	Here's a partial:
 
-	<p><a name="some-target"></a></p>
+	<p><a id="some-target"></a></p>
 
 	<p>I'm a partial!</p>
 
@@ -68,7 +68,7 @@ Some more body. \reference{some-target}
 <div>
 	Here's the partial again:
 
-	<p><a name="some-target"></a></p>
+	<p><a id="some-target"></a></p>
 
 	<p>I'm a partial!</p>
 
