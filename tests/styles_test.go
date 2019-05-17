@@ -31,13 +31,13 @@ This is an \inline-style{Title C}{inline style}!
   <div class="custom-style">
 		<h3>Title A</h3>
 
-		<p>Hello, <a name="target-a"></a> <a href="hello-world.html#target-b">some other target</a>!</p>
+		<p>Hello, <a id="target-a"></a> <a href="hello-world.html#target-b">some other target</a>!</p>
 	</div>
 
   <div class="custom-style">
 		<h3>Title B</h3>
 
-		<p>Hello again, <a name="target-b"></a> <a href="hello-world.html#target-a">some target</a>!</p>
+		<p>Hello again, <a id="target-b"></a> <a href="hello-world.html#target-a">some target</a>!</p>
 	</div>
 
 	<p>This is an <span class="inline-style"><strong>Title C</strong>: inline style</span>!</p>
