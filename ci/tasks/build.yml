@@ -3,9 +3,11 @@ platform: linux
 
 image_resource:
   type: registry-image
-  source: {repository: golang}
+  source:
+    repository: golang
 
 inputs:
+- name: ci
 - name: booklit
 - name: version
   optional: true
@@ -17,4 +19,4 @@ caches:
 - path: gopath/
 
 run:
-  path: booklit/ci/build
+  path: ci/tasks/scripts/build

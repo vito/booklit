@@ -1,0 +1,5 @@
+---
+name: ci
+
+plan:
+- set_pipeline: booklit

@@ -1,0 +1,6 @@
+---
+type: git
+
+source:
+  branch: version
+  uri: https://github.com/vito/booklit

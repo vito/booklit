@@ -1,0 +1,10 @@
+---
+type: semver
+
+source:
+  branch: version
+  driver: git
+  file: version
+  initial_version: 0.0.0
+  private_key: ((repo_private_key))
+  uri: git@github.com:vito/booklit

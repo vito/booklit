@@ -1,0 +1,143 @@
+---
+groups:
+- name: dev
+  jobs:
+  - unit
+  - rc
+  - ship
+- name: semver
+  jobs:
+  - major
+  - minor
+  - patch
+- name: prs
+  jobs:
+  - pr-unit
+
+
+jobs:
+- name: unit
+  public: true
+  plan:
+  - get: booklit
+    trigger: true
+    version: every
+  - put: gh-status
+    params:
+      path: booklit
+      state: pending
+  - task: test
+    params:
+      COVERALLS_TOKEN: ((coveralls_token))
+    on_failure:
+      put: gh-status
+      params:
+        path: booklit
+        state: failure
+    on_success:
+      put: gh-status
+      params:
+        path: booklit
+        state: success
+
+- name: rc
+  public: true
+  serial_groups:
+  - version
+  plan:
+  - get: booklit
+    passed:
+    - unit
+    trigger: true
+  - get: version
+    params:
+      pre: rc
+  - put: version
+    params:
+      file: version/version
+
+- name: ship
+  public: true
+  serial_groups:
+  - version
+  plan:
+  - get: booklit
+    passed:
+    - rc
+  - get: final-version
+    passed:
+    - rc
+    resource: version
+    params:
+      bump: final
+  - get: release-notes
+  - task: build
+    input_mapping:
+      version: final-version
+  - task: grab-release-notes
+  - put: version
+    params:
+      file: final-version/version
+  - put: booklit-rel
+    params:
+      body: release-info/notes.md
+      committish: booklit/.git/HEAD
+      globs:
+      - assets/*
+      name: release-info/name
+      tag: version/version
+      tag_prefix: v
+
+- name: major
+  public: true
+  serial_groups:
+  - version
+  plan:
+  - get: version
+    params:
+      bump: major
+      pre: rc
+  - put: version
+    params:
+      file: version/version
+
+- name: minor
+  public: true
+  serial_groups:
+  - version
+  plan:
+  - get: version
+    params:
+      bump: minor
+      pre: rc
+  - put: version
+    params:
+      file: version/version
+
+- name: patch
+  public: true
+  serial_groups:
+  - version
+  plan:
+  - get: version
+    passed:
+    - ship
+    trigger: true
+    params:
+      bump: patch
+      pre: rc
+  - put: version
+    params:
+      file: version/version
+
+- name: pr-unit
+  public: true
+  plan:
+  - get: booklit-pr
+    trigger: true
+    version: every
+  - task: unit
+    file: booklit-pr/ci/test.yml
+    input_mapping:
+      booklit: booklit-pr
+

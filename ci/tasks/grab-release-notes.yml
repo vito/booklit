@@ -3,9 +3,11 @@ platform: linux
 
 image_resource:
   type: registry-image
-  source: {repository: ubuntu}
+  source:
+    repository: ubuntu
 
 inputs:
+- name: ci
 - name: booklit
 - name: final-version
 - name: release-notes
@@ -14,4 +16,4 @@ outputs:
 - name: release-info
 
 run:
-  path: booklit/ci/grab-release-notes
+  path: ci/tasks/scripts/grab-release-notes

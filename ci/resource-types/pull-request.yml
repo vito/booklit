@@ -1,0 +1,5 @@
+---
+type: registry-image
+
+source:
+  repository: jtarchie/pr

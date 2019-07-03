@@ -1,0 +1,6 @@
+---
+type: github-status
+
+source:
+  access_token: ((prs_access_token))
+  repo: vito/booklit

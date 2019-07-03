@@ -1,0 +1,7 @@
+---
+type: github-release
+
+source:
+  access_token: ((releases_access_token))
+  owner: vito
+  repository: booklit
