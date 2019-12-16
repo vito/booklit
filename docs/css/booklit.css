@@ -114,7 +114,7 @@ h2, h3 {
   font-size: 2em;
   border-bottom: 0;
 
-  background: url('/images/booklit.svg') no-repeat;
+  background: url('images/booklit.svg') no-repeat;
   background-size: 60px;
   background-position-y: -5px;
   text-indent: 75px;
