@@ -123,6 +123,7 @@ h2, h3 {
 .page {
   width: 600px;
   padding: 3rem;
+  padding-right: 5rem;
 }
 
 .side {
