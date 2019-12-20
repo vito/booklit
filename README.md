@@ -3,6 +3,8 @@
 [![GoDoc](https://godoc.org/github.com/vito/booklit?status.svg)](https://godoc.org/github.com/vito/booklit)
 [![CI](https://wings.pivotal.io/api/v1/teams/vito/pipelines/booklit/jobs/unit/badge)](https://wings.pivotal.io/teams/vito/pipelines/booklit/jobs/unit)
 
+[documentation](https://vito.github.io/booklit)
+
 ## installation
 
 grab the latest [release](https://github.com/vito/booklit/releases), or build
