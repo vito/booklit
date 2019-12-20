@@ -3,7 +3,9 @@
 [![GoDoc](https://godoc.org/github.com/vito/booklit?status.svg)](https://godoc.org/github.com/vito/booklit)
 [![CI](https://wings.pivotal.io/api/v1/teams/vito/pipelines/booklit/jobs/unit/badge)](https://wings.pivotal.io/teams/vito/pipelines/booklit/jobs/unit)
 
-[documentation](https://vito.github.io/booklit)
+## documentation
+
+[vito.github.io/booklit](https://vito.github.io/booklit)
 
 ## installation
 
