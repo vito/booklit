@@ -80,6 +80,77 @@ Good, thanks! And you?
 		},
 	}),
 
+	Entry("including sections relative to the section's path", Example{
+		Input: `\title{Hello, world!}
+
+How are you?
+
+\include-section{./sub-path/how-im-doing.lit}
+
+\section{
+	\title{Their Reply}
+
+	Good, thanks!
+}
+`,
+
+		Inputs: Files{
+			"sub-path/how-im-doing.lit": `\title{How I'm doing}
+
+Good, thanks! And you?
+
+\include-section{another-section.lit}
+`,
+
+			"sub-path/another-section.lit": `\title{My Response}
+
+Not bad, not bad.
+
+\section{
+	\title{Including in an Inline Section}
+
+	That's great.
+
+	\include-section{yet-another-section.lit}
+}
+`,
+
+			"sub-path/yet-another-section.lit": `\title{Their Response to My Response}
+
+Sick.
+`,
+		},
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm doing</h2>
+
+	<p>Good, thanks! And you?</p>
+
+	<h3>1.1 My Response</h3>
+
+	<p>Not bad, not bad.</p>
+
+	<h4>1.1.1 Including in an Inline Section</h4>
+
+	<p>That's great.</p>
+
+	<h5>1.1.1.1 Their Response to My Response</h5>
+
+	<p>Sick.</p>
+
+	<h2>2 Their Reply</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("nested sub-sections", Example{
 		Input: `\title{Hello, world!}
 

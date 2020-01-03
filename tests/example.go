@@ -42,7 +42,10 @@ func (example Example) Run() {
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Inputs {
-		err := ioutil.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
+		err := os.MkdirAll(filepath.Join(dir, filepath.Dir(file)), 0755)
+		Expect(err).ToNot(HaveOccurred())
+
+		err = ioutil.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
 		Expect(err).ToNot(HaveOccurred())
 	}
 

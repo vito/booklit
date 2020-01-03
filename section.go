@@ -56,6 +56,18 @@ func (con *Section) String() string {
 	return fmt.Sprintf("{section (%s): %s}", con.Path, con.Title)
 }
 
+func (con *Section) FilePath() string {
+	if con.Path != "" {
+		return con.Path
+	}
+
+	if con.Parent != nil {
+		return con.Parent.FilePath()
+	}
+
+	return ""
+}
+
 func (con *Section) IsFlow() bool {
 	return false
 }

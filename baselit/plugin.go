@@ -57,7 +57,7 @@ func (plugin Plugin) Section(node ast.Node) error {
 }
 
 func (plugin Plugin) IncludeSection(path string) error {
-	sectionPath := filepath.Join(filepath.Dir(plugin.section.Path), path)
+	sectionPath := filepath.Join(filepath.Dir(plugin.section.FilePath()), path)
 
 	section, err := plugin.section.Processor.EvaluateFile(plugin.section, sectionPath, []booklit.PluginFactory{NewPlugin})
 	if err != nil {
