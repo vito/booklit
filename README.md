@@ -1,7 +1,7 @@
 # booklit
 
 [![GoDoc](https://godoc.org/github.com/vito/booklit?status.svg)](https://godoc.org/github.com/vito/booklit)
-[![CI](https://wings.pivotal.io/api/v1/teams/vito/pipelines/booklit/jobs/unit/badge)](https://wings.pivotal.io/teams/vito/pipelines/booklit/jobs/unit)
+[![CI](https://ci.concourse-ci.org/api/v1/teams/main/pipelines/booklit/jobs/unit/badge)](https://ci.concourse-ci.org/teams/main/pipelines/booklit/jobs/unit)
 
 ## documentation
 
