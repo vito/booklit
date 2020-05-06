@@ -43,7 +43,7 @@ LineBreak <- "\n" / "\r\n"
 
 CommentSpacing <- LineBreak / Comment
 
-Paragraph <- lines:(l:Line LineBreak { return l, nil })+ {
+Paragraph <- lines:(l:Line LineBreak? { return l, nil })+ {
   return Paragraph(ifaceSequences(lines)), nil
 }
 

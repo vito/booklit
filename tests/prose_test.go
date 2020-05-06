@@ -21,6 +21,20 @@ How are you?
 		},
 	}),
 
+	Entry("no trailing linebreak", Example{
+		Input: `\title{Hello, world!}
+
+How are you?`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+</section>`,
+		},
+	}),
+
 	Entry("link", Example{
 		Input: `\title{Hello, world!}
 
