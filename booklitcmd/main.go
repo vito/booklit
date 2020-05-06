@@ -20,8 +20,12 @@ func Main() {
 
 	args, err := parser.Parse()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
+			fmt.Println(err)
+			os.Exit(0)
+		} else {
+			os.Exit(1)
+		}
 	}
 
 	err = cmd.Execute(args)
