@@ -39,9 +39,11 @@ Paragraphs <- CommentSpacing* paragraphs:(p:Paragraph CommentSpacing* { return p
   return Sequence(ifaceNodes(paragraphs)), nil
 }
 
-CommentSpacing <- "\n" / Comment
+LineBreak <- "\n" / "\r\n"
 
-Paragraph <- lines:(l:Line "\n" { return l, nil })+ {
+CommentSpacing <- LineBreak / Comment
+
+Paragraph <- lines:(l:Line LineBreak { return l, nil })+ {
   return Paragraph(ifaceSequences(lines)), nil
 }
 
@@ -68,34 +70,34 @@ WrappedLine <- firstWord:Word words:(Word / Split)* {
   return Sequence(ifaceNodes(allWords)), nil
 }
 
-Split <- "\n" [ \t]* { return String(" "), nil }
+Split <- LineBreak [ \t]* { return String(" "), nil }
 
-String <- str:[^\\{}\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
+String <- str:[^\\{}\r\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
 
-VerbatimString <- str:[^\n}]+ {
+VerbatimString <- str:[^\r\n}]+ {
   return String(c.text), nil
 } / '}' !"}}" {
   return String(c.text), nil
 }
 
-PreformattedLine <- indent:Indent words:Word* '\n' {
+PreformattedLine <- indent:Indent words:Word* LineBreak {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
 }
 
-Preformatted <- '\n' lines:PreformattedLine* {
+Preformatted <- LineBreak lines:PreformattedLine* {
   delete(c.globalStore, "indent-skip")
   return Preformatted(ifaceSequences(lines)), nil
 }
 
-VerbatimLine <- indent:Indent words:VerbatimString* '\n' {
+VerbatimLine <- indent:Indent words:VerbatimString* LineBreak {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
 }
 
-Verbatim <- '\n' lines:VerbatimLine* {
+Verbatim <- LineBreak lines:VerbatimLine* {
   delete(c.globalStore, "indent-skip")
   return Preformatted(ifaceSequences(lines)), nil
 }
