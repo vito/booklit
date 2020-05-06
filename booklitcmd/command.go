@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"plugin"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
@@ -50,9 +49,10 @@ func (cmd *Command) Execute(args []string) error {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	err := cmd.loadPlugins()
-	if err != nil {
-		return err
+	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
+	if !isReexec && len(cmd.Plugins) > 0 {
+		logrus.Debug("plugins configured; reexecing")
+		return cmd.reexec()
 	}
 
 	if cmd.ServerPort != 0 {
@@ -73,6 +73,8 @@ func (cmd *Command) Serve() error {
 		Engine:     render.NewHTMLRenderingEngine(),
 		FileServer: http.FileServer(http.Dir(cmd.Out)),
 	})
+
+	logrus.WithField("port", cmd.ServerPort).Info("listening")
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", cmd.ServerPort), nil)
 }
@@ -160,7 +162,7 @@ func (cmd *Command) Build() error {
 	return nil
 }
 
-func (cmd *Command) loadPlugins() error {
+func (cmd *Command) reexec() error {
 	tmpdir, err := ioutil.TempDir("", "booklit-reexec")
 	if err != nil {
 		return err
@@ -170,30 +172,45 @@ func (cmd *Command) loadPlugins() error {
 		_ = os.RemoveAll(tmpdir)
 	}()
 
-	for i, p := range cmd.Plugins {
-		log := logrus.WithFields(logrus.Fields{
-			"plugin": p,
-		})
+	src := filepath.Join(tmpdir, "main.go")
+	bin := filepath.Join(tmpdir, "main")
 
-		pluginPath := filepath.Join(tmpdir, fmt.Sprintf("plugin-%d.so", i))
+	goSrc := "package main\n"
+	goSrc += "import \"github.com/vito/booklit/booklitcmd\"\n"
+	for _, p := range cmd.Plugins {
+		goSrc += "import _ \"" + p + "\"\n"
+	}
+	goSrc += "func main() {\n"
+	goSrc += "	booklitcmd.Main()\n"
+	goSrc += "}\n"
 
-		build := exec.Command("go", "build", "-buildmode=plugin", "-o", pluginPath, p)
-		build.Env = append(os.Environ(), "GOBIN="+tmpdir)
-		buildOutput, err := build.CombinedOutput()
-		if err != nil {
-			if _, ok := err.(*exec.ExitError); ok {
-				return fmt.Errorf("failed to compile plugin '%s':\n\n%s", p, string(buildOutput))
-			} else {
-				return err
-			}
-		}
+	err = ioutil.WriteFile(src, []byte(goSrc), 0644)
+	if err != nil {
+		return err
+	}
 
-		_, err = plugin.Open(pluginPath)
-		if err != nil {
-			return fmt.Errorf("failed to load plugin '%s': %s", p, err)
-		}
+	build := exec.Command("go", "install", src)
+	build.Env = append(os.Environ(), "GOBIN="+tmpdir)
+	build.Stdout = os.Stdout
+	build.Stderr = os.Stderr
 
-		log.Info("loaded plugin")
+	logrus.Debug("building reexec binary")
+
+	err = build.Run()
+	if err != nil {
+		return fmt.Errorf("build failed: %w", err)
+	}
+
+	run := exec.Command(bin, os.Args[1:]...)
+	run.Env = append(os.Environ(), "BOOKLIT_REEXEC=1")
+	run.Stdout = os.Stdout
+	run.Stderr = os.Stderr
+
+	logrus.Debug("reexecing")
+
+	err = run.Run()
+	if err != nil {
+		return fmt.Errorf("reexec failed: %w", err)
 	}
 
 	return nil
