@@ -1,12 +1,19 @@
 package booklit
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/vito/booklit/ast"
+)
 
 type Reference struct {
 	TagName string
 	Content Content
 
 	Tag *Tag
+
+	// original location of the reference
+	Location ast.Location
 }
 
 func (con *Reference) IsFlow() bool {

@@ -1,9 +1,12 @@
 package booklit
 
+import "github.com/vito/booklit/ast"
+
 type Target struct {
-	TagName string
-	Title   Content
-	Content Content
+	TagName  string
+	Location ast.Location
+	Title    Content
+	Content  Content
 }
 
 func (con Target) IsFlow() bool {

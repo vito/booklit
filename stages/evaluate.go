@@ -89,6 +89,8 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 }
 
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
+	eval.Section.InvokeLocation = invoke.Location
+
 	methodName := invoke.Method()
 
 	var method reflect.Value
@@ -101,7 +103,11 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	}
 
 	if !method.IsValid() {
-		return fmt.Errorf("undefined booklit function: %s", invoke.Function)
+		return booklit.UndefinedFunctionError{
+			Function: invoke.Function,
+			FilePath: eval.Section.FilePath(),
+			Location: invoke.Location,
+		}
 	}
 
 	methodType := method.Type()

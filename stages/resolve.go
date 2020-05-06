@@ -60,21 +60,35 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 			"section": resolve.Section.Path,
 		}).Warnf("broken reference: %s", con.TagName)
 
-		err = booklit.ErrBrokenReference
+		err = booklit.UnknownReferenceError{
+			TagName:  con.TagName,
+			FilePath: resolve.Section.FilePath(),
+			Location: con.Location,
+		}
 	case 1:
 		con.Tag = &tags[0]
 	default:
-		paths := []string{}
+		locs := []string{}
 		for _, t := range tags {
-			paths = append(paths, t.Section.Path)
+			loc := t.Section.FilePath()
+			if t.Location.Line != 0 {
+				loc += fmt.Sprintf(":%d", t.Location.Line)
+			}
+
+			locs = append(locs, loc)
 		}
 
 		logrus.WithFields(logrus.Fields{
-			"section":    resolve.Section.Path,
-			"defined-in": paths,
+			"section":   resolve.Section.FilePath(),
+			"locations": locs,
 		}).Warnf("ambiguous reference: %s", con.TagName)
 
-		err = booklit.ErrBrokenReference
+		err = booklit.AmbiguousReferenceError{
+			TagName:          con.TagName,
+			DefinedLocations: locs,
+			FilePath:         resolve.Section.FilePath(),
+			Location:         con.Location,
+		}
 	}
 
 	if err == nil {
@@ -83,10 +97,11 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 
 	if resolve.AllowBrokenReferences {
 		con.Tag = &booklit.Tag{
-			Name:    con.TagName,
-			Anchor:  "broken",
-			Title:   booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
-			Section: resolve.Section,
+			Name:     con.TagName,
+			Anchor:   "broken",
+			Title:    booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
+			Section:  resolve.Section,
+			Location: con.Location,
 		}
 
 		return nil

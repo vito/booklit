@@ -20,9 +20,19 @@ func (node String) Visit(visitor Visitor) error {
 	return visitor.VisitString(node)
 }
 
+type Location struct {
+	Line   int
+	Col    int
+	Offset int
+
+	Text string
+}
+
 type Invoke struct {
 	Function  string
 	Arguments []Node
+
+	Location Location
 }
 
 func (node Invoke) Visit(visitor Visitor) error {

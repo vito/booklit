@@ -19,7 +19,7 @@ type Example struct {
 	Inputs      Files
 	Outputs     Files
 	SearchIndex string
-	Err         error
+	Err         interface{}
 }
 
 type Files map[string]string
@@ -51,7 +51,7 @@ func (example Example) Run() {
 
 	section, err := processor.LoadFile(sectionPath, pluginFactories)
 	if example.Err != nil {
-		Expect(err).To(MatchError(err))
+		Expect(err).To(MatchError(example.Err))
 		return
 	}
 

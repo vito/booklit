@@ -76,7 +76,8 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Cont
 		Partials: booklit.Partials{
 			"Thumb": booklit.Sequence{
 				booklit.Target{
-					TagName: invoke.Function,
+					TagName:  invoke.Function,
+					Location: plugin.section.InvokeLocation,
 					Title: plugin.base.Code(booklit.Sequence{
 						booklit.String("\\"),
 						plugin.base.Bold(booklit.String(invoke.Function)),
@@ -93,8 +94,9 @@ func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {
 	str := booklit.Sequence{booklit.String("\\")}
 
 	str = append(str, &booklit.Reference{
-		TagName: invoke.Function,
-		Content: plugin.base.Bold(booklit.String(invoke.Function)),
+		TagName:  invoke.Function,
+		Content:  plugin.base.Bold(booklit.String(invoke.Function)),
+		Location: invoke.Location,
 	})
 
 	for _, arg := range invoke.Arguments {
@@ -126,9 +128,10 @@ func (plugin Plugin) DescribeFruit(
 
 	for _, tag := range tags {
 		content = append(content, booklit.Target{
-			TagName: tag,
-			Title:   booklit.String(name),
-			Content: definition,
+			TagName:  tag,
+			Location: plugin.section.InvokeLocation,
+			Title:    booklit.String(name),
+			Content:  definition,
 		})
 	}
 

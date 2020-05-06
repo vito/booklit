@@ -33,6 +33,9 @@ type Section struct {
 	Processor       SectionProcessor
 	PluginFactories []PluginFactory
 	Plugins         []Plugin
+
+	Location       ast.Location
+	InvokeLocation ast.Location
 }
 
 type Partials map[string]Content
@@ -46,8 +49,9 @@ type Tag struct {
 	Name  string
 	Title Content
 
-	Section *Section
-	Anchor  string
+	Section  *Section
+	Location ast.Location
+	Anchor   string
 
 	Content Content
 }
@@ -76,28 +80,29 @@ func (con *Section) Visit(visitor Visitor) error {
 	return visitor.VisitSection(con)
 }
 
-func (con *Section) SetTitle(title Content, tags ...string) {
+func (con *Section) SetTitle(title Content, loc ast.Location, tags ...string) {
 	if len(tags) == 0 {
 		tags = []string{con.defaultTag(title)}
 	}
 
 	con.Tags = []Tag{}
 	for _, name := range tags {
-		con.SetTag(name, title)
+		con.SetTag(name, title, loc)
 	}
 
 	con.Title = title
 	con.PrimaryTag = con.Tags[0]
 }
 
-func (con *Section) SetTag(name string, title Content, optionalAnchor ...string) {
+func (con *Section) SetTag(name string, title Content, loc ast.Location, optionalAnchor ...string) {
 	anchor := ""
 	if len(optionalAnchor) > 0 {
 		anchor = optionalAnchor[0]
 	}
 
 	con.Tags = append(con.Tags, Tag{
-		Section: con,
+		Section:  con,
+		Location: loc,
 
 		Name:   name,
 		Title:  title,
@@ -105,9 +110,10 @@ func (con *Section) SetTag(name string, title Content, optionalAnchor ...string)
 	})
 }
 
-func (con *Section) SetTagAnchored(name string, title Content, content Content, anchor string) {
+func (con *Section) SetTagAnchored(name string, title Content, loc ast.Location, content Content, anchor string) {
 	con.Tags = append(con.Tags, Tag{
-		Section: con,
+		Section:  con,
+		Location: loc,
 
 		Name:   name,
 		Title:  title,

@@ -110,7 +110,7 @@ func (collect *Collect) VisitImage(con booklit.Image) error {
 }
 
 func (collect *Collect) VisitTarget(con booklit.Target) error {
-	collect.Section.SetTagAnchored(con.TagName, con.Title, con.Content, con.TagName)
+	collect.Section.SetTagAnchored(con.TagName, con.Title, con.Location, con.Content, con.TagName)
 	return nil
 }
 

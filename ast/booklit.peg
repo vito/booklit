@@ -106,6 +106,12 @@ Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   return Invoke{
     Function: ifaceStr(name),
     Arguments: ifaceNodes(args),
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
   }, nil
 }
 

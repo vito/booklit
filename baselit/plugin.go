@@ -38,11 +38,13 @@ func (plugin Plugin) Styled(name string) {
 }
 
 func (plugin Plugin) Title(title booklit.Content, tags ...string) {
-	plugin.section.SetTitle(title, tags...)
+	plugin.section.SetTitle(title, plugin.section.InvokeLocation, tags...)
 }
 
 func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
-	return booklit.Aux{content}
+	return booklit.Aux{
+		Content: content,
+	}
 }
 
 func (plugin Plugin) Section(node ast.Node) error {
@@ -50,6 +52,8 @@ func (plugin Plugin) Section(node ast.Node) error {
 	if err != nil {
 		return err
 	}
+
+	section.Location = plugin.section.InvokeLocation
 
 	plugin.section.Children = append(plugin.section.Children, section)
 
@@ -171,6 +175,8 @@ func (plugin Plugin) Link(content booklit.Content, target string) booklit.Conten
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
 		TagName: tag,
+
+		Location: plugin.section.InvokeLocation,
 	}
 
 	if len(content) > 0 {
@@ -182,7 +188,8 @@ func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.C
 
 func (plugin Plugin) Target(tag string, titleAndContent ...booklit.Content) booklit.Content {
 	ref := &booklit.Target{
-		TagName: tag,
+		TagName:  tag,
+		Location: plugin.section.InvokeLocation,
 	}
 
 	switch len(titleAndContent) {
