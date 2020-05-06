@@ -66,7 +66,7 @@ type FailedFunctionError struct {
 
 func (err FailedFunctionError) Error() string {
 	return annotate(err.FilePath, err.Location,
-		"failed to evaluate \\%s: %s",
+		"function \\%s returned an error: %s",
 		err.Function,
 		err.Err,
 	)

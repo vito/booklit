@@ -26,7 +26,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-return-fail{some arg}
 `,
 
-		Err: gomega.ContainSubstring("erroring single-return function.lit:5: failed to evaluate \\single-fail: oh no"),
+		Err: gomega.ContainSubstring("erroring single-return function.lit:5: function \\single-fail returned an error: oh no"),
 	}),
 
 	Entry("erroring multi-return function", Example{
@@ -37,7 +37,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-fail{some arg}
 `,
 
-		Err: gomega.ContainSubstring("erroring multi-return function.lit:5: failed to evaluate \\multi-fail: oh no"),
+		Err: gomega.ContainSubstring("erroring multi-return function.lit:5: function \\multi-fail returned an error: oh no"),
 	}),
 
 	Entry("ambiguous references", Example{
