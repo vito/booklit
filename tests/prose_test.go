@@ -416,6 +416,65 @@ This is an \italic{  } even more spaced italic.
 `,
 		},
 	}),
+	Entry("empty multi-line arguments", Example{
+		Input: `\title{Hello, world!}
+
+\code{
+}
+
+\code{{
+}}
+
+\code{{{
+}}}
+
+\code{
+
+}
+
+\code{{
+
+}}
+
+\code{{{
+
+}}}
+
+\code{
+
+
+}
+
+\code{{
+
+
+}}
+
+\code{{{
+
+
+}}}
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p><code></code></p>
+	<pre></pre>
+	<pre></pre>
+	<p><code></code></p>
+	<pre></pre>
+	<pre></pre>
+	<p><code></code></p>
+	<pre>
+</pre>
+	<pre>
+</pre>
+</section>
+`,
+		},
+	}),
 
 	Entry("preformatted string arguments", Example{
 		Input: `\title{Hello, world!}

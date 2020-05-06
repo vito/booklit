@@ -117,7 +117,9 @@ PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
   return node, nil
 }
 
-Arg <- '{' node:(WrappedLine / ParaArg)? '}' {
+EmptyArg <- CommentSpacing* { return nil, nil }
+
+Arg <- '{' node:(WrappedLine / ParaArg / EmptyArg)? '}' {
   if node == nil {
     return String(""), nil
   } else {
