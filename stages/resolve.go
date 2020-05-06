@@ -61,9 +61,11 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 		}).Warnf("broken reference: %s", con.TagName)
 
 		err = booklit.UnknownReferenceError{
-			TagName:  con.TagName,
-			FilePath: resolve.Section.FilePath(),
-			Location: con.Location,
+			TagName: con.TagName,
+			ErrorLocation: booklit.ErrorLocation{
+				FilePath:     resolve.Section.FilePath(),
+				NodeLocation: con.Location,
+			},
 		}
 	case 1:
 		con.Tag = &tags[0]
@@ -86,8 +88,10 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 		err = booklit.AmbiguousReferenceError{
 			TagName:          con.TagName,
 			DefinedLocations: locs,
-			FilePath:         resolve.Section.FilePath(),
-			Location:         con.Location,
+			ErrorLocation: booklit.ErrorLocation{
+				FilePath:     resolve.Section.FilePath(),
+				NodeLocation: con.Location,
+			},
 		}
 	}
 

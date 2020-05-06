@@ -105,8 +105,10 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	if !method.IsValid() {
 		return booklit.UndefinedFunctionError{
 			Function: invoke.Function,
-			FilePath: eval.Section.FilePath(),
-			Location: invoke.Location,
+			ErrorLocation: booklit.ErrorLocation{
+				FilePath:     eval.Section.FilePath(),
+				NodeLocation: invoke.Location,
+			},
 		}
 	}
 
@@ -166,11 +168,13 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		case *error:
 			if val != nil {
 				return booklit.FailedFunctionError{
-					Err: val.(error),
-
 					Function: invoke.Function,
-					FilePath: eval.Section.FilePath(),
-					Location: invoke.Location,
+					Err:      val.(error),
+
+					ErrorLocation: booklit.ErrorLocation{
+						FilePath:     eval.Section.FilePath(),
+						NodeLocation: invoke.Location,
+					},
 				}
 			}
 		case *booklit.Content:
@@ -185,11 +189,13 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		case *error:
 			if second != nil {
 				return booklit.FailedFunctionError{
-					Err: second.(error),
-
 					Function: invoke.Function,
-					FilePath: eval.Section.FilePath(),
-					Location: invoke.Location,
+					Err:      second.(error),
+
+					ErrorLocation: booklit.ErrorLocation{
+						FilePath:     eval.Section.FilePath(),
+						NodeLocation: invoke.Location,
+					},
 				}
 			}
 		default:

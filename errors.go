@@ -7,35 +7,38 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
-func annotate(filePath string, loc ast.Location, msg string, args ...interface{}) string {
-	if loc.Line == 0 {
-		return fmt.Sprintf("%s: %s", filePath, fmt.Sprintf(msg, args...))
+type ErrorLocation struct {
+	FilePath     string
+	NodeLocation ast.Location
+}
+
+func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
+	if loc.NodeLocation.Line == 0 {
+		return fmt.Sprintf("%s: %s", loc.FilePath, fmt.Sprintf(msg, args...))
 	} else {
-		return fmt.Sprintf("%s:%d: %s", filePath, loc.Line, fmt.Sprintf(msg, args...))
+		return fmt.Sprintf("%s:%d: %s", loc.FilePath, loc.NodeLocation.Line, fmt.Sprintf(msg, args...))
 	}
 }
 
 type UnknownReferenceError struct {
 	TagName string
 
-	FilePath string
-	Location ast.Location
+	ErrorLocation
 }
 
 func (err UnknownReferenceError) Error() string {
-	return annotate(err.FilePath, err.Location, "unknown tag '%s'", err.TagName)
+	return err.Annotate("unknown tag '%s'", err.TagName)
 }
 
 type AmbiguousReferenceError struct {
 	TagName          string
 	DefinedLocations []string
 
-	FilePath string
-	Location ast.Location
+	ErrorLocation
 }
 
 func (err AmbiguousReferenceError) Error() string {
-	return annotate(err.FilePath, err.Location,
+	return err.Annotate(
 		"ambiguous target for tag '%s'\n\ntag '%s' is defined in multiple locations:\n\n - %s",
 		err.TagName,
 		err.TagName,
@@ -45,27 +48,26 @@ func (err AmbiguousReferenceError) Error() string {
 
 type UndefinedFunctionError struct {
 	Function string
-	FilePath string
-	Location ast.Location
+
+	ErrorLocation
 }
 
 func (err UndefinedFunctionError) Error() string {
-	return annotate(err.FilePath, err.Location,
+	return err.Annotate(
 		"undefined function \\%s",
 		err.Function,
 	)
 }
 
 type FailedFunctionError struct {
-	Err error
-
 	Function string
-	FilePath string
-	Location ast.Location
+	Err      error
+
+	ErrorLocation
 }
 
 func (err FailedFunctionError) Error() string {
-	return annotate(err.FilePath, err.Location,
+	return err.Annotate(
 		"function \\%s returned an error: %s",
 		err.Function,
 		err.Err,
