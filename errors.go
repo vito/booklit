@@ -55,3 +55,19 @@ func (err UndefinedFunctionError) Error() string {
 		err.Function,
 	)
 }
+
+type FailedFunctionError struct {
+	Err error
+
+	Function string
+	FilePath string
+	Location ast.Location
+}
+
+func (err FailedFunctionError) Error() string {
+	return annotate(err.FilePath, err.Location,
+		"failed to evaluate \\%s: %s",
+		err.Function,
+		err.Err,
+	)
+}

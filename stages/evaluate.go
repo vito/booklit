@@ -165,7 +165,13 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		switch reflect.New(valType).Interface().(type) {
 		case *error:
 			if val != nil {
-				return val.(error)
+				return booklit.FailedFunctionError{
+					Err: val.(error),
+
+					Function: invoke.Function,
+					FilePath: eval.Section.FilePath(),
+					Location: invoke.Location,
+				}
 			}
 		case *booklit.Content:
 			eval.Result = booklit.Append(eval.Result, val.(booklit.Content))
@@ -178,7 +184,13 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		switch reflect.New(secondType).Interface().(type) {
 		case *error:
 			if second != nil {
-				return second.(error)
+				return booklit.FailedFunctionError{
+					Err: second.(error),
+
+					Function: invoke.Function,
+					FilePath: eval.Section.FilePath(),
+					Location: invoke.Location,
+				}
 			}
 		default:
 			return fmt.Errorf("unknown second return type: %s", secondType)

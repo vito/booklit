@@ -3,7 +3,7 @@ package tests
 import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	"github.com/onsi/gomega"
-	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
+	_ "github.com/vito/booklit/tests/fixtures/erroring-plugin"
 )
 
 var _ = DescribeTable("Booklit", (Example).Run,
@@ -14,6 +14,30 @@ var _ = DescribeTable("Booklit", (Example).Run,
 `,
 
 		Err: gomega.ContainSubstring("unknown function.lit:3: undefined function \\banana"),
+	}),
+
+	Entry("erroring single-return function", Example{
+		Input: `\title{Hello, world!}
+
+\use-plugin{errer}
+
+\single-fail{some arg}
+
+\multi-return-fail{some arg}
+`,
+
+		Err: gomega.ContainSubstring("erroring single-return function.lit:5: failed to evaluate \\single-fail: oh no"),
+	}),
+
+	Entry("erroring multi-return function", Example{
+		Input: `\title{Hello, world!}
+
+\use-plugin{errer}
+
+\multi-fail{some arg}
+`,
+
+		Err: gomega.ContainSubstring("erroring multi-return function.lit:5: failed to evaluate \\multi-fail: oh no"),
 	}),
 
 	Entry("ambiguous references", Example{
@@ -34,7 +58,7 @@ See also \reference{dupe-tag}{this tag}.
 }
 `,
 
-		Err: gomega.MatchRegexp(`ambiguous references.lit:3: ambiguous reference tag 'dupe-tag'\n\ndefined in multiple locations:\n - .*ambiguous references.lit:8\n - .*ambiguous references.lit:14`),
+		Err: gomega.MatchRegexp(`ambiguous references.lit:3: ambiguous target for tag 'dupe-tag'\n\ntag 'dupe-tag' is defined in multiple locations:\n\n - .*ambiguous references.lit:8\n - .*ambiguous references.lit:14`),
 	}),
 
 	Entry("missing references", Example{
