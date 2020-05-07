@@ -12,8 +12,8 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/markbates/pkger"
 	"github.com/vito/booklit"
-	"github.com/vito/booklit/render/text"
 )
 
 var initTextTmpl *template.Template
@@ -55,18 +55,40 @@ func init() {
 		},
 	})
 
-	for _, asset := range text.AssetNames() {
-		info, err := text.AssetInfo(asset)
+	err := pkger.Walk("/render/text/", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			panic(err)
+			return err
 		}
 
-		content := strings.TrimRight(string(text.MustAsset(asset)), "\n")
+		if info.IsDir() || !strings.HasSuffix(info.Name(), ".tmpl") {
+			return nil
+		}
 
+		file, err := pkger.Open(path)
+		if err != nil {
+			return err
+		}
+
+		asset, err := ioutil.ReadAll(file)
+		if err != nil {
+			return err
+		}
+
+		err = file.Close()
+		if err != nil {
+			return err
+		}
+
+		content := strings.TrimRight(string(asset), "\n")
 		_, err = initTextTmpl.New(filepath.Base(info.Name())).Parse(content)
 		if err != nil {
-			panic(err)
+			return err
 		}
+
+		return nil
+	})
+	if err != nil {
+		panic(err)
 	}
 }
 
