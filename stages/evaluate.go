@@ -108,6 +108,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 			ErrorLocation: booklit.ErrorLocation{
 				FilePath:     eval.Section.FilePath(),
 				NodeLocation: invoke.Location,
+				Length:       len("\\" + invoke.Function),
 			},
 		}
 	}
@@ -174,6 +175,7 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 					ErrorLocation: booklit.ErrorLocation{
 						FilePath:     eval.Section.FilePath(),
 						NodeLocation: invoke.Location,
+						Length:       len("\\" + invoke.Function),
 					},
 				}
 			}

@@ -30,7 +30,12 @@ func Main() {
 
 	err = cmd.Execute(args)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		if prettyErr, ok := err.(booklit.PrettyError); ok {
+			prettyErr.PrettyPrint(os.Stderr)
+		} else {
+			fmt.Fprintln(os.Stderr, err)
+		}
+
 		os.Exit(1)
 	}
 }

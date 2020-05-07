@@ -13,7 +13,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \banana{attack}
 `,
 
-		Err: gomega.ContainSubstring("unknown function.lit:3: undefined function \\banana"),
+		Err: gomega.ContainSubstring("undefined function \\banana"),
 	}),
 
 	Entry("erroring single-return function", Example{
@@ -26,7 +26,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-return-fail{some arg}
 `,
 
-		Err: gomega.ContainSubstring("erroring single-return function.lit:5: function \\single-fail returned an error: oh no"),
+		Err: gomega.ContainSubstring("function \\single-fail returned an error: oh no"),
 	}),
 
 	Entry("erroring multi-return function", Example{
@@ -37,7 +37,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-fail{some arg}
 `,
 
-		Err: gomega.ContainSubstring("erroring multi-return function.lit:5: function \\multi-fail returned an error: oh no"),
+		Err: gomega.ContainSubstring("function \\multi-fail returned an error: oh no"),
 	}),
 
 	Entry("ambiguous references", Example{
@@ -58,7 +58,7 @@ See also \reference{dupe-tag}{this tag}.
 }
 `,
 
-		Err: gomega.MatchRegexp(`ambiguous references.lit:3: ambiguous target for tag 'dupe-tag'\n\ntag 'dupe-tag' is defined in multiple locations:\n\n - .*ambiguous references.lit:8\n - .*ambiguous references.lit:14`),
+		Err: gomega.MatchRegexp(`ambiguous target for tag 'dupe-tag'`),
 	}),
 
 	Entry("missing references", Example{
@@ -67,6 +67,6 @@ See also \reference{dupe-tag}{this tag}.
 See also \reference{missing-tag}{this tag}.
 `,
 
-		Err: gomega.MatchRegexp(`missing references.lit:3: unknown tag 'missing-tag'`),
+		Err: gomega.MatchRegexp(`unknown tag 'missing-tag'`),
 	}),
 )

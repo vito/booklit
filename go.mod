@@ -17,6 +17,7 @@ require (
 	github.com/mna/pigeon v1.0.1-0.20200224192238-18953b277063
 	github.com/onsi/ginkgo v1.6.0
 	github.com/onsi/gomega v1.4.1
+	github.com/segmentio/textio v1.2.0
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.4.1
 	golang.org/x/sys v0.0.0-20190415145633-3fd5a3612ccd // indirect

@@ -56,34 +56,24 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	var err error
 	switch len(tags) {
 	case 0:
-		logrus.WithFields(logrus.Fields{
-			"section": resolve.Section.Path,
-		}).Warnf("broken reference: %s", con.TagName)
-
 		err = booklit.UnknownReferenceError{
 			TagName: con.TagName,
 			ErrorLocation: booklit.ErrorLocation{
 				FilePath:     resolve.Section.FilePath(),
 				NodeLocation: con.Location,
+				Length:       len("\\reference"),
 			},
 		}
 	case 1:
 		con.Tag = &tags[0]
 	default:
-		locs := []string{}
+		locs := []booklit.ErrorLocation{}
 		for _, t := range tags {
-			loc := t.Section.FilePath()
-			if t.Location.Line != 0 {
-				loc += fmt.Sprintf(":%d", t.Location.Line)
-			}
-
-			locs = append(locs, loc)
+			locs = append(locs, booklit.ErrorLocation{
+				FilePath:     t.Section.FilePath(),
+				NodeLocation: t.Location,
+			})
 		}
-
-		logrus.WithFields(logrus.Fields{
-			"section":   resolve.Section.FilePath(),
-			"locations": locs,
-		}).Warnf("ambiguous reference: %s", con.TagName)
 
 		err = booklit.AmbiguousReferenceError{
 			TagName:          con.TagName,
@@ -91,6 +81,7 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 			ErrorLocation: booklit.ErrorLocation{
 				FilePath:     resolve.Section.FilePath(),
 				NodeLocation: con.Location,
+				Length:       len("\\reference"),
 			},
 		}
 	}
@@ -100,6 +91,10 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	}
 
 	if resolve.AllowBrokenReferences {
+		logrus.WithFields(logrus.Fields{
+			"section": resolve.Section.Path,
+		}).Warnf("broken reference: %s", err)
+
 		con.Tag = &booklit.Tag{
 			Name:     con.TagName,
 			Anchor:   "broken",
