@@ -13,7 +13,6 @@ require (
 	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/markbates/pkger v0.15.1
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/mna/pigeon v1.0.1-0.20200224192238-18953b277063
 	github.com/onsi/ginkgo v1.6.0

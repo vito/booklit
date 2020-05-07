@@ -1,7 +1,10 @@
-all: ast/booklit.peg.go pkged.go
+all: ast/booklit.peg.go render/html/bindata.go render/text/bindata.go
 
 ast/booklit.peg.go: ast/booklit.peg
 	pigeon ast/booklit.peg | goimports > ast/booklit.peg.go
 
-pkged.go: render/html/*.tmpl render/text/*.tmpl
-	pkger
+render/html/bindata.go: render/html render/html/*.tmpl
+	go-bindata -o render/html/bindata.go -pkg html render/html/*.tmpl
+
+render/text/bindata.go: render/text render/text/*.tmpl
+	go-bindata -o render/text/bindata.go -pkg text render/text/*.tmpl

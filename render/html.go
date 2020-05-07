@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/markbates/pkger"
 	"github.com/vito/booklit"
+	"github.com/vito/booklit/render/html"
 )
 
 var initHTMLTmpl *template.Template
@@ -51,40 +51,18 @@ func init() {
 		},
 	})
 
-	err := pkger.Walk("/render/html/", func(path string, info os.FileInfo, err error) error {
+	for _, asset := range html.AssetNames() {
+		info, err := html.AssetInfo(asset)
 		if err != nil {
-			return err
+			panic(err)
 		}
 
-		if info.IsDir() || !strings.HasSuffix(info.Name(), ".tmpl") {
-			return nil
-		}
+		content := strings.TrimRight(string(html.MustAsset(asset)), "\n")
 
-		file, err := pkger.Open(path)
-		if err != nil {
-			return err
-		}
-
-		asset, err := ioutil.ReadAll(file)
-		if err != nil {
-			return err
-		}
-
-		err = file.Close()
-		if err != nil {
-			return err
-		}
-
-		content := strings.TrimRight(string(asset), "\n")
 		_, err = initHTMLTmpl.New(filepath.Base(info.Name())).Parse(content)
 		if err != nil {
-			return err
+			panic(err)
 		}
-
-		return nil
-	})
-	if err != nil {
-		panic(err)
 	}
 }
 
