@@ -210,6 +210,11 @@ func (cmd *Command) reexec() error {
 
 	err = run.Run()
 	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			os.Exit(exitErr.ExitCode())
+			return nil
+		}
+
 		return fmt.Errorf("reexec failed: %w", err)
 	}
 

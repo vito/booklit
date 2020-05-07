@@ -24,8 +24,6 @@ type Location struct {
 	Line   int
 	Col    int
 	Offset int
-
-	Text string
 }
 
 type Invoke struct {
