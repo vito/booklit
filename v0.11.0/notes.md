@@ -4,9 +4,13 @@
 
   the Go `plugin` package doesn't look like it will be getting Windows support any time soon, and the cross-compiled Darwin binaries stopped working, so really this just wasn't worth it.
 
+  this means that all plugins must now go back from `package main` to `package <whatever>`. on the plus side, now you can import them again!
+
 * a few methods on `*booklit.Section` now take an `ast.Location` argument, which is required for the "better error messages" feature below. plugins should typically adapt by passing it the value from the newly added `.InvokeLocation` field on the section object given to the plugin.
 
 * `booklit.Reference`, `booklit.Target`, and `booklit.Section` now have `Location` fields which should similarly be populated by plugins which construct them, again in service of better error messages.
+
+[this diff](https://github.com/concourse/docs/compare/854846b3f935c341dc00a6191ed0945f99c8b2df..769e5e81385d6c52e907a892b964be825b8a0b7d) shows a completed migration to v0.11.0, if you need a reference!
 
 ## new features
 
