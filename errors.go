@@ -2,32 +2,92 @@ package booklit
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"html/template"
 	"io"
+	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/segmentio/textio"
 	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/errhtml"
 )
+
+var errorTmpl *template.Template
+
+func init() {
+	errorTmpl = template.New("errors").Funcs(template.FuncMap{
+		"error": func(err error) (template.HTML, error) {
+			buf := new(bytes.Buffer)
+			if prettyErr, ok := err.(PrettyError); ok {
+				renderErr := prettyErr.PrettyHTML(buf)
+				if renderErr != nil {
+					return "", renderErr
+				}
+
+				return template.HTML(buf.String()), nil
+			} else {
+				return template.HTML(`<pre class="raw-error">` + template.HTMLEscapeString(err.Error()) + `</pre>`), nil
+			}
+		},
+		"annotate": func(loc ErrorLocation) (template.HTML, error) {
+			buf := new(bytes.Buffer)
+			err := loc.AnnotatedHTML(buf)
+			if err != nil {
+				return "", err
+			}
+
+			return template.HTML(buf.String()), nil
+		},
+	})
+
+	for _, asset := range errhtml.AssetNames() {
+		info, err := errhtml.AssetInfo(asset)
+		if err != nil {
+			panic(err)
+		}
+
+		content := strings.TrimRight(string(errhtml.MustAsset(asset)), "\n")
+
+		_, err = errorTmpl.New(filepath.Base(info.Name())).Parse(content)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func ErrorPage(err error, w http.ResponseWriter) {
+	renderErr := errorTmpl.Lookup("page.tmpl").Execute(w, err)
+	if renderErr != nil {
+		fmt.Fprintf(w, "failed to render error page: %s", renderErr)
+	}
+}
 
 type PrettyError interface {
 	PrettyPrint(io.Writer)
+	PrettyHTML(io.Writer) error
 }
 
-type UnknownReferenceError struct {
+type UnknownTagError struct {
 	TagName string
 
 	ErrorLocation
 }
 
-func (err UnknownReferenceError) Error() string {
+func (err UnknownTagError) Error() string {
 	return fmt.Sprintf("unknown tag '%s'", err.TagName)
 }
 
-func (err UnknownReferenceError) PrettyPrint(out io.Writer) {
+func (err UnknownTagError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("reference points to unknown tag '%s':\n\n", err.TagName))
 	err.AnnotateLocation(out)
+}
+
+func (err UnknownTagError) PrettyHTML(out io.Writer) error {
+	return errorTmpl.Lookup("unknown-tag.tmpl").Execute(out, err)
 }
 
 type AmbiguousReferenceError struct {
@@ -55,6 +115,10 @@ func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 	}
 }
 
+func (err AmbiguousReferenceError) PrettyHTML(out io.Writer) error {
+	return errorTmpl.Lookup("ambiguous-reference.tmpl").Execute(out, err)
+}
+
 type UndefinedFunctionError struct {
 	Function string
 
@@ -71,6 +135,10 @@ func (err UndefinedFunctionError) Error() string {
 func (err UndefinedFunctionError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s:\n\n", err))
 	err.AnnotateLocation(out)
+}
+
+func (err UndefinedFunctionError) PrettyHTML(out io.Writer) error {
+	return errorTmpl.Lookup("undefined-function.tmpl").Execute(out, err)
 }
 
 type FailedFunctionError struct {
@@ -94,6 +162,10 @@ func (err FailedFunctionError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, "error: %s\n", err.Err)
 }
 
+func (err FailedFunctionError) PrettyHTML(out io.Writer) error {
+	return errorTmpl.Lookup("function-error.tmpl").Execute(out, err)
+}
+
 type ErrorLocation struct {
 	FilePath     string
 	NodeLocation ast.Location
@@ -114,28 +186,14 @@ func (loc ErrorLocation) AnnotateLocation(out io.Writer) error {
 		return nil
 	}
 
-	file, err := os.Open(loc.FilePath)
-	if err != nil {
-		return err
-	}
-
-	buf := bufio.NewReader(file)
-
-	for i := 0; i < loc.NodeLocation.Line-1; i++ {
-		_, _, err := buf.ReadLine()
-		if err != nil {
-			return err
-		}
-	}
-
-	lineInQuestion, _, err := buf.ReadLine()
+	line, err := loc.lineInQuestion()
 	if err != nil {
 		return err
 	}
 
 	prefix := fmt.Sprintf("% 4d| ", loc.NodeLocation.Line)
 
-	_, err = fmt.Fprintf(out, "%s%s\n", prefix, lineInQuestion)
+	_, err = fmt.Fprintf(out, "%s%s\n", prefix, line)
 	if err != nil {
 		return err
 	}
@@ -147,4 +205,56 @@ func (loc ErrorLocation) AnnotateLocation(out io.Writer) error {
 	}
 
 	return nil
+}
+
+func (loc ErrorLocation) AnnotatedHTML(out io.Writer) error {
+	if loc.NodeLocation.Line == 0 {
+		// location unavailable
+		return nil
+	}
+
+	line, err := loc.lineInQuestion()
+	if err != nil {
+		return err
+	}
+
+	type data struct {
+		FilePath                  string
+		Lineno                    string
+		Prefix, Annotated, Suffix string
+	}
+
+	offset := loc.NodeLocation.Col - 1
+	return errorTmpl.Lookup("annotated-line.tmpl").Execute(out, data{
+		FilePath:  loc.FilePath,
+		Lineno:    fmt.Sprintf("% 4d", loc.NodeLocation.Line),
+		Prefix:    line[0:offset],
+		Annotated: line[offset : offset+loc.Length],
+		Suffix:    line[offset+loc.Length:],
+	})
+}
+
+func (loc ErrorLocation) lineInQuestion() (string, error) {
+	file, err := os.Open(loc.FilePath)
+	if err != nil {
+		return "", err
+	}
+
+	defer file.Close()
+
+	buf := bufio.NewReader(file)
+
+	for i := 0; i < loc.NodeLocation.Line-1; i++ {
+		_, _, err := buf.ReadLine()
+		if err != nil {
+			return "", err
+		}
+	}
+
+	lineInQuestion, _, err := buf.ReadLine()
+	if err != nil {
+		return "", err
+	}
+
+	return string(lineInQuestion), nil
 }

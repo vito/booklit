@@ -1,0 +1,119 @@
+:root {
+  --background: #FFFAEA;
+  --foreground: #432E2B;
+
+  --foreground-light: #7D5D4E;
+
+  --red: #d46947;
+  --light-red: #D68F78;
+
+  --code-background: #F7E5BF;
+
+  --code-border: #EAD2A4;
+  --sidebar-border: #EAD2A4;
+}
+
+html {
+  display: flex;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Lora', 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: row;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+a {
+  text-decoration: none;
+  color: var(--link);
+}
+
+a:visited {
+  color: var(--link-visited);
+}
+
+a:hover {
+  text-decoration: underline;
+  color: var(--link);
+}
+
+code, pre {
+  font-family: 'Source Code Pro', monospace;
+}
+
+pre {
+  background: var(--code-background);
+  border-bottom: 1px solid var(--code-border);
+  padding: .5rem;
+}
+
+code code {
+  font-size: 1em;
+}
+
+body {
+  flex-grow: 1;
+}
+
+.title-header {
+  font-size: 2em;
+  border-bottom: 0;
+  background: url(data:image/svg+xml;base64,{{template "logo.svg.base64"}}) no-repeat;
+  background-size: 60px;
+  background-position-y: -5px;
+  text-indent: 75px;
+}
+
+.error-message {
+  font-family: 'Roboto Slab', serif;
+  font-weight: normal;
+  color: var(--red);
+  font-size: 1.5em;
+}
+
+.error-panel {
+  margin: 50px;
+  margin-left: 250px;
+  min-width: 500px;
+}
+
+.file-path {
+  background: transparent;
+  border: 0;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.annotated-line {
+  display: flex;
+  flex-direction: row;
+}
+
+.annotated-line pre {
+  margin-top: 0;
+}
+
+.file-path {
+  font-size: .9em;
+}
+
+.annotated-line .lineno {
+  background: var(--code-border);
+  border-right: 1px solid var(--foreground-light);
+  flex-grow: 0;
+}
+
+.annotated-line .line {
+  flex-grow: 1;
+}
+
+.annotated-line .line .annotated {
+  background: var(--red);
+  color: white;
+}

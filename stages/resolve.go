@@ -56,7 +56,7 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	var err error
 	switch len(tags) {
 	case 0:
-		err = booklit.UnknownReferenceError{
+		err = booklit.UnknownTagError{
 			TagName: con.TagName,
 			ErrorLocation: booklit.ErrorLocation{
 				FilePath:     resolve.Section.FilePath(),

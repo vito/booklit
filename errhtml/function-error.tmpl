@@ -1,0 +1,9 @@
+<div class="error">
+  <div class="error-message">function <code>\{{.Function}}</code> returned an error</div>
+
+  <div class="code-location">
+    {{.ErrorLocation | annotate}}
+  </div>
+
+  {{.Err | error}}
+</div>

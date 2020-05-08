@@ -34,7 +34,8 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	section, found, err := server.loadRequestedSection(r.URL.Path)
 	if err != nil {
 		log.Errorf("failed to load section: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		booklit.ErrorPage(err, w)
 		return
 	}
 

@@ -1,0 +1,17 @@
+<div class="error">
+  <div class="error-message">ambiguous reference tag: <code>{{.TagName}}</code></div>
+
+  <div class="code-location">
+    {{.ErrorLocation | annotate}}
+  </div>
+
+  <p>The same tag was defined in the following locations:</p>
+
+  {{range .DefinedLocations}}
+  <div class="code-location">
+    {{. | annotate}}
+  </div>
+  {{end}}
+
+  <p>One of these tags must be changed.</p>
+</div>
