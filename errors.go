@@ -136,6 +136,8 @@ func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 		fmt.Fprintf(out, "- %s:\n", loc.FilePath)
 		loc.AnnotateLocation(textio.NewPrefixWriter(out, "  "))
 	}
+
+	fmt.Fprintf(out, "one of these must be changed.\n")
 }
 
 func (err AmbiguousReferenceError) PrettyHTML(out io.Writer) error {
