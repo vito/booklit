@@ -3,6 +3,10 @@
 
   <div class="annotated-line">
     <pre class="lineno">{{.Lineno}}</pre>
+    {{if .EOF}}
+    <pre class="line"><span class="eof">(end of file)</span></pre>
+    {{else}}
     <pre class="line">{{.Prefix}}<span class="annotated">{{.Annotated}}</span>{{.Suffix}}</pre>
+    {{end}}
   </div>
 </div>

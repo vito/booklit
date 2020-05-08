@@ -30,7 +30,11 @@ func init() {
 
 				return template.HTML(buf.String()), nil
 			} else {
-				return template.HTML(`<pre class="raw-error">` + template.HTMLEscapeString(err.Error()) + `</pre>`), nil
+				return template.HTML(
+					`<pre class="raw-error">` +
+						template.HTMLEscapeString(err.Error()) +
+						`</pre>`,
+				), nil
 			}
 		},
 		"annotate": func(loc ErrorLocation) (template.HTML, error) {
@@ -69,6 +73,25 @@ func ErrorPage(err error, w http.ResponseWriter) {
 type PrettyError interface {
 	PrettyPrint(io.Writer)
 	PrettyHTML(io.Writer) error
+}
+
+type ParseError struct {
+	Err error
+
+	ErrorLocation
+}
+
+func (err ParseError) Error() string {
+	return err.Err.Error()
+}
+
+func (err ParseError) PrettyPrint(out io.Writer) {
+	fmt.Fprintf(out, err.Annotate("parse error: %s\n\n", err.Err))
+	err.AnnotateLocation(out)
+}
+
+func (err ParseError) PrettyHTML(out io.Writer) error {
+	return errorTmpl.Lookup("parse-error.tmpl").Execute(out, err)
 }
 
 type UnknownTagError struct {
@@ -207,6 +230,13 @@ func (loc ErrorLocation) AnnotateLocation(out io.Writer) error {
 	return nil
 }
 
+type AnnotationData struct {
+	FilePath                  string
+	EOF                       bool
+	Lineno                    string
+	Prefix, Annotated, Suffix string
+}
+
 func (loc ErrorLocation) AnnotatedHTML(out io.Writer) error {
 	if loc.NodeLocation.Line == 0 {
 		// location unavailable
@@ -218,20 +248,23 @@ func (loc ErrorLocation) AnnotatedHTML(out io.Writer) error {
 		return err
 	}
 
-	type data struct {
-		FilePath                  string
-		Lineno                    string
-		Prefix, Annotated, Suffix string
+	data := AnnotationData{
+		FilePath: loc.FilePath,
+		Lineno:   fmt.Sprintf("% 4d", loc.NodeLocation.Line),
+	}
+
+	if line == "" {
+		data.EOF = true
 	}
 
 	offset := loc.NodeLocation.Col - 1
-	return errorTmpl.Lookup("annotated-line.tmpl").Execute(out, data{
-		FilePath:  loc.FilePath,
-		Lineno:    fmt.Sprintf("% 4d", loc.NodeLocation.Line),
-		Prefix:    line[0:offset],
-		Annotated: line[offset : offset+loc.Length],
-		Suffix:    line[offset+loc.Length:],
-	})
+	if len(line) >= offset+loc.Length {
+		data.Prefix = line[0:offset]
+		data.Annotated = line[offset : offset+loc.Length]
+		data.Suffix = line[offset+loc.Length:]
+	}
+
+	return errorTmpl.Lookup("annotated-line.tmpl").Execute(out, data)
 }
 
 func (loc ErrorLocation) lineInQuestion() (string, error) {
@@ -253,6 +286,10 @@ func (loc ErrorLocation) lineInQuestion() (string, error) {
 
 	lineInQuestion, _, err := buf.ReadLine()
 	if err != nil {
+		if err == io.EOF {
+			return "", nil
+		}
+
 		return "", err
 	}
 

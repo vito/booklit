@@ -1,0 +1,9 @@
+<div class="error">
+  <div class="error-message">parse error</div>
+
+  <p>{{.Err}}</p>
+
+  <div class="code-location">
+    {{.ErrorLocation | annotate}}
+  </div>
+</div>

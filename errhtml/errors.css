@@ -117,3 +117,7 @@ body {
   background: var(--red);
   color: white;
 }
+
+.annotated-line .line .eof {
+  color: var(--red);
+}
