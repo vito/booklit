@@ -1,0 +1,7 @@
+{{if eq .PrimaryTag.Name "set-partial-read-template"}}
+{{template "partial-template.tmpl" .}}
+{{else}}
+<section class="full-styled-page">
+  {{. | render}}
+</section>
+{{end}}

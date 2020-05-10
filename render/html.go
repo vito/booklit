@@ -146,14 +146,23 @@ func (engine *HTMLRenderingEngine) URL(tag booklit.Tag) string {
 }
 
 func (engine *HTMLRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
-	tmpl := "page"
-	if con.Style != "" {
-		tmpl = con.Style + "-page"
-	}
-
 	engine.data = con
 
-	err := engine.setTmpl(tmpl)
+	try := []string{}
+
+	if con.Style != "" {
+		try = append(try, con.Style+"-page")
+	}
+
+	try = append(try, "page")
+
+	var err error
+	for _, tmpl := range try {
+		err = engine.setTmpl(tmpl)
+		if err == nil {
+			break
+		}
+	}
 	if err != nil {
 		return err
 	}

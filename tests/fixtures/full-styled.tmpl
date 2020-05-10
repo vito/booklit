@@ -1,0 +1,9 @@
+<h{{headerDepth .}} class="full-styled">{{ if .Parent }}{{.Number}} {{ end }}{{.Title | render }}</h{{headerDepth .}}>
+
+{{.Body | render}}
+
+{{if not .SplitSections}}
+  {{range .Children}}
+    {{. | render}}
+  {{end}}
+{{end}}

@@ -6,6 +6,40 @@ import (
 )
 
 var _ = DescribeTable("Booklit", (Example).Run,
+	Entry("styled sections", Example{
+		Input: `\title{Hello, world!}
+
+\styled{styled}
+
+Sup?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1 class="styled">Hello, world!</h1>
+
+	<p>Sup?</p>
+</section>
+`,
+		},
+	}),
+	Entry("styled pages", Example{
+		Input: `\title{Hello, world!}
+
+\styled{full-styled}
+
+Sup?
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section class="full-styled-page">
+	<h1 class="full-styled">Hello, world!</h1>
+
+	<p>Sup?</p>
+</section>
+`,
+		},
+	}),
 	Entry("styling with partials", Example{
 		Input: `\title{Hello, world!}
 
