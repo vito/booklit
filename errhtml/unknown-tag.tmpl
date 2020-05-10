@@ -4,4 +4,16 @@
   <div class="code-location">
     {{.ErrorLocation | annotate}}
   </div>
+
+  {{if .SimilarTags}}
+  <p>The following tags are kinda similar - did you mean one of them?</p>
+
+  <ul>
+  {{range .SimilarTags}}
+    <li><p><code>{{.Name}}</code></p></li>
+  {{end}}
+  </ul>
+  {{else}}
+  <p>I couldn't find any similar tags. :(</p>
+  {{end}}
 </div>

@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/agext/levenshtein"
 	"github.com/vito/booklit/ast"
 )
 
@@ -262,7 +263,15 @@ func (con *Section) NextSibling() *Section {
 }
 
 func (con *Section) FindTag(tagName string) []Tag {
-	return con.findTag(tagName, true, nil)
+	return con.filterTags(true, nil, func(other string) bool {
+		return other == tagName
+	})
+}
+
+func (con *Section) SimilarTags(tagName string) []Tag {
+	return con.filterTags(true, nil, func(other string) bool {
+		return levenshtein.Match(tagName, other, nil) > 0.5
+	})
 }
 
 func (con *Section) SetPartial(name string, value Content) {
@@ -310,27 +319,27 @@ func (con *Section) SplitSectionsPrevented() bool {
 	return false
 }
 
-func (con *Section) findTag(tagName string, up bool, exclude *Section) []Tag {
+func (con *Section) filterTags(up bool, exclude *Section, match func(string) bool) []Tag {
 	tags := []Tag{}
 
-	if tagName == con.Title.String() {
+	if match(con.Title.String()) {
 		tags = append(tags, con.PrimaryTag)
 	}
 
 	for _, t := range con.Tags {
-		if t.Name == tagName {
+		if match(t.Name) {
 			tags = append(tags, t)
 		}
 	}
 
 	for _, sub := range con.Children {
 		if sub != exclude {
-			tags = append(tags, sub.findTag(tagName, false, nil)...)
+			tags = append(tags, sub.filterTags(false, nil, match)...)
 		}
 	}
 
 	if up && con.Parent != nil {
-		tags = append(tags, con.Parent.findTag(tagName, true, con)...)
+		tags = append(tags, con.Parent.filterTags(true, con, match)...)
 	}
 
 	return tags

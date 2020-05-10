@@ -101,7 +101,7 @@ func errhtmlAmbiguousReferenceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/ambiguous-reference.tmpl", size: 396, mode: os.FileMode(420), modTime: time.Unix(1588897786, 0)}
+	info := bindataFileInfo{name: "errhtml/ambiguous-reference.tmpl", size: 396, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -121,7 +121,7 @@ func errhtmlAnnotatedLineTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/annotated-line.tmpl", size: 367, mode: os.FileMode(420), modTime: time.Unix(1588900237, 0)}
+	info := bindataFileInfo{name: "errhtml/annotated-line.tmpl", size: 367, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -141,7 +141,7 @@ func errhtmlFunctionErrorTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/function-error.tmpl", size: 211, mode: os.FileMode(420), modTime: time.Unix(1588897809, 0)}
+	info := bindataFileInfo{name: "errhtml/function-error.tmpl", size: 211, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -161,7 +161,7 @@ func errhtmlPageTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/page.tmpl", size: 596, mode: os.FileMode(420), modTime: time.Unix(1588898232, 0)}
+	info := bindataFileInfo{name: "errhtml/page.tmpl", size: 596, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -181,7 +181,7 @@ func errhtmlParseErrorTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/parse-error.tmpl", size: 167, mode: os.FileMode(420), modTime: time.Unix(1588899710, 0)}
+	info := bindataFileInfo{name: "errhtml/parse-error.tmpl", size: 167, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -201,12 +201,12 @@ func errhtmlUndefinedFunctionTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/undefined-function.tmpl", size: 184, mode: os.FileMode(420), modTime: time.Unix(1588897744, 0)}
+	info := bindataFileInfo{name: "errhtml/undefined-function.tmpl", size: 184, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _errhtmlUnknownTagTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x64\x8d\xb1\xae\xc2\x30\x0c\x45\xf7\x7e\xc5\x55\xf7\xb6\xfb\x53\x5e\x36\x36\xc4\xc4\x0f\x58\xa9\x89\x22\x5a\x5b\x4a\x42\x19\x42\xfe\x1d\xa5\x74\x82\xc9\xd2\xb1\xee\x39\x66\x0e\x1b\xdc\x42\x29\xfd\xf7\x1c\xa3\xc6\xde\x76\xc0\x0f\x1d\x56\x4e\x89\x3c\xf7\x36\xf2\x8d\x23\x8b\x63\x64\xc5\x43\xee\xa2\x4f\x41\x26\xff\x07\xe3\x74\x66\x5b\xca\x78\x25\x7f\xa1\x95\x6b\x35\xd3\x8e\xcc\x34\x87\xcd\x76\x5f\xde\xf6\x1a\x16\x75\x94\x83\xca\x5e\x05\x4a\x19\x4f\x2d\x77\x3e\x30\x5e\x20\x11\xcd\x94\xb9\xd6\xb6\xff\x98\x8e\xf3\x0e\x00\x00\xff\xff\xe6\x0d\x2b\x1b\xbc\x00\x00\x00")
+var _errhtmlUnknownTagTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x64\x90\xc1\x6e\x83\x30\x10\x44\xef\xf9\x8a\x51\x2e\xed\x25\x70\x8f\x5c\xf7\xd4\x43\xa5\xaa\x97\xe6\x07\x56\x78\x21\x56\xcc\x2e\xb2\x4d\xa2\x88\xf2\xef\x15\x90\x50\x29\xb9\xce\xc2\x9b\x37\x36\xce\x9f\x51\x05\x4a\xe9\x6d\xcb\x31\x6a\xdc\xda\x0d\xf0\x94\xee\x5a\x4e\x89\x1a\xde\xda\xc8\x35\x47\x96\x8a\x91\x15\xbd\x9c\x44\x2f\x82\x4c\xcd\x1e\xa6\x52\xc7\x76\x18\x8a\x03\x35\xdf\xd4\xf2\x38\x9a\x72\x8e\x4c\xe9\xfc\xd9\x6e\x1e\xb8\xd3\x69\x17\xb4\xa2\xec\x55\xe6\x56\x60\x18\x8a\x8f\xa9\xee\xeb\x16\xe3\x17\x24\xa2\x99\x32\x8f\xe3\xf4\xff\x4a\x1a\x06\x5f\xa3\xf8\xf1\xad\x0f\x14\x0f\xd4\xa4\xe5\xde\xd9\xc3\x91\x51\x6b\x08\x7a\xf1\xd2\x4c\x62\x09\x14\x19\x27\x2f\x8e\x90\x96\xef\xb1\x83\xf3\x0e\x57\xed\xd1\x32\x09\x54\x18\x5a\x23\x1f\xb9\x7d\x37\x65\xb7\xa8\xf6\xc1\xce\x3d\x91\xa4\xe1\xe7\x2a\xc0\x04\x6f\x4d\x67\xd7\xd9\x0f\x9b\x3b\x6b\xca\xe0\x17\x06\x8b\xbb\xf9\xdf\xa9\x1c\x12\xdf\x95\x3f\x51\x69\x1f\x9c\xbc\x64\xd4\x5e\x1c\x48\xae\xab\xe9\x34\xa0\xc0\xfe\x75\xd6\xfa\x47\xdd\x1e\xe2\x2f\x00\x00\xff\xff\x54\xac\x37\x36\xbe\x01\x00\x00")
 
 func errhtmlUnknownTagTmplBytes() ([]byte, error) {
 	return bindataRead(
@@ -221,7 +221,7 @@ func errhtmlUnknownTagTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/unknown-tag.tmpl", size: 188, mode: os.FileMode(420), modTime: time.Unix(1588897771, 0)}
+	info := bindataFileInfo{name: "errhtml/unknown-tag.tmpl", size: 446, mode: os.FileMode(420), modTime: time.Unix(1589134032, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -241,7 +241,7 @@ func errhtmlErrorsCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/errors.css", size: 1883, mode: os.FileMode(420), modTime: time.Unix(1588900244, 0)}
+	info := bindataFileInfo{name: "errhtml/errors.css", size: 1883, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -261,7 +261,7 @@ func errhtmlNormalizeCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/normalize.css", size: 7719, mode: os.FileMode(420), modTime: time.Unix(1588890511, 0)}
+	info := bindataFileInfo{name: "errhtml/normalize.css", size: 7719, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -281,7 +281,7 @@ func errhtmlLogoSvgBase64() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/logo.svg.base64", size: 14036, mode: os.FileMode(420), modTime: time.Unix(1588893569, 0)}
+	info := bindataFileInfo{name: "errhtml/logo.svg.base64", size: 14036, mode: os.FileMode(420), modTime: time.Unix(1589133689, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

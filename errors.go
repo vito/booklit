@@ -97,6 +97,8 @@ func (err ParseError) PrettyHTML(out io.Writer) error {
 type UnknownTagError struct {
 	TagName string
 
+	SimilarTags []Tag
+
 	ErrorLocation
 }
 
@@ -107,6 +109,18 @@ func (err UnknownTagError) Error() string {
 func (err UnknownTagError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("reference points to unknown tag '%s':\n\n", err.TagName))
 	err.AnnotateLocation(out)
+
+	if len(err.SimilarTags) == 0 {
+		fmt.Fprintf(out, "I couldn't find any similar tags. :(\n")
+	} else {
+		fmt.Fprintf(out, "the following tags are kinda similar:\n\n")
+
+		for _, tag := range err.SimilarTags {
+			fmt.Fprintf(out, "- %s\n", tag.Name)
+		}
+
+		fmt.Fprintf(out, "\ndid you mean one of them?\n")
+	}
 }
 
 func (err UnknownTagError) PrettyHTML(out io.Writer) error {
@@ -129,7 +143,9 @@ func (err AmbiguousReferenceError) Error() string {
 
 func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s:\n\n", err))
+
 	err.AnnotateLocation(out)
+
 	fmt.Fprintf(out, "the same tag was defined in the following locations:\n\n")
 
 	for _, loc := range err.DefinedLocations {
@@ -137,7 +153,7 @@ func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 		loc.AnnotateLocation(textio.NewPrefixWriter(out, "  "))
 	}
 
-	fmt.Fprintf(out, "one of these must be changed.\n")
+	fmt.Fprintf(out, "one of these tags must be changed.\n")
 }
 
 func (err AmbiguousReferenceError) PrettyHTML(out io.Writer) error {
