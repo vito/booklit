@@ -51,7 +51,8 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		err := server.Engine.LoadTemplates(server.Templates)
 		if err != nil {
 			log.Errorf("failed to load templates: %s", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			booklit.ErrorPage(err, w)
 			return
 		}
 	}
@@ -65,7 +66,8 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = server.Engine.RenderSection(w, section)
 	if err != nil {
 		log.Errorf("failed to render: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		booklit.ErrorPage(err, w)
 		return
 	}
 
