@@ -304,8 +304,11 @@
 }
 
 .column.title {
-  width: 380px;
   flex-shrink: 0;
   flex-grow: 0;
-  padding-right: 20px;
+
+  @media (min-width: @page-width + (2 * @page-padding-x)) {
+    width: 380px;
+    padding-right: 20px;
+  }
 }
