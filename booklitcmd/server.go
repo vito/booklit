@@ -2,7 +2,6 @@ package booklitcmd
 
 import (
 	"net/http"
-	"path/filepath"
 	"strings"
 	"sync"
 
@@ -85,7 +84,7 @@ func (server *Server) loadRequestedSection(path string) (*booklit.Section, bool,
 		return nil, false, nil
 	}
 
-	tagName := strings.TrimSuffix(filepath.Base(path), "."+ext)
+	tagName := strings.TrimSuffix(strings.TrimPrefix(path, "/"), "."+ext)
 
 	logrus.WithFields(logrus.Fields{
 		"section": server.In,
