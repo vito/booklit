@@ -4,146 +4,81 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Getting Started</title>
-    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
-    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
   </head>
   <body>
-    <div class="side">
-      
-
-<div class="context">
-  <nav>
-    <div class="top">
-      
-<a href="index.html" >Booklit</a>
-
-    </div>
-
-    
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">1&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html"  class="self">Getting Started</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">3&nbsp;</td>
-          <td class="title-cell">
-<a href="html-renderer.html" >The HTML Renderer</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">4&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">5&nbsp;</td>
-          <td class="title-cell">
-<a href="syntax.html" >Document Syntax</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">6&nbsp;</td>
-          <td class="title-cell">
-<a href="thanks.html" >Thanks</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-    
-  </nav>
-</div>
-
-
-<div class="context">
-  <nav>
-    <div class="top">
-      1&nbsp;
-<a href="getting-started.html"  class="self">Getting Started</a>
-
-    </div>
-
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">1.1&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html#hello-world" >Hello, world!</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">1.2&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html#organizing-with-sections" >Organizing with Sections</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">1.3&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html#splitting-sections" >Splitting Sections</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">1.4&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html#references-and-tagging" >References &amp; Tagging</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">1.5&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html#next-steps" >Next Steps</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-  </nav>
-</div>
-
-
-
-    </div>
     <div class="page">
-      <h1 class="section-header"><a id="getting-started"></a><span class="section-number">1 </span>Getting Started</h1>
+      <div class="page-header">
+        <a href="index.html">Booklit</a>
+        <p class="tagline">the little static site engine that could</p>
+      </div>
+
+      <nav class="top-nav">
+        <ul>
+        
+          <li class="current"><a href="getting-started.html">Getting Started</a></li>
+        
+          <li><a href="baselit.html">Basic Functions</a></li>
+        
+          <li><a href="html-renderer.html">HTML Renderer</a></li>
+        
+          <li><a href="plugins.html">Writing Plugins</a></li>
+        
+          <li><a href="syntax.html">Syntax</a></li>
+        
+          <li><a href="thanks.html">Thanks</a></li>
+        
+        </ul>
+      </nav>
+
+      <h1 class="section-header"><a id="getting-started"></a><span class="section-number"><a href="getting-started.html">1</a> </span>Getting Started</h1>
 
 <p>First you&#39;ll need to grab the <code>booklit</code> CLI. This can be fetched from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>. Download the appropriate binary for your platform, <code>chmod &#43;x</code> it, and drop it somewhere in your <code>$PATH</code>.</p><p>The <code>chmod</code>ing and copying can be done in one fell swoop with <code>install</code>, like so:</p><div class="highlight"><pre style="">$ install ~/Downloads/booklit_* ~/bin/booklit
 </pre></div><p>Then, run <code>booklit -v</code>. You should see the version number printed out, assuming <code>~/bin</code> is in your <code>$PATH</code>.</p>
+<nav>
+  <ul>
+  
+    <li>
+      <a href="getting-started.html#hello-world">1.1 Hello, world!</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="getting-started.html#organizing-with-sections">1.2 Organizing with Sections</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="getting-started.html#splitting-sections">1.3 Splitting Sections</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="getting-started.html#references-and-tagging">1.4 References &amp; Tagging</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="getting-started.html#next-steps">1.5 Next Steps</a>
+
+      
+    </li>
+  
+  </ul>
+</nav>
+
 
 
   
-    <h2 class="section-header"><a id="hello-world"></a><span class="section-number">1.1 </span>Hello, world!</h2>
+    <h2 class="section-header"><a id="hello-world"></a><span class="section-number"><a href="getting-started.html#hello-world">1.1</a> </span>Hello, world!</h2>
 
-<p>First, create a file called <code>hello.lit</code> with the following content:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+<p>First, create a file called <code>hello.lit</code> with the following content:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
 </pre></div><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><div class="highlight"><pre style="">$ booklit -i hello.lit -o docs
@@ -153,14 +88,14 @@ I&#39;m a Booklit document!
   
 
   
-    <h2 class="section-header"><a id="organizing-with-sections"></a><span class="section-number">1.2 </span>Organizing with Sections</h2>
+    <h2 class="section-header"><a id="organizing-with-sections"></a><span class="section-number"><a href="getting-started.html#organizing-with-sections">1.2</a> </span>Organizing with Sections</h2>
 
-<p>Next, let&#39;s try adding a section within our document:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+<p>Next, let&#39;s try adding a section within our document:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
 
-<span style="font-weight:bold">\section</span>{
-  <span style="font-weight:bold">\title</span>{Hi there!}
+<span style="color:#ed6c30;font-weight:bold">\section</span>{
+  <span style="color:#ed6c30;font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
 }
@@ -170,29 +105,29 @@ I&#39;m a Booklit document!
   
 
   
-    <h2 class="section-header"><a id="splitting-sections"></a><span class="section-number">1.3 </span>Splitting Sections</h2>
+    <h2 class="section-header"><a id="splitting-sections"></a><span class="section-number"><a href="getting-started.html#splitting-sections">1.3</a> </span>Splitting Sections</h2>
 
-<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span style="font-weight:bold">\split-sections</span>
+<span style="color:#ed6c30;font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document!
 
-<span style="font-weight:bold">\section</span>{
-  <span style="font-weight:bold">\title</span>{Hi there!}
+<span style="color:#ed6c30;font-weight:bold">\section</span>{
+  <span style="color:#ed6c30;font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
 }
-</pre></div><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done generally with <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a>:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+</pre></div><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done generally with <a href="baselit.html#table-of-contents"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></a>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span style="font-weight:bold">\split-sections</span>
+<span style="color:#ed6c30;font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document!
 
-<span style="font-weight:bold">\table-of-contents</span>
+<span style="color:#ed6c30;font-weight:bold">\table-of-contents</span>
 
-<span style="font-weight:bold">\section</span>{
-  <span style="font-weight:bold">\title</span>{Hi there!}
+<span style="color:#ed6c30;font-weight:bold">\section</span>{
+  <span style="color:#ed6c30;font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
 }
@@ -202,29 +137,29 @@ I&#39;m a Booklit document!
   
 
   
-    <h2 class="section-header"><a id="references-and-tagging"></a><span class="section-number">1.4 </span>References &amp; Tagging</h2>
+    <h2 class="section-header"><a id="references-and-tagging"></a><span class="section-number"><a href="getting-started.html#references-and-tagging">1.4</a> </span>References &amp; Tagging</h2>
 
-<p>Having a <a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+<p>Having a <a href="baselit.html#table-of-contents"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span style="font-weight:bold">\split-sections</span>
+<span style="color:#ed6c30;font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document! To read further, see
-<span style="font-weight:bold">\reference</span>{hi-there}.
+<span style="color:#ed6c30;font-weight:bold">\reference</span>{hi-there}.
 
-<span style="font-weight:bold">\section</span>{
-  <span style="font-weight:bold">\title</span>{Hi there!}
+<span style="color:#ed6c30;font-weight:bold">\section</span>{
+  <span style="color:#ed6c30;font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
 }
-</pre></div><p>The first argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Hello, world!}{hello}
+</pre></div><p>The first argument to <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello, world!}{hello}
 
-<span style="font-weight:bold">\split-sections</span>
+<span style="color:#ed6c30;font-weight:bold">\split-sections</span>
 
 I&#39;m a Booklit document! Consult
-<span style="font-weight:bold">\reference</span>{hi-there}{this section} for more.
+<span style="color:#ed6c30;font-weight:bold">\reference</span>{hi-there}{this section} for more.
 
-<span style="font-weight:bold">\section</span>{
-  <span style="font-weight:bold">\title</span>{Hi there!}
+<span style="color:#ed6c30;font-weight:bold">\section</span>{
+  <span style="color:#ed6c30;font-weight:bold">\title</span>{Hi there!}
 
   I&#39;m so organized!
 }
@@ -234,15 +169,15 @@ I&#39;m a Booklit document! Consult
   
 
   
-    <h2 class="section-header"><a id="next-steps"></a><span class="section-number">1.5 </span>Next Steps</h2>
+    <h2 class="section-header"><a id="next-steps"></a><span class="section-number"><a href="getting-started.html#next-steps">1.5</a> </span>Next Steps</h2>
 
 <p>What we&#39;ve gone over should carry you pretty far. But you&#39;ll likely want to know a lot more.</p><ul>
 
-  <li><p>To learn all the <code>\functions</code> you can call in a document out-of-the-box, consult <a href="baselit.html">The <code>baselit</code> Plugin</a>.</p></li>
+  <li><p>To learn all the <code>\functions</code> you can call in a document out-of-the-box, consult <a href="baselit.html">Basic Functions</a>.</p></li>
 
   <li><p>To change how your generated content looks, check out the <a href="html-renderer.html">HTML renderer</a>.</p></li>
 
-  <li><p>Once you&#39;ve identified patterns or abstractions that you want to introduce, consult <a href="plugins.html">Extending with Plugins</a>.</p></li>
+  <li><p>Once you&#39;ve identified patterns or abstractions that you want to introduce, consult <a href="plugins.html">Writing Plugins</a>.</p></li>
 
 </ul>
 

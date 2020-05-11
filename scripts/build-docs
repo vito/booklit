@@ -3,7 +3,7 @@
 go run cmd/booklit/*.go \
   -i docs/lit/index.lit \
   -o docs \
-  --html-templates docs/lit/html \
-  --plugin github.com/vito/booklit/booklitdoc \
+  --html-templates docs/html \
+  --plugin github.com/vito/booklit/docs/go \
   --plugin github.com/vito/booklit/chroma/plugin \
   "$@"

@@ -1,7 +1,7 @@
 \use-plugin{booklitdoc}
 \use-plugin{chroma}
 
-\title{The HTML Renderer}{html-renderer}
+\title{\aux{The }HTML Renderer}{html-renderer}
 
 The presentation of your content is controlled by a \italic{renderer}. At
 present, there is only one, and it's probably the one you'll want to use: HTML,
@@ -16,9 +16,10 @@ override templates, first create a directory for your \code{.tmpl} files, and
 then provide the \code{--html-templates} flag when building your docs:
 
 \syntax{bash}{{{
-booklit -i ./index.any -o ./docs \
-    --html-templates ./html
+booklit -i ./index.any -o ./docs --html-templates ./html
 }}}
+
+\table-of-contents
 
 \section{
   \title{Base Templates}

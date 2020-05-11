@@ -1,14 +1,16 @@
 \use-plugin{booklitdoc}
 \use-plugin{chroma}
 
-\title{Extending with Plugins}{plugins}
+\title{Writing Plugins}{plugins}
 
 Plugins are what provide the functionality behind function calls like
-\code{\\foo\{bar\}}. Out of the box, Booklit comes with a plugin called
+\syntax{lit}{\\foo\{bar\}}. Out of the box, Booklit comes with a plugin called
 \reference{baselit}{\code{baselit}} which provides basic primives like
 \reference{title} and \reference{section} in addition to support for basic
 markup like \reference{italic} and \reference{bold}. It also serves as a good
 reference when writing your own plugin.
+
+\table-of-contents
 
 \section{
   \title{Get Going}

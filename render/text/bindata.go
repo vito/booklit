@@ -99,7 +99,7 @@ func renderTextInsetTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/inset.tmpl", size: 45, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/inset.tmpl", size: 45, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -119,7 +119,7 @@ func renderTextPageTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/page.tmpl", size: 33, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/page.tmpl", size: 33, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -139,7 +139,7 @@ func renderTextParagraphTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/paragraph.tmpl", size: 83, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/paragraph.tmpl", size: 83, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -159,7 +159,7 @@ func renderTextPreformattedTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/preformatted.tmpl", size: 75, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/preformatted.tmpl", size: 75, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -179,7 +179,7 @@ func renderTextSectionTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/section.tmpl", size: 153, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/section.tmpl", size: 153, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -199,7 +199,7 @@ func renderTextSequenceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/sequence.tmpl", size: 41, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/sequence.tmpl", size: 41, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -219,7 +219,7 @@ func renderTextStringTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/string.tmpl", size: 12, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/string.tmpl", size: 12, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -239,7 +239,7 @@ func renderTextTocTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "render/text/toc.tmpl", size: 166, mode: os.FileMode(420), modTime: time.Unix(1588613985, 0)}
+	info := bindataFileInfo{name: "render/text/toc.tmpl", size: 166, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

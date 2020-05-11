@@ -4,88 +4,98 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Booklit</title>
-    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
-    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
   </head>
   <body>
-    <div class="side">
-      
-
-<div class="context">
-  <nav>
-    <div class="top">
-      
-<a href="index.html"  class="self">Booklit</a>
-
-    </div>
-
-    
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">1&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html" >Getting Started</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">3&nbsp;</td>
-          <td class="title-cell">
-<a href="html-renderer.html" >The HTML Renderer</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">4&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">5&nbsp;</td>
-          <td class="title-cell">
-<a href="syntax.html" >Document Syntax</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">6&nbsp;</td>
-          <td class="title-cell">
-<a href="thanks.html" >Thanks</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-    
-  </nav>
-</div>
-
-
-
-
-    </div>
     <div class="page top">
-      <h1 class="section-header"><a id="index"></a>Booklit</h1>
+      <div class="page-header">
+        <a href="index.html">Booklit</a>
+        <p class="tagline">the little static site engine that could</p>
+      </div>
 
-<p>Booklit is a static-site generator where the content is king.</p><p>Content is organized as a tree of <a href="baselit.html#sections">sections</a>. Each section controls whether its sub-sections should render inline or on their own pages. Header sizes are set intelligently, so you&#39;re not spending your time adjusting <code>&lt;h1&gt;</code>s to <code>&lt;h2&gt;</code>s.</p><p>Linking within your content is done by <a href="baselit.html#reference">referencing tags</a>, rather than hardcoding URLs. An error will be raised if any references are broken.</p><p><a href="plugins.html">Plugins</a> bring <code>\functions</code> to your content, allowing you to write with abstractions, not just markup. As patterns emerge, you can give them meaningful names.</p><p>Presentation is separated from prose by having an explicit rendering stage. With the <a href="html-renderer.html">HTML renderer</a>, you can bring your own templates and control exactly how everything should look.</p><p>This website is written with Booklit. The source is available on GitHub under <a href="https://github.com/vito/booklit/tree/master/docs/lit"><code>docs/lit</code></a>. To learn how to start writing your own stuff, head to <a href="getting-started.html">Getting Started</a>!</p>
+      <nav class="top-nav">
+        <ul>
+        
+          <li><a href="getting-started.html">Getting Started</a></li>
+        
+          <li><a href="baselit.html">Basic Functions</a></li>
+        
+          <li><a href="html-renderer.html">HTML Renderer</a></li>
+        
+          <li><a href="plugins.html">Writing Plugins</a></li>
+        
+          <li><a href="syntax.html">Syntax</a></li>
+        
+          <li><a href="thanks.html">Thanks</a></li>
+        
+        </ul>
+      </nav>
 
+      <div class="columns">
+  <div class="column title"><div class="column-header">content in <code>*.lit</code></div><p>Booklit documents are text files which invoke <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> to produce content or configure the current section.</p><p>Booklit makes it easy to reorganize and refactor your entire website without breaking links or manually adjusting header sizes.</p></div>
+  
+  <div class="column"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Hello}
 
+Hello, world!
+
+<span style="color:#ed6c30;font-weight:bold">\testimonial</span>{Jacques Berman Webster II}{
+  It&#39;s lit!
+}
+</pre></div></div>
+  
+</div><div class="columns">
+  <div class="column title"><div class="column-header">plugins in <code>*.go</code></div><p>Plugins are written in the <a href="https://golang.org">Go programming language</a>. Go is popular yet pretty boring, allowing you to focus on content while having <a href="https://pkg.go.dev/">plenty of libraries</a> around when you need them.</p><p>Plugins allow documents to be expressive, providing meaningful syntax for repeated patterns and abstractions.</p></div>
+  
+  <div class="column"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (p MyPlugin) Testimonial(
+  source, quote booklit.Content,
+) booklit.Content {
+  <span style="color:#ed6c30;font-weight:bold">return</span> booklit.Styled{
+    Style: <span style="color:#fcc21b">&#34;testimonial&#34;</span>,
+    Content: quote,
+    Partials: booklit.Partials{
+      <span style="color:#fcc21b">&#34;Source&#34;</span>: source,
+    },
+  }
+}
+</pre></div></div>
+  
+</div><div class="columns">
+  <div class="column title"><div class="column-header">presentation in <code>*.tmpl</code></div><p>The <a href="html-renderer.html">HTML Renderer</a> is powered by Go&#39;s prolific <a href="https://golang.org/pkg/html/template/"><code>html/template</code> package</a>.</p><p>All templates can be overridden and different sections can be <a href="baselit.html#styled"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\styled</span></code></a>, providing full control over presentation.</p></div>
+  
+  <div class="column"><div class="highlight"><pre style="">&lt;<span style="color:#fcc21b;font-weight:bold">blockquote</span> class=<span style="color:#fcc21b">&#34;testimonial&#34;</span>&gt;
+  {{.Content | render}}
+
+  &lt;<span style="color:#fcc21b;font-weight:bold">footer</span>&gt;
+    {{.Partial &#34;Source&#34; | render}}
+  &lt;/<span style="color:#fcc21b;font-weight:bold">footer</span>&gt;
+&lt;/<span style="color:#fcc21b;font-weight:bold">blockquote</span>&gt;
+</pre></div></div>
+  
+</div><div class="columns">
+  <div class="column title"><div class="column-header">build with <code>booklit</code></div><p><code>booklit</code> a single command for rendering content.</p><p>When an error occurs, Booklit will show the precise location of the error and suggest a fix (if possible).</p></div>
+  
+  <div class="column"><pre>$ booklit -i ./index.lit -o ./public/
+<span class="syntax-hl">INFO</span>[0000] rendering
+$ booklit -i ./to-err-is-human.lit
+to-err-is-human.lit:5: unknown tag &#39;helo&#39;
+
+   5| Say \reference{helo}!
+          <span class="syntax-hl">^^^^^^^^^^</span>
+These tags seem similar:
+
+- hello
+
+Did you mean one of these?</pre></div>
+  
+</div><div class="columns">
+  <div class="column title"><div class="column-header">run with <code>booklit -s $PORT</code></div><p>In server mode, content is generated on each request with only plugin changes requiring a server restart. The feedback loop is <em>wicked fast</em>.</p><p>If building the page fails, the error will be shown on the page instead, and be just as helpful.</p></div>
+  
+  <div class="column"><pre>$ booklit -i ./index.lit -s 3000
+<span class="syntax-hl">INFO</span>[0000] listening</pre><p><iframe class="output-frame" scrolling="no" src="outputs/index.html"></iframe></p></div>
+  
+</div><p>This website is <a href="https://github.com/vito/booklit/tree/master/docs/lit">written with Booklit</a>. Want to write your own? Let&#39;s <a href="getting-started.html">get started</a>!</p>
     </div>
     <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

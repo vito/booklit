@@ -1,0 +1,6 @@
+<div class="columns">
+  <div class="column title">{{.Content | render}}</div>
+  {{range .Partial "Columns"}}
+  <div class="column">{{. | render}}</div>
+  {{end}}
+</div>

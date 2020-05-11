@@ -10,6 +10,7 @@ import (
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/baselit"
+	chromap "github.com/vito/booklit/chroma"
 )
 
 func init() {
@@ -18,18 +19,17 @@ func init() {
 	styles.Fallback = chroma.MustNewStyle("booklitdoc", chroma.StyleEntries{
 		chroma.Comment:               "italic",
 		chroma.CommentPreproc:        "noitalic",
-		chroma.Keyword:               "bold",
+		chroma.Keyword:               "#ed6c30 bold",
 		chroma.KeywordPseudo:         "nobold",
 		chroma.KeywordType:           "nobold",
-		chroma.OperatorWord:          "bold",
-		chroma.NameClass:             "bold",
-		chroma.NameNamespace:         "bold",
-		chroma.NameException:         "bold",
-		chroma.NameEntity:            "bold",
-		chroma.NameTag:               "bold",
-		chroma.LiteralString:         "italic",
+		chroma.OperatorWord:          "#fcc21b bold",
+		chroma.NameClass:             "#fcc21b bold",
+		chroma.NameNamespace:         "#fcc21b bold",
+		chroma.NameException:         "#fcc21b bold",
+		chroma.NameEntity:            "#fcc21b bold",
+		chroma.NameTag:               "#fcc21b bold",
+		chroma.LiteralString:         "#fcc21b",
 		chroma.LiteralStringInterpol: "bold",
-		chroma.LiteralStringEscape:   "bold",
 		chroma.GenericHeading:        "bold",
 		chroma.GenericSubheading:     "bold",
 		chroma.GenericEmph:           "italic",
@@ -43,30 +43,101 @@ func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
 		section: section,
 		base:    baselit.NewPlugin(section).(baselit.Plugin),
+		chroma:  chromap.NewPlugin(section).(chromap.Plugin),
 	}
 }
 
 type Plugin struct {
 	section *booklit.Section
 	base    baselit.Plugin
+	chroma  chromap.Plugin
 }
 
-func (plugin Plugin) Godoc(ref string) booklit.Content {
+func (plugin Plugin) OutputFrame(url string) booklit.Content {
+	return booklit.Styled{
+		Style: "output-frame",
+		Content: booklit.Link{
+			Content: booklit.String(url),
+			Target:  url,
+		},
+		Partials: booklit.Partials{
+			"URL": booklit.String(url),
+		},
+	}
+}
+
+func (plugin Plugin) SyntaxHl(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "syntax-hl",
+		Content: content,
+	}
+}
+
+func (plugin Plugin) ColumnHeader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "column-header",
+		Block:   true,
+		Content: content,
+	}
+}
+
+func (plugin Plugin) Columns(title booklit.Content, rest ...booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "columns",
+		Block:   true,
+		Content: title,
+		Partials: booklit.Partials{
+			"Columns": booklit.Sequence(rest),
+		},
+	}
+}
+
+func (plugin Plugin) BigCode(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "big-code",
+		Content: content,
+	}
+}
+
+func (plugin Plugin) Codefile(path string) booklit.Content {
+	return booklit.Styled{
+		Style:   "codefile",
+		Content: booklit.String(path),
+		Block:   true,
+	}
+}
+
+func (plugin Plugin) Godoc(ref string) (booklit.Content, error) {
 	spl := strings.SplitN(ref, ".", 2)
 
 	pkg := strings.TrimLeft(spl[0], "*")
 
+	syntax, err := plugin.chroma.Syntax("go", booklit.Sequence{
+		booklit.String(spl[0] + "."),
+		plugin.base.Bold(booklit.String(spl[1])),
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return plugin.base.Link(
-		plugin.base.Code(booklit.Sequence{
-			booklit.String(spl[0] + "."),
-			plugin.base.Bold(booklit.String(spl[1])),
-		}),
+		syntax,
 		"https://godoc.org/github.com/vito/"+pkg+"#"+spl[1],
-	)
+	), nil
 }
 
-func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Content {
+func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Content, error) {
 	invoke := node.(ast.Sequence)[0].(ast.Invoke)
+
+	title, err := plugin.chroma.Syntax("lit", booklit.String("\\"+invoke.Function))
+	if err != nil {
+		return nil, err
+	}
+
+	thumb, err := plugin.chroma.Syntax("lit", plugin.renderInvoke(invoke))
+	if err != nil {
+		return nil, err
+	}
 
 	return booklit.Styled{
 		Style: "definition",
@@ -78,16 +149,13 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) booklit.Cont
 				booklit.Target{
 					TagName:  invoke.Function,
 					Location: plugin.section.InvokeLocation,
-					Title: plugin.base.Code(booklit.Sequence{
-						booklit.String("\\"),
-						plugin.base.Bold(booklit.String(invoke.Function)),
-					}),
-					Content: content,
+					Title:    title,
+					Content:  content,
 				},
-				plugin.base.Code(plugin.renderInvoke(invoke)),
+				thumb,
 			},
 		},
-	}
+	}, nil
 }
 
 func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {

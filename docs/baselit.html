@@ -3,432 +3,136 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>The baselit Plugin</title>
-    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <title>Basic Functions</title>
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
-    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
   </head>
   <body>
-    <div class="side">
-      
-
-<div class="context">
-  <nav>
-    <div class="top">
-      
-<a href="index.html" >Booklit</a>
-
-    </div>
-
-    
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">1&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html" >Getting Started</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html"  class="self">The <code>baselit</code> Plugin</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">3&nbsp;</td>
-          <td class="title-cell">
-<a href="html-renderer.html" >The HTML Renderer</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">4&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html" >Extending with Plugins</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">5&nbsp;</td>
-          <td class="title-cell">
-<a href="syntax.html" >Document Syntax</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">6&nbsp;</td>
-          <td class="title-cell">
-<a href="thanks.html" >Thanks</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-    
-  </nav>
-</div>
-
-
-<div class="context">
-  <nav>
-    <div class="top">
-      2&nbsp;
-<a href="baselit.html"  class="self">The <code>baselit</code> Plugin</a>
-
-    </div>
-
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">2.1&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#sections" >Defining Sections</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2.2&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#links-and-references" >Links &amp; References</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2.3&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#flow-content" >Flow Content</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2.4&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#block-content" >Block Content</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2.5&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#customizing-sections" >Customizing Sections</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-  </nav>
-</div>
-
-
-
-<div class="context">
-  <div class="top">
-    On this page:
-  </div>
-
-  <nav>
-    <div class="children">
-      <table>
-        
-        
-        <tr>
-          <td class="number-cell" align="right">2.1&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#sections" >Defining Sections</a>
-</td>
-        </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#title"><code>\<strong>title</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#aux"><code>\<strong>aux</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#section"><code>\<strong>section</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#include-section"><code>\<strong>include-section</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#split-sections"><code>\<strong>split-sections</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#single-page"><code>\<strong>single-page</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#table-of-contents"><code>\<strong>table-of-contents</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#omit-children-from-table-of-contents"><code>\<strong>omit-children-from-table-of-contents</strong></code></a></td>
-          </tr>
-          
-        
-        <tr>
-          <td class="number-cell" align="right">2.2&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#links-and-references" >Links &amp; References</a>
-</td>
-        </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#link"><code>\<strong>link</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#reference"><code>\<strong>reference</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#some-tag">I&#39;m just some tag!</a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#target"><code>\<strong>target</strong></code></a></td>
-          </tr>
-          
-        
-        <tr>
-          <td class="number-cell" align="right">2.3&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#flow-content" >Flow Content</a>
-</td>
-        </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#code"><code>\<strong>code</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#italic"><code>\<strong>italic</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#bold"><code>\<strong>bold</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#larger"><code>\<strong>larger</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#smaller"><code>\<strong>smaller</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#strike"><code>\<strong>strike</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#superscript"><code>\<strong>superscript</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#subscript"><code>\<strong>subscript</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#image"><code>\<strong>image</strong></code></a></td>
-          </tr>
-          
-        
-        <tr>
-          <td class="number-cell" align="right">2.4&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#block-content" >Block Content</a>
-</td>
-        </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#inset"><code>\<strong>inset</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#aside"><code>\<strong>aside</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#list"><code>\<strong>list</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#ordered-list"><code>\<strong>ordered-list</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#table-row"><code>\<strong>table-row</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#table"><code>\<strong>table</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#definition"><code>\<strong>definition</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#definitions"><code>\<strong>definitions</strong></code></a></td>
-          </tr>
-          
-        
-        <tr>
-          <td class="number-cell" align="right">2.5&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html#customizing-sections" >Customizing Sections</a>
-</td>
-        </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#set-partial"><code>\<strong>set-partial</strong></code></a></td>
-          </tr>
-          
-          <tr>
-            <td class="number-cell" align="right"></td>
-            <td class="title-cell"><a href="baselit.html#styled"><code>\<strong>styled</strong></code></a></td>
-          </tr>
-          
-        
-      </table>
-    </div>
-  </nav>
-</div>
-
-    </div>
     <div class="page">
-      <h1 class="section-header"><a id="baselit"></a><span class="section-number">2 </span>The <code>baselit</code> Plugin</h1>
+      <div class="page-header">
+        <a href="index.html">Booklit</a>
+        <p class="tagline">the little static site engine that could</p>
+      </div>
+
+      <nav class="top-nav">
+        <ul>
+        
+          <li><a href="getting-started.html">Getting Started</a></li>
+        
+          <li class="current"><a href="baselit.html">Basic Functions</a></li>
+        
+          <li><a href="html-renderer.html">HTML Renderer</a></li>
+        
+          <li><a href="plugins.html">Writing Plugins</a></li>
+        
+          <li><a href="syntax.html">Syntax</a></li>
+        
+          <li><a href="thanks.html">Thanks</a></li>
+        
+        </ul>
+      </nav>
+
+      <h1 class="section-header"><a id="baselit"></a><span class="section-number"><a href="baselit.html">2</a> </span>Basic Functions</h1>
 
 <p>Booklit comes with a default plugin called <code>baselit</code>. It provides the basic set of functions needed for authoring Booklit documents, plus many common methods useful for writing prose.</p>
+<nav>
+  <ul>
+  
+    <li>
+      <a href="baselit.html#sections">2.1 Defining Sections</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="baselit.html#links-and-references">2.2 Links &amp; References</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="baselit.html#flow-content">2.3 Flow Content</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="baselit.html#block-content">2.4 Block Content</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="baselit.html#customizing-sections">2.5 Customizing Sections</a>
+
+      
+    </li>
+  
+  </ul>
+</nav>
+
 
 
   
-    <h2 class="section-header"><a id="sections"></a><span class="section-number">2.1 </span>Defining Sections</h2>
+    <h2 class="section-header"><a id="sections"></a><span class="section-number"><a href="baselit.html#sections">2.1</a> </span>Defining Sections</h2>
 
 <div class="definition">
-  <div class="definition-thumb">
-    <a id="title"></a><code>\<a href="baselit.html#title"><strong>title</strong></a>{<em>text</em>}{<em>tags...</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="title"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span>{text}{tags...}</code></pre>
 
   <div class="definition-content">
-    <p>Sets the title and optional <em>tags</em> as repeated arguments. For example, the <code>title</code> invocation for this section is:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{The <span style="font-weight:bold">\code</span>{baselit} Plugin}{baselit}
-</pre></div><p>To specify multiple tags, pass multiple arguments:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{I&#39;m a taggy section!}{tag-1}{tag-1}
+    <p>Sets the title and optional <em>tags</em> as repeated arguments. For example, the <code>title</code> invocation for this section is:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{The <span style="color:#ed6c30;font-weight:bold">\code</span>{baselit} Plugin}{baselit}
+</pre></div><p>To specify multiple tags, pass multiple arguments:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{I&#39;m a taggy section!}{tag-1}{tag-1}
 </pre></div><p>You can also just specify the title, in which case the section&#39;s tag will default to a sanitized form of the title (e.g. <em>I&#39;m a fancy title!</em> becomes <code>im-a-fancy-title</code>).</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="aux"></a><code>\<a href="baselit.html#aux"><strong>aux</strong></a>{<em>content</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="aux"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\aux</span>{content}</code></pre>
 
   <div class="definition-content">
-    <p>Used within a title declaration to provide content that will show up on the section page itself, but will be omitted when referencing the section. This is handy for sub-titles that you don&#39;t care to show anywhere but the section&#39;s page itself.</p><p>Example:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{Booklit<span style="font-weight:bold">\aux</span>{: a pretty lit authoring system}}
+    <p>Used within a title declaration to provide content that will show up on the section page itself, but will be omitted when referencing the section. This is handy for sub-titles that you don&#39;t care to show anywhere but the section&#39;s page itself.</p><p>Example:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{Booklit<span style="color:#ed6c30;font-weight:bold">\aux</span>{: a pretty lit authoring system}}
 </pre></div><p>This section, when referenced, would only show <em>Booklit</em>, but its header would include the <em>content</em>..</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="section"></a><code>\<a href="baselit.html#section"><strong>section</strong></a>{<em>content</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="section"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\section</span>{content}</code></pre>
 
   <div class="definition-content">
-    <p>Introduce a sub-section, inheriting plugins of the outer section.</p><p>Each sub-section should conventionally begin with a call to <a href="baselit.html#title"><code>\<strong>title</strong></code></a> to set its title.</p><p>For example, here&#39;s a full section containing a sub-section:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{I&#39;m a parent section!}
+    <p>Introduce a sub-section, inheriting plugins of the outer section.</p><p>Each sub-section should conventionally begin with a call to <a href="baselit.html#title"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span></code></a> to set its title.</p><p>For example, here&#39;s a full section containing a sub-section:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{I&#39;m a parent section!}
 
 Hello, world!
 
-<span style="font-weight:bold">\section</span>{
-  <span style="font-weight:bold">\title</span>{And I&#39;m a child section!}
+<span style="color:#ed6c30;font-weight:bold">\section</span>{
+  <span style="color:#ed6c30;font-weight:bold">\title</span>{And I&#39;m a child section!}
 
   Waaah! Waaaah!
 }
-</pre></div><p>Sections can be nested arbitrarily deep, however it is recommended to keep a maximum depth of two on a single page. Sections can be split on to separate pages by invoking <a href="baselit.html#split-sections"><code>\<strong>split-sections</strong></code></a>.</p>
+</pre></div><p>Sections can be nested arbitrarily deep, however it is recommended to keep a maximum depth of two on a single page. Sections can be split on to separate pages by invoking <a href="baselit.html#split-sections"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\split-sections</span></code></a>.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="include-section"></a><code>\<a href="baselit.html#include-section"><strong>include-section</strong></a>{<em>path</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="include-section"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\include-section</span>{path}</code></pre>
 
   <div class="definition-content">
-    <p>Introduce a sub-section located at <em>path</em>, relative to the current section&#39;s file. The included section will <strong>not</strong> inherit the plugins of the parent section. Instead, it should explicitly call <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> on its own, so that it&#39;s self-contained.</p>
+    <p>Introduce a sub-section located at <em>path</em>, relative to the current section&#39;s file. The included section will <strong>not</strong> inherit the plugins of the parent section. Instead, it should explicitly call <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> on its own, so that it&#39;s self-contained.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="split-sections"></a><code>\<a href="baselit.html#split-sections"><strong>split-sections</strong></a></code>
-  </div>
+  <pre class="definition-thumb"><a id="split-sections"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\split-sections</span></code></pre>
 
   <div class="definition-content">
     <p>Configures the renderer to generate a separate page for each sub-section, rather than inlining them under smaller headings.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="single-page"></a><code>\<a href="baselit.html#single-page"><strong>single-page</strong></a></code>
-  </div>
+  <pre class="definition-thumb"><a id="single-page"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\single-page</span></code></pre>
 
   <div class="definition-content">
-    <p>When declared in a section, it overrules any <a href="baselit.html#split-sections"><code>\<strong>split-sections</strong></code></a> in the section and any child sections (recursively), in order to force them all on to one page. Each section&#39;s header sizing is preserved, however.</p><p>This is useful for having all of your content which is normally split across many pages joined in to an additional &#34;single-page&#34; format, for quick skimming and searching.</p>
+    <p>When declared in a section, it overrules any <a href="baselit.html#split-sections"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\split-sections</span></code></a> in the section and any child sections (recursively), in order to force them all on to one page. Each section&#39;s header sizing is preserved, however.</p><p>This is useful for having all of your content which is normally split across many pages joined in to an additional &#34;single-page&#34; format, for quick skimming and searching.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="table-of-contents"></a><code>\<a href="baselit.html#table-of-contents"><strong>table-of-contents</strong></a></code>
-  </div>
+  <pre class="definition-thumb"><a id="table-of-contents"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></pre>
 
   <div class="definition-content">
-    <p>This generates a block element that becomes the table of contents from this section downward upon rendering. Often used in combination with <a href="baselit.html#split-sections"><code>\<strong>split-sections</strong></code></a>.</p>
+    <p>This generates a block element that becomes the table of contents from this section downward upon rendering. Often used in combination with <a href="baselit.html#split-sections"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\split-sections</span></code></a>.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="omit-children-from-table-of-contents"></a><code>\<a href="baselit.html#omit-children-from-table-of-contents"><strong>omit-children-from-table-of-contents</strong></a></code>
-  </div>
+  <pre class="definition-thumb"><a id="omit-children-from-table-of-contents"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\omit-children-from-table-of-contents</span></code></pre>
 
   <div class="definition-content">
     <p>Configures the section to omit its children from table of contents listings. This is appropriate when the sub-sections within a section are not quite standalone; they may be brief and meant to be consumed all at once, so navigating to them individually would not make sense.</p>
@@ -439,31 +143,25 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a id="links-and-references"></a><span class="section-number">2.2 </span>Links &amp; References</h2>
+    <h2 class="section-header"><a id="links-and-references"></a><span class="section-number"><a href="baselit.html#links-and-references">2.2</a> </span>Links &amp; References</h2>
 
 <div class="definition">
-  <div class="definition-thumb">
-    <a id="link"></a><code>\<a href="baselit.html#link"><strong>link</strong></a>{<em>display</em>}{<em>target</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="link"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\link</span>{display}{target}</code></pre>
 
   <div class="definition-content">
-    <p>Link to <em>target</em> (i.e. a URL), with <em>display</em> as the link&#39;s text.</p><p>For example, <code>\link{Example}{https://example.com}</code> becomes <a href="https://example.com">Example</a>.</p><p>Note that the argument order is the reverse of <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>; writing tends to flow more naturally this way without a big URL interrupting the sentence.</p>
+    <p>Link to <em>target</em> (i.e. a URL), with <em>display</em> as the link&#39;s text.</p><p>For example, <code>\link{Example}{https://example.com}</code> becomes <a href="https://example.com">Example</a>.</p><p>Note that the argument order is the reverse of <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>; writing tends to flow more naturally this way without a big URL interrupting the sentence.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="reference"></a><code>\<a href="baselit.html#reference"><strong>reference</strong></a>{<em>tag</em>}{<em>display?</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="reference"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span>{tag}{display?}</code></pre>
 
   <div class="definition-content">
     <p>Generate a link to the target associated with <em>tag</em>. If the optional <em>display</em> argument is specified, it will be used as the link&#39;s content. Otherwise, the tag&#39;s configured display will be rendered.</p><p>For example, <code>\reference{links-and-references}</code> becomes <a href="baselit.html#links-and-references">Links &amp; References</a>.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="target"></a><code>\<a href="baselit.html#target"><strong>target</strong></a>{<em>tag</em>}{<em>display?</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="target"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\target</span>{tag}{display?}</code></pre>
 
   <div class="definition-content">
-    <p>Generate a target element that can be <a href="baselit.html#reference"><code>\<strong>reference</strong></code></a>d by <em>tag</em>. If <em>display</em> is specified, references will default to showing it as their link. Otherwise, <em>tag</em> itself will be the default.</p><p>As an example, we&#39;ll create a target element in the following paragraph, with the tag <em>some-tag</em> and display <em>I&#39;m just some tag!</em>:</p><p><a id="some-tag"></a> I&#39;m a targetable paragraph.</p><p>Then, we&#39;ll reference it with <code>\reference{some-tag}</code>:</p><p><a href="baselit.html#some-tag">I&#39;m just some tag!</a></p><p>Clicking the above link should take you to the paragraph.</p>
+    <p>Generate a target element that can be <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>d by <em>tag</em>. If <em>display</em> is specified, references will default to showing it as their link. Otherwise, <em>tag</em> itself will be the default.</p><p>As an example, we&#39;ll create a target element in the following paragraph, with the tag <em>some-tag</em> and display <em>I&#39;m just some tag!</em>:</p><p><a id="some-tag"></a> I&#39;m a targetable paragraph.</p><p>Then, we&#39;ll reference it with <code>\reference{some-tag}</code>:</p><p><a href="baselit.html#some-tag">I&#39;m just some tag!</a></p><p>Clicking the above link should take you to the paragraph.</p>
   </div>
 </div>
 
@@ -471,80 +169,62 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a id="flow-content"></a><span class="section-number">2.3 </span>Flow Content</h2>
+    <h2 class="section-header"><a id="flow-content"></a><span class="section-number"><a href="baselit.html#flow-content">2.3</a> </span>Flow Content</h2>
 
 <p><em>Flow</em> content is anything that forms a <em>sentence</em>, i.e. a string of words or inline elements.</p><div class="definition">
-  <div class="definition-thumb">
-    <a id="code"></a><code>\<a href="baselit.html#code"><strong>code</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="code"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\code</span>{text}</code></pre>
 
   <div class="definition-content">
-    <p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a single line, it is presented as inline code. If it is in paragraph form, it is presented as its own block. See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>This is often used with <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace). See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>For example:</p><div class="highlight"><pre style="">I&#39;m a sentence with some <span style="font-weight:bold">\code</span>{code bits} in it.
-</pre></div><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\code</span>{{
+    <p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a single line, it is presented as inline code. If it is in paragraph form, it is presented as its own block. See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>This is often used with <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace). See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>For example:</p><div class="highlight"><pre style="">I&#39;m a sentence with some <span style="color:#ed6c30;font-weight:bold">\code</span>{code bits} in it.
+</pre></div><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\code</span>{{
   This is a code block.
 }}
 </pre></div><p>...renders as:</p><pre>This is a code block.</pre>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="italic"></a><code>\<a href="baselit.html#italic"><strong>italic</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="italic"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\italic</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> in <em>italics</em> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="bold"></a><code>\<a href="baselit.html#bold"><strong>bold</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="bold"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\bold</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> in <strong>bold</strong> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="larger"></a><code>\<a href="baselit.html#larger"><strong>larger</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="larger"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\larger</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> ~20% <span style="font-size: 120%">larger</span> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="smaller"></a><code>\<a href="baselit.html#smaller"><strong>smaller</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="smaller"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\smaller</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> ~20% <span style="font-size: 80%">smaller</span> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="strike"></a><code>\<a href="baselit.html#strike"><strong>strike</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="strike"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\strike</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> with a <span style="text-decoration: line-through">strike through it</span> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="superscript"></a><code>\<a href="baselit.html#superscript"><strong>superscript</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="superscript"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\superscript</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> in <sup>superscript</sup> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="subscript"></a><code>\<a href="baselit.html#subscript"><strong>subscript</strong></a>{<em>text</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="subscript"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\subscript</span>{text}</code></pre>
 
   <div class="definition-content">
     <p>Present <em>text</em> in <sub>subscript</sub> upon rendering.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="image"></a><code>\<a href="baselit.html#image"><strong>image</strong></a>{<em>path</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="image"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\image</span>{path}</code></pre>
 
   <div class="definition-content">
     <p>Renders the image at <em>path</em> inline.</p><p>Currently there is no &#34;magic&#34; that will do anything with the file specified by <em>path</em> - if it&#39;s a local path, you should make sure it&#39;s present in the directory that your documents are being generated into.</p>
@@ -555,28 +235,22 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a id="block-content"></a><span class="section-number">2.4 </span>Block Content</h2>
+    <h2 class="section-header"><a id="block-content"></a><span class="section-number"><a href="baselit.html#block-content">2.4</a> </span>Block Content</h2>
 
 <p><em>Block</em> content is anything that forms a <em>paragraph</em>, i.e. a block of text or any element that is standalone.</p><div class="definition">
-  <div class="definition-thumb">
-    <a id="inset"></a><code>\<a href="baselit.html#inset"><strong>inset</strong></a>{<em>content</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="inset"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\inset</span>{content}</code></pre>
 
   <div class="definition-content">
     <p>Render <em>content</em> indented a bit.</p><div style="margin: 0 2em 1em" class="inset"><p>Like this!</p></div>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="aside"></a><code>\<a href="baselit.html#aside"><strong>aside</strong></a>{<em>content</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="aside"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\aside</span>{content}</code></pre>
 
   <div class="definition-content">
-    <p>Render <em>content</em> in some way that conveys that it&#39;s a side-note.</p><blockquote class="aside"><p>Here I am!</p></blockquote><p>Depending on your screen size, you should either see it to the right or above this line.</p><p>This is largely up to how you style them, though. You may want them to just look something like <a href="baselit.html#inset"><code>\<strong>inset</strong></code></a> if you don&#39;t have a &#34;margin&#34; in your design.</p>
+    <p>Render <em>content</em> in some way that conveys that it&#39;s a side-note.</p><blockquote class="aside"><p>Here I am!</p></blockquote><p>Depending on your screen size, you should either see it to the right or above this line.</p><p>This is largely up to how you style them, though. You may want them to just look something like <a href="baselit.html#inset"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\inset</span></code></a> if you don&#39;t have a &#34;margin&#34; in your design.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="list"></a><code>\<a href="baselit.html#list"><strong>list</strong></a>{<em>items...</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="list"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\list</span>{items...}</code></pre>
 
   <div class="definition-content">
     <p>Render an unordered list of <em>items</em>.</p><ul>
@@ -590,9 +264,7 @@ Hello, world!
 </ul>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="ordered-list"></a><code>\<a href="baselit.html#ordered-list"><strong>ordered-list</strong></a>{<em>items...</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="ordered-list"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\ordered-list</span>{items...}</code></pre>
 
   <div class="definition-content">
     <p>Render an ordered list of <em>items</em>.</p><ol>
@@ -606,15 +278,13 @@ Hello, world!
 </ol>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="table"></a><code>\<a href="baselit.html#table"><strong>table</strong></a>{<em>rows...</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="table"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table</span>{rows...}</code></pre>
 
   <div class="definition-content">
-    <p>Render a table with <em>rows</em> as its content.</p><p><a id="table-row"></a> The value for each row should be produced by using <a href="baselit.html#table-row"><code>\<strong>table-row</strong></code></a> like so:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\table</span>{
-  <span style="font-weight:bold">\table-row</span>{a}{b}{c}
+    <p>Render a table with <em>rows</em> as its content.</p><p><a id="table-row"></a> The value for each row should be produced by using <a href="baselit.html#table-row"><code>\<strong>table-row</strong></code></a> like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\table</span>{
+  <span style="color:#ed6c30;font-weight:bold">\table-row</span>{a}{b}{c}
 }{
-  <span style="font-weight:bold">\table-row</span>{1}{2}{3}
+  <span style="color:#ed6c30;font-weight:bold">\table-row</span>{1}{2}{3}
 }
 </pre></div><p>The above example renders as:</p><table>
   
@@ -641,15 +311,13 @@ Hello, world!
 </table>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="definitions"></a><code>\<a href="baselit.html#definitions"><strong>definitions</strong></a>{<em>entries...</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="definitions"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\definitions</span>{entries...}</code></pre>
 
   <div class="definition-content">
-    <p>Render a definition list with <em>entries</em> as its entries.</p><p><a id="definition"></a> The value for each entry should be produced by using <a href="baselit.html#definition"><code>\<strong>definition</strong></code></a> like so:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\definitions</span>{
-  <span style="font-weight:bold">\definition</span>{a}{1}
+    <p>Render a definition list with <em>entries</em> as its entries.</p><p><a id="definition"></a> The value for each entry should be produced by using <a href="baselit.html#definition"><code>\<strong>definition</strong></code></a> like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\definitions</span>{
+  <span style="color:#ed6c30;font-weight:bold">\definition</span>{a}{1}
 }{
-  <span style="font-weight:bold">\definition</span>{b}{2}
+  <span style="color:#ed6c30;font-weight:bold">\definition</span>{b}{2}
 }
 </pre></div><p>The above example renders as:</p><dl>
   
@@ -667,28 +335,22 @@ Hello, world!
   
 
   
-    <h2 class="section-header"><a id="customizing-sections"></a><span class="section-number">2.5 </span>Customizing Sections</h2>
+    <h2 class="section-header"><a id="customizing-sections"></a><span class="section-number"><a href="baselit.html#customizing-sections">2.5</a> </span>Customizing Sections</h2>
 
 <div class="definition">
-  <div class="definition-thumb">
-    <a id="use-plugin"></a><code>\<a href="baselit.html#use-plugin"><strong>use-plugin</strong></a>{<em>name</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="use-plugin"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span>{name}</code></pre>
 
   <div class="definition-content">
-    <p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Extending with Plugins</a> for more information.</p>
+    <p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Writing Plugins</a> for more information.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="set-partial"></a><code>\<a href="baselit.html#set-partial"><strong>set-partial</strong></a>{<em>name</em>}{<em>content</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="set-partial"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\set-partial</span>{name}{content}</code></pre>
 
   <div class="definition-content">
-    <p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Extending with Plugins</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p>
+    <p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Writing Plugins</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p>
   </div>
 </div><div class="definition">
-  <div class="definition-thumb">
-    <a id="styled"></a><code>\<a href="baselit.html#styled"><strong>styled</strong></a>{<em>name</em>}</code>
-  </div>
+  <pre class="definition-thumb"><a id="styled"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\styled</span>{name}</code></pre>
 
   <div class="definition-content">
     <p>Set the template&#39;s style to <em>name</em>. The renderer may then use this to present the section in a different way. See <a href="html-renderer.html#styled-sections">Styled Sections</a>.</p>

@@ -1,11 +1,13 @@
 \use-plugin{booklitdoc}
 \use-plugin{chroma}
 
-\title{The \code{baselit} Plugin}{baselit}
+\title{Basic Functions}{baselit}
 
 Booklit comes with a default plugin called \code{baselit}. It provides the
 basic set of functions needed for authoring Booklit documents, plus many common
 methods useful for writing prose.
+
+\table-of-contents
 
 \section{
   \title{Defining Sections}{sections}

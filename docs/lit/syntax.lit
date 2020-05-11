@@ -1,10 +1,12 @@
 \use-plugin{chroma}
 
-\title{Document Syntax}{syntax}
+\title{Syntax}{syntax}
 
 Booklit documents are basically just text files with special syntax for
 \reference{function-syntax}{function calls}. Aside from those, everything is
 either text or a comment.
+
+\table-of-contents
 
 \section{
   \title{Prose Syntax}{prose-syntax}

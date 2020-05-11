@@ -1,0 +1,90 @@
+@import "normalize.less";
+@import "colors.less";
+
+html {
+  display: flex;
+  min-height: 100%;
+}
+
+body {
+  font-family: Helvetica, Arial, Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: center;
+  color: @foreground;
+  background: @background;
+}
+
+a {
+  color: @link;
+
+  // this cute little hack lets syntax highlighting have an underline that
+  // matches its color
+  &, * {
+    text-decoration: underline;
+  }
+}
+
+a:visited {
+  color: @link-visited;
+}
+
+a:hover {
+  color: @link;
+}
+
+code, pre {
+  font-family: 'Iosevka', monospace;
+  color: @foreground-light;
+}
+
+code {
+  background: @background-dark;
+  border-radius: .3em;
+  padding: .25em;
+  white-space: nowrap;
+}
+
+pre {
+  background: @background-dark;
+  padding: .5em;
+  border-radius: .3em;
+}
+
+h1 code, h2 code, h3 code {
+  font-weight: 600;
+  font-size: .9em;
+}
+
+nav ul {
+  list-style-type: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto Slab', serif;
+  font-weight: normal;
+  color: @foreground-light;
+}
+
+h1 {
+  font-size: 2em;
+  border-bottom: 5px solid @trim;
+}
+
+h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid @trim;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+h2, h3 {
+  margin-top: 3rem;
+}
+

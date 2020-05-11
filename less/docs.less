@@ -1,0 +1,297 @@
+@import "base.less";
+
+.syntax-hl {
+  color: @lit;
+}
+
+.page code code, .definition-thumb code {
+  border: 0;
+  padding: 0;
+}
+
+.page a:hover code strong {
+  text-decoration: underline;
+}
+
+.page {
+  padding: 3rem 0;
+  width: 800px;
+}
+
+.side {
+  font-family: 'Roboto Slab', serif;
+  font-size: 15px;
+  width: 250px;
+  padding-top: 5rem;
+  padding-left: 5rem;
+  color: @foreground-dim;
+}
+
+.side .context {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.side .context a.self {
+  font-weight: lighter;
+  color: @foreground;
+}
+
+.side .context .top {
+  padding-left: 1.2rem;
+  font-size: 1.1em;
+}
+
+.side .toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  line-height: 1.4rem;
+  z-index: 2;
+  opacity: 0;
+}
+
+.side .toggle:focus {
+  outline: none;
+}
+
+.side .arrow:after, .side .toggle:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "\25ba";
+  line-height: 1.4rem;
+  font-size: .75rem;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.side .toggle:checked + .arrow:after {
+  content: "\25bc";
+}
+
+.side .toggle:not(:checked) + .arrow + .children {
+  display: none;
+}
+
+.side .children {
+  border-left: 1px solid @trim;
+  margin-left: .35rem;
+  padding-left: .8rem;
+}
+
+.side .children table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.side table td {
+  vertical-align: top;
+}
+
+.section-header {
+  position: relative;
+}
+
+.section-number {
+  width: 100px;
+  position: absolute;
+  right: 0;
+  text-align: right;
+
+  a {
+    color: @foreground-dim;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.definition-thumb {
+  margin-top: 2em;
+}
+
+.definition-thumb a {
+  color: inherit;
+}
+
+.definition-thumb a:hover {
+  text-decoration: underline;
+}
+
+.definition-content {
+  border-bottom: 1px solid @trim;
+  padding: 0 0 1em 1em;
+  margin-bottom: 2rem;
+}
+
+.definition-content:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.page {
+  position: relative;
+}
+
+.aside {
+  background: @background-dark;
+  padding: .5em .75em;
+  color: @foreground-dim;
+}
+
+.aside p:first-child {
+  margin-top: 0;
+}
+
+.aside p:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 961px) {
+  .aside {
+    box-sizing: border-box;
+    margin: 0;
+    width: 200px;
+    position: absolute;
+    right: -200px;
+  }
+}
+
+.top .section-header {
+  width: 300px;
+  display: inline-block;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  border-bottom: 0;
+
+  a {
+    font-size: 48px;
+    background: url('images/booklit.svg') no-repeat left 0;
+    background-size: 80px;
+    display: inline-block;
+
+    color: @foreground-light;
+    font-family: 'Iosevka', monospace;
+    font-weight: bold;
+    text-transform: lowercase;
+    padding: 10px .5em 0 100px;
+    text-decoration: none;
+    border-radius: .3em;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .tagline {
+    color: @foreground-dim;
+    font-size: 18px;
+    margin: 0;
+    padding-top: 45px;
+  }
+}
+
+.column-header {
+  font-size: 24px;
+  // font-size: 36px;
+  color: @foreground-light;
+
+  code {
+    font-weight: bold;
+  }
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 40px;
+
+  .column {
+    flex-grow: 1;
+
+    pre {
+      margin-top: 0;
+    }
+
+    .output-frame {
+      background: white;
+      @page-width: 280px;
+      @page-height: 190px;
+      overflow: hidden;
+
+      @max-width: 400px;
+      @ratio: unit(@max-width / @page-width);
+      @x-gap: @page-width - (@page-width * @ratio);
+      @y-gap: @page-height - (@page-height * @ratio);
+
+      border: (5px * (1 / @ratio)) solid @background-dark;
+      border-radius: .3em * (1 / @ratio);
+
+      width: @page-width;
+      height: @page-height;
+      margin: -(@y-gap / 2) -(@x-gap / 2);
+      transform: scale(@ratio);
+    }
+  }
+}
+
+.column.title {
+  width: 380px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  padding-right: 20px;
+}
+
+.top-nav {
+  margin-top: 20px;
+  margin-bottom: 50px;
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 0;
+      padding: 0;
+      margin-right: 10px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    a {
+      background: darken(@background, 3%);
+      border-radius: .5em;
+      padding: .5em;
+      text-decoration: none;
+      white-space: nowrap;
+
+      &, &:visited{
+        color: @foreground-dim;
+      }
+    }
+
+    a:hover {
+      background: lighten(@background, 10%);
+      color: @foreground-light;
+    }
+
+    .current a {
+      background: lighten(@background, 20%);
+      color: @foreground-light;
+    }
+  }
+}

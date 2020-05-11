@@ -3,169 +3,91 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Extending with Plugins</title>
-    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <title>Writing Plugins</title>
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
-    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Source+Code+Pro:400,600|Lora:400,400i" rel="stylesheet" />
   </head>
   <body>
-    <div class="side">
-      
-
-<div class="context">
-  <nav>
-    <div class="top">
-      
-<a href="index.html" >Booklit</a>
-
-    </div>
-
-    
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">1&nbsp;</td>
-          <td class="title-cell">
-<a href="getting-started.html" >Getting Started</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">2&nbsp;</td>
-          <td class="title-cell">
-<a href="baselit.html" >The <code>baselit</code> Plugin</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">3&nbsp;</td>
-          <td class="title-cell">
-<a href="html-renderer.html" >The HTML Renderer</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">4&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html"  class="self">Extending with Plugins</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">5&nbsp;</td>
-          <td class="title-cell">
-<a href="syntax.html" >Document Syntax</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">6&nbsp;</td>
-          <td class="title-cell">
-<a href="thanks.html" >Thanks</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-    
-  </nav>
-</div>
-
-
-<div class="context">
-  <nav>
-    <div class="top">
-      4&nbsp;
-<a href="plugins.html"  class="self">Extending with Plugins</a>
-
-    </div>
-
-    <input type="checkbox" class="toggle" checked />
-    <span class="arrow"></span>
-    <div class="children">
-      <table>
-      
-        <tr>
-          <td class="number-cell" align="right">4.1&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html#get-going" >Get Going</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">4.2&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html#using-plugins" >Using Plugins</a>
-</td>
-        </tr>
-      
-        <tr>
-          <td class="number-cell" align="right">4.3&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html#using-plugins" >Writing Plugins</a>
-</td>
-        </tr>
-      
-      </table>
-    </div>
-  </nav>
-</div>
-
-
-
-<div class="context">
-  <div class="top">
-    On this page:
-  </div>
-
-  <nav>
-    <div class="children">
-      <table>
-        
-        
-        <tr>
-          <td class="number-cell" align="right">4.1&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html#get-going" >Get Going</a>
-</td>
-        </tr>
-          
-        
-        <tr>
-          <td class="number-cell" align="right">4.2&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html#using-plugins" >Using Plugins</a>
-</td>
-        </tr>
-          
-        
-        <tr>
-          <td class="number-cell" align="right">4.3&nbsp;</td>
-          <td class="title-cell">
-<a href="plugins.html#using-plugins" >Writing Plugins</a>
-</td>
-        </tr>
-          
-        
-      </table>
-    </div>
-  </nav>
-</div>
-
-    </div>
     <div class="page">
-      <h1 class="section-header"><a id="plugins"></a><span class="section-number">4 </span>Extending with Plugins</h1>
+      <div class="page-header">
+        <a href="index.html">Booklit</a>
+        <p class="tagline">the little static site engine that could</p>
+      </div>
 
-<p>Plugins are what provide the functionality behind function calls like <code>\foo{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code>\<strong>title</strong></code></a> and <a href="baselit.html#section"><code>\<strong>section</strong></code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code>\<strong>italic</strong></code></a> and <a href="baselit.html#bold"><code>\<strong>bold</strong></code></a>. It also serves as a good reference when writing your own plugin.</p>
+      <nav class="top-nav">
+        <ul>
+        
+          <li><a href="getting-started.html">Getting Started</a></li>
+        
+          <li><a href="baselit.html">Basic Functions</a></li>
+        
+          <li><a href="html-renderer.html">HTML Renderer</a></li>
+        
+          <li class="current"><a href="plugins.html">Writing Plugins</a></li>
+        
+          <li><a href="syntax.html">Syntax</a></li>
+        
+          <li><a href="thanks.html">Thanks</a></li>
+        
+        </ul>
+      </nav>
+
+      <h1 class="section-header"><a id="plugins"></a><span class="section-number"><a href="plugins.html">4</a> </span>Writing Plugins</h1>
+
+<p>Plugins are what provide the functionality behind function calls like <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\foo</span>{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span></code></a> and <a href="baselit.html#section"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\section</span></code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\italic</span></code></a> and <a href="baselit.html#bold"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\bold</span></code></a>. It also serves as a good reference when writing your own plugin.</p>
+<nav>
+  <ul>
+  
+    <li>
+      <a href="plugins.html#get-going">4.1 Get Going</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="plugins.html#using-plugins">4.2 Using Plugins</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="plugins.html#using-plugins">4.3 Writing Plugins</a>
+
+      
+<nav>
+  <ul>
+  
+    <li>
+      <a href="plugins.html#argument-types">4.3.1 Argument Types</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="plugins.html#return-values">4.3.2 Return Values</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="plugins.html#a-full-example">4.3.3 A Full Example</a>
+
+      
+    </li>
+  
+  </ul>
+</nav>
+
+    </li>
+  
+  </ul>
+</nav>
+
 
 
   
-    <h2 class="section-header"><a id="get-going"></a><span class="section-number">4.1 </span>Get Going</h2>
+    <h2 class="section-header"><a id="get-going"></a><span class="section-number"><a href="plugins.html#get-going">4.1</a> </span>Get Going</h2>
 
 <p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><div class="highlight"><pre style="">go get github.com/vito/booklit
 </pre></div><p>This fetch is necessary even if you already have the <code>booklit</code> binary installed, as plugins make use of Booklit&#39;s Go API.</p>
@@ -174,68 +96,68 @@
   
 
   
-    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number">4.2 </span>Using Plugins</h2>
+    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.2</a> </span>Using Plugins</h2>
 
-<p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><div class="highlight"><pre style="">booklit -i index.lit -o out <span style="font-weight:bold;font-style:italic">\
-</span><span style="font-weight:bold;font-style:italic"></span>    --plugin my/fancyplugin
-</pre></div><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> in your <code>.lit</code> document to add it to the section:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\title</span>{My Section}
+<p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><div class="highlight"><pre style="">booklit -i index.lit -o out <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>    --plugin my/fancyplugin
+</pre></div><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> in your <code>.lit</code> document to add it to the section:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\title</span>{My Section}
 
-<span style="font-weight:bold">\use-plugin</span>{fancyplugin}
+<span style="color:#ed6c30;font-weight:bold">\use-plugin</span>{fancyplugin}
 
 Blah blah.
-</pre></div><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code>\<strong>use-plugin</strong></code></a> can be invoked multiple times.</p>
+</pre></div><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> can be invoked multiple times.</p>
 
 
   
 
   
-    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number">4.3 </span>Writing Plugins</h2>
+    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.3</a> </span>Writing Plugins</h2>
 
 <p>To write a new plugin, first you&#39;ll need to create a directory for your plugin&#39;s package in your <code>$GOPATH</code>. Let&#39;s just call it something cute like <code>pluglit</code>.</p><div class="highlight"><pre style="">mkdir $GOPATH/src/pluglit
-</pre></div><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>$GOPATH/src/pluglit/plugin.go</code>:</p><div class="highlight"><pre style=""><span style="font-weight:bold">package</span> pluglit
+</pre></div><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>$GOPATH/src/pluglit/plugin.go</code>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">package</span> pluglit
 
-<span style="font-weight:bold">import</span> (
-  <span style="font-style:italic">&#34;github.com/vito/booklit&#34;</span>
+<span style="color:#ed6c30;font-weight:bold">import</span> (
+  <span style="color:#fcc21b">&#34;github.com/vito/booklit&#34;</span>
 )
 
-<span style="font-weight:bold">func</span> init() {
-  booklit.RegisterPlugin(<span style="font-style:italic">&#34;pluglit&#34;</span>, NewPlugin)
+<span style="color:#ed6c30;font-weight:bold">func</span> init() {
+  booklit.RegisterPlugin(<span style="color:#fcc21b">&#34;pluglit&#34;</span>, NewPlugin)
 }
 
-<span style="font-weight:bold">func</span> NewPlugin(sec *booklit.Section) booklit.Plugin {
-  <span style="font-weight:bold">return</span> Plugin{
+<span style="color:#ed6c30;font-weight:bold">func</span> NewPlugin(sec *booklit.Section) booklit.Plugin {
+  <span style="color:#ed6c30;font-weight:bold">return</span> Plugin{
     section: sec,
   }
 }
 
-<span style="font-weight:bold">type</span> Plugin <span style="font-weight:bold">struct</span> {
+<span style="color:#ed6c30;font-weight:bold">type</span> Plugin <span style="color:#ed6c30;font-weight:bold">struct</span> {
   section *booklit.Section
 }
-</pre></div><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><div class="highlight"><pre style=""><span style="font-weight:bold">func</span> (plugin Plugin) HelloWorld() booklit.Content {
-  <span style="font-weight:bold">return</span> booklit.String(<span style="font-style:italic">&#34;Hello, world!&#34;</span>)
+</pre></div><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) HelloWorld() booklit.Content {
+  <span style="color:#ed6c30;font-weight:bold">return</span> booklit.String(<span style="color:#fcc21b">&#34;Hello, world!&#34;</span>)
 }
-</pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\use-plugin</span>{pluglit}
+</pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\use-plugin</span>{pluglit}
 
-Zero args: <span style="font-weight:bold">\hello-world</span>
-</pre></div><p>And build it like so:</p><div class="highlight"><pre style="">booklit -i hello-plugins.lit -o out <span style="font-weight:bold;font-style:italic">\
-</span><span style="font-weight:bold;font-style:italic"></span>    --plugin pluglit
+Zero args: <span style="color:#ed6c30;font-weight:bold">\hello-world</span>
+</pre></div><p>And build it like so:</p><div class="highlight"><pre style="">booklit -i hello-plugins.lit -o out <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>    --plugin pluglit
 </pre></div><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
 
 
   
-    <h3 class="section-header"><a id="argument-types"></a><span class="section-number">4.3.1 </span>Argument Types</h3>
+    <h3 class="section-header"><a id="argument-types"></a><span class="section-number"><a href="plugins.html#argument-types">4.3.1</a> </span>Argument Types</h3>
 
-<p>Functions can be invoked with any number of arguments, like so:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\hello-world</span>{arg1}{arg2}
+<p>Functions can be invoked with any number of arguments, like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\hello-world</span>{arg1}{arg2}
 </pre></div><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
-  <dt><a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
+  <dt><a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
   
   <dt><code>string</code></dt>
-    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or line of text. The <a href="baselit.html#title"><code>\<strong>title</strong></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
+    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or line of text. The <a href="baselit.html#title"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
   
-  <dt><a href="https://godoc.org/github.com/vito/booklit/ast#Node"><code>booklit/ast.<strong>Node</strong></code></a></dt>
-    <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code>\<strong>section</strong></code></a> which need to control the evaluation context of the content.</p></dd>
+  <dt><a href="https://godoc.org/github.com/vito/booklit/ast#Node"><code class="highlight">booklit/ast.Node</code></a></dt>
+    <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\section</span></code></a> which need to control the evaluation context of the content.</p></dd>
   
 </dl>
 
@@ -243,7 +165,7 @@ Zero args: <span style="font-weight:bold">\hello-world</span>
   
 
   
-    <h3 class="section-header"><a id="return-values"></a><span class="section-number">4.3.2 </span>Return Values</h3>
+    <h3 class="section-header"><a id="return-values"></a><span class="section-number"><a href="plugins.html#return-values">4.3.2</a> </span>Return Values</h3>
 
 <p>Plugin methods can then return one of the following:</p><ul>
 
@@ -251,9 +173,9 @@ Zero args: <span style="font-weight:bold">\hello-world</span>
 
   <li><p><code>error</code></p></li>
 
-  <li><p><a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></p></li>
+  <li><p><a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></p></li>
 
-  <li><p><code>(<a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a>, error)</code></p></li>
+  <li><p><code>(<a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a>, error)</code></p></li>
 
 </ul><p>If a method returns a non-nil <code>error</code> value, it will bubble up and the building will fail.</p>
 
@@ -261,23 +183,23 @@ Zero args: <span style="font-weight:bold">\hello-world</span>
   
 
   
-    <h3 class="section-header"><a id="a-full-example"></a><span class="section-number">4.3.3 </span>A Full Example</h3>
+    <h3 class="section-header"><a id="a-full-example"></a><span class="section-number"><a href="plugins.html#a-full-example">4.3.3</a> </span>A Full Example</h3>
 
-<p>Putting the pieces together, let&#39;s extend our <code>pluglit</code> plugin from earlier write a real function that does something useful:</p><div class="highlight"><pre style=""><span style="font-weight:bold">func</span> (plugin Plugin) DescribeFruit(
-  name <span style="">string</span>,
+<p>Putting the pieces together, let&#39;s extend our <code>pluglit</code> plugin from earlier write a real function that does something useful:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) DescribeFruit(
+  name <span style="color:#ed6c30">string</span>,
   definition booklit.Content,
-  tags ...<span style="">string</span>,
-) (booklit.Content, <span style="">error</span>) {
-  <span style="font-weight:bold">if</span> name == <span style="font-style:italic">&#34;&#34;</span> {
-    <span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, errors.New(<span style="font-style:italic">&#34;name cannot be blank&#34;</span>)
+  tags ...<span style="color:#ed6c30">string</span>,
+) (booklit.Content, <span style="color:#ed6c30">error</span>) {
+  <span style="color:#ed6c30;font-weight:bold">if</span> name == <span style="color:#fcc21b">&#34;&#34;</span> {
+    <span style="color:#ed6c30;font-weight:bold">return</span> <span style="color:#ed6c30;font-weight:bold">nil</span>, errors.New(<span style="color:#fcc21b">&#34;name cannot be blank&#34;</span>)
   }
 
   content := booklit.Sequence{}
-  <span style="font-weight:bold">if</span> len(tags) == 0 {
-    tags = []<span style="">string</span>{name}
+  <span style="color:#ed6c30;font-weight:bold">if</span> len(tags) == 0 {
+    tags = []<span style="color:#ed6c30">string</span>{name}
   }
 
-  <span style="font-weight:bold">for</span> _, tag := <span style="font-weight:bold">range</span> tags {
+  <span style="color:#ed6c30;font-weight:bold">for</span> _, tag := <span style="color:#ed6c30;font-weight:bold">range</span> tags {
     content = append(content, booklit.Target{
       TagName: tag,
       Display: booklit.String(name),
@@ -293,21 +215,21 @@ Zero args: <span style="font-weight:bold">\hello-world</span>
 
   content = append(content, definition)
 
-  <span style="font-weight:bold">return</span> content, <span style="font-weight:bold">nil</span>
+  <span style="color:#ed6c30;font-weight:bold">return</span> content, <span style="color:#ed6c30;font-weight:bold">nil</span>
 }
 </pre></div><p>There are many things to note here:</p><ul>
 
-  <li><p>there are two required arguments; <em>name</em> is a <code>string</code> and <em>value</em> is a <a href="https://godoc.org/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></p></li>
+  <li><p>there are two required arguments; <em>name</em> is a <code>string</code> and <em>value</em> is a <a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></p></li>
 
   <li><p>there&#39;s a variadic argument, <em>tags</em>, which is of type <code>[]string</code></p></li>
 
   <li><p>this function generates content, and can raise an error when building</p></li>
 
-  <li><p>the <a href="https://godoc.org/github.com/vito/booklit#Target"><code>booklit.<strong>Target</strong></code></a> elements will result in tags being registered in the section the function is called from</p></li>
+  <li><p>the <a href="https://godoc.org/github.com/vito/booklit#Target"><code class="highlight">booklit.Target</code></a> elements will result in tags being registered in the section the function is called from</p></li>
 
   <li><p>the function name, <code>describe-fruit</code>, corresponds to the method name <code>DescribeFruit</code></p></li>
 
-</ul><p>This function would be called like so:</p><div class="highlight"><pre style=""><span style="font-weight:bold">\describe-fruit</span>{banana}{
+</ul><p>This function would be called like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\describe-fruit</span>{banana}{
   A banana is a yellow fruit that only really tastes
   good in its original form. Banana flavored
   anything is a pit of dispair.

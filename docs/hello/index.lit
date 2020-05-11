@@ -1,0 +1,9 @@
+\title{Hello}{index}
+
+\use-plugin{hello}
+
+Hello, world!
+
+\testimonial{Jacques Berman Webster II}{
+  It's lit!
+}

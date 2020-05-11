@@ -1,0 +1,66 @@
+@import "base.less";
+@import "logo-url.less";
+
+.title-header {
+  font-size: 2em;
+  border-bottom: 0;
+  background: url(@logo-url) no-repeat;
+  background-size: 60px;
+  background-position-y: -5px;
+  text-indent: 75px;
+}
+
+.error-message {
+  font-family: 'Roboto Slab', serif;
+  font-weight: normal;
+  color: @lit;
+  font-size: 1.5em;
+}
+
+.error-panel {
+  margin: 50px 0;
+  min-width: 500px;
+}
+
+.file-path {
+  background: transparent;
+  border: 0;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.annotated-line {
+  display: flex;
+  flex-direction: row;
+}
+
+.annotated-line pre {
+  margin-top: 0;
+}
+
+.file-path {
+  font-size: .9em;
+}
+
+.annotated-line .lineno {
+  background: @background-dark;
+  border-right: 1px solid @background-light;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  flex-grow: 0;
+}
+
+.annotated-line .line {
+  flex-grow: 1;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.annotated-line .line .annotated {
+  background: @lit;
+  color: white;
+}
+
+.annotated-line .line .eof {
+  color: @lit;
+}

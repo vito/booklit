@@ -1,0 +1,15 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "booklit docs dev toolchain",
+  "repository": "https://github.com/vito/booklit",
+  "author": "Alex Suraci",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "less": "^3.11.1"
+  },
+  "scripts": {
+    "build-logo-url-less": "echo '@logo-url: \"data:image/svg+xml;base64,'$(base64 -w2 docs/css/images/booklit.svg)'\";' >> less/logo-url.less"
+  }
+}

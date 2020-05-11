@@ -1,28 +1,120 @@
 \title{Booklit}{index}
 
-Booklit is a static-site generator where the content is king.
+\use-plugin{booklitdoc}
+\use-plugin{chroma}
 
-Content is organized as a tree of \reference{sections}{sections}. Each section
-controls whether its sub-sections should render inline or on their own pages.
-Header sizes are set intelligently, so you're not spending your time adjusting
-\code{<h1>}s to \code{<h2>}s.
+\styled{splash}
 
-Linking within your content is done by \reference{reference}{referencing tags},
-rather than hardcoding URLs. An error will be raised if any references are
-broken.
+\columns{
+  \column-header{content in \code{*.lit}}
 
-\reference{plugins}{Plugins} bring \code{\\functions} to your content, allowing
-you to write with abstractions, not just markup. As patterns emerge, you can
-give them meaningful names.
+  Booklit documents are text files which invoke \syntax{lit}{\\functions} to
+  produce content or configure the current section.
 
-Presentation is separated from prose by having an explicit rendering stage.
-With the \reference{html-renderer}{HTML renderer}, you can bring your own
-templates and control exactly how everything should look.
+  Booklit makes it easy to reorganize and refactor your entire website without
+  breaking links or manually adjusting header sizes.
+}{
+  \syntax{lit}{{{
+    \title{Hello}
 
-This website is written with Booklit. The source is available on GitHub under
-\link{\code{docs/lit}}{https://github.com/vito/booklit/tree/master/docs/lit}.
-To learn how to start writing your own stuff, head to
-\reference{getting-started}!
+    Hello, world!
+
+    \testimonial{Jacques Berman Webster II}{
+      It's lit!
+    }
+  }}}
+}
+
+\columns{
+  \column-header{plugins in \code{*.go}}
+
+  Plugins are written in the \link{Go programming
+  language}{https://golang.org}. Go is popular yet pretty boring, allowing you
+  to focus on content while having \link{plenty of
+  libraries}{https://pkg.go.dev/} around when you need them.
+
+  Plugins allow documents to be expressive, providing meaningful syntax for
+  repeated patterns and abstractions.
+}{
+  \syntax{go}{{{
+  func (p MyPlugin) Testimonial(
+    source, quote booklit.Content,
+  ) booklit.Content {
+    return booklit.Styled{
+      Style: "testimonial",
+      Content: quote,
+      Partials: booklit.Partials{
+        "Source": source,
+      },
+    }
+  }
+  }}}
+}
+
+\columns{
+  \column-header{presentation in \code{*.tmpl}}
+
+  The \reference{html-renderer} is powered by Go's prolific
+  \link{\code{html/template} package}{https://golang.org/pkg/html/template/}.
+
+  All templates can be overridden and different sections can be
+  \reference{styled}, providing full control over presentation.
+}{
+  \syntax{html}{{{
+  <blockquote class="testimonial">
+    {{.Content | render}}
+
+    <footer>
+      {{.Partial "Source" | render}}
+    </footer>
+  </blockquote>
+  }}}
+}
+
+\columns{
+  \column-header{build with \code{booklit}}
+
+  \code{booklit} a single command for rendering content.
+
+  When an error occurs, Booklit will show the precise location of the error and
+  suggest a fix (if possible).
+}{
+  \code{{
+    $ booklit -i ./index.lit -o ./public/
+    \syntax-hl{INFO}[0000] rendering
+    $ booklit -i ./to-err-is-human.lit
+    to-err-is-human.lit:5: unknown tag 'helo'
+
+       5| Say \\reference\{helo\}!
+              \syntax-hl{^^^^^^^^^^}
+    These tags seem similar:
+
+    - hello
+
+    Did you mean one of these?
+  }}
+}
+
+\columns{
+  \column-header{run with \code{booklit -s $PORT}}
+
+  In server mode, content is generated on each request with only plugin changes
+  requiring a server restart. The feedback loop is \italic{wicked fast}.
+
+  If building the page fails, the error will be shown on the page instead, and
+  be just as helpful.
+}{
+  \code{{
+    $ booklit -i ./index.lit -s 3000
+    \syntax-hl{INFO}[0000] listening
+  }}
+
+  \output-frame{outputs/index.html}
+}
+
+This website is \link{written with
+Booklit}{https://github.com/vito/booklit/tree/master/docs/lit}. Want to write
+your own? Let's \reference{getting-started}{get started}!
 
 \split-sections
 

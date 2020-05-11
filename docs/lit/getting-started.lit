@@ -17,6 +17,8 @@ $ install ~/Downloads/booklit_* ~/bin/booklit
 Then, run \code{booklit -v}. You should see the version number printed out,
 assuming \code{~/bin} is in your \code{$PATH}.
 
+\table-of-contents
+
 \section{
   \title{Hello, world!}
 

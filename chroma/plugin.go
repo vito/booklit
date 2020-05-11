@@ -30,7 +30,7 @@ func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...
 		return nil, err
 	}
 
-	formatter := html.New()
+	formatter := html.New(html.PreventSurroundingPre(code.IsFlow()))
 
 	chromaStyle := styles.Fallback
 	if len(styleName) > 0 {

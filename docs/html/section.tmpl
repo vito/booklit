@@ -1,0 +1,14 @@
+<h{{headerDepth .}} class="section-header"><a id="{{.PrimaryTag.Name}}"></a>
+  {{- if .Parent -}}
+    <span class="section-number"><a href="{{.PrimaryTag | url}}">{{.Number}}</a> </span>
+  {{- end -}}
+  {{.Title | render -}}
+</h{{headerDepth .}}>
+
+{{.Body | render}}
+
+{{if not .SplitSections}}
+  {{range .Children}}
+    {{. | render}}
+  {{end}}
+{{end}}
