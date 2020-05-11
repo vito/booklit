@@ -468,6 +468,52 @@ h2,
 h3 {
   margin-top: 3rem;
 }
+.page {
+  padding: 50px 30px;
+  max-width: 800px;
+}
+.top-nav {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+.top-nav ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+.top-nav ul li {
+  margin: 0;
+  padding: 0;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.top-nav ul li:last-child {
+  margin-right: 0;
+}
+.top-nav ul a {
+  background: #21170f;
+  border-radius: 0.5em;
+  padding: 0 0.5em;
+  line-height: 35px;
+  display: inline-block;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.top-nav ul a,
+.top-nav ul a:visited {
+  color: rgba(235, 222, 211, 0.5);
+}
+.top-nav ul a:hover {
+  background: #4e3824;
+  color: #f3ebe4;
+}
+.top-nav ul .current a {
+  background: #715134;
+  color: #f3ebe4;
+}
 .syntax-hl {
   color: #ed6c30;
 }
@@ -478,10 +524,6 @@ h3 {
 }
 .page a:hover code strong {
   text-decoration: underline;
-}
-.page {
-  padding: 3rem 0;
-  width: 800px;
 }
 .side {
   font-family: 'Roboto Slab', serif;
@@ -632,6 +674,7 @@ h3 {
   font-size: 18px;
   margin: 0;
   padding-top: 45px;
+  text-align: right;
 }
 .column-header {
   font-size: 24px;
@@ -642,8 +685,13 @@ h3 {
 }
 .columns {
   display: flex;
-  flex-direction: row;
   margin-bottom: 40px;
+  flex-direction: column;
+}
+@media (min-width: 860px) {
+  .columns {
+    flex-direction: row;
+  }
 }
 .columns .column {
   flex-grow: 1;
@@ -666,42 +714,4 @@ h3 {
   flex-shrink: 0;
   flex-grow: 0;
   padding-right: 20px;
-}
-.top-nav {
-  margin-top: 20px;
-  margin-bottom: 50px;
-}
-.top-nav ul {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin: 0;
-  padding: 0;
-}
-.top-nav ul li {
-  margin: 0;
-  padding: 0;
-  margin-right: 10px;
-}
-.top-nav ul li:last-child {
-  margin-right: 0;
-}
-.top-nav ul a {
-  background: #21170f;
-  border-radius: 0.5em;
-  padding: 0.5em;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.top-nav ul a,
-.top-nav ul a:visited {
-  color: rgba(235, 222, 211, 0.5);
-}
-.top-nav ul a:hover {
-  background: #4e3824;
-  color: #f3ebe4;
-}
-.top-nav ul .current a {
-  background: #715134;
-  color: #f3ebe4;
 }

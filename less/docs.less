@@ -1,5 +1,64 @@
 @import "base.less";
 
+@page-width: 800px;
+@page-padding-x: 30px;
+@page-padding-y: 50px;
+
+.page {
+  padding: @page-padding-y @page-padding-x;
+  max-width: @page-width;
+}
+
+.top-nav {
+  margin-top: 20px;
+  margin-bottom: 30px;
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 0;
+      padding: 0;
+      margin-right: 10px;
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    a {
+      background: darken(@background, 3%);
+      border-radius: .5em;
+      padding: 0 .5em;
+      line-height: 35px;
+      display: inline-block;
+      text-decoration: none;
+      white-space: nowrap;
+
+      &, &:visited{
+        color: @foreground-dim;
+      }
+    }
+
+    a:hover {
+      background: lighten(@background, 10%);
+      color: @foreground-light;
+    }
+
+    .current a {
+      background: lighten(@background, 20%);
+      color: @foreground-light;
+    }
+  }
+}
+
 .syntax-hl {
   color: @lit;
 }
@@ -11,11 +70,6 @@
 
 .page a:hover code strong {
   text-decoration: underline;
-}
-
-.page {
-  padding: 3rem 0;
-  width: 800px;
 }
 
 .side {
@@ -196,6 +250,7 @@
     font-size: 18px;
     margin: 0;
     padding-top: 45px;
+    text-align: right;
   }
 }
 
@@ -209,10 +264,15 @@
   }
 }
 
+
 .columns {
   display: flex;
-  flex-direction: row;
   margin-bottom: 40px;
+
+  flex-direction: column;
+  @media (min-width: @page-width + (2 * @page-padding-x)) {
+    flex-direction: row;
+  }
 
   .column {
     flex-grow: 1;
@@ -248,50 +308,4 @@
   flex-shrink: 0;
   flex-grow: 0;
   padding-right: 20px;
-}
-
-.top-nav {
-  margin-top: 20px;
-  margin-bottom: 50px;
-
-  ul {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    margin: 0;
-    padding: 0;
-
-    li {
-      margin: 0;
-      padding: 0;
-      margin-right: 10px;
-
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-
-    a {
-      background: darken(@background, 3%);
-      border-radius: .5em;
-      padding: .5em;
-      text-decoration: none;
-      white-space: nowrap;
-
-      &, &:visited{
-        color: @foreground-dim;
-      }
-    }
-
-    a:hover {
-      background: lighten(@background, 10%);
-      color: @foreground-light;
-    }
-
-    .current a {
-      background: lighten(@background, 20%);
-      color: @foreground-light;
-    }
-  }
 }
