@@ -82,11 +82,11 @@ type ParseError struct {
 }
 
 func (err ParseError) Error() string {
-	return err.Err.Error()
+	return fmt.Sprintf("parse error: %s", err.Err)
 }
 
 func (err ParseError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("parse error: %s\n\n", err.Err))
+	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
 	err.AnnotateLocation(out)
 }
 
@@ -107,19 +107,20 @@ func (err UnknownTagError) Error() string {
 }
 
 func (err UnknownTagError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("reference points to unknown tag '%s':\n\n", err.TagName))
+	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
+
 	err.AnnotateLocation(out)
 
 	if len(err.SimilarTags) == 0 {
 		fmt.Fprintf(out, "I couldn't find any similar tags. :(\n")
 	} else {
-		fmt.Fprintf(out, "the following tags are kinda similar:\n\n")
+		fmt.Fprintf(out, "These tags seem similar:\n\n")
 
 		for _, tag := range err.SimilarTags {
 			fmt.Fprintf(out, "- %s\n", tag.Name)
 		}
 
-		fmt.Fprintf(out, "\ndid you mean one of them?\n")
+		fmt.Fprintf(out, "\nDid you mean one of these?\n")
 	}
 }
 
@@ -146,14 +147,14 @@ func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 
 	err.AnnotateLocation(out)
 
-	fmt.Fprintf(out, "the same tag was defined in the following locations:\n\n")
+	fmt.Fprintf(out, "The same tag was defined in the following locations:\n\n")
 
 	for _, loc := range err.DefinedLocations {
 		fmt.Fprintf(out, "- %s:\n", loc.FilePath)
 		loc.AnnotateLocation(textio.NewPrefixWriter(out, "  "))
 	}
 
-	fmt.Fprintf(out, "one of these tags must be changed.\n")
+	fmt.Fprintf(out, "Tags must be unique so I know where to link to!\n")
 }
 
 func (err AmbiguousReferenceError) PrettyHTML(out io.Writer) error {
@@ -198,9 +199,14 @@ func (err FailedFunctionError) Error() string {
 }
 
 func (err FailedFunctionError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("function \\%s returned an error:\n\n", err.Function))
+	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
 	err.AnnotateLocation(out)
-	fmt.Fprintf(out, "error: %s\n", err.Err)
+
+	if prettyErr, ok := err.Err.(PrettyError); ok {
+		prettyErr.PrettyPrint(textio.NewPrefixWriter(out, "  "))
+	} else {
+		fmt.Fprintln(out, err.Err)
+	}
 }
 
 func (err FailedFunctionError) PrettyHTML(out io.Writer) error {
