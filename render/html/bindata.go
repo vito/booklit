@@ -3,6 +3,7 @@
 // render/html/aside.tmpl
 // render/html/bold.tmpl
 // render/html/definitions.tmpl
+// render/html/header.tmpl
 // render/html/image.tmpl
 // render/html/inset.tmpl
 // render/html/italic.tmpl
@@ -12,6 +13,7 @@
 // render/html/page.tmpl
 // render/html/paragraph.tmpl
 // render/html/preformatted.tmpl
+// render/html/quote.tmpl
 // render/html/reference.tmpl
 // render/html/section.tmpl
 // render/html/sequence.tmpl
@@ -156,6 +158,26 @@ func renderHtmlDefinitionsTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/definitions.tmpl", size: 106, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlHeaderTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\xc9\xa8\xae\xd6\x0b\x48\x2c\x2a\xc9\x4c\xcc\x51\x50\xf2\x49\x2d\x4b\xcd\x51\xaa\xad\xb5\xab\xae\xd6\x73\xce\xcf\x2b\x49\xcd\x2b\x51\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\xc7\xae\x98\x0b\x10\x00\x00\xff\xff\xcb\x4c\x00\xd4\x45\x00\x00\x00")
+
+func renderHtmlHeaderTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlHeaderTmpl,
+		"render/html/header.tmpl",
+	)
+}
+
+func renderHtmlHeaderTmpl() (*asset, error) {
+	bytes, err := renderHtmlHeaderTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/header.tmpl", size: 69, mode: os.FileMode(420), modTime: time.Unix(1589297997, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -336,6 +358,26 @@ func renderHtmlPreformattedTmpl() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "render/html/preformatted.tmpl", size: 75, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _renderHtmlQuoteTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb2\x49\xca\xc9\x4f\xce\x2e\x2c\xcd\x2f\x49\xb5\xab\xae\xd6\x73\xce\xcf\x2b\x49\xcd\x2b\x51\xa8\x51\x28\x4a\xcd\x4b\x49\x2d\xaa\xad\xb5\xd1\x47\x52\xc1\x05\x08\x00\x00\xff\xff\xc1\x42\xcd\x5b\x2f\x00\x00\x00")
+
+func renderHtmlQuoteTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_renderHtmlQuoteTmpl,
+		"render/html/quote.tmpl",
+	)
+}
+
+func renderHtmlQuoteTmpl() (*asset, error) {
+	bytes, err := renderHtmlQuoteTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "render/html/quote.tmpl", size: 47, mode: os.FileMode(420), modTime: time.Unix(1589299194, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -635,6 +677,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/aside.tmpl":        renderHtmlAsideTmpl,
 	"render/html/bold.tmpl":         renderHtmlBoldTmpl,
 	"render/html/definitions.tmpl":  renderHtmlDefinitionsTmpl,
+	"render/html/header.tmpl":       renderHtmlHeaderTmpl,
 	"render/html/image.tmpl":        renderHtmlImageTmpl,
 	"render/html/inset.tmpl":        renderHtmlInsetTmpl,
 	"render/html/italic.tmpl":       renderHtmlItalicTmpl,
@@ -644,6 +687,7 @@ var _bindata = map[string]func() (*asset, error){
 	"render/html/page.tmpl":         renderHtmlPageTmpl,
 	"render/html/paragraph.tmpl":    renderHtmlParagraphTmpl,
 	"render/html/preformatted.tmpl": renderHtmlPreformattedTmpl,
+	"render/html/quote.tmpl":        renderHtmlQuoteTmpl,
 	"render/html/reference.tmpl":    renderHtmlReferenceTmpl,
 	"render/html/section.tmpl":      renderHtmlSectionTmpl,
 	"render/html/sequence.tmpl":     renderHtmlSequenceTmpl,
@@ -704,6 +748,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"aside.tmpl":        &bintree{renderHtmlAsideTmpl, map[string]*bintree{}},
 			"bold.tmpl":         &bintree{renderHtmlBoldTmpl, map[string]*bintree{}},
 			"definitions.tmpl":  &bintree{renderHtmlDefinitionsTmpl, map[string]*bintree{}},
+			"header.tmpl":       &bintree{renderHtmlHeaderTmpl, map[string]*bintree{}},
 			"image.tmpl":        &bintree{renderHtmlImageTmpl, map[string]*bintree{}},
 			"inset.tmpl":        &bintree{renderHtmlInsetTmpl, map[string]*bintree{}},
 			"italic.tmpl":       &bintree{renderHtmlItalicTmpl, map[string]*bintree{}},
@@ -713,6 +758,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"page.tmpl":         &bintree{renderHtmlPageTmpl, map[string]*bintree{}},
 			"paragraph.tmpl":    &bintree{renderHtmlParagraphTmpl, map[string]*bintree{}},
 			"preformatted.tmpl": &bintree{renderHtmlPreformattedTmpl, map[string]*bintree{}},
+			"quote.tmpl":        &bintree{renderHtmlQuoteTmpl, map[string]*bintree{}},
 			"reference.tmpl":    &bintree{renderHtmlReferenceTmpl, map[string]*bintree{}},
 			"section.tmpl":      &bintree{renderHtmlSectionTmpl, map[string]*bintree{}},
 			"sequence.tmpl":     &bintree{renderHtmlSequenceTmpl, map[string]*bintree{}},

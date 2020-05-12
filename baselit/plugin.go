@@ -41,6 +41,80 @@ func (plugin Plugin) Title(title booklit.Content, tags ...string) {
 	plugin.section.SetTitle(title, plugin.section.InvokeLocation, tags...)
 }
 
+func (plugin Plugin) Quote(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "quote",
+		Block:   true,
+		Content: content,
+	}
+}
+
+func (plugin Plugin) Header(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("1"),
+		},
+	}
+}
+
+func (plugin Plugin) Subheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("2"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("3"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("4"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubsubsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("5"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubsubsubsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("6"),
+		},
+	}
+}
+
 func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
 	return booklit.Aux{
 		Content: content,

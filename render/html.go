@@ -41,6 +41,14 @@ func init() {
 			}
 		},
 
+		"max": func(a, b string) string {
+			if a > b {
+				return a
+			} else {
+				return b
+			}
+		},
+
 		"headerDepth": func(con *booklit.Section) int {
 			depth := con.PageDepth() + 1
 			if depth > 6 {
