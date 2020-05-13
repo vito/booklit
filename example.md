@@ -4,8 +4,8 @@ I'm a paragraph!
 
 Paragraphs are separated by two blank lines.
 
-Paragraphs can also
-span multiple lines.
+Paragraphs can be *really long* with [links](https://example.com) and sometimes
+they even contain **strong words** wrapped onto other lines.
 
 > Block quotes begin with a caret,
 > And can span multiple lines.
