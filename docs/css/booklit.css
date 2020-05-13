@@ -523,66 +523,6 @@ h3 {
 .page a:hover code strong {
   text-decoration: underline;
 }
-.side {
-  font-family: 'Roboto Slab', serif;
-  font-size: 15px;
-  width: 250px;
-  padding-top: 5rem;
-  padding-left: 5rem;
-  color: rgba(235, 222, 211, 0.5);
-}
-.side .context {
-  position: relative;
-  margin-bottom: 2rem;
-}
-.side .context a.self {
-  font-weight: lighter;
-  color: #ebded3;
-}
-.side .context .top {
-  padding-left: 1.2rem;
-  font-size: 1.1em;
-}
-.side .toggle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  line-height: 1.4rem;
-  z-index: 2;
-  opacity: 0;
-}
-.side .toggle:focus {
-  outline: none;
-}
-.side .arrow:after,
-.side .toggle:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  content: "\25ba";
-  line-height: 1.4rem;
-  font-size: 0.75rem;
-  z-index: 1;
-  cursor: pointer;
-}
-.side .toggle:checked + .arrow:after {
-  content: "\25bc";
-}
-.side .toggle:not(:checked) + .arrow + .children {
-  display: none;
-}
-.side .children {
-  border-left: 1px solid #1a120c;
-  margin-left: 0.35rem;
-  padding-left: 0.8rem;
-}
-.side .children table {
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-.side table td {
-  vertical-align: top;
-}
 .section-header {
   position: relative;
 }
