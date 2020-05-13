@@ -42,3 +42,5 @@ That's cool, but...
 Emphasis on the *italics* and **strong text**.
 
 Or [links](https://google.com)?
+
+What about \italic{**using both**?}.
