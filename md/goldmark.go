@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -11,7 +10,9 @@ import (
 	bast "github.com/vito/booklit/ast"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
+	"github.com/yuin/goldmark/util"
 )
 
 type stack struct {
@@ -49,8 +50,23 @@ func (stack *stack) invoke(fun string, entering bool) {
 	}
 }
 
+func NewInvokeParser() parser.InlineParser {
+	return &invokeParser{}
+}
+
+type invokeParser struct{}
+
+func (s *invokeParser) Trigger() []byte {
+	return []byte{'\'', '{', '}'}
+}
+
+func (parser *invokeParser) Parse(parent ast.Node, block text.Reader, pc parser.Context) ast.Node {
+	return nil
+}
+
 func main() {
 	md := goldmark.DefaultParser()
+	md.AddOptions(parser.WithInlineParsers(util.Prioritized(NewInvokeParser(), 100)))
 
 	content, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
@@ -68,8 +84,6 @@ func main() {
 	var doc bast.Sequence
 
 	err = ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
-		n.Dump(content, 0)
-
 		switch node := n.(type) {
 		case *ast.Document:
 			if entering {
@@ -165,12 +179,4 @@ func main() {
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("  ", "  ")
 	enc.Encode(doc)
-}
-
-func invoke(out io.Writer, name string, entering bool) {
-	if entering {
-		fmt.Fprintf(out, `\%s{`, name)
-	} else {
-		fmt.Fprintf(out, `}`)
-	}
 }
