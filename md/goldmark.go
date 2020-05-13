@@ -1,17 +1,19 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
+	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	bast "github.com/vito/booklit/ast"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
+	"github.com/yuin/goldmark/util"
 )
 
 type stack struct {
@@ -51,6 +53,7 @@ func (stack *stack) invoke(fun string, entering bool) {
 
 func main() {
 	md := goldmark.DefaultParser()
+	md.AddOptions(parser.WithBlockParsers(util.Prioritized(NewInvokeParser(), 100)))
 
 	content, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
@@ -68,8 +71,6 @@ func main() {
 	var doc bast.Sequence
 
 	err = ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
-		n.Dump(content, 0)
-
 		switch node := n.(type) {
 		case *ast.Document:
 			if entering {
@@ -162,15 +163,53 @@ func main() {
 		panic(err)
 	}
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("  ", "  ")
-	enc.Encode(doc)
+	// enc := json.NewEncoder(os.Stdout)
+	// enc.SetIndent("  ", "  ")
+	// enc.Encode(doc)
 }
 
-func invoke(out io.Writer, name string, entering bool) {
-	if entering {
-		fmt.Fprintf(out, `\%s{`, name)
-	} else {
-		fmt.Fprintf(out, `}`)
+type invokeParser struct {
+}
+
+var defaultInvokeParser = &invokeParser{}
+
+func NewInvokeParser() parser.BlockParser {
+	return defaultInvokeParser
+}
+
+func (b *invokeParser) Trigger() []byte {
+	return []byte{'\\'}
+}
+
+var funcRegexp = regexp.MustCompile(`\\([a-z-]+)`)
+
+func (b *invokeParser) Open(parent ast.Node, reader text.Reader, pc parser.Context) (ast.Node, parser.State) {
+	log.Println("PEEKABOO", reader.Peek())
+
+	matches := reader.FindSubMatch(funcRegexp)
+	if matches == nil {
+		return nil, parser.NoChildren
 	}
+
+	reader.Advance(len(matches[0]))
+
+	function := string(matches[1])
+
+	return nil, parser.NoChildren
+}
+
+func (b *invokeParser) Continue(node ast.Node, reader text.Reader, pc parser.Context) parser.State {
+	return parser.Close
+}
+
+func (b *invokeParser) Close(node ast.Node, reader text.Reader, pc parser.Context) {
+	// nothing to do
+}
+
+func (b *invokeParser) CanInterruptParagraph() bool {
+	return true
+}
+
+func (b *invokeParser) CanAcceptIndentedLine() bool {
+	return false
 }

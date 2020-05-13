@@ -1,0 +1,3 @@
+[submodule "goldmark"]
+	path = goldmark
+	url = ./goldmark
