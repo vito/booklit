@@ -35,7 +35,106 @@ Booklit <- node:Paragraphs !. {
   return node, nil
 }
 
-Paragraphs <- CommentSpacing* paragraphs:(p:Paragraph CommentSpacing* { return p, nil })+ {
+InlineCode <- '`' node:([^`]+ { return String(c.text), nil }) '`' {
+  return Invoke{
+    Function: "code",
+    Arguments: []Node{node.(Node)},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+StarItalic <- '*' node:WrappedLine '*' {
+  return Invoke{
+    Function: "italic",
+    Arguments: []Node{node.(Node)},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+UnderscoreItalic <- '_' node:WrappedLine '_' {
+  return Invoke{
+    Function: "italic",
+    Arguments: []Node{node.(Node)},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+StarBold <- "**" node:WrappedLine "**" {
+  return Invoke{
+    Function: "bold",
+    Arguments: []Node{node.(Node)},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+UnderscoreBold <- "__" node:WrappedLine "__" {
+  return Invoke{
+    Function: "bold",
+    Arguments: []Node{node.(Node)},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+Link <- '[' title:WrappedLine ']' '(' destination:[^)]+ ')' {
+  return Invoke{
+    Function: "link",
+    Arguments: []Node{title.(Node), String(ifaceStr(destination))},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+Image <- "![" title:WrappedLine? ']' '(' destination:[^)]+ ')' {
+  args := []Node{
+    String(ifaceStr(destination)),
+  }
+
+  if title != nil {
+    args = append(args, title.(Node))
+  }
+
+  return Invoke{
+    Function: "image",
+    Arguments: args,
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+Paragraphs <- CommentSpacing* paragraphs:(p:(Header / Quote / List / Paragraph) CommentSpacing* { return p, nil })+ {
   return Sequence(ifaceNodes(paragraphs)), nil
 }
 
@@ -47,15 +146,85 @@ Paragraph <- lines:(l:Line LineBreak? { return l, nil })+ {
   return Paragraph(ifaceSequences(lines)), nil
 }
 
-Line <- [ \t]* words:(Word)+ {
+QuotedParagraph <- WS lines:('>' l:Line LineBreak? { return l, nil })+ {
+  return Paragraph(ifaceSequences(lines)), nil
+}
+
+Quote <- paras:(p:QuotedParagraph (WS '>' WS LineBreak)? { return p, nil })+ {
+  return Invoke{
+    Function: "quote",
+    Arguments: []Node{Sequence(ifaceNodes(paras))},
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+StarTightList <- WS lines:('*' l:Line LineBreak? { return l, nil })+ {
+  return Invoke{
+    Function: "list",
+    Arguments: ifaceNodes(paras),
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+IndentedLines <- lines:((Linebreak /  "  " l:Line LineBreak? { return l, nil })+ {
+}
+
+StarLooseListItem <- "* " l:Line LineBreak IndentedLines* {
+  return Paragraph(ifaceSequences(lines)), nil
+}
+
+StarLooseList <- items:StartLooseListItem+ {
+  return Invoke{
+    Function: "list",
+    Arguments: ifaceNodes(items),
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+StarList <- StarTightList / StarLooseList
+DashList <- DashTightList / DashLooseList
+
+List <- StarList / DashList
+
+Sentence <- words:(Word)+ {
   return Sequence(ifaceNodes(words)), nil
 }
 
-Word <- Comment? val:(String / Invoke / Interpolated) Comment? {
+Line <- WS node:Sentence { return node, nil }
+
+Header <- depth:'#'+ line:Line {
+  sub := strings.Repeat("sub", len(depth.([]interface{}))-1)
+  return Invoke{
+    Function: sub+"header",
+    Arguments: []Node{line.(Node)},
+
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+Flow <- String / Invoke / Image / Link / InlineCode / StarBold / UnderscoreBold / StarItalic / UnderscoreItalic / Interpolated
+
+Word <- Comment? val:Flow Comment? {
   return val, nil
 }
 
-Comment <- [ \t]* "{-" (Comment / !"-}" .)* "-}"
+Comment <- WS "{-" (Comment / !"-}" .)* "-}"
 
 Interpolated <- '{' word:Word? '}' {
   if word == nil {
@@ -70,9 +239,9 @@ WrappedLine <- firstWord:Word words:(Word / Split)* {
   return Sequence(ifaceNodes(allWords)), nil
 }
 
-Split <- LineBreak [ \t]* { return String(" "), nil }
+Split <- LineBreak WS { return String(" "), nil }
 
-String <- str:[^\\{}\r\n]+ { return String(c.text), nil } / '\\' [\\{}] { return String(c.text[1:]), nil }
+String <- ([^\\{}*_`[\]!\r\n]+ / '!' !'[') { return String(c.text), nil } / '\\' [\\{}*_`[\]!] { return String(c.text[1:]), nil }
 
 VerbatimString <- str:[^\r\n}]+ {
   return String(c.text), nil
@@ -115,11 +284,11 @@ Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   }, nil
 }
 
-VerbatimArg <- "{{{" node:Verbatim [ \t]* "}}}" {
+VerbatimArg <- "{{{" node:Verbatim WS "}}}" {
   return node, nil
 }
 
-PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
+PreformattedArg <- "{{" node:Preformatted WS "}}" {
   return node, nil
 }
 
@@ -133,13 +302,13 @@ Arg <- '{' node:(WrappedLine / ParaArg / EmptyArg)? '}' {
   }
 }
 
-ParaArg <- paras:Paragraphs [ \t]* {
+ParaArg <- paras:Paragraphs WS {
   return paras, nil
 }
 
 Argument <- VerbatimArg / PreformattedArg / Arg
 
-Indent <- [ \t]* {
+Indent <- WS {
   skip := len(c.text)
 
   i, found := c.globalStore["indent-skip"]
@@ -155,3 +324,5 @@ Indent <- [ \t]* {
     return "", nil
   }
 }
+
+WS <- [ \t]*

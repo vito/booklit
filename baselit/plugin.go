@@ -277,3 +277,77 @@ func (plugin Plugin) Definitions(items ...booklit.Content) (booklit.Content, err
 func (plugin Plugin) Definition(subject booklit.Content, definition booklit.Content) booklit.Content {
 	return plugin.List(subject, definition)
 }
+
+func (plugin Plugin) Quote(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "quote",
+		Block:   true,
+		Content: content,
+	}
+}
+
+func (plugin Plugin) Header(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("1"),
+		},
+	}
+}
+
+func (plugin Plugin) Subheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("2"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("3"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("4"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubsubsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("5"),
+		},
+	}
+}
+
+func (plugin Plugin) Subsubsubsubsubheader(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "header",
+		Block:   true,
+		Content: content,
+		Partials: booklit.Partials{
+			"Level": booklit.String("6"),
+		},
+	}
+}
