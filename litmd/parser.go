@@ -1,11 +1,9 @@
-package main
+package litmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 
 	bast "github.com/vito/booklit/ast"
@@ -16,49 +14,17 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-type stack struct {
-	seqs []bast.Sequence
-}
-
-func (stack *stack) push() {
-	stack.seqs = append(stack.seqs, bast.Sequence{})
-}
-
-func (stack *stack) pop() bast.Sequence {
-	end := stack.seqs[stack.last()]
-	stack.seqs = stack.seqs[0:stack.last()]
-	return end
-}
-
-func (stack *stack) append(node bast.Node) {
-	end := stack.seqs[stack.last()]
-	end = append(end, node)
-	stack.seqs[stack.last()] = end
-}
-
-func (stack *stack) last() int {
-	return len(stack.seqs) - 1
-}
-
-func (stack *stack) invoke(fun string, entering bool) {
-	if entering {
-		stack.push()
-	} else {
-		stack.append(bast.Invoke{
-			Function:  fun,
-			Arguments: stack.pop(),
-		})
-	}
-}
-
-func main() {
+func Parse(content []byte) (bast.Node, error) {
 	md := goldmark.DefaultParser()
-	md.AddOptions(parser.WithBlockParsers(util.Prioritized(NewInvokeParser(), 100)))
-
-	content, err := ioutil.ReadFile(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
+	md.AddOptions(
+		// parser.WithBlockParsers(util.Prioritized(NewBlockInvokeParser(), 100)),
+		parser.WithInlineParsers(
+			util.Prioritized(NewInlineInvokeParser(), 100),
+		),
+		parser.WithBlockParsers(
+			util.Prioritized(NewBlockArgParser(), 100),
+		),
+	)
 
 	node := md.Parse(text.NewReader(content))
 
@@ -70,7 +36,11 @@ func main() {
 
 	var doc bast.Sequence
 
-	err = ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+	err := ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+		log.Printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv WALK %T %v\n", n, entering)
+		n.Dump(content, 0)
+		log.Printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ WALK %T %v\n", n, entering)
+
 		switch node := n.(type) {
 		case *ast.Document:
 			if entering {
@@ -96,6 +66,9 @@ func main() {
 					// fmt.Fprint(out, `\break`)
 				}
 			}
+
+		case *ast.CodeBlock:
+			stack.invoke("code", entering)
 
 		case *ast.Blockquote:
 			stack.invoke("quote", entering)
@@ -153,6 +126,40 @@ func main() {
 			// TextBlocks are used in lists which do not contain paragraphs. There is
 			// nothing to explicitly do here.
 
+		case *invokeNode:
+			log.Println("GEN INVOKE", entering)
+			node.Dump(content, 0)
+			stack.invoke(node.Function, entering)
+
+		case *invokeArgumentNode:
+			log.Println("GEN INVOKE ARG", entering)
+			node.Dump(content, 0)
+			stack.dump()
+
+			if entering {
+				stack.push()
+			} else {
+				arg := stack.pop()
+
+				log.Println("ARG", arg)
+				end := stack.seqs[stack.last()]
+
+				if len(end) == 0 {
+					stack.append(arg)
+				} else if inv, ok := end[0].(bast.Invoke); ok {
+					inv.Arguments = append(inv.Arguments, arg)
+					end[0] = inv
+				} else {
+					stack.append(arg)
+				}
+			}
+
+			// if entering {
+			// 	stack.push()
+			// } else {
+			// 	stack.append(stack.pop())
+			// }
+
 		default:
 			return ast.WalkStop, fmt.Errorf("unhandled markdown type: %T", node)
 		}
@@ -160,56 +167,8 @@ func main() {
 		return ast.WalkContinue, nil
 	})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	// enc := json.NewEncoder(os.Stdout)
-	// enc.SetIndent("  ", "  ")
-	// enc.Encode(doc)
-}
-
-type invokeParser struct {
-}
-
-var defaultInvokeParser = &invokeParser{}
-
-func NewInvokeParser() parser.BlockParser {
-	return defaultInvokeParser
-}
-
-func (b *invokeParser) Trigger() []byte {
-	return []byte{'\\'}
-}
-
-var funcRegexp = regexp.MustCompile(`\\([a-z-]+)`)
-
-func (b *invokeParser) Open(parent ast.Node, reader text.Reader, pc parser.Context) (ast.Node, parser.State) {
-	log.Println("PEEKABOO", reader.Peek())
-
-	matches := reader.FindSubMatch(funcRegexp)
-	if matches == nil {
-		return nil, parser.NoChildren
-	}
-
-	reader.Advance(len(matches[0]))
-
-	function := string(matches[1])
-
-	return nil, parser.NoChildren
-}
-
-func (b *invokeParser) Continue(node ast.Node, reader text.Reader, pc parser.Context) parser.State {
-	return parser.Close
-}
-
-func (b *invokeParser) Close(node ast.Node, reader text.Reader, pc parser.Context) {
-	// nothing to do
-}
-
-func (b *invokeParser) CanInterruptParagraph() bool {
-	return true
-}
-
-func (b *invokeParser) CanAcceptIndentedLine() bool {
-	return false
+	return doc, nil
 }

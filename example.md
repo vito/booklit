@@ -44,3 +44,29 @@ Emphasis on the *italics* and **strong text**.
 Or [links](https://google.com)?
 
 What about \italic{**using both**?}.
+
+\preformatted{{
+  Hello.
+}}
+
+\verbatim{{{
+  Hello.
+
+    This is another line.
+}}}
+
+    Huh.
+
+    This is another code block.
+
+This is a {\interpolated}invoke.
+
+\basic-invoke
+
+this is a \invoke in a sentence
+
+arguments \can{be} given too
+
+\block{
+  Hello.
+}
