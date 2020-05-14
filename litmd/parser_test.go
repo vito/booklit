@@ -1,7 +1,7 @@
 package litmd_test
 
 import (
-	"log"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -101,40 +101,76 @@ func (s *ParserSuite) TestParser() {
 				},
 			},
 		},
-		// {
-		// 	Title: "block argument",
+		{
+			Title: "block argument",
 
-		// 	Markdown: `\block-arg{
-		// Hello.
+			Markdown: `\block-arg{
+  Hello.
 
-		// Goodbye.
-		// }`,
-		// 	Node: ast.Sequence{
-		// 		ast.Paragraph{
-		// 			ast.Sequence{
-		// 				ast.Invoke{
-		// 					Function: "block-arg",
-		// 					Arguments: []ast.Node{
-		// 						ast.Sequence{
-		// 							ast.Paragraph{
-		// 								ast.Sequence{
-		// 									ast.String("Hello."),
-		// 								},
-		// 							},
-		// 							ast.Paragraph{
-		// 								ast.Sequence{
-		// 									ast.String("Goodbye."),
-		// 								},
-		// 							},
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
+  Goodbye.
+}`,
+			Node: ast.Sequence{
+				ast.Paragraph{
+					ast.Sequence{
+						ast.Invoke{
+							Function: "block-arg",
+							Arguments: []ast.Node{
+								ast.Sequence{
+									ast.Paragraph{
+										ast.Sequence{
+											ast.String("Hello."),
+										},
+									},
+									ast.Paragraph{
+										ast.Sequence{
+											ast.String("Goodbye."),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Title: "block with multiple arguments",
+
+			Markdown: `\block-arg{Hi!}{
+  Hello.
+
+  Goodbye.
+}`,
+			Node: ast.Sequence{
+				ast.Paragraph{
+					ast.Sequence{
+						ast.Invoke{
+							Function: "block-arg",
+							Arguments: []ast.Node{
+								ast.String("Hi!"),
+								ast.Sequence{
+									ast.Paragraph{
+										ast.Sequence{
+											ast.String("Hello."),
+										},
+									},
+									ast.Paragraph{
+										ast.Sequence{
+											ast.String("Goodbye."),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
-		log.Println("------------------------")
+		fmt.Println("------------------------------------------------------------------")
+		fmt.Println("------------------------------------------------------------------")
+		fmt.Println("------------------------------------------------------------------")
+		fmt.Println("------------------------------------------------------------------")
 
 		ok := s.Run(example.Title, func() {
 			node, err := litmd.Parse([]byte(example.Markdown))
@@ -143,7 +179,7 @@ func (s *ParserSuite) TestParser() {
 			s.Equal(example.Node, node)
 		})
 		if !ok {
-			// break
+			break
 		}
 	}
 }

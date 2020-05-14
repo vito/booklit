@@ -3,7 +3,6 @@ package litmd
 import (
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	bast "github.com/vito/booklit/ast"
@@ -16,30 +15,38 @@ import (
 
 func Parse(content []byte) (bast.Node, error) {
 	md := goldmark.DefaultParser()
+
+	inlineParser := parser.NewParser(
+		parser.WithInlineParsers(
+			parser.DefaultInlineParsers()...,
+		),
+	)
+	inlineParser.AddOptions(parser.WithInlineParsers(
+		util.Prioritized(NewInvokeInlineParser(), 100),
+	))
+
 	md.AddOptions(
 		// parser.WithBlockParsers(util.Prioritized(NewBlockInvokeParser(), 100)),
 		parser.WithInlineParsers(
-			util.Prioritized(NewInlineInvokeParser(), 100),
+			util.Prioritized(NewInvokeInlineParser(), 100),
 		),
 		parser.WithBlockParsers(
-			util.Prioritized(NewBlockArgParser(), 100),
+			util.Prioritized(NewInvokeBlockParser(md), 101),
 		),
 	)
 
 	node := md.Parse(text.NewReader(content))
 
-	if os.Getenv("DUMP") != "" {
-		node.Dump(content, 0)
-	}
+	node.Dump(content, 0)
 
 	stack := &stack{}
 
 	var doc bast.Sequence
 
 	err := ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
-		log.Printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv WALK %T %v\n", n, entering)
-		n.Dump(content, 0)
-		log.Printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ WALK %T %v\n", n, entering)
+		// log.Printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv WALK %T %v\n", n, entering)
+		// n.Dump(content, 0)
+		// log.Printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ WALK %T %v\n", n, entering)
 
 		switch node := n.(type) {
 		case *ast.Document:
@@ -126,13 +133,22 @@ func Parse(content []byte) (bast.Node, error) {
 			// TextBlocks are used in lists which do not contain paragraphs. There is
 			// nothing to explicitly do here.
 
-		case *invokeNode:
-			log.Println("GEN INVOKE", entering)
-			node.Dump(content, 0)
+		case *InvokeBlock:
+			if entering {
+				stack.push()
+			}
+
 			stack.invoke(node.Function, entering)
 
-		case *invokeArgumentNode:
-			log.Println("GEN INVOKE ARG", entering)
+			if !entering {
+				stack.append(bast.Paragraph{stack.pop()})
+			}
+
+		case *InvokeInline:
+			stack.invoke(node.Function, entering)
+
+		case *InvokeInlineArgument:
+			log.Println("GEN INVOKE INLINE ARG", entering)
 			node.Dump(content, 0)
 			stack.dump()
 
@@ -141,12 +157,37 @@ func Parse(content []byte) (bast.Node, error) {
 			} else {
 				arg := stack.pop()
 
-				log.Println("ARG", arg)
+				log.Printf("ARG: %#v\n", arg)
 				end := stack.seqs[stack.last()]
 
 				if len(end) == 0 {
 					stack.append(arg)
 				} else if inv, ok := end[0].(bast.Invoke); ok {
+					log.Println("ADDING TO ARGS")
+					inv.Arguments = append(inv.Arguments, arg)
+					end[0] = inv
+				} else {
+					stack.append(arg)
+				}
+			}
+
+		case *InvokeBlockArgument:
+			log.Println("GEN INVOKE BLOCK ARG", entering)
+			node.Dump(content, 0)
+			stack.dump()
+
+			if entering {
+				stack.push()
+			} else {
+				arg := stack.pop()
+
+				log.Printf("ARG: %#v\n", arg)
+				end := stack.seqs[stack.last()]
+
+				if len(end) == 0 {
+					stack.append(arg)
+				} else if inv, ok := end[0].(bast.Invoke); ok {
+					log.Println("ADDING TO ARGS")
 					inv.Arguments = append(inv.Arguments, arg)
 					end[0] = inv
 				} else {

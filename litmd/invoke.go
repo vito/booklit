@@ -1,5 +1,7 @@
 package litmd
 
+// XXX: re-add delimiter stuff (linkBottom and etc)
+
 import (
 	"encoding/json"
 	"log"
@@ -12,27 +14,30 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-type invokeParser struct {
+var funcRegexp = regexp.MustCompile(`\\([a-z-]+)`)
+
+type invokeInlineParser struct {
 }
 
-func NewInlineInvokeParser() parser.InlineParser {
-	return &invokeParser{}
+func NewInvokeInlineParser() parser.InlineParser {
+	return &invokeInlineParser{}
 }
 
-func NewBlockArgParser() parser.BlockParser {
-	return &blockArgParser{}
+func NewInvokeBlockParser(recurse parser.Parser) parser.BlockParser {
+	return &invokeBlockParser{
+		recurse: recurse,
+	}
 }
 
-func (b *invokeParser) Trigger() []byte {
+func (b *invokeInlineParser) Trigger() []byte {
 	return []byte{'\\', '{', '}'}
 }
-
-var funcRegexp = regexp.MustCompile(`\\([a-z-]+)`)
 
 var inlineArgStateKey = parser.NewContextKey()
 
 type inlineArgState struct {
-	ast.BaseBlock
+	// XXX: this was BaseBlock at one point
+	ast.BaseInline
 
 	Segment text.Segment
 
@@ -108,7 +113,7 @@ func removeInlineArgState(pc parser.Context, d *inlineArgState) {
 	d.Last = nil
 }
 
-func (b *invokeParser) Parse(parent ast.Node, reader text.Reader, pc parser.Context) ast.Node {
+func (b *invokeInlineParser) Parse(parent ast.Node, reader text.Reader, pc parser.Context) ast.Node {
 	line, segment := reader.PeekLine()
 	log.Println("PARSE", string(line))
 	switch line[0] {
@@ -121,17 +126,18 @@ func (b *invokeParser) Parse(parent ast.Node, reader text.Reader, pc parser.Cont
 
 		function := string(matches[1])
 
-		return &invokeNode{
+		return &InvokeInline{
 			Function: function,
 		}
 
 	// beginning an inline argument?
 	case '{':
-		log.Println("OPEN UP", string(line))
 		if string(line) == "{\n" {
+			log.Println("NOT AN INLINE ARGUMENT")
 			return nil
 		}
 
+		log.Printf("????????????????????????? IM AN INLINE ARG STATE\n")
 		state := &inlineArgState{
 			Segment: text.NewSegment(segment.Start, segment.Start+1),
 		}
@@ -156,7 +162,7 @@ func (b *invokeParser) Parse(parent ast.Node, reader text.Reader, pc parser.Cont
 		reader.Advance(1)
 		removeInlineArgState(pc, last)
 
-		arg := &invokeArgumentNode{}
+		arg := &InvokeInlineArgument{}
 		processInlineArg(reader.Source(), parent, arg, last, pc)
 
 		last.Dump(reader.Source(), 0)
@@ -165,11 +171,11 @@ func (b *invokeParser) Parse(parent ast.Node, reader text.Reader, pc parser.Cont
 		return arg
 
 	default:
-		panic("impossible?")
+		panic("impossible invoke inline open: " + string(line))
 	}
 }
 
-func processInlineArg(source []byte, parent ast.Node, arg *invokeArgumentNode, last *inlineArgState, pc parser.Context) {
+func processInlineArg(source []byte, parent ast.Node, arg *InvokeInlineArgument, last *inlineArgState, pc parser.Context) {
 	for c := last.NextSibling(); c != nil; {
 		log.Printf("SIB")
 		c.Dump(source, 1)
@@ -180,50 +186,188 @@ func processInlineArg(source []byte, parent ast.Node, arg *invokeArgumentNode, l
 	}
 }
 
-type blockArgParser struct {
+type invokeBlockParser struct {
 	ast.BaseBlock
+
+	recurse parser.Parser
 }
 
-func (b *blockArgParser) Trigger() []byte {
-	return []byte{'{', '}'}
+func (b *invokeBlockParser) Trigger() []byte {
+	return []byte{'\\', '{', '}'}
 }
-func (b *blockArgParser) Open(parent ast.Node, reader text.Reader, pc parser.Context) (ast.Node, parser.State) {
+func (b *invokeBlockParser) Open(parent ast.Node, reader text.Reader, pc parser.Context) (ast.Node, parser.State) {
 	log.Printf("OPEN %T", parent)
 	// nothing to de
 
+	// startPos, startSeg := reader.Position()
+
 	line, _ := reader.PeekLine()
-	log.Println("BLOCK ARG? (must be {)", string(line))
-	switch string(line) {
-	case "{":
-		return &invokeArgumentNode{}, parser.HasChildren
-	case "}":
+	switch line[0] {
+	case '\\':
+		matches := reader.FindSubMatch(funcRegexp)
+		if matches == nil {
+			return nil, parser.NoChildren
+		}
+
+		function := string(matches[1])
+
+		invoke := &InvokeBlock{
+			Function: function,
+		}
+
+		// inCurly := 0
+
+		// 	beforeArgsPos, beforeArgsSeg := reader.Position()
+		// 	plb, _ := reader.PeekLine()
+		// 	log.Printf("PEEK BEFORE SCANNING ARGS: %q\n", string(plb))
+
+		// 	var args []byte
+		// scanInlineArgs:
+		// 	for {
+		// 		pl, _ := reader.PeekLine()
+		// 		if len(pl) == 0 {
+		// 			// non-block invoke at EOF
+		// 			reader.SetPosition(startPos, startSeg)
+		// 			return nil, parser.NoChildren
+		// 		}
+
+		// 		switch pl[0] {
+		// 		case '{':
+		// 			if pl[1] == '\n' {
+		// 				break scanInlineArgs
+		// 			}
+
+		// 			reader.Advance(1)
+		// 			inCurly++
+		// 		case '}':
+		// 			if inCurly == 0 {
+		// 				panic("ROGUE CLOSE CURLY")
+		// 				reader.SetPosition(startPos, startSeg)
+		// 				return nil, parser.NoChildren
+		// 			}
+
+		// 			reader.Advance(1)
+		// 			inCurly--
+		// 		default:
+		// 			if inCurly == 0 {
+		// 				panic("HIT CHARACTER WHILE NOT IN CURLY")
+		// 				// \foo{bar} foo { is not a block
+		// 				reader.SetPosition(startPos, startSeg)
+		// 				return nil, parser.NoChildren
+		// 			}
+
+		// 			log.Printf("ADVANCING PAST %q\n", pl[0])
+
+		// 			reader.Advance(1)
+		// 		}
+
+		// 		args = append(args, pl[0])
+		// 	}
+
+		// 	afterArgsPos, afterArgsSeg := reader.Position()
+
+		// 	log.Printf("COLLECTED ARGS: %s\n", string(args))
+
+		// 	if len(args) > 0 {
+		// reader.SetPosition(beforeArgsPos, beforeArgsSeg)
+		pl, _ := reader.PeekLine()
+		log.Printf("PEEK BEFORE RECURSE: %q\n", string(pl))
+		inlineArgs := b.recurse.Parse(reader)
+		if inlineArgs != nil {
+			para := inlineArgs.FirstChild()
+			if para != nil {
+				log.Println("vvvvvvvvvvvvvvvvvvvvv PARSED PARA OF ARGS vvvvvvvvvvvvvvvvvvvvv")
+				para.Dump(reader.Source(), 0)
+				// for n := para.FirstChild(); n != nil; n = n.NextSibling() {
+				// 	log.Printf("APPEND CHILD: %#v\n", n)
+				// 	argPara := ast.NewParagraph()
+				// 	argPara.AppendChild(argPara, n)
+
+				// 	invoke.AppendChild(invoke, argPara)
+				// }
+				// invoke.AppendChild(invoke, para)
+			}
+		}
+		// }
+
+		// reader.SetPosition(afterArgsPos, afterArgsSeg)
+
+		if reader.Peek() == '{' {
+			return invoke, parser.HasChildren
+		} else {
+			return invoke, parser.NoChildren
+		}
+
+		// for reader.Peek() == '{' {
+		// 	// reader.Advance(1)
+
+		// 	arg := b.recurse.Parse(reader, parser.WithContext(pc))
+		// 	log.Println("RECURSED")
+		// 	if arg == nil {
+		// 		log.Println("GOT NIL")
+		// 		break
+		// 	}
+
+		// 	doc := arg.(*ast.Document)
+
+		// 	para := doc.FirstChild()
+		// 	if para == nil {
+		// 		log.Printf("NO PARA!")
+		// 		break
+		// 	}
+
+		// 	log.Printf("CHILD: %T\n", para)
+		// 	arg.Dump(reader.Source(), 1)
+
+		// 	invoke.AppendChild(invoke, para)
+		// }
+
+		// confirmed block
+		if reader.Peek() == '{' {
+			log.Println("~~~~~~~~~~~~~~~~~~~ HAS BLOCK! ~~~~~~~~~~~~~~~~~~~~~~~~~")
+			return invoke, parser.HasChildren
+		} else {
+			return invoke, parser.NoChildren
+		}
+	case '{':
+		log.Printf("BLOCK ARGUMENT??? %q\n", string(line))
+		if string(line) != "{\n" {
+			log.Println("NOT A BLOCK ARGUMENT")
+			return nil, parser.NoChildren
+		}
+
+		reader.Advance(1)
+		log.Printf("TOTALLY A BLOCK ARGUMENT: %T\n", parent)
+		return &InvokeBlockArgument{}, parser.HasChildren
+	case '}':
 		return nil, parser.Close
 	default:
-		println("NOT A BLOCK ARG")
-		return nil, parser.NoChildren
+		panic("impossible invoke block open: " + string(line))
 	}
-
 }
 
-func (b *blockArgParser) Continue(node ast.Node, reader text.Reader, pc parser.Context) parser.State {
+func (b *invokeBlockParser) Continue(node ast.Node, reader text.Reader, pc parser.Context) parser.State {
 	line, _ := reader.PeekLine()
 	log.Printf("CONTINUE? (peek %q, node %T)", string(line), node)
 	if string(line) == "}" {
+		reader.Advance(1)
 		println("EXITING BLOCK ARG")
 		return parser.Close
 	}
 	return parser.Continue | parser.HasChildren
 }
 
-func (b *blockArgParser) Close(node ast.Node, reader text.Reader, pc parser.Context) {
+func (b *invokeBlockParser) Close(node ast.Node, reader text.Reader, pc parser.Context) {
 	log.Printf("CLOSE %T", node)
 	// nothing to do
 }
 
-func (b *blockArgParser) CanInterruptParagraph() bool {
-	return true
+func (b *invokeBlockParser) CanInterruptParagraph() bool {
+	// XXX: confirm, this is a guess
+	return false
 }
 
-func (b *blockArgParser) CanAcceptIndentedLine() bool {
-	return false
+func (b *invokeBlockParser) CanAcceptIndentedLine() bool {
+	// XXX: confirm, this is a guess
+	return true
 }
