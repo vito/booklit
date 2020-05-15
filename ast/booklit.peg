@@ -146,7 +146,7 @@ Paragraph <- lines:(l:Line LineBreak? { return l, nil })+ {
   return Paragraph(ifaceSequences(lines)), nil
 }
 
-QuotedParagraph <- WS lines:('>' l:Line LineBreak? { return l, nil })+ {
+QuotedParagraph <- lines:(WS '>' l:Line LineBreak? { return l, nil })+ {
   return Paragraph(ifaceSequences(lines)), nil
 }
 
@@ -162,10 +162,18 @@ Quote <- paras:(p:QuotedParagraph (WS '>' WS LineBreak)? { return p, nil })+ {
   }, nil
 }
 
+IndentedParagraph <- lines:("  " l:Line LineBreak? { return l, nil })+ {
+  return Paragraph(ifaceSequences(lines)), nil
+}
+
+Indented <- paras:(p:IndentedParagraph WS LineBreak? { return p, nil })+ {
+  return Sequence(ifaceNodes(paras)), nil
+}
+
 StarTightList <- WS lines:('*' l:Line LineBreak? { return l, nil })+ {
   return Invoke{
     Function: "list",
-    Arguments: ifaceNodes(paras),
+    Arguments: ifaceNodes(lines),
     Location: Location{
       Line:   c.pos.line,
       Col:    c.pos.col,
@@ -174,14 +182,12 @@ StarTightList <- WS lines:('*' l:Line LineBreak? { return l, nil })+ {
   }, nil
 }
 
-IndentedLines <- lines:((Linebreak /  "  " l:Line LineBreak? { return l, nil })+ {
+StarLooseListItem <- "* " l:Line LineBreak? ls:Indented* {
+  // TODO get l back in there
+  return Paragraph(ifaceSequences(ls)), nil
 }
 
-StarLooseListItem <- "* " l:Line LineBreak IndentedLines* {
-  return Paragraph(ifaceSequences(lines)), nil
-}
-
-StarLooseList <- items:StartLooseListItem+ {
+StarLooseList <- items:StarLooseListItem+ {
   return Invoke{
     Function: "list",
     Arguments: ifaceNodes(items),
@@ -193,9 +199,37 @@ StarLooseList <- items:StartLooseListItem+ {
   }, nil
 }
 
-StarList <- StarTightList / StarLooseList
-DashList <- DashTightList / DashLooseList
+DashTightList <- WS lines:('-' l:Line LineBreak? { return l, nil })+ {
+  return Invoke{
+    Function: "list",
+    Arguments: ifaceNodes(lines),
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
 
+DashLooseListItem <- "- " l:Line LineBreak ls:Indented* {
+  // TODO get l back in there
+  return Paragraph(ifaceSequences(ls)), nil
+}
+
+DashLooseList <- items:DashLooseListItem+ {
+  return Invoke{
+    Function: "list",
+    Arguments: ifaceNodes(items),
+    Location: Location{
+      Line:   c.pos.line,
+      Col:    c.pos.col,
+      Offset: c.pos.offset,
+    },
+  }, nil
+}
+
+StarList <- StarLooseList / StarTightList
+DashList <- DashLooseList / DashTightList
 List <- StarList / DashList
 
 Sentence <- words:(Word)+ {

@@ -140,6 +140,7 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 > This is line 2.
 
   > This one has spaces!
+		>
  > Isn't that neat?
 `,
 
@@ -154,6 +155,11 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 	<blockquote>
 		<p>This is line 1.</p>
 		<p>This is line 2.</p>
+	</blockquote>
+
+	<blockquote>
+		<p>This one has spaces!</p>
+		<p>Isn't that neat?</p>
 	</blockquote>
 </section>`,
 		},
@@ -193,16 +199,17 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		Input: `\title{Hello, world!}
 
 * This is a list item.
-  
-  With multiple paragraphs.
+
 * Therefore...
+
 * Is is a loose list.
 
 - This is a list item.
-  
-  With multiple paragraphs.
+
 - Therefore...
+
 - Is is another loose list.
+
 `,
 
 		Outputs: Files{
@@ -216,7 +223,7 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		</li>
 		<li><p>Therefore...</p></li>
 		<li><p>It is a loose list.</p></li>
-    </ul>
+	</ul>
 
 	<ul>
 		<li>
@@ -225,7 +232,7 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		</li>
 		<li><p>Therefore...</p></li>
 		<li><p>It is another loose list.</p></li>
-    </ul>
+	</ul>
 </section>`,
 		},
 	}),
@@ -250,13 +257,13 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		<li>This.</li>
 		<li>Is.</li>
 		<li>A tight list.</li>
-    </ol>
+	</ol>
 
 	<ul>
 		<li>This.</li>
 		<li>Is.</li>
 		<li>Another tight list.</li>
-    </ul>
+	</ul>
 </section>`,
 		},
 	}),
@@ -264,13 +271,13 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		Input: `\title{Hello, world!}
 
 1. This is a list item.
-  
+
   With multiple paragraphs.
 2. Therefore...
 1. Is is a loose list.
 
 1) This is a list item.
-  
+
   With multiple paragraphs.
 2) Therefore...
 1) Is is another loose list.
@@ -287,7 +294,7 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		</li>
 		<li><p>Therefore...</p></li>
 		<li><p>It is a loose list.</p></li>
-    </ol>
+	</ol>
 
 	<ol>
 		<li>
@@ -296,7 +303,7 @@ Here's an ![with alt text](foo.png) and another ![](without.gif).
 		</li>
 		<li><p>Therefore...</p></li>
 		<li><p>It is another loose list.</p></li>
-    </ol>
+	</ol>
 </section>`,
 		},
 	}),
