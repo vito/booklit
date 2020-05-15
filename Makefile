@@ -14,7 +14,7 @@ docs/css/booklit.css: less/docs.less less/*.less
 less/logo-url.less: docs/css/images/booklit.svg
 	yarn run build-logo-url-less
 
-errhtml/bindata.go: errhtml errhtml/*.tmpl errhtml/*.css
+errhtml/bindata.go: errhtml errhtml/errors.css errhtml/*.tmpl
 	go-bindata -o errhtml/bindata.go -pkg errhtml errhtml/*.tmpl errhtml/*.css
 
 render/html/bindata.go: render/html render/html/*.tmpl
