@@ -1,7 +1,6 @@
 package litmd_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -27,7 +26,7 @@ func (s *ParserSuite) TestParser() {
 			Node: ast.Sequence{
 				ast.Paragraph{
 					ast.Sequence{
-						ast.Invoke{
+						&ast.Invoke{
 							Function:  "basic-invoke",
 							Arguments: []ast.Node{},
 						},
@@ -42,7 +41,7 @@ func (s *ParserSuite) TestParser() {
 				ast.Paragraph{
 					ast.Sequence{
 						ast.String("in "),
-						ast.Invoke{
+						&ast.Invoke{
 							Function:  "between",
 							Arguments: []ast.Node{},
 						},
@@ -57,7 +56,7 @@ func (s *ParserSuite) TestParser() {
 			Node: ast.Sequence{
 				ast.Paragraph{
 					ast.Sequence{
-						ast.Invoke{
+						&ast.Invoke{
 							Function: "inline-arg",
 							Arguments: []ast.Node{
 								ast.Sequence{
@@ -81,7 +80,7 @@ func (s *ParserSuite) TestParser() {
 			Node: ast.Sequence{
 				ast.Paragraph{
 					ast.Sequence{
-						ast.Invoke{
+						&ast.Invoke{
 							Function: "inline-arg",
 							Arguments: []ast.Node{
 								ast.Sequence{
@@ -104,15 +103,17 @@ func (s *ParserSuite) TestParser() {
 		{
 			Title: "block argument",
 
-			Markdown: `\block-arg{
+			Markdown: `\block-arg
+{
   Hello.
 
   Goodbye.
-}`,
+}
+`,
 			Node: ast.Sequence{
 				ast.Paragraph{
 					ast.Sequence{
-						ast.Invoke{
+						&ast.Invoke{
 							Function: "block-arg",
 							Arguments: []ast.Node{
 								ast.Sequence{
@@ -136,7 +137,8 @@ func (s *ParserSuite) TestParser() {
 		{
 			Title: "block with multiple arguments",
 
-			Markdown: `\block-arg{Hi!}{
+			Markdown: `\block-arg{Hi!}
+{
   Hello.
 
   Goodbye.
@@ -144,10 +146,10 @@ func (s *ParserSuite) TestParser() {
 			Node: ast.Sequence{
 				ast.Paragraph{
 					ast.Sequence{
-						ast.Invoke{
+						&ast.Invoke{
 							Function: "block-arg",
 							Arguments: []ast.Node{
-								ast.String("Hi!"),
+								ast.Sequence{ast.String("Hi!")},
 								ast.Sequence{
 									ast.Paragraph{
 										ast.Sequence{
@@ -167,11 +169,6 @@ func (s *ParserSuite) TestParser() {
 			},
 		},
 	} {
-		fmt.Println("------------------------------------------------------------------")
-		fmt.Println("------------------------------------------------------------------")
-		fmt.Println("------------------------------------------------------------------")
-		fmt.Println("------------------------------------------------------------------")
-
 		ok := s.Run(example.Title, func() {
 			node, err := litmd.Parse([]byte(example.Markdown))
 			s.NoError(err)

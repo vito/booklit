@@ -2,7 +2,6 @@ package litmd
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	bast "github.com/vito/booklit/ast"
@@ -26,27 +25,33 @@ func Parse(content []byte) (bast.Node, error) {
 	))
 
 	md.AddOptions(
-		// parser.WithBlockParsers(util.Prioritized(NewBlockInvokeParser(), 100)),
+		parser.WithBlockParsers(
+			util.Prioritized(NewInvokeBlockParser(), 100),
+		),
 		parser.WithInlineParsers(
 			util.Prioritized(NewInvokeInlineParser(), 100),
-		),
-		parser.WithBlockParsers(
-			util.Prioritized(NewInvokeBlockParser(md), 101),
 		),
 	)
 
 	node := md.Parse(text.NewReader(content))
 
-	node.Dump(content, 0)
-
 	stack := &stack{}
 
 	var doc bast.Sequence
 
+	var lastInvoke *bast.Invoke
+
+	depth := 0
 	err := ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
-		// log.Printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv WALK %T %v\n", n, entering)
-		// n.Dump(content, 0)
-		// log.Printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ WALK %T %v\n", n, entering)
+		if entering {
+			depth++
+		} else {
+			depth--
+		}
+
+		// fmt.Printf("vvvvvvvvvvvvvvvvvvvvvvvvvvvv WALK %T %v\n", n, entering)
+		// n.Dump(content, depth)
+		// fmt.Printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ WALK %T %v\n", n, entering)
 
 		switch node := n.(type) {
 		case *ast.Document:
@@ -133,73 +138,52 @@ func Parse(content []byte) (bast.Node, error) {
 			// TextBlocks are used in lists which do not contain paragraphs. There is
 			// nothing to explicitly do here.
 
-		case *InvokeBlock:
+		// case *InvokeBlock:
+		// 	if entering {
+		// 		stack.push()
+		// 	}
+
+		// 	stack.invoke(node.Function, entering)
+
+		// 	if !entering {
+		// 		stack.append(bast.Paragraph{stack.pop()})
+		// 	}
+
+		case *Invoke:
 			if entering {
-				stack.push()
+				lastInvoke = &bast.Invoke{
+					Function:  node.Function,
+					Arguments: []bast.Node{},
+				}
+
+				stack.append(lastInvoke)
 			}
-
-			stack.invoke(node.Function, entering)
-
-			if !entering {
-				stack.append(bast.Paragraph{stack.pop()})
-			}
-
-		case *InvokeInline:
-			stack.invoke(node.Function, entering)
 
 		case *InvokeInlineArgument:
-			log.Println("GEN INVOKE INLINE ARG", entering)
-			node.Dump(content, 0)
-			stack.dump()
-
 			if entering {
 				stack.push()
 			} else {
 				arg := stack.pop()
 
-				log.Printf("ARG: %#v\n", arg)
-				end := stack.seqs[stack.last()]
-
-				if len(end) == 0 {
-					stack.append(arg)
-				} else if inv, ok := end[0].(bast.Invoke); ok {
-					log.Println("ADDING TO ARGS")
-					inv.Arguments = append(inv.Arguments, arg)
-					end[0] = inv
+				if lastInvoke != nil {
+					lastInvoke.Arguments = append(lastInvoke.Arguments, arg)
 				} else {
-					stack.append(arg)
+					panic("TODO: handle renegade inline arg")
 				}
 			}
 
 		case *InvokeBlockArgument:
-			log.Println("GEN INVOKE BLOCK ARG", entering)
-			node.Dump(content, 0)
-			stack.dump()
-
 			if entering {
 				stack.push()
 			} else {
 				arg := stack.pop()
 
-				log.Printf("ARG: %#v\n", arg)
-				end := stack.seqs[stack.last()]
-
-				if len(end) == 0 {
-					stack.append(arg)
-				} else if inv, ok := end[0].(bast.Invoke); ok {
-					log.Println("ADDING TO ARGS")
-					inv.Arguments = append(inv.Arguments, arg)
-					end[0] = inv
+				if lastInvoke != nil {
+					lastInvoke.Arguments = append(lastInvoke.Arguments, arg)
 				} else {
-					stack.append(arg)
+					panic("TODO: handle renegade block arg")
 				}
 			}
-
-			// if entering {
-			// 	stack.push()
-			// } else {
-			// 	stack.append(stack.pop())
-			// }
 
 		default:
 			return ast.WalkStop, fmt.Errorf("unhandled markdown type: %T", node)
