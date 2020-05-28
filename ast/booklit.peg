@@ -80,24 +80,28 @@ VerbatimString <- str:[^\r\n}]+ {
   return String(c.text), nil
 }
 
-PreformattedLine <- indent:Indent words:Word* LineBreak {
+PreformattedBlockLine <- indent:Indent words:Word* LineBreak {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
 }
 
-Preformatted <- LineBreak lines:PreformattedLine* {
+PreformattedBlock <- LineBreak lines:PreformattedBlockLine* [ \t]* {
   delete(c.globalStore, "indent-skip")
   return Preformatted(ifaceSequences(lines)), nil
 }
 
-VerbatimLine <- indent:Indent words:VerbatimString* LineBreak {
+VerbatimLine <- words:VerbatimString* {
+  return Sequence(ifaceNodes(words)), nil
+}
+
+VerbatimBlockLine <- indent:Indent words:VerbatimString* LineBreak {
   line := []Node{String(indent.(string))}
   line = append(line, ifaceNodes(words)...)
   return Sequence(line), nil
 }
 
-Verbatim <- LineBreak lines:VerbatimLine* {
+VerbatimBlock <- LineBreak lines:VerbatimBlockLine* [ \t]* {
   delete(c.globalStore, "indent-skip")
   return Preformatted(ifaceSequences(lines)), nil
 }
@@ -115,11 +119,11 @@ Invoke <- '\\' name:([a-z-]+) args:(Argument*) {
   }, nil
 }
 
-VerbatimArg <- "{{{" node:Verbatim [ \t]* "}}}" {
+VerbatimArg <- "{{{" node:(VerbatimBlock / VerbatimLine) "}}}" {
   return node, nil
 }
 
-PreformattedArg <- "{{" node:Preformatted [ \t]* "}}" {
+PreformattedArg <- "{{" node:PreformattedBlock "}}" {
   return node, nil
 }
 

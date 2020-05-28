@@ -513,6 +513,8 @@ I'm indented less.
 
 	One more line, with meaning.
 }}}
+
+And here I'm just using it to \string{{{escape {{wacky}} curlies}}}.
 `,
 
 		Outputs: Files{
@@ -536,6 +538,8 @@ I'm indented less.
 
 One more line, with meaning.
 </p>
+
+<p>And here I'm just using it to escape {{wacky}} curlies.</p>
 </section>
 `,
 		},
