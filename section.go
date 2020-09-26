@@ -74,10 +74,6 @@ func (con *Section) FilePath() string {
 }
 
 func (con *Section) IsFlow() bool {
-	if false {
-		println("sup")
-	}
-
 	return false
 }
 
