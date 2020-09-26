@@ -14,3 +14,7 @@ enabled = true
 
   [analyzers.meta]
   import_paths = ["github.com/vito/booklit"]
+
+[[analyzers]]
+name = "test-coverage"
+enabled = true
