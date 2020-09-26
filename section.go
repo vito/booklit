@@ -299,14 +299,6 @@ func (con *Section) Depth() int {
 	return con.Parent.Depth() + 1
 }
 
-func (con *Section) DepthPlusOne() int {
-	if con.Parent == nil {
-		return 1
-	}
-
-	return con.Parent.Depth() + 1
-}
-
 func (con *Section) PageDepth() int {
 	if con.Parent == nil || con.Parent.ResetDepth {
 		return 0
