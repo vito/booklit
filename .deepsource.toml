@@ -3,7 +3,7 @@ version = 1
 test_patterns = ["tests/**"]
 
 exclude_patterns = [
-    "bindata.go",
+    "**/bindata.go",
     "errhtml/errors.css",
     "docs/css/*.css"
 ]
