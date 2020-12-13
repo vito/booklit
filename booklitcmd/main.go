@@ -1,6 +1,7 @@
 package booklitcmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -30,7 +31,8 @@ func Main() {
 
 	err = cmd.Execute(args)
 	if err != nil {
-		if prettyErr, ok := err.(booklit.PrettyError); ok {
+		var prettyErr booklit.PrettyError
+		if errors.As(err, &prettyErr) {
 			prettyErr.PrettyPrint(os.Stderr)
 		} else {
 			fmt.Fprintln(os.Stderr, err)
