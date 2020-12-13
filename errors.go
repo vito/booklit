@@ -63,7 +63,7 @@ func init() {
 	}
 }
 
-func ErrorPage(err error, w http.ResponseWriter) {
+func ErrorResponse(w http.ResponseWriter, err error) {
 	renderErr := errorTmpl.Lookup("page.tmpl").Execute(w, err)
 	if renderErr != nil {
 		fmt.Fprintf(w, "failed to render error page: %s", renderErr)

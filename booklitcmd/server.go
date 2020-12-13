@@ -34,7 +34,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf("failed to load section: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		booklit.ErrorPage(err, w)
+		booklit.ErrorResponse(w, err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Errorf("failed to load templates: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			booklit.ErrorPage(err, w)
+			booklit.ErrorResponse(w, err)
 			return
 		}
 	}
@@ -66,7 +66,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf("failed to render: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		booklit.ErrorPage(err, w)
+		booklit.ErrorResponse(w, err)
 		return
 	}
 
