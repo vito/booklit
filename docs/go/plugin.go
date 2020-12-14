@@ -122,7 +122,7 @@ func (plugin Plugin) Godoc(ref string) (booklit.Content, error) {
 
 	return plugin.base.Link(
 		syntax,
-		"https://godoc.org/github.com/vito/"+pkg+"#"+spl[1],
+		"https://pkg.go.dev/github.com/vito/"+pkg+"#"+spl[1],
 	), nil
 }
 

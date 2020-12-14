@@ -150,13 +150,13 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\hello-world</span>
 <p>Functions can be invoked with any number of arguments, like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\hello-world</span>{arg1}{arg2}
 </pre></div><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
-  <dt><a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></dt>
+  <dt><a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
   
   <dt><code>string</code></dt>
     <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or line of text. The <a href="baselit.html#title"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
   
-  <dt><a href="https://godoc.org/github.com/vito/booklit/ast#Node"><code class="highlight">booklit/ast.Node</code></a></dt>
+  <dt><a href="https://pkg.go.dev/github.com/vito/booklit/ast#Node"><code class="highlight">booklit/ast.Node</code></a></dt>
     <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\section</span></code></a> which need to control the evaluation context of the content.</p></dd>
   
 </dl>
@@ -173,9 +173,9 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\hello-world</span>
 
   <li><p><code>error</code></p></li>
 
-  <li><p><a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></p></li>
+  <li><p><a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></p></li>
 
-  <li><p><code>(<a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a>, error)</code></p></li>
+  <li><p><code>(<a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a>, error)</code></p></li>
 
 </ul><p>If a method returns a non-nil <code>error</code> value, it will bubble up and the building will fail.</p>
 
@@ -219,13 +219,13 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\hello-world</span>
 }
 </pre></div><p>There are many things to note here:</p><ul>
 
-  <li><p>there are two required arguments; <em>name</em> is a <code>string</code> and <em>value</em> is a <a href="https://godoc.org/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></p></li>
+  <li><p>there are two required arguments; <em>name</em> is a <code>string</code> and <em>value</em> is a <a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code class="highlight">booklit.Content</code></a></p></li>
 
   <li><p>there&#39;s a variadic argument, <em>tags</em>, which is of type <code>[]string</code></p></li>
 
   <li><p>this function generates content, and can raise an error when building</p></li>
 
-  <li><p>the <a href="https://godoc.org/github.com/vito/booklit#Target"><code class="highlight">booklit.Target</code></a> elements will result in tags being registered in the section the function is called from</p></li>
+  <li><p>the <a href="https://pkg.go.dev/github.com/vito/booklit#Target"><code class="highlight">booklit.Target</code></a> elements will result in tags being registered in the section the function is called from</p></li>
 
   <li><p>the function name, <code>describe-fruit</code>, corresponds to the method name <code>DescribeFruit</code></p></li>
 
