@@ -2,8 +2,10 @@ package booklit
 
 import "fmt"
 
+// Definitions is a list of definitions, e.g. a glossary.
 type Definitions []Definition
 
+// Definition is a subject and its definition.
 type Definition struct {
 	Subject    Content
 	Definition Content

@@ -1,5 +1,9 @@
 package booklit
 
+// Paragraph is block content containing flow content as sentences.
+//
+// When rendered, the sentences are joined by a single space in between and a
+// blank line following the paragraph.
 type Paragraph []Content
 
 func (con Paragraph) String() string {

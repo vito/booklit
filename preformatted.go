@@ -1,5 +1,7 @@
 package booklit
 
+// Preformatted is block content representing preformatted text, e.g. a code
+// block.
 type Preformatted []Content
 
 func (con Preformatted) String() string {

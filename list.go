@@ -5,9 +5,13 @@ import (
 	"strings"
 )
 
+// List is a block content containing a list of content, either ordered or
+// unordered.
 type List struct {
+	// The items in the list.
 	Items []Content
 
+	// Whether the list is ordered.
 	Ordered bool
 }
 

@@ -1,9 +1,17 @@
 package booklit
 
+// Aux is auxiliary content, typically in section titles, which can be removed
+// in certain contexts such as references or table-of-content lists.
+//
+// It is primarily used with the `stripAux` template function.
+//
+// See https://booklit.page/baselit.html#aux for more information.
 type Aux struct {
 	Content
 }
 
+// StripAux recurses through Content and removes any Aux content from any
+// nested sequences.
 func StripAux(content Content) Content {
 	visitor := &stripAuxVisitor{}
 

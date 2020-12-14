@@ -6,13 +6,20 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
+// Reference is flow content linking to a tag defined elsewhere.
 type Reference struct {
+	// The tag to link to.
 	TagName string
+
+	// Optional content to display for the reference. If not present, the tag's
+	// own display content will be used.
 	Content Content
 
+	// The tag that the name resolved to in the "resolving" phase.
 	Tag *Tag
 
-	// original location of the reference
+	// The original source location of the reference. Used when generating error
+	// messages.
 	Location ast.Location
 }
 

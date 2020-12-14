@@ -1,5 +1,7 @@
 package booklit
 
+// TableOfContents is block content which renders a table of contents for the
+// section and its children.
 type TableOfContents struct {
 	Section *Section
 }

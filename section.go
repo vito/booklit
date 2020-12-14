@@ -9,58 +9,123 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
+// Section is a Booklit document, typically loaded from a .lit file.
 type Section struct {
+	// The file path that the section was loaded from.
 	Path string
 
+	// The section title and body.
 	Title Content
 	Body  Content
 
+	// The primary tag and additional tags for the section.
 	PrimaryTag Tag
 	Tags       []Tag
 
+	// The section's parent and child sections, if any.
 	Parent   *Section
 	Children []*Section
 
-	Style    string
+	// The section's style. Used at the rendering stage to e.g. use different
+	// templates.
+	//
+	// Set with \style{foo}.
+	Style string
+
+	// Arbitrary named content.
+	//
+	// Partials are typically rendered in templates via {{.Partial "Foo" | render}}.
+	//
+	// Set with \set-partial{name}{content}.
 	Partials Partials
 
-	SplitSections        bool
+	// Instructs the renderer to render child sections on their own pages.
+	//
+	// Set with \split-sections.
+	SplitSections bool
+
+	// Instructs the renderer to never render child sections on their own pages,
+	// even if they set SplitSections.
+	//
+	// Typically used to have a single-page view or printout of the content.
+	//
+	// Set with \single-page.
 	PreventSplitSections bool
 
+	// Instructs .PageDepth to pretend the section is the lowest point.
+	//
+	// Set with \split-sections, even if PreventSplitSections is true, to ensure
+	// section numbers remain consistent.
 	ResetDepth bool
 
+	// Omit child sections from table-of-contents lists.
+	//
+	// Set with \omit-children-from-table-of-contents.
 	OmitChildrenFromTableOfContents bool
 
-	Processor       SectionProcessor
+	// Plugins used by the section.
 	PluginFactories []PluginFactory
 	Plugins         []Plugin
 
-	Location       ast.Location
+	// Location is the source location where the section was defined, if it was
+	// defined as an inline section.
+	Location ast.Location
+
+	// InvokeLocation is set prior to each function call so that the plugin's
+	// method can assign it on content that it produces, e.g. Reference and
+	// Target, so that error messages can be annotated with the source of the
+	// error.
+	//
+	// XXX: make this an optional argument instead?
 	InvokeLocation ast.Location
+
+	// Processor is used for evaluating additional child sections.
+	Processor SectionProcessor
 }
 
+// Arbitrary named snippets of content.
 type Partials map[string]Content
 
+// SectionProcessor evaluates a file or an inline syntax node to produce a
+// child section.
 type SectionProcessor interface {
 	EvaluateFile(*Section, string, []PluginFactory) (*Section, error)
 	EvaluateNode(*Section, ast.Node, []PluginFactory) (*Section, error)
 }
 
+// Tag is something which can be referenced (by its name) from elsewhere in the
+// section tree to produce a link.
 type Tag struct {
-	Name  string
+	// The name of the tag, to be referenced with \reference.
+	Name string
+
+	// The title of the tag to display when no display is given by \reference.
 	Title Content
 
-	Section  *Section
-	Location ast.Location
-	Anchor   string
+	// The section the tag resides in.
+	Section *Section
 
+	// An optional anchor for the tag.
+	//
+	// Anchored tags correspond to page anchors and are typically displayed in
+	// the section body, as opposed to tags corresponding to a section.
+	Anchor string
+
+	// Content that the tag corresponds to. For example, the section body or the
+	// text that an anchored tag is for.
+	//
+	// Typically used for showing content previews in search results.
 	Content Content
+
+	// The source location of the tag's definition.
+	Location ast.Location
 }
 
 func (con *Section) String() string {
 	return fmt.Sprintf("{section (%s): %s}", con.Path, con.Title)
 }
 
+// FilePath is the file that the section is contained in.
 func (con *Section) FilePath() string {
 	if con.Path != "" {
 		return con.Path
@@ -73,14 +138,18 @@ func (con *Section) FilePath() string {
 	return ""
 }
 
+// IsFlow returns false.
 func (con *Section) IsFlow() bool {
 	return false
 }
 
+// Visit calls VisitSection on visitor.
 func (con *Section) Visit(visitor Visitor) error {
 	return visitor.VisitSection(con)
 }
 
+// SetTitle sets the section title and tags, setting a default tag based on the
+// title if no tags are specified.
 func (con *Section) SetTitle(title Content, loc ast.Location, tags ...string) {
 	if len(tags) == 0 {
 		tags = []string{con.defaultTag(title)}
@@ -95,6 +164,7 @@ func (con *Section) SetTitle(title Content, loc ast.Location, tags ...string) {
 	con.PrimaryTag = con.Tags[0]
 }
 
+// SetTag adds a tag to the section.
 func (con *Section) SetTag(name string, title Content, loc ast.Location, optionalAnchor ...string) {
 	anchor := ""
 	if len(optionalAnchor) > 0 {
@@ -111,6 +181,8 @@ func (con *Section) SetTag(name string, title Content, loc ast.Location, optiona
 	})
 }
 
+// SetTagAnchored adds an anchored tag to the section, along with content
+// associated to the anchor.
 func (con *Section) SetTagAnchored(name string, title Content, loc ast.Location, content Content, anchor string) {
 	con.Tags = append(con.Tags, Tag{
 		Section:  con,
@@ -124,6 +196,8 @@ func (con *Section) SetTagAnchored(name string, title Content, loc ast.Location,
 	})
 }
 
+// Number returns a string denoting the section's unique numbering for use in
+// titles and tables of contents, e.g. "3.2".
 func (con *Section) Number() string {
 	if con.Parent == nil {
 		return ""
@@ -146,6 +220,8 @@ func (con *Section) Number() string {
 	return fmt.Sprintf("%s.%d", parentNumber, selfIndex)
 }
 
+// HasAnchors returns true if the section has any anchored tags or if any
+// inline child sections have anchors.
 func (con *Section) HasAnchors() bool {
 	for _, tag := range con.Tags {
 		if tag.Anchor != "" {
@@ -166,6 +242,7 @@ func (con *Section) HasAnchors() bool {
 	return false
 }
 
+// AnchorTags returns the section's tags which have anchors.
 func (con *Section) AnchorTags() []Tag {
 	tags := []Tag{}
 
@@ -180,6 +257,7 @@ func (con *Section) AnchorTags() []Tag {
 	return tags
 }
 
+// Top returns the top-level section.
 func (con *Section) Top() *Section {
 	if con.Parent != nil {
 		return con.Parent.Top()
@@ -188,6 +266,8 @@ func (con *Section) Top() *Section {
 	return con
 }
 
+// Contains returns true if the section is sub or if any of the children
+// Contains sub.
 func (con *Section) Contains(sub *Section) bool {
 	if con == sub {
 		return true
@@ -202,6 +282,8 @@ func (con *Section) Contains(sub *Section) bool {
 	return false
 }
 
+// IsOrHasChild returns true if the section is sub or has sub as a direct
+// child.
 func (con *Section) IsOrHasChild(sub *Section) bool {
 	if con == sub {
 		return true
@@ -216,6 +298,10 @@ func (con *Section) IsOrHasChild(sub *Section) bool {
 	return false
 }
 
+// Prev returns the previous section, i.e. the previous sibling section or the
+// parent section if it is the first child.
+//
+// If the section has no parent, Prev returns nil.
 func (con *Section) Prev() *Section {
 	if con.Parent == nil {
 		return nil
@@ -233,6 +319,8 @@ func (con *Section) Prev() *Section {
 	return con.Parent
 }
 
+// Next returns the next section, i.e. if SplitSections return the first child,
+// otherwise return the NextSibling.
 func (con *Section) Next() *Section {
 	if con.SplitSections {
 		if len(con.Children) > 0 {
@@ -243,6 +331,11 @@ func (con *Section) Next() *Section {
 	return con.NextSibling()
 }
 
+// NextSibling returns the section after the current section in the parent's
+// children.
+//
+// If there is no section after this section, the parent's NextSibling is
+// returned.
 func (con *Section) NextSibling() *Section {
 	if con.Parent == nil {
 		return nil
@@ -262,18 +355,22 @@ func (con *Section) NextSibling() *Section {
 	return con.Parent.NextSibling()
 }
 
+// FindTag searches for a given tag name and returns all matching tags.
 func (con *Section) FindTag(tagName string) []Tag {
 	return con.filterTags(true, nil, func(other string) bool {
 		return other == tagName
 	})
 }
 
+// SimilarTags searches for a given tag name and returns all similar tags, i.e.
+// tags with a levenshtein distance > 0.5.
 func (con *Section) SimilarTags(tagName string) []Tag {
 	return con.filterTags(true, nil, func(other string) bool {
 		return levenshtein.Match(tagName, other, nil) > 0.5
 	})
 }
 
+// SetPartial assigns a partial within the section.
 func (con *Section) SetPartial(name string, value Content) {
 	if con.Partials == nil {
 		con.Partials = Partials{}
@@ -282,15 +379,18 @@ func (con *Section) SetPartial(name string, value Content) {
 	con.Partials[name] = value
 }
 
+// Partial returns the given partial, or nil if it does not exist.
 func (con *Section) Partial(name string) Content {
 	return con.Partials[name]
 }
 
+// UsePlugin registers the plugin within the section.
 func (con *Section) UsePlugin(pf PluginFactory) {
 	con.PluginFactories = append(con.PluginFactories, pf)
 	con.Plugins = append(con.Plugins, pf(con))
 }
 
+// Depth returns the absolute depth of the section.
 func (con *Section) Depth() int {
 	if con.Parent == nil {
 		return 0
@@ -299,6 +399,8 @@ func (con *Section) Depth() int {
 	return con.Parent.Depth() + 1
 }
 
+// PageDepth returns the depth within the page that the section will be
+// rendered on, i.e. accounting for ResetDepth being set on the parent section.
 func (con *Section) PageDepth() int {
 	if con.Parent == nil || con.Parent.ResetDepth {
 		return 0
@@ -307,6 +409,8 @@ func (con *Section) PageDepth() int {
 	return con.Parent.PageDepth() + 1
 }
 
+// SplitSectionsPrevented returns true if PreventSplitSections is true or if
+// the parent has SplitSectionsPrevented.
 func (con *Section) SplitSectionsPrevented() bool {
 	if con.PreventSplitSections {
 		return true

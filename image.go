@@ -2,8 +2,12 @@ package booklit
 
 import "fmt"
 
+// Image embeds an image as flow content.
 type Image struct {
-	Path        string
+	// File path or URL.
+	Path string
+
+	// Description of the image.
 	Description string
 }
 

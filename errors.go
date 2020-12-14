@@ -63,6 +63,10 @@ func init() {
 	}
 }
 
+// ErrorResponse writes the error response page.
+//
+// If err implements PrettyHTML it can render its own HTML template with
+// additional troubleshooting.
 func ErrorResponse(w http.ResponseWriter, err error) {
 	renderErr := errorTmpl.Lookup("page.tmpl").Execute(w, err)
 	if renderErr != nil {
@@ -70,11 +74,18 @@ func ErrorResponse(w http.ResponseWriter, err error) {
 	}
 }
 
+// PrettyError is an interface for providing friendly error messages.
 type PrettyError interface {
+	// PrettyPrint is called by the booklit CLI to print an error message to
+	// stderr.
 	PrettyPrint(io.Writer)
+
+	// PrettyHTML is called by the error page template to render HTML within the
+	// error page.
 	PrettyHTML(io.Writer) error
 }
 
+// ParseError is returned when a Booklit document fails to parse.
 type ParseError struct {
 	Err error
 
@@ -94,6 +105,7 @@ func (err ParseError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("parse-error.tmpl").Execute(out, err)
 }
 
+// UnknownTagError is returned when a reference is made to an unknown tag.
 type UnknownTagError struct {
 	TagName string
 
@@ -128,6 +140,8 @@ func (err UnknownTagError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("unknown-tag.tmpl").Execute(out, err)
 }
 
+// AmbiguousReferenceError is returned when a referenced tag is defined in
+// multiple places.
 type AmbiguousReferenceError struct {
 	TagName          string
 	DefinedLocations []ErrorLocation
@@ -161,6 +175,8 @@ func (err AmbiguousReferenceError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("ambiguous-reference.tmpl").Execute(out, err)
 }
 
+// UndefinedFunctionError is returned when a Booklit document tries to call a
+// function that is not defined by any plugin.
 type UndefinedFunctionError struct {
 	Function string
 
@@ -183,6 +199,8 @@ func (err UndefinedFunctionError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("undefined-function.tmpl").Execute(out, err)
 }
 
+// FailedFunctionError is returned when a plugin function called by a Booklit
+// document returns an error.
 type FailedFunctionError struct {
 	Function string
 	Err      error
@@ -213,12 +231,15 @@ func (err FailedFunctionError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("function-error.tmpl").Execute(out, err)
 }
 
+// ErrorLocation is the source location in a Booklit document where an error
+// occurred.
 type ErrorLocation struct {
 	FilePath     string
 	NodeLocation ast.Location
 	Length       int
 }
 
+// Annotate prepends the source location to the given message.
 func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
 	if loc.NodeLocation.Line == 0 {
 		return fmt.Sprintf("%s: %s", loc.FilePath, fmt.Sprintf(msg, args...))
@@ -227,6 +248,8 @@ func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
 	}
 }
 
+// AnnotateLocation writes a plaintext snippet of the location in the Booklit
+// document.
 func (loc ErrorLocation) AnnotateLocation(out io.Writer) error {
 	if loc.NodeLocation.Line == 0 {
 		// location unavailable
@@ -254,13 +277,15 @@ func (loc ErrorLocation) AnnotateLocation(out io.Writer) error {
 	return nil
 }
 
-type AnnotationData struct {
+type annotationData struct {
 	FilePath                  string
 	EOF                       bool
 	Lineno                    string
 	Prefix, Annotated, Suffix string
 }
 
+// AnnotatedHTML renders a HTML snippet of the error location in the Booklit
+// document.
 func (loc ErrorLocation) AnnotatedHTML(out io.Writer) error {
 	if loc.NodeLocation.Line == 0 {
 		// location unavailable
@@ -272,7 +297,7 @@ func (loc ErrorLocation) AnnotatedHTML(out io.Writer) error {
 		return err
 	}
 
-	data := AnnotationData{
+	data := annotationData{
 		FilePath: loc.FilePath,
 		Lineno:   fmt.Sprintf("% 4d", loc.NodeLocation.Line),
 	}

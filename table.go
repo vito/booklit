@@ -1,5 +1,6 @@
 package booklit
 
+// Table is block content containing tabular data, i.e. rows and columns.
 type Table struct {
 	Rows [][]Content
 }

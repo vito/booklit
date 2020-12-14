@@ -1,5 +1,9 @@
 package booklit
 
+// Append joins content together in a sequence.
+//
+// When appending to a Sequence, the Sequence is extended. Otherwise a new
+// Sequence is created.
 func Append(first Content, rest ...Content) Content {
 	appended := first
 
