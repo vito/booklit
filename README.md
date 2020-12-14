@@ -5,7 +5,7 @@
 
 ## documentation
 
-[vito.github.io/booklit](https://vito.github.io/booklit)
+[booklit.page](https://booklit.page)
 
 ## installation
 
@@ -24,17 +24,18 @@ booklit -i foo.lit -o ./out
 
 ## example
 
-clone this repo and build its docs:
+clone this repo and build the Booklit website:
 
 ```bash
-booklit \
-  -i docs/lit/index.lit \
-  -o docs \
-  --html-templates docs/lit/html \
-  --plugin github.com/vito/booklit/booklitdoc \
-  --plugin github.com/vito/booklit/chroma/plugin
+./scripts/build-docs
 ```
 
 then browse the generated docs from `./docs/index.html`.
 
-you can see the result at https://vito.github.io/booklit
+alternatively, run the docs in server mode:
+
+```bash
+./scripts/build-docs -s 3000
+```
+
+...and then browse to [localhost:3000](https://localhost:3000)
