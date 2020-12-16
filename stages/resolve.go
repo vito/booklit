@@ -7,16 +7,20 @@ import (
 	"github.com/vito/booklit"
 )
 
+// Resolve is a booklit.Visitor that locates the target tag for each
+// booklit.Reference.
 type Resolve struct {
 	AllowBrokenReferences bool
 
 	Section *booklit.Section
 }
 
+// VisitString does nothing.
 func (resolve *Resolve) VisitString(booklit.String) error {
 	return nil
 }
 
+// VisitPreformatted visits each content in the sequence.
 func (resolve *Resolve) VisitSequence(con booklit.Sequence) error {
 	for _, c := range con {
 		err := c.Visit(resolve)
@@ -28,6 +32,7 @@ func (resolve *Resolve) VisitSequence(con booklit.Sequence) error {
 	return nil
 }
 
+// VisitParagraph visits each line.
 func (resolve *Resolve) VisitParagraph(con booklit.Paragraph) error {
 	for _, c := range con {
 		err := c.Visit(resolve)
@@ -39,6 +44,7 @@ func (resolve *Resolve) VisitParagraph(con booklit.Paragraph) error {
 	return nil
 }
 
+// VisitPreformatted visits each line.
 func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
 	for _, c := range con {
 		err := c.Visit(resolve)
@@ -50,6 +56,18 @@ func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
 	return nil
 }
 
+// VisitReference finds the referenced tag through Section.FindTag.
+//
+// If 1 tag is found, it is assigned on the Reference.
+//
+// If 0 tags are found and AllowBrokenReferences is false,
+// booklit.UnknownTagError is returned.
+//
+// If more than one tag is returned and AllowBrokenReferences is false,
+// booklit.AmbiguousReferenceError is returned.
+//
+// If AllowBrokenReferences is true, a made-up tag is assigned on the Reference
+// instead of returning either of the above errors.
 func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	tags := resolve.Section.FindTag(con.TagName)
 
@@ -110,6 +128,8 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 	return err
 }
 
+// VisitSection visits the section's title, body, and partials, followed by
+// each child section which is visited with their own *Resolve.
 func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 	err := con.Title.Visit(resolve)
 	if err != nil {
@@ -128,8 +148,6 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 		}
 	}
 
-	// TODO: this probably does redundant resolving, since i think the section
-	// was loaded via a processor in the first place
 	for _, child := range con.Children {
 		subResolver := &Resolve{
 			AllowBrokenReferences: resolve.AllowBrokenReferences,
@@ -145,10 +163,12 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 	return nil
 }
 
+// VisitTableOfContents does nothing.
 func (resolve *Resolve) VisitTableOfContents(booklit.TableOfContents) error {
 	return nil
 }
 
+// VisitStyled visits the content and partials.
 func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
 	err := con.Content.Visit(resolve)
 	if err != nil {
@@ -169,6 +189,7 @@ func (resolve *Resolve) VisitStyled(con booklit.Styled) error {
 	return nil
 }
 
+// VisitTarget visits the target's title and content.
 func (resolve *Resolve) VisitTarget(con booklit.Target) error {
 	err := con.Title.Visit(resolve)
 	if err != nil {
@@ -185,10 +206,12 @@ func (resolve *Resolve) VisitTarget(con booklit.Target) error {
 	return nil
 }
 
+// VisitImage does nothing.
 func (resolve *Resolve) VisitImage(con booklit.Image) error {
 	return nil
 }
 
+// VisitList visits each item in the list.
 func (resolve *Resolve) VisitList(con booklit.List) error {
 	for _, c := range con.Items {
 		err := c.Visit(resolve)
@@ -200,10 +223,12 @@ func (resolve *Resolve) VisitList(con booklit.List) error {
 	return nil
 }
 
+// VisitLink visits the link's content.
 func (resolve *Resolve) VisitLink(con booklit.Link) error {
 	return con.Content.Visit(resolve)
 }
 
+// VisitTable visits each table cell.
 func (resolve *Resolve) VisitTable(con booklit.Table) error {
 	for _, row := range con.Rows {
 		for _, c := range row {
@@ -217,6 +242,7 @@ func (resolve *Resolve) VisitTable(con booklit.Table) error {
 	return nil
 }
 
+// VisitDefinitions visits each subject and definition.
 func (resolve *Resolve) VisitDefinitions(con booklit.Definitions) error {
 	for _, def := range con {
 		err := def.Subject.Visit(resolve)

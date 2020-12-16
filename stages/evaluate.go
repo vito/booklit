@@ -8,17 +8,24 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
+// Evaluate is an ast.Visitor that builds up the booklit.Content for a given
+// section.
 type Evaluate struct {
+	// The section which acts as the evaluation context. The section's plugins
+	// are used for evaluating Invoke nodes.
 	Section *booklit.Section
 
+	// The evaluated content after calling (ast.Node).Visit.
 	Result booklit.Content
 }
 
+// VisitString appends the string's text to the result using booklit.Append.
 func (eval *Evaluate) VisitString(str ast.String) error {
 	eval.Result = booklit.Append(eval.Result, booklit.String(str))
 	return nil
 }
 
+// VisitSequence visits each node within the sequence.
 func (eval *Evaluate) VisitSequence(seq ast.Sequence) error {
 	for _, node := range seq {
 		err := node.Visit(eval)
@@ -30,6 +37,18 @@ func (eval *Evaluate) VisitSequence(seq ast.Sequence) error {
 	return nil
 }
 
+// VisitParagraph visits each line in the paragraph and builds up a
+// booklit.Paragraph containing each evaluated line.
+//
+// Any lines which evaluate to a nil result are skipped, i.e. a Invoke which
+// performed side effects and returned nothing. If the paragraph is empty as a
+// result, the Result is unaffected.
+//
+// If the Result contains a single non-flow content, it is unwrapped and
+// appended to the Result.
+//
+// Otherwise, i.e. a normal paragraph of flow content, the paragraph is
+// appended to the Result.
 func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	previous := eval.Result
 
@@ -66,6 +85,9 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
+// VisitPreformatted behaves similarly to VisitParagraph, but with no
+// special-case for block content, and it appends a booklit.Preformatted
+// instead.
 func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 	previous := eval.Result
 
@@ -88,6 +110,20 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 	return nil
 }
 
+// VisitInvoke uses reflection to evaluate the corresponding method on the
+// section's plugins, trying them in order.
+//
+// If no method is found, booklit.UndefinedFunctionError is returned.
+//
+// If the method's arity does not match the Invoke's arguments, an error is
+// returned.
+//
+// The method must return either no value, a booklit.Content, an error, or
+// (booklit.Content, error). Other return types will result in an error.
+//
+// If an error is returned, booklit.FailedFunctionError will be returned.
+//
+// If a booklit.Content is returned, it will be appended to Result.
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 	eval.Section.InvokeLocation = invoke.Location
 
