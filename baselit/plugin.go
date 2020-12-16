@@ -1,3 +1,7 @@
+// Package baselit provides the base package inherited by all sections by
+// default.
+//
+// See https://booklit.page/baselit.html for more information.
 package baselit
 
 import (
