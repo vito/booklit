@@ -1,5 +1,6 @@
 package ast
 
+// UnpackError extracts the inner parse error and returns its Location.
 func UnpackError(err error) (error, Location, bool) {
 	if list, ok := err.(errList); ok {
 		for _, e := range list {
