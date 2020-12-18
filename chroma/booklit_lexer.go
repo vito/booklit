@@ -5,7 +5,7 @@ import (
 	"github.com/alecthomas/chroma/lexers"
 )
 
-// Booklit lexer.
+// Booklit is a lexer for Booklit syntax.
 var Booklit = lexers.Register(MustNewLexer(
 	&Config{
 		Name:      "Booklit",

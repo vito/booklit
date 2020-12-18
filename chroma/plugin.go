@@ -1,3 +1,21 @@
+// Package chroma provides a basic plugin for implementing syntax highlighting
+// using Chroma (https://github.com/alecthomas/chroma).
+//
+// To use this plugin, pass `--plugin github.com/vito/booklit/chroma/plugin`
+// and use it like so:
+//
+//   \use-plugin{chroma}
+//
+//   \syntax{go}{{{
+//   package chroma
+//
+//   // ...
+//   }}}
+//
+// An optional style name may be specified as the third argument. To use a
+// custom style you may write your own plugin that embeds this plugin, or
+// re-assign github.com/alecthomas/chroma/styles.Fallback to change the
+// default.
 package chroma
 
 import (
