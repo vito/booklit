@@ -10,7 +10,7 @@ import (
 	"github.com/vito/booklit"
 )
 
-type RenderingEngine interface {
+type Engine interface {
 	booklit.Visitor
 
 	FileExtension() string
@@ -19,7 +19,7 @@ type RenderingEngine interface {
 }
 
 type Writer struct {
-	Engine RenderingEngine
+	Engine Engine
 
 	Destination string
 }

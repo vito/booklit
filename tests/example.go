@@ -57,7 +57,7 @@ func (example Example) Run() {
 
 	Expect(err).ToNot(HaveOccurred())
 
-	engine := render.NewHTMLRenderingEngine()
+	engine := render.NewHTMLEngine()
 
 	err = engine.LoadTemplates("fixtures")
 	Expect(err).ToNot(HaveOccurred())

@@ -16,7 +16,7 @@ type Server struct {
 	Processor *load.Processor
 
 	Templates string
-	Engine    *render.HTMLRenderingEngine
+	Engine    *render.HTMLEngine
 
 	FileServer http.Handler
 

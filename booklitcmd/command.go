@@ -70,7 +70,7 @@ func (cmd *Command) Serve() error {
 		},
 
 		Templates:  cmd.HTMLEngine.Templates,
-		Engine:     render.NewHTMLRenderingEngine(),
+		Engine:     render.NewHTMLEngine(),
 		FileServer: http.FileServer(http.Dir(cmd.Out)),
 	})
 
@@ -88,9 +88,9 @@ func (cmd *Command) Build() error {
 		AllowBrokenReferences: cmd.AllowBrokenReferences,
 	}
 
-	var engine render.RenderingEngine
+	var engine render.Engine
 	if cmd.TextEngine.FileExtension != "" {
-		textEngine := render.NewTextRenderingEngine(cmd.TextEngine.FileExtension)
+		textEngine := render.NewTextEngine(cmd.TextEngine.FileExtension)
 
 		if cmd.TextEngine.Templates != "" {
 			err := textEngine.LoadTemplates(cmd.TextEngine.Templates)
@@ -101,7 +101,7 @@ func (cmd *Command) Build() error {
 
 		engine = textEngine
 	} else {
-		htmlEngine := render.NewHTMLRenderingEngine()
+		htmlEngine := render.NewHTMLEngine()
 
 		if cmd.HTMLEngine.Templates != "" {
 			err := htmlEngine.LoadTemplates(cmd.HTMLEngine.Templates)

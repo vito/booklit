@@ -70,7 +70,7 @@ func init() {
 	}
 }
 
-type TextRenderingEngine struct {
+type TextEngine struct {
 	fileExtension string
 
 	tmpl         *template.Template
@@ -80,8 +80,8 @@ type TextRenderingEngine struct {
 	data     interface{}
 }
 
-func NewTextRenderingEngine(fileExtension string) *TextRenderingEngine {
-	engine := &TextRenderingEngine{
+func NewTextEngine(fileExtension string) *TextEngine {
+	engine := &TextEngine{
 		fileExtension: fileExtension,
 
 		tmplModTimes: map[string]time.Time{},
@@ -92,7 +92,7 @@ func NewTextRenderingEngine(fileExtension string) *TextRenderingEngine {
 	return engine
 }
 
-func (engine *TextRenderingEngine) resetTmpl() {
+func (engine *TextEngine) resetTmpl() {
 	engine.tmpl = template.Must(initTextTmpl.Clone())
 	engine.tmpl.Funcs(template.FuncMap{
 		"render": engine.subRender,
@@ -102,7 +102,7 @@ func (engine *TextRenderingEngine) resetTmpl() {
 	})
 }
 
-func (engine *TextRenderingEngine) LoadTemplates(templatesDir string) error {
+func (engine *TextEngine) LoadTemplates(templatesDir string) error {
 	templates, err := filepath.Glob(filepath.Join(templatesDir, "*.tmpl"))
 	if err != nil {
 		return err
@@ -148,15 +148,15 @@ func (engine *TextRenderingEngine) LoadTemplates(templatesDir string) error {
 	return nil
 }
 
-func (engine *TextRenderingEngine) FileExtension() string {
+func (engine *TextEngine) FileExtension() string {
 	return engine.fileExtension
 }
 
-func (engine *TextRenderingEngine) URL(tag booklit.Tag) string {
+func (engine *TextEngine) URL(tag booklit.Tag) string {
 	return sectionURL(engine.FileExtension(), tag.Section, tag.Anchor)
 }
 
-func (engine *TextRenderingEngine) RenderSection(out io.Writer, con *booklit.Section) error {
+func (engine *TextEngine) RenderSection(out io.Writer, con *booklit.Section) error {
 	tmpl := "page"
 	if con.Style != "" {
 		tmpl = con.Style + "-page"
@@ -172,17 +172,17 @@ func (engine *TextRenderingEngine) RenderSection(out io.Writer, con *booklit.Sec
 	return engine.render(out)
 }
 
-func (engine *TextRenderingEngine) VisitString(con booklit.String) error {
+func (engine *TextEngine) VisitString(con booklit.String) error {
 	engine.data = con
 	return engine.setTmpl("string")
 }
 
-func (engine *TextRenderingEngine) VisitReference(con *booklit.Reference) error {
+func (engine *TextEngine) VisitReference(con *booklit.Reference) error {
 	engine.data = con
 	return engine.setTmpl("reference")
 }
 
-func (engine *TextRenderingEngine) VisitSection(con *booklit.Section) error {
+func (engine *TextEngine) VisitSection(con *booklit.Section) error {
 	tmpl := "section"
 	if con.Style != "" {
 		tmpl = con.Style
@@ -192,62 +192,62 @@ func (engine *TextRenderingEngine) VisitSection(con *booklit.Section) error {
 	return engine.setTmpl(tmpl)
 }
 
-func (engine *TextRenderingEngine) VisitSequence(con booklit.Sequence) error {
+func (engine *TextEngine) VisitSequence(con booklit.Sequence) error {
 	engine.data = con
 	return engine.setTmpl("sequence")
 }
 
-func (engine *TextRenderingEngine) VisitParagraph(con booklit.Paragraph) error {
+func (engine *TextEngine) VisitParagraph(con booklit.Paragraph) error {
 	engine.data = con
 	return engine.setTmpl("paragraph")
 }
 
-func (engine *TextRenderingEngine) VisitPreformatted(con booklit.Preformatted) error {
+func (engine *TextEngine) VisitPreformatted(con booklit.Preformatted) error {
 	engine.data = con
 	return engine.setTmpl("preformatted")
 }
 
-func (engine *TextRenderingEngine) VisitTableOfContents(con booklit.TableOfContents) error {
+func (engine *TextEngine) VisitTableOfContents(con booklit.TableOfContents) error {
 	engine.data = con.Section
 	return engine.setTmpl("toc")
 }
 
-func (engine *TextRenderingEngine) VisitStyled(con booklit.Styled) error {
+func (engine *TextEngine) VisitStyled(con booklit.Styled) error {
 	engine.data = con
 	return engine.setTmpl(string(con.Style))
 }
 
-func (engine *TextRenderingEngine) VisitTarget(con booklit.Target) error {
+func (engine *TextEngine) VisitTarget(con booklit.Target) error {
 	engine.data = con
 	return engine.setTmpl("target")
 }
 
-func (engine *TextRenderingEngine) VisitImage(con booklit.Image) error {
+func (engine *TextEngine) VisitImage(con booklit.Image) error {
 	engine.data = con
 	return engine.setTmpl("image")
 }
 
-func (engine *TextRenderingEngine) VisitList(con booklit.List) error {
+func (engine *TextEngine) VisitList(con booklit.List) error {
 	engine.data = con
 	return engine.setTmpl("list")
 }
 
-func (engine *TextRenderingEngine) VisitLink(con booklit.Link) error {
+func (engine *TextEngine) VisitLink(con booklit.Link) error {
 	engine.data = con
 	return engine.setTmpl("link")
 }
 
-func (engine *TextRenderingEngine) VisitTable(con booklit.Table) error {
+func (engine *TextEngine) VisitTable(con booklit.Table) error {
 	engine.data = con
 	return engine.setTmpl("table")
 }
 
-func (engine *TextRenderingEngine) VisitDefinitions(con booklit.Definitions) error {
+func (engine *TextEngine) VisitDefinitions(con booklit.Definitions) error {
 	engine.data = con
 	return engine.setTmpl("definitions")
 }
 
-func (engine *TextRenderingEngine) setTmpl(name string) error {
+func (engine *TextEngine) setTmpl(name string) error {
 	tmpl := engine.tmpl.Lookup(name + ".tmpl")
 
 	if tmpl == nil {
@@ -259,7 +259,7 @@ func (engine *TextRenderingEngine) setTmpl(name string) error {
 	return nil
 }
 
-func (engine *TextRenderingEngine) render(out io.Writer) error {
+func (engine *TextEngine) render(out io.Writer) error {
 	if engine.template == nil {
 		return fmt.Errorf("unknown template for '%s' (%T)", engine.data, engine.data)
 	}
@@ -267,10 +267,10 @@ func (engine *TextRenderingEngine) render(out io.Writer) error {
 	return engine.template.Execute(out, engine.data)
 }
 
-func (engine *TextRenderingEngine) subRender(content booklit.Content) (string, error) {
+func (engine *TextEngine) subRender(content booklit.Content) (string, error) {
 	buf := new(bytes.Buffer)
 
-	subEngine := NewTextRenderingEngine(engine.fileExtension)
+	subEngine := NewTextEngine(engine.fileExtension)
 	subEngine.tmpl = engine.tmpl
 
 	err := content.Visit(subEngine)
