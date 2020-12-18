@@ -1,3 +1,5 @@
+// Package ast contains functions and types for parsing a Booklit document into
+// a Node.
 package ast
 
 import "strings"
