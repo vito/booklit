@@ -4,6 +4,7 @@ package booklit
 // block.
 type Preformatted []Content
 
+// String summarizes the content for debugging purposes.
 func (con Preformatted) String() string {
 	str := ""
 
@@ -15,10 +16,12 @@ func (con Preformatted) String() string {
 	return str
 }
 
+// IsFlow returns false.
 func (con Preformatted) IsFlow() bool {
 	return false
 }
 
+// Visit calls VisitPreformatted.
 func (con Preformatted) Visit(visitor Visitor) error {
 	return visitor.VisitPreformatted(con)
 }

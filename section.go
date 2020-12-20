@@ -83,7 +83,8 @@ type Section struct {
 	Processor SectionProcessor
 }
 
-// Arbitrary named snippets of content.
+// Partials is a map of named snippets of content. By convention, partial names
+// are camel-cased like FooBar.
 type Partials map[string]Content
 
 // SectionProcessor evaluates a file or an inline syntax node to produce a
@@ -121,6 +122,7 @@ type Tag struct {
 	Location ast.Location
 }
 
+// String summarizes the content for debugging purposes.
 func (con *Section) String() string {
 	return fmt.Sprintf("{section (%s): %s}", con.Path, con.Title)
 }

@@ -57,9 +57,9 @@ func (cmd *Command) Execute(args []string) error {
 
 	if cmd.ServerPort != 0 {
 		return cmd.Serve()
-	} else {
-		return cmd.Build()
 	}
+
+	return cmd.Build()
 }
 
 func (cmd *Command) Serve() error {

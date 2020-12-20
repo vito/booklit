@@ -2,6 +2,8 @@ package render
 
 import "github.com/vito/booklit"
 
+// WalkContext is a utility type constructed via the walkContext template
+// function.
 type WalkContext struct {
 	Current *booklit.Section
 	Section *booklit.Section

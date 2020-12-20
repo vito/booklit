@@ -89,16 +89,16 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 
 		result, err := ast.ParseReader(path, file)
 		if err != nil {
-			err, loc, ok := ast.UnpackError(err)
+			astErr, ok := ast.UnpackError(err)
 			if !ok {
 				return nil, err
 			}
 
 			return nil, booklit.ParseError{
-				Err: err,
+				Err: astErr.Inner,
 				ErrorLocation: booklit.ErrorLocation{
 					FilePath:     path,
-					NodeLocation: loc,
+					NodeLocation: astErr.Location,
 					Length:       1,
 				},
 			}

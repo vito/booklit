@@ -20,7 +20,7 @@ func (resolve *Resolve) VisitString(booklit.String) error {
 	return nil
 }
 
-// VisitPreformatted visits each content in the sequence.
+// VisitSequence visits each content in the sequence.
 func (resolve *Resolve) VisitSequence(con booklit.Sequence) error {
 	for _, c := range con {
 		err := c.Visit(resolve)

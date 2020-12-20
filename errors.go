@@ -29,14 +29,15 @@ func init() {
 				}
 
 				return template.HTML(buf.String()), nil
-			} else {
-				return template.HTML(
-					`<pre class="raw-error">` +
-						template.HTMLEscapeString(err.Error()) +
-						`</pre>`,
-				), nil
 			}
+
+			return template.HTML(
+				`<pre class="raw-error">` +
+					template.HTMLEscapeString(err.Error()) +
+					`</pre>`,
+			), nil
 		},
+
 		"annotate": func(loc ErrorLocation) (template.HTML, error) {
 			buf := new(bytes.Buffer)
 			err := loc.AnnotatedHTML(buf)
@@ -92,15 +93,20 @@ type ParseError struct {
 	ErrorLocation
 }
 
+// Error returns a 'parse error' error message.
 func (err ParseError) Error() string {
 	return fmt.Sprintf("parse error: %s", err.Err)
 }
 
+// PrettyPrint prints the error message followed by a snippet of the source
+// location where the error occurred.
 func (err ParseError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
 	err.AnnotateLocation(out)
 }
 
+// PrettyHTML renders an HTML template containing the error message followed by
+// a snippet of the source location where the error occurred.
 func (err ParseError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("parse-error.tmpl").Execute(out, err)
 }
@@ -114,10 +120,13 @@ type UnknownTagError struct {
 	ErrorLocation
 }
 
+// Error returns an 'unknown tag' error message.
 func (err UnknownTagError) Error() string {
 	return fmt.Sprintf("unknown tag '%s'", err.TagName)
 }
 
+// PrettyPrint prints the error message, a snippet of the source code where the
+// error occurred, and suggests similar tags.
 func (err UnknownTagError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
 
@@ -136,6 +145,8 @@ func (err UnknownTagError) PrettyPrint(out io.Writer) {
 	}
 }
 
+// PrettyHTML renders an HTML template containing the error message, a snippet
+// of the source code where the error occurred, and suggests similar tags.
 func (err UnknownTagError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("unknown-tag.tmpl").Execute(out, err)
 }
@@ -149,6 +160,7 @@ type AmbiguousReferenceError struct {
 	ErrorLocation
 }
 
+// Error returns an 'ambiguous target for tag' error message.
 func (err AmbiguousReferenceError) Error() string {
 	return fmt.Sprintf(
 		"ambiguous target for tag '%s'",
@@ -156,6 +168,9 @@ func (err AmbiguousReferenceError) Error() string {
 	)
 }
 
+// PrettyPrint prints the error message, a snippet of the source code where the
+// error occurred, and snippets for the definition location of each tag that
+// was found.
 func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s:\n\n", err))
 
@@ -171,6 +186,9 @@ func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, "Tags must be unique so I know where to link to!\n")
 }
 
+// PrettyHTML renders a HTML template containing the error message, a snippet
+// of the source code where the error occurred, and snippets for the definition
+// location of each tag that was found.
 func (err AmbiguousReferenceError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("ambiguous-reference.tmpl").Execute(out, err)
 }
@@ -183,6 +201,7 @@ type UndefinedFunctionError struct {
 	ErrorLocation
 }
 
+// Error returns an 'undefined function' error message.
 func (err UndefinedFunctionError) Error() string {
 	return fmt.Sprintf(
 		"undefined function \\%s",
@@ -190,11 +209,15 @@ func (err UndefinedFunctionError) Error() string {
 	)
 }
 
+// PrettyPrint prints the error message and a snippet of the source code where
+// the error occurred.
 func (err UndefinedFunctionError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s:\n\n", err))
 	err.AnnotateLocation(out)
 }
 
+// PrettyHTML renders an HTML template containing the error message and a
+// snippet of the source code where the error occurred.
 func (err UndefinedFunctionError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("undefined-function.tmpl").Execute(out, err)
 }
@@ -208,6 +231,8 @@ type FailedFunctionError struct {
 	ErrorLocation
 }
 
+// Error returns a 'function \... returned an error' message specifying the
+// function name and the error it returned.
 func (err FailedFunctionError) Error() string {
 	return fmt.Sprintf(
 		"function \\%s returned an error: %s",
@@ -216,6 +241,13 @@ func (err FailedFunctionError) Error() string {
 	)
 }
 
+// PrettyPrint prints the error message and a snippet of the source code where
+// the error occurred.
+//
+// If the error returned by the function is a PrettyError, PrettyPrint is
+// called and its output is indented.
+//
+// Otherwise, the error is printed normally.
 func (err FailedFunctionError) PrettyPrint(out io.Writer) {
 	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
 	err.AnnotateLocation(out)
@@ -227,6 +259,11 @@ func (err FailedFunctionError) PrettyPrint(out io.Writer) {
 	}
 }
 
+// PrettyHTML renders an HTML template containing the error message followed by
+// a snippet of the source location where the error occurred.
+//
+// If the error returned by the function is a PrettyError, PrettyHTML will be
+// called within the template to embed the error recursively.
 func (err FailedFunctionError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("function-error.tmpl").Execute(out, err)
 }
@@ -243,9 +280,9 @@ type ErrorLocation struct {
 func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
 	if loc.NodeLocation.Line == 0 {
 		return fmt.Sprintf("%s: %s", loc.FilePath, fmt.Sprintf(msg, args...))
-	} else {
-		return fmt.Sprintf("%s:%d: %s", loc.FilePath, loc.NodeLocation.Line, fmt.Sprintf(msg, args...))
 	}
+
+	return fmt.Sprintf("%s:%d: %s", loc.FilePath, loc.NodeLocation.Line, fmt.Sprintf(msg, args...))
 }
 
 // AnnotateLocation writes a plaintext snippet of the location in the Booklit

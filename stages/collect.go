@@ -13,7 +13,7 @@ func (collect *Collect) VisitString(booklit.String) error {
 	return nil
 }
 
-// VisitPreformatted visits each content in the sequence.
+// VisitSequence visits each content in the sequence.
 func (collect *Collect) VisitSequence(con booklit.Sequence) error {
 	for _, c := range con {
 		err := c.Visit(collect)

@@ -10,6 +10,7 @@ type Link struct {
 	Target string
 }
 
+// Visit calls VisitLink.
 func (con Link) Visit(visitor Visitor) error {
 	return visitor.VisitLink(con)
 }

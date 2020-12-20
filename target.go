@@ -11,14 +11,20 @@ type Target struct {
 	Content  Content
 }
 
+// IsFlow returns true.
 func (con Target) IsFlow() bool {
 	return true
 }
 
+// String returns an empty string.
+//
+// XXX: maybe this should summarize it, and the search index should use
+// render.TextEngine isntead of String
 func (con Target) String() string {
 	return ""
 }
 
+// Visit calls VisitTarget.
 func (con Target) Visit(visitor Visitor) error {
 	return visitor.VisitTarget(con)
 }

@@ -15,6 +15,7 @@ func (con Sequence) IsFlow() bool {
 	return true
 }
 
+// String summarizes the content for debugging purposes.
 func (con Sequence) String() string {
 	str := ""
 	for _, content := range con {
@@ -29,6 +30,7 @@ func (con Sequence) Contents() []Content {
 	return con
 }
 
+// Visit calls VisitSequence.
 func (con Sequence) Visit(visitor Visitor) error {
 	return visitor.VisitSequence(con)
 }

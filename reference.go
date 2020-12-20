@@ -23,10 +23,12 @@ type Reference struct {
 	Location ast.Location
 }
 
+// IsFlow returns true.
 func (con *Reference) IsFlow() bool {
 	return true
 }
 
+// String summarizes the content for debugging purposes.
 func (con *Reference) String() string {
 	if con.Content != nil {
 		return con.Content.String()
@@ -39,10 +41,13 @@ func (con *Reference) String() string {
 	return fmt.Sprintf("{reference: %s}", con.TagName)
 }
 
+// Visit calls VisitReference.
 func (con *Reference) Visit(visitor Visitor) error {
 	return visitor.VisitReference(con)
 }
 
+// Display returns the content to display for the reference. If Content is set,
+// it is returned, otherwise the resolved tag's Title is returned.
 func (con *Reference) Display() Content {
 	if con.Content != nil {
 		return con.Content

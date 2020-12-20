@@ -5,10 +5,12 @@ type Table struct {
 	Rows [][]Content
 }
 
+// IsFlow returns false.
 func (con Table) IsFlow() bool {
 	return false
 }
 
+// String summarizes the content for debugging purposes.
 func (con Table) String() string {
 	var text string
 	for _, cols := range con.Rows {
@@ -25,6 +27,7 @@ func (con Table) String() string {
 	return text
 }
 
+// Visit calls VisitTable.
 func (con Table) Visit(visitor Visitor) error {
 	return visitor.VisitTable(con)
 }

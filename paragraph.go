@@ -6,6 +6,7 @@ package booklit
 // blank line following the paragraph.
 type Paragraph []Content
 
+// String summarizes the content for debugging purposes.
 func (con Paragraph) String() string {
 	str := ""
 
@@ -24,10 +25,12 @@ func (con Paragraph) String() string {
 	return str
 }
 
+// IsFlow returns true.
 func (con Paragraph) IsFlow() bool {
 	return false
 }
 
+// Visit calls VisitParagraph.
 func (con Paragraph) Visit(visitor Visitor) error {
 	return visitor.VisitParagraph(con)
 }

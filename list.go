@@ -15,10 +15,12 @@ type List struct {
 	Ordered bool
 }
 
+// IsFlow returns false.
 func (con List) IsFlow() bool {
 	return false
 }
 
+// String summarizes the content for debugging purposes.
 func (con List) String() string {
 	var str string
 	for i, c := range con.Items {
@@ -43,6 +45,7 @@ func (con List) String() string {
 	return str
 }
 
+// Visit calls VisitList.
 func (con List) Visit(visitor Visitor) error {
 	return visitor.VisitList(con)
 }

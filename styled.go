@@ -19,6 +19,7 @@ type Styled struct {
 // Style identifies a template name.
 type Style string
 
+// Common styled templated names.
 const (
 	StyleVerbatim    Style = "verbatim"
 	StyleItalic      Style = "italic"
@@ -32,6 +33,7 @@ const (
 	StyleAside       Style = "aside"
 )
 
+// String summarizes the content for debugging purposes.
 func (con Styled) String() string {
 	return con.Content.String()
 }
@@ -46,6 +48,7 @@ func (con Styled) IsFlow() bool {
 	return con.Content.IsFlow()
 }
 
+// Visit calls VisitStyled.
 func (con Styled) Visit(visitor Visitor) error {
 	return visitor.VisitStyled(con)
 }
