@@ -2,7 +2,6 @@ package render
 
 import (
 	"encoding/json"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -10,30 +9,42 @@ import (
 	"github.com/vito/booklit"
 )
 
-type Engine interface {
-	booklit.Visitor
-
-	FileExtension() string
-	RenderSection(io.Writer, *booklit.Section) error
-	URL(booklit.Tag) string
-}
-
+// Writer writes rendered content using an Engine to the given
+// destination.
 type Writer struct {
 	Engine Engine
 
 	Destination string
 }
 
+// SearchIndex is a mapping from tag names to a summary useful for
+// inline search.
 type SearchIndex map[string]SearchDocument
 
+// SearchDocument contains data useful for implementing inline
+// search.
 type SearchDocument struct {
-	Location   string `json:"location"`
-	Title      string `json:"title"`
-	Text       string `json:"text"`
-	Depth      int    `json:"depth"`
+	// The tag's URL.
+	Location string `json:"location"`
+
+	// The title of the tag.
+	Title string `json:"title"`
+
+	// The text content for the tag, or the section's text if the tag
+	// does not have its own content.
+	Text string `json:"text"`
+
+	// The depth of the tag's section.
+	Depth int `json:"depth"`
+
+	// The containing section's primary tag.
 	SectionTag string `json:"section_tag"`
 }
 
+// WriteSection renders the given section to disk if it has no
+// parent or if its parent is configured with SplitSections.
+//
+// After rendering, WriteSection recurses to the section's Children.
 func (writer Writer) WriteSection(section *booklit.Section) error {
 	if section.Parent == nil || section.Parent.SplitSections {
 		err := writer.writeSingleSection(section)
@@ -52,6 +63,8 @@ func (writer Writer) WriteSection(section *booklit.Section) error {
 	return nil
 }
 
+// WriteSearchIndex generates and writes a SearchIndex in JSON
+// format to the given path within the destination.
 func (writer Writer) WriteSearchIndex(section *booklit.Section, path string) error {
 	logrus.WithFields(logrus.Fields{
 		"path": path,

@@ -18,42 +18,29 @@ import (
 
 var initTextTmpl *template.Template
 
+// TextFuncs is the set of functions available to all templates.
+var TextFuncs = template.FuncMap{
+	"render": func(booklit.Content) (string, error) {
+		return "", errors.New("render stubbed out")
+	},
+
+	"url": func(ext string, tag booklit.Tag) (string, error) {
+		return "", errors.New("url stubbed out")
+	},
+
+	"htmlURL": func(tag booklit.Tag) string {
+		return sectionURL("html", tag.Section, tag.Anchor)
+	},
+
+	"stripAux": booklit.StripAux,
+
+	"joinLines": func(prefix string, str string) string {
+		return strings.Join(strings.Split(str, "\n"), "\n"+prefix)
+	},
+}
+
 func init() {
-	initTextTmpl = template.New("engine").Funcs(template.FuncMap{
-		"url": func(ext string, tag booklit.Tag) (string, error) {
-			return "", errors.New("url stubbed out")
-		},
-
-		"htmlURL": func(tag booklit.Tag) string {
-			return sectionURL("html", tag.Section, tag.Anchor)
-		},
-
-		"stripAux": booklit.StripAux,
-
-		"render": func(booklit.Content) (string, error) {
-			return "", errors.New("render stubbed out")
-		},
-
-		"walkContext": func(current *booklit.Section, section *booklit.Section) WalkContext {
-			return WalkContext{
-				Current: current,
-				Section: section,
-			}
-		},
-
-		"headerDepth": func(con *booklit.Section) int {
-			depth := con.PageDepth() + 1
-			if depth > 6 {
-				depth = 6
-			}
-
-			return depth
-		},
-
-		"joinLines": func(prefix string, str string) string {
-			return strings.Join(strings.Split(str, "\n"), "\n"+prefix)
-		},
-	})
+	initTextTmpl = template.New("engine").Funcs(TextFuncs)
 
 	for _, asset := range text.AssetNames() {
 		info, err := text.AssetInfo(asset)
@@ -70,6 +57,10 @@ func init() {
 	}
 }
 
+// TextEngine renders sections as plaintext using Go's text/template system.
+//
+// Text templates may be provided to generate e.g. Markdown or other plaintext
+// formats.
 type TextEngine struct {
 	fileExtension string
 
@@ -80,6 +71,10 @@ type TextEngine struct {
 	data     interface{}
 }
 
+// NewTextEngine constructs a new TextEngine with the basic set of text
+// templates bundled with Booklit.
+//
+// A file extension must be provided, e.g. "md" for Markdown.
 func NewTextEngine(fileExtension string) *TextEngine {
 	engine := &TextEngine{
 		fileExtension: fileExtension,
@@ -102,6 +97,7 @@ func (engine *TextEngine) resetTmpl() {
 	})
 }
 
+// LoadTemplates loads all *.tmpl files in the specified directory.
 func (engine *TextEngine) LoadTemplates(templatesDir string) error {
 	templates, err := filepath.Glob(filepath.Join(templatesDir, "*.tmpl"))
 	if err != nil {
@@ -148,14 +144,21 @@ func (engine *TextEngine) LoadTemplates(templatesDir string) error {
 	return nil
 }
 
+// FileExtension returns the configured file extension.
 func (engine *TextEngine) FileExtension() string {
 	return engine.fileExtension
 }
 
+// URL returns the file name using te configured file extension, with an anchor
+// if present.
 func (engine *TextEngine) URL(tag booklit.Tag) string {
 	return sectionURL(engine.FileExtension(), tag.Section, tag.Anchor)
 }
 
+// RenderSection renders the section to the writer using page.tmpl.
+//
+// If the section has Style set and a template named (Style)-page.tmpl exists
+// it will be used instead.
 func (engine *TextEngine) RenderSection(out io.Writer, con *booklit.Section) error {
 	tmpl := "page"
 	if con.Style != "" {
@@ -172,16 +175,22 @@ func (engine *TextEngine) RenderSection(out io.Writer, con *booklit.Section) err
 	return engine.render(out)
 }
 
+// VisitString renders con using string.tmpl.
 func (engine *TextEngine) VisitString(con booklit.String) error {
 	engine.data = con
 	return engine.setTmpl("string")
 }
 
+// VisitReference renders con using reference.tmpl.
 func (engine *TextEngine) VisitReference(con *booklit.Reference) error {
 	engine.data = con
 	return engine.setTmpl("reference")
 }
 
+// VisitSection renders con using section.tmpl.
+//
+// If the section has Style set and a template named (Style).tmpl exists it
+// will be used instead.
 func (engine *TextEngine) VisitSection(con *booklit.Section) error {
 	tmpl := "section"
 	if con.Style != "" {
@@ -192,56 +201,67 @@ func (engine *TextEngine) VisitSection(con *booklit.Section) error {
 	return engine.setTmpl(tmpl)
 }
 
+// VisitSequence renders con using sequence.tmpl.
 func (engine *TextEngine) VisitSequence(con booklit.Sequence) error {
 	engine.data = con
 	return engine.setTmpl("sequence")
 }
 
+// VisitParagraph renders con using paragraph.tmpl.
 func (engine *TextEngine) VisitParagraph(con booklit.Paragraph) error {
 	engine.data = con
 	return engine.setTmpl("paragraph")
 }
 
+// VisitPreformatted renders con using preformatted.tmpl.
 func (engine *TextEngine) VisitPreformatted(con booklit.Preformatted) error {
 	engine.data = con
 	return engine.setTmpl("preformatted")
 }
 
+// VisitTableOfContents renders con using toc.tmpl.
 func (engine *TextEngine) VisitTableOfContents(con booklit.TableOfContents) error {
 	engine.data = con.Section
 	return engine.setTmpl("toc")
 }
 
+// VisitStyled renders con using (Style).tmpl.
 func (engine *TextEngine) VisitStyled(con booklit.Styled) error {
 	engine.data = con
 	return engine.setTmpl(string(con.Style))
 }
 
+// VisitTarget renders con using target.tmpl.
 func (engine *TextEngine) VisitTarget(con booklit.Target) error {
 	engine.data = con
 	return engine.setTmpl("target")
 }
 
+// VisitImage renders con using image.tmpl.
 func (engine *TextEngine) VisitImage(con booklit.Image) error {
 	engine.data = con
 	return engine.setTmpl("image")
 }
 
+// VisitList renders con using list.tmpl.
 func (engine *TextEngine) VisitList(con booklit.List) error {
 	engine.data = con
 	return engine.setTmpl("list")
 }
 
+// VisitLink renders con using link.tmpl.
 func (engine *TextEngine) VisitLink(con booklit.Link) error {
 	engine.data = con
 	return engine.setTmpl("link")
 }
 
+// VisitTable renders con using table.tmpl.
 func (engine *TextEngine) VisitTable(con booklit.Table) error {
 	engine.data = con
 	return engine.setTmpl("table")
 }
 
+// VisitDefinitions renders con using definitions.tmpl.
 func (engine *TextEngine) VisitDefinitions(con booklit.Definitions) error {
 	engine.data = con
 	return engine.setTmpl("definitions")
