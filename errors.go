@@ -77,6 +77,8 @@ func ErrorResponse(w http.ResponseWriter, err error) {
 
 // PrettyError is an interface for providing friendly error messages.
 type PrettyError interface {
+	error
+
 	// PrettyPrint is called by the booklit CLI to print an error message to
 	// stderr.
 	PrettyPrint(io.Writer)
@@ -249,13 +251,13 @@ func (err FailedFunctionError) Error() string {
 //
 // Otherwise, the error is printed normally.
 func (err FailedFunctionError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
+	fmt.Fprintf(out, err.Annotate("function \\%s returned an error\n\n", err.Function))
 	err.AnnotateLocation(out)
 
 	if prettyErr, ok := err.Err.(PrettyError); ok {
 		prettyErr.PrettyPrint(textio.NewPrefixWriter(out, "  "))
 	} else {
-		fmt.Fprintln(out, err.Err)
+		fmt.Fprintf(out, "\x1b[33m%s\x1b[0m\n", err.Err)
 	}
 }
 
@@ -266,6 +268,44 @@ func (err FailedFunctionError) PrettyPrint(out io.Writer) {
 // called within the template to embed the error recursively.
 func (err FailedFunctionError) PrettyHTML(out io.Writer) error {
 	return errorTmpl.Lookup("function-error.tmpl").Execute(out, err)
+}
+
+// TitleTwiceError is returned when a section tries to set \title twice.
+type TitleTwiceError struct {
+	TitleLocation ErrorLocation
+
+	ErrorLocation
+}
+
+// Error returns a 'cannot set title twice' message.
+func (err TitleTwiceError) Error() string {
+	return "cannot set title twice"
+}
+
+// PrettyPrint prints the error message and a snippet of the source code where
+// the error occurred.
+//
+// If the error returned by the function is a PrettyError, PrettyPrint is
+// called and its output is indented.
+//
+// Otherwise, the error is printed normally.
+func (err TitleTwiceError) PrettyPrint(out io.Writer) {
+	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
+	err.AnnotateLocation(out)
+
+	fmt.Fprintf(out, "The section's title was first set here:\n\n")
+	err.TitleLocation.AnnotateLocation(out)
+
+	fmt.Fprintln(out, "Maybe the second \\title should be in a \\section{...}?")
+}
+
+// PrettyHTML renders an HTML template containing the error message followed by
+// a snippet of the source location where the error occurred.
+//
+// If the error returned by the function is a PrettyError, PrettyHTML will be
+// called within the template to embed the error recursively.
+func (err TitleTwiceError) PrettyHTML(out io.Writer) error {
+	return errorTmpl.Lookup("title-twice-error.tmpl").Execute(out, err)
 }
 
 // ErrorLocation is the source location in a Booklit document where an error

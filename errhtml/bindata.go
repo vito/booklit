@@ -5,6 +5,7 @@
 // errhtml/function-error.tmpl
 // errhtml/page.tmpl
 // errhtml/parse-error.tmpl
+// errhtml/title-twice-error.tmpl
 // errhtml/undefined-function.tmpl
 // errhtml/unknown-tag.tmpl
 // errhtml/errors.css
@@ -99,7 +100,7 @@ func errhtmlAmbiguousReferenceTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/ambiguous-reference.tmpl", size: 396, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	info := bindataFileInfo{name: "errhtml/ambiguous-reference.tmpl", size: 396, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -119,7 +120,7 @@ func errhtmlAnnotatedLineTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/annotated-line.tmpl", size: 367, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	info := bindataFileInfo{name: "errhtml/annotated-line.tmpl", size: 367, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -139,7 +140,7 @@ func errhtmlFunctionErrorTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/function-error.tmpl", size: 211, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	info := bindataFileInfo{name: "errhtml/function-error.tmpl", size: 211, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -159,7 +160,7 @@ func errhtmlPageTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/page.tmpl", size: 422, mode: os.FileMode(420), modTime: time.Unix(1589160255, 0)}
+	info := bindataFileInfo{name: "errhtml/page.tmpl", size: 422, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -179,7 +180,27 @@ func errhtmlParseErrorTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/parse-error.tmpl", size: 167, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	info := bindataFileInfo{name: "errhtml/parse-error.tmpl", size: 167, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _errhtmlTitleTwiceErrorTmpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x8e\xb1\x4e\x03\x31\x10\x44\xfb\x7c\xc5\xe8\x1a\xaa\xdc\xf5\xc8\x98\x8a\x0e\xba\x94\x34\x1b\x7b\xe1\x2c\x19\x3b\xf2\x2e\x89\xd0\x71\xff\x8e\xec\x18\x21\x91\xe6\xca\x5d\xcd\xbc\x79\xc6\x87\x33\x5c\x24\x91\x87\x81\x4b\xc9\x65\xb0\x3b\xe0\xe6\xbb\xff\x60\x11\x7a\xe7\xc1\x3a\x4a\x29\x2b\x84\x15\x1a\x34\x32\xf4\x12\x1c\x9b\xc9\x87\xb3\xdd\xfd\xab\xba\xec\x79\x1f\xb3\x23\x0d\x39\x35\x30\xb0\x2c\xe3\x53\x25\x3e\xf7\x37\xbe\xd1\x88\xa4\xbc\xae\xb5\xff\x47\x3a\xd9\xc3\xcc\x10\x76\x35\x77\x27\x7d\xef\x42\x82\xb7\x50\xe4\xea\x30\x73\xe1\x7b\x33\x9d\xb6\x6e\x1f\x2a\x63\xd3\xf6\x0b\x7d\x1d\x19\x7a\x35\xc8\xc9\xc3\x54\xa4\x7d\x6d\x16\x66\x6a\x07\x64\xce\x9f\xd1\xe3\xc8\x08\x09\xf4\x1b\xe9\xca\xcb\x38\x8e\x6b\x4f\x3e\x36\xc7\x3e\xf0\x13\x00\x00\xff\xff\x38\xe2\x36\x91\x75\x01\x00\x00")
+
+func errhtmlTitleTwiceErrorTmplBytes() ([]byte, error) {
+	return bindataRead(
+		_errhtmlTitleTwiceErrorTmpl,
+		"errhtml/title-twice-error.tmpl",
+	)
+}
+
+func errhtmlTitleTwiceErrorTmpl() (*asset, error) {
+	bytes, err := errhtmlTitleTwiceErrorTmplBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "errhtml/title-twice-error.tmpl", size: 373, mode: os.FileMode(420), modTime: time.Unix(1608498612, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -199,7 +220,7 @@ func errhtmlUndefinedFunctionTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/undefined-function.tmpl", size: 184, mode: os.FileMode(420), modTime: time.Unix(1589116514, 0)}
+	info := bindataFileInfo{name: "errhtml/undefined-function.tmpl", size: 184, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -219,7 +240,7 @@ func errhtmlUnknownTagTmpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/unknown-tag.tmpl", size: 443, mode: os.FileMode(420), modTime: time.Unix(1589154812, 0)}
+	info := bindataFileInfo{name: "errhtml/unknown-tag.tmpl", size: 443, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -239,7 +260,7 @@ func errhtmlErrorsCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/errors.css", size: 30697, mode: os.FileMode(420), modTime: time.Unix(1589292954, 0)}
+	info := bindataFileInfo{name: "errhtml/errors.css", size: 30697, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -301,6 +322,7 @@ var _bindata = map[string]func() (*asset, error){
 	"errhtml/function-error.tmpl":      errhtmlFunctionErrorTmpl,
 	"errhtml/page.tmpl":                errhtmlPageTmpl,
 	"errhtml/parse-error.tmpl":         errhtmlParseErrorTmpl,
+	"errhtml/title-twice-error.tmpl":   errhtmlTitleTwiceErrorTmpl,
 	"errhtml/undefined-function.tmpl":  errhtmlUndefinedFunctionTmpl,
 	"errhtml/unknown-tag.tmpl":         errhtmlUnknownTagTmpl,
 	"errhtml/errors.css":               errhtmlErrorsCss,
@@ -354,6 +376,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"function-error.tmpl":      &bintree{errhtmlFunctionErrorTmpl, map[string]*bintree{}},
 		"page.tmpl":                &bintree{errhtmlPageTmpl, map[string]*bintree{}},
 		"parse-error.tmpl":         &bintree{errhtmlParseErrorTmpl, map[string]*bintree{}},
+		"title-twice-error.tmpl":   &bintree{errhtmlTitleTwiceErrorTmpl, map[string]*bintree{}},
 		"undefined-function.tmpl":  &bintree{errhtmlUndefinedFunctionTmpl, map[string]*bintree{}},
 		"unknown-tag.tmpl":         &bintree{errhtmlUnknownTagTmpl, map[string]*bintree{}},
 	}},

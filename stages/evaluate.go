@@ -121,7 +121,9 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 // The method must return either no value, a booklit.Content, an error, or
 // (booklit.Content, error). Other return types will result in an error.
 //
-// If an error is returned, booklit.FailedFunctionError will be returned.
+// If a PrettyError is returned, it is returned without wrapping.
+//
+// If an error is returned, it is wrapped in a booklit.FailedFunctionError.
 //
 // If a booklit.Content is returned, it will be appended to Result.
 func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
@@ -204,6 +206,10 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		switch reflect.New(valType).Interface().(type) {
 		case *error:
 			if val != nil {
+				if pErr, ok := val.(booklit.PrettyError); ok {
+					return pErr
+				}
+
 				return booklit.FailedFunctionError{
 					Function: invoke.Function,
 					Err:      val.(error),
@@ -226,6 +232,10 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		switch reflect.New(secondType).Interface().(type) {
 		case *error:
 			if second != nil {
+				if pErr, ok := second.(booklit.PrettyError); ok {
+					return pErr
+				}
+
 				return booklit.FailedFunctionError{
 					Function: invoke.Function,
 					Err:      second.(error),

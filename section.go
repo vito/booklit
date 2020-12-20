@@ -18,6 +18,9 @@ type Section struct {
 	Title Content
 	Body  Content
 
+	// The the file source location where the title was set.
+	TitleLocation ast.Location
+
 	// The primary tag and additional tags for the section.
 	PrimaryTag Tag
 	Tags       []Tag
@@ -163,6 +166,7 @@ func (con *Section) SetTitle(title Content, loc ast.Location, tags ...string) {
 	}
 
 	con.Title = title
+	con.TitleLocation = loc
 	con.PrimaryTag = con.Tags[0]
 }
 

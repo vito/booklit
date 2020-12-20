@@ -69,4 +69,13 @@ See also \reference{missing-tag}{this tag}.
 
 		Err: gomega.MatchRegexp(`unknown tag 'missing-tag'`),
 	}),
+
+	Entry("setting title twice", Example{
+		Input: `\title{Hello, world!}
+
+\title{BAM}
+`,
+
+		Err: gomega.ContainSubstring("cannot set title twice"),
+	}),
 )

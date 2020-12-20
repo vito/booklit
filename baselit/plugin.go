@@ -40,8 +40,24 @@ func (plugin Plugin) Styled(name string) {
 	plugin.section.Style = name
 }
 
-func (plugin Plugin) Title(title booklit.Content, tags ...string) {
+func (plugin Plugin) Title(title booklit.Content, tags ...string) error {
+	if plugin.section.Title != booklit.Empty {
+		return booklit.TitleTwiceError{
+			TitleLocation: booklit.ErrorLocation{
+				FilePath:     plugin.section.Path,
+				NodeLocation: plugin.section.TitleLocation,
+				Length:       len("\\title"),
+			},
+			ErrorLocation: booklit.ErrorLocation{
+				FilePath:     plugin.section.Path,
+				NodeLocation: plugin.section.InvokeLocation,
+				Length:       len("\\title"),
+			},
+		}
+	}
+
 	plugin.section.SetTitle(title, plugin.section.InvokeLocation, tags...)
+	return nil
 }
 
 func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
