@@ -26,9 +26,9 @@ func (con List) String() string {
 	for i, c := range con.Items {
 		var text string
 		for _, line := range strings.Split(strings.TrimRight(c.String(), "\n"), "\n") {
-			if len(text) == 0 {
+			if text == "" {
 				text = line
-			} else if len(line) == 0 {
+			} else if line == "" {
 				text += "\n"
 			} else {
 				text += "\n  " + line

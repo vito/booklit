@@ -66,5 +66,5 @@ How are you?
 )
 
 func crlf(str string) string {
-	return strings.Replace(str, "\n", "\r\n", -1)
+	return strings.ReplaceAll(str, "\n", "\r\n")
 }

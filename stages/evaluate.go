@@ -162,10 +162,8 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		if len(rawArgs) < argc {
 			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", invoke.Function, len(rawArgs), argc)
 		}
-	} else {
-		if len(rawArgs) != argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Function, len(rawArgs), argc)
-		}
+	} else if len(rawArgs) != argc {
+		return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Function, len(rawArgs), argc)
 	}
 
 	argv := make([]reflect.Value, argc)

@@ -203,14 +203,16 @@ func (plugin Plugin) DescribeFruit(
 		})
 	}
 
-	content = append(content, booklit.Paragraph{
-		booklit.Styled{
-			Style:   booklit.StyleBold,
-			Content: booklit.String(name),
+	content = append(
+		content,
+		booklit.Paragraph{
+			booklit.Styled{
+				Style:   booklit.StyleBold,
+				Content: booklit.String(name),
+			},
 		},
-	})
-
-	content = append(content, definition)
+		definition,
+	)
 
 	return content, nil
 }

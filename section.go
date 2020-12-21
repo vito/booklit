@@ -462,11 +462,10 @@ func (con *Section) defaultTag(title Content) string {
 	return strings.ToLower(
 		specialCharsRegexp.ReplaceAllString(
 			whitespaceRegexp.ReplaceAllString(
-				strings.Replace(
+				strings.ReplaceAll(
 					StripAux(title).String(),
 					" & ",
 					" and ",
-					-1,
 				),
 				"-",
 			),
