@@ -293,6 +293,6 @@ func (plugin Plugin) Definitions(items ...booklit.Content) (booklit.Content, err
 	return defs, nil
 }
 
-func (plugin Plugin) Definition(subject booklit.Content, definition booklit.Content) booklit.Content {
+func (plugin Plugin) Definition(subject, definition booklit.Content) booklit.Content {
 	return plugin.List(subject, definition)
 }

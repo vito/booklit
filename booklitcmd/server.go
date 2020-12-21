@@ -69,8 +69,6 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		booklit.ErrorResponse(w, err)
 		return
 	}
-
-	return
 }
 
 func (server *Server) loadRequestedSection(path string) (*booklit.Section, bool, error) {
