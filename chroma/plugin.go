@@ -118,8 +118,7 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 	}
 
 	for i, con := range highlighted {
-		switch con.(type) {
-		case booklit.String:
+		if _, ok := con.(booklit.String); ok {
 			highlighted[i] = booklit.Styled{
 				Style:   "raw-html",
 				Content: con,
