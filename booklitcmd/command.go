@@ -52,7 +52,15 @@ func (cmd *Command) Execute(args []string) error {
 	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
 	if !isReexec && len(cmd.Plugins) > 0 {
 		logrus.Debug("plugins configured; reexecing")
-		return cmd.reexec()
+
+		exitCode, err := cmd.reexec()
+		if err != nil {
+			return err
+		}
+
+		os.Exit(exitCode)
+
+		return nil
 	}
 
 	if cmd.ServerPort != 0 {
@@ -162,10 +170,10 @@ func (cmd *Command) Build() error {
 	return nil
 }
 
-func (cmd *Command) reexec() error {
+func (cmd *Command) reexec() (int, error) {
 	tmpdir, err := ioutil.TempDir("", "booklit-reexec")
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	defer func() {
@@ -186,7 +194,7 @@ func (cmd *Command) reexec() error {
 
 	err = ioutil.WriteFile(src, []byte(goSrc), 0644)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	build := exec.Command("go", "install", src)
@@ -198,7 +206,7 @@ func (cmd *Command) reexec() error {
 
 	err = build.Run()
 	if err != nil {
-		return fmt.Errorf("build failed: %w", err)
+		return 0, fmt.Errorf("build failed: %w", err)
 	}
 
 	run := exec.Command(bin, os.Args[1:]...)
@@ -211,12 +219,11 @@ func (cmd *Command) reexec() error {
 	err = run.Run()
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
-			os.Exit(exitErr.ExitCode())
-			return nil
+			return exitErr.ExitCode(), nil
 		}
 
-		return fmt.Errorf("reexec failed: %w", err)
+		return 0, fmt.Errorf("reexec failed: %w", err)
 	}
 
-	return nil
+	return 0, nil
 }
