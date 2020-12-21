@@ -253,7 +253,8 @@ func (err FailedFunctionError) Error() string {
 //
 // Otherwise, the error is printed normally.
 func (err FailedFunctionError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("function \\%s returned an error\n\n", err.Function))
+	fmt.Fprintln(out, err.Annotate("function \\%s returned an error", err.Function))
+	fmt.Fprintln(out)
 	err.AnnotateLocation(out)
 
 	if prettyErr, ok := err.Err.(PrettyError); ok {
