@@ -16,13 +16,13 @@ methods useful for writing prose.
     Sets the title and optional \italic{tags} as repeated arguments. For
     example, the \code{title} invocation for this section is:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \title{The \code{baselit} Plugin}{baselit}
     }}}
 
     To specify multiple tags, pass multiple arguments:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \title{I'm a taggy section!}{tag-1}{tag-1}
     }}}
 
@@ -39,7 +39,7 @@ methods useful for writing prose.
 
     Example:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
       \title{Booklit\aux{: a pretty lit authoring system}}
     }}}
 
@@ -55,7 +55,7 @@ methods useful for writing prose.
 
     For example, here's a full section containing a sub-section:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \title{I'm a parent section!}
 
     Hello, world!
@@ -172,7 +172,7 @@ methods useful for writing prose.
 
     For example:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     I'm a sentence with some \code{code bits} in it.
     }}}
 
@@ -182,7 +182,7 @@ methods useful for writing prose.
 
     While, this example:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \code{{
       This is a code block.
     }}
@@ -279,7 +279,7 @@ methods useful for writing prose.
     \target{table-row}{\code{\\\bold{table-row}}} The value for each row should
     be produced by using \reference{table-row} like so:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \table{
       \table-row{a}{b}{c}
     }{
@@ -302,7 +302,7 @@ methods useful for writing prose.
     \target{definition}{\code{\\\bold{definition}}} The value for each entry
     should be produced by using \reference{definition} like so:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \definitions{
       \definition{a}{1}
     }{

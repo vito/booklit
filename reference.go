@@ -18,6 +18,10 @@ type Reference struct {
 	// The tag that the name resolved to in the "resolving" phase.
 	Tag *Tag
 
+	// If set to true and resolving the tag does not succeed, display Content
+	// instead of displaying a link.
+	Optional bool
+
 	// The original source location of the reference. Used when generating error
 	// messages.
 	Location ast.Location

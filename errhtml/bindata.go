@@ -260,7 +260,7 @@ func errhtmlErrorsCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "errhtml/errors.css", size: 30697, mode: os.FileMode(420), modTime: time.Unix(1607886945, 0)}
+	info := bindataFileInfo{name: "errhtml/errors.css", size: 30697, mode: os.FileMode(420), modTime: time.Unix(1608521181, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

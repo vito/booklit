@@ -109,6 +109,11 @@ func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
 		return nil
 	}
 
+	if con.Optional {
+		// allow nonexistant tag; template must handle nil Tag
+		return nil
+	}
+
 	if resolve.AllowBrokenReferences {
 		logrus.WithFields(logrus.Fields{
 			"section": resolve.Section.Path,

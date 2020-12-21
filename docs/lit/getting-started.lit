@@ -1,4 +1,5 @@
 \use-plugin{chroma}
+\use-plugin{booklitdoc}
 
 \title{Getting Started}
 
@@ -24,7 +25,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
 
   First, create a file called \code{hello.lit} with the following content:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
     \title{Hello, world!}{hello}
 
     I'm a Booklit document!
@@ -57,7 +58,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
 
   Next, let's try adding a section within our document:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
     \title{Hello, world!}{hello}
 
     I'm a Booklit document!
@@ -93,7 +94,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   To render each sub-section on its own page, simply call
   \code{\\split-sections} somewhere in the section.
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
     \title{Hello, world!}{hello}
 
     \split-sections
@@ -111,7 +112,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   at least make it so we can browse to it! This can be done generally with
   \reference{table-of-contents}:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
     \title{Hello, world!}{hello}
 
     \split-sections
@@ -138,7 +139,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   you'll want to reference sections from each other directly and in context.
   This can be done with \reference{reference}:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
     \title{Hello, world!}{hello}
 
     \split-sections
@@ -159,7 +160,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   a section it'll be the section's title. This can be overridden by passing a
   second argument to \reference{reference}:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
     \title{Hello, world!}{hello}
 
     \split-sections

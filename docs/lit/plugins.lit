@@ -54,7 +54,7 @@ reference when writing your own plugin.
   execute \reference{use-plugin} in your \code{.lit} document to add it to the
   section:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
   \title{My Section}
 
   \use-plugin{fancyplugin}
@@ -120,7 +120,7 @@ reference when writing your own plugin.
 
   Now let's create a Booklit document that uses it as \code{hello-plugins.lit}:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
   \use-plugin{pluglit}
 
   Zero args: \hello-world
@@ -144,7 +144,7 @@ reference when writing your own plugin.
 
     Functions can be invoked with any number of arguments, like so:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \hello-world{arg1}{arg2}
     }}}
 
@@ -257,7 +257,7 @@ reference when writing your own plugin.
 
     This function would be called like so:
 
-    \syntax{booklit}{{{
+    \lit-syntax{{{
     \describe-fruit{banana}{
       A banana is a yellow fruit that only really tastes
       good in its original form. Banana flavored

@@ -1,4 +1,4 @@
-\use-plugin{chroma}
+\use-plugin{booklitdoc}
 
 \title{Syntax}{syntax}
 
@@ -45,7 +45,7 @@ either text or a comment.
   appear in between words, and they can also be nested. This makes commenting
   out large blocks of content easy:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
   Hi, I'm{- a comment -} in the middle of a sentence!
 
   {-
@@ -74,7 +74,7 @@ either text or a comment.
       line.
     }
   }{
-    \definition{\syntax{booklit}{{{
+    \definition{\lit-syntax{{{
       {word wrapped
 line}
     }}}}{
@@ -82,7 +82,7 @@ line}
       space, as if it were written as \code{\{word wrapped line\}}.
     }
   }{
-    \definition{\syntax{booklit}{{{
+    \definition{\lit-syntax{{{
       {
         paragraph 1
 
@@ -93,7 +93,7 @@ line}
       paragraphs.
     }
   }{
-    \definition{\syntax{booklit}{{{
+    \definition{\lit-syntax{{{
       {{
         paragraph 1
 
@@ -110,7 +110,7 @@ line}
       ignored.
     }
   }{
-    \definition{\syntax{booklit}{{
+    \definition{\lit-syntax{{
       \{\{\{
         paragraph 1
 

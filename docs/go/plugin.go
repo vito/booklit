@@ -3,6 +3,7 @@ package booklitdoc
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/alecthomas/chroma"
@@ -92,19 +93,39 @@ func (plugin Plugin) Columns(title booklit.Content, rest ...booklit.Content) boo
 	}
 }
 
-func (plugin Plugin) BigCode(content booklit.Content) booklit.Content {
-	return booklit.Styled{
-		Style:   "big-code",
-		Content: content,
-	}
+var linkTransformer = chromap.Transformer{
+	Pattern: regexp.MustCompile(`\\([a-z-]+)`),
+	Transform: func(invoke string) booklit.Content {
+		function := strings.TrimPrefix(invoke, `\`)
+
+		return booklit.Sequence{
+			booklit.String(`\`),
+			&booklit.Reference{
+				TagName:  function,
+				Content:  booklit.String(function),
+				Optional: true,
+			},
+		}
+	},
 }
 
-func (plugin Plugin) Codefile(path string) booklit.Content {
-	return booklit.Styled{
-		Style:   "codefile",
-		Content: booklit.String(path),
-		Block:   true,
-	}
+var argTransformer = chromap.Transformer{
+	Pattern: regexp.MustCompile(`\{[^\}]+\}`),
+	Transform: func(farg string) booklit.Content {
+		arg := strings.TrimPrefix(strings.TrimSuffix(farg, "}"), "{")
+		return booklit.Sequence{
+			booklit.String("{"),
+			booklit.Styled{
+				Style:   booklit.StyleItalic,
+				Content: booklit.String(arg),
+			},
+			booklit.String("}"),
+		}
+	},
+}
+
+func (plugin Plugin) LitSyntax(code booklit.Content) (booklit.Content, error) {
+	return plugin.chroma.SyntaxTransform("lit", code, styles.Fallback, linkTransformer)
 }
 
 func (plugin Plugin) Godoc(ref string) (booklit.Content, error) {
@@ -112,16 +133,14 @@ func (plugin Plugin) Godoc(ref string) (booklit.Content, error) {
 
 	pkg := strings.TrimLeft(spl[0], "*")
 
-	syntax, err := plugin.chroma.Syntax("go", booklit.Sequence{
-		booklit.String(spl[0] + "."),
-		plugin.base.Bold(booklit.String(spl[1])),
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	return plugin.base.Link(
-		syntax,
+		booklit.Styled{
+			Style: booklit.StyleVerbatim,
+			Content: booklit.Sequence{
+				booklit.String(spl[0] + "."),
+				plugin.base.Bold(booklit.String(spl[1])),
+			},
+		},
 		"https://pkg.go.dev/github.com/vito/"+pkg+"#"+spl[1],
 	), nil
 }
@@ -134,7 +153,7 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Con
 		return nil, err
 	}
 
-	thumb, err := plugin.chroma.Syntax("lit", plugin.renderInvoke(invoke))
+	thumb, err := plugin.chroma.SyntaxTransform("lit", plugin.renderInvoke(invoke), styles.Fallback, linkTransformer, argTransformer)
 	if err != nil {
 		return nil, err
 	}
@@ -159,25 +178,19 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Con
 }
 
 func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {
-	str := booklit.Sequence{booklit.String("\\")}
-
-	str = append(str, &booklit.Reference{
-		TagName:  invoke.Function,
-		Content:  plugin.base.Bold(booklit.String(invoke.Function)),
-		Location: invoke.Location,
-	})
+	str := fmt.Sprintf(`\%s`, invoke.Function)
 
 	for _, arg := range invoke.Arguments {
-		str = append(str, booklit.String("{"))
+		str += "{"
 
 		for _, n := range arg.(ast.Sequence) {
-			str = append(str, plugin.base.Italic(booklit.String(fmt.Sprintf("%s", n))))
+			str += fmt.Sprintf("%s", n)
 		}
 
-		str = append(str, booklit.String("}"))
+		str += "}"
 	}
 
-	return str
+	return booklit.String(str)
 }
 
 func (plugin Plugin) DescribeFruit(

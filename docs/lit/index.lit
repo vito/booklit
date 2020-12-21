@@ -14,7 +14,7 @@
   Booklit makes it easy to reorganize and refactor your entire website without
   breaking links or manually adjusting header sizes.
 }{
-  \syntax{lit}{{{
+  \lit-syntax{{{
     \title{Hello}
 
     Hello, world!

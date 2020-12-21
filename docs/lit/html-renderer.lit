@@ -179,7 +179,7 @@ booklit -i ./index.any -o ./docs --html-templates ./html
 
   So, given the following example:
 
-  \syntax{booklit}{{{
+  \lit-syntax{{{
   \title{Fancy Section}
 
   \styled{fancy}
