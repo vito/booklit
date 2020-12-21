@@ -103,7 +103,8 @@ func (err ParseError) Error() string {
 // PrettyPrint prints the error message followed by a snippet of the source
 // location where the error occurred.
 func (err ParseError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
+	fmt.Fprintln(out, err.Annotate("%s", err))
+	fmt.Fprintln(out)
 	err.AnnotateLocation(out)
 }
 
@@ -130,8 +131,8 @@ func (err UnknownTagError) Error() string {
 // PrettyPrint prints the error message, a snippet of the source code where the
 // error occurred, and suggests similar tags.
 func (err UnknownTagError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
-
+	fmt.Fprintln(out, err.Annotate("%s", err))
+	fmt.Fprintln(out)
 	err.AnnotateLocation(out)
 
 	if len(err.SimilarTags) == 0 {
@@ -174,8 +175,8 @@ func (err AmbiguousReferenceError) Error() string {
 // error occurred, and snippets for the definition location of each tag that
 // was found.
 func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("%s:\n\n", err))
-
+	fmt.Fprintln(out, err.Annotate("%s", err))
+	fmt.Fprintln(out)
 	err.AnnotateLocation(out)
 
 	fmt.Fprintf(out, "The same tag was defined in the following locations:\n\n")
@@ -214,7 +215,8 @@ func (err UndefinedFunctionError) Error() string {
 // PrettyPrint prints the error message and a snippet of the source code where
 // the error occurred.
 func (err UndefinedFunctionError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("%s:\n\n", err))
+	fmt.Fprintln(out, err.Annotate("%s", err))
+	fmt.Fprintln(out)
 	err.AnnotateLocation(out)
 }
 
@@ -290,7 +292,8 @@ func (err TitleTwiceError) Error() string {
 //
 // Otherwise, the error is printed normally.
 func (err TitleTwiceError) PrettyPrint(out io.Writer) {
-	fmt.Fprintf(out, err.Annotate("%s\n\n", err))
+	fmt.Fprintln(out, err.Annotate("%s", err))
+	fmt.Fprintln(out)
 	err.AnnotateLocation(out)
 
 	fmt.Fprintf(out, "The section's title was first set here:\n\n")
