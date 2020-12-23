@@ -1,99 +1,104 @@
 \use-plugin{booklitdoc}
 \use-plugin{chroma}
 
-\title{Writing Plugins}{plugins}
+\title{Plugin System}{plugins}
 
-Plugins are what provide the functionality behind function calls like
-\syntax{lit}{\\foo\{bar\}}. Out of the box, Booklit comes with a plugin called
-\reference{baselit}{\code{baselit}} which provides basic primives like
-\reference{title} and \reference{section} in addition to support for basic
-markup like \reference{italic} and \reference{bold}. It also serves as a good
-reference when writing your own plugin.
+Plugins provide the functionality behind function calls like
+\syntax{lit}{\\foo\{bar\}}.
+
+Out of the box, Booklit comes with a plugin called
+\reference{baselit}{\code{baselit}} which provides basic functions like
+\reference{title}, \reference{section}, \reference{italic}, and
+\reference{bold}.
+
+More functions can be added by writing plugins and using them in your
+documents.
+
+If you've skipped ahead, you may want to check out \reference{getting-started}
+to see how to set up your Go module.
 
 \table-of-contents
 
 \section{
-  \title{Get Going}
-
-  Plugins are implemented in the \link{Go programming
-  language}{https://golang.org}, so if you're planning on writing or using one,
-  make sure you've got it installed.
-
-  First you'll need to get your \code{$GOPATH} sorted out. By default, Go sets
-  this value to \code{~/go}, but if that's not sufficient you can set it to
-  something else. This is the path under which Go source code and compiled
-  binaries will live.
-
-  One suggestion: you may want to set the root of your Booklit content as your
-  \code{$GOPATH}, so that your content can live alongside its plugins, whether
-  they're all third-party or whether you'll be writing some yourself.
-
-  For starters, let's fetch Booklit itself into your \code{$GOPATH}:
-
-  \syntax{bash}{{{
-  go get github.com/vito/booklit
-  }}}
-
-  This fetch is necessary even if you already have the \code{booklit} binary
-  installed, as plugins make use of Booklit's Go API.
-}
-
-\section{
   \title{Using Plugins}{using-plugins}
 
-  To use a plugin, you'll need to pass its Go import path to the \code{booklit}
-  command when building your docs via the \code{--plugin} flag, like so:
+  To use a plugin, pass its Go package's import path as \code{--plugin} to the
+  \code{booklit} command when building your docs.
+
+  For example, Booklit comes with a \code{chroma} plugin for syntax
+  highlighting. To use it, run:
 
   \syntax{bash}{{{
   booklit -i index.lit -o out \
-      --plugin my/fancyplugin
+    --plugin github.com/vito/booklit/chroma/plugin
   }}}
 
-  The plugin will then be pulled in at runtime, and it will register itself
-  under a certain name (conventionally, the same name as its package). Next,
-  execute \reference{use-plugin} in your \code{.lit} document to add it to the
-  section:
+  The \code{--plugin} flag must be passed every time you build your docs,
+  so you may want to put it in a script:
 
-  \lit-syntax{{{
-  \title{My Section}
+  \syntax{bash}{{{
+  #!/bin/bash
 
-  \use-plugin{fancyplugin}
-
-  Blah blah.
+  booklit -i lit/index.lit -o public \
+    --plugin github.com/vito/booklit/chroma/plugin \
+    "$@" # forward args from script to booklit
   }}}
+
+
+  Booklit imports all specified plugins at build time, automatically adding
+  them to \code{go.mod}. When imported, plugins register themselves under a
+  certain name - typically guessable from the import path.
+
+  To use the plugin in your documents, call \reference{use-plugin} with its
+  registered name:
+
+  \lit-syntax{{
+  \\title\{My Section\}
+
+  \\use-plugin\{chroma\}
+
+  \\syntax\{ruby\}\{\{\{
+    def fib(n)
+      fib(n - 2) + fib(n - 1)
+    end
+  \}\}\}
+  }}
 
   The \code{--plugin} flag can be specified multiple times, and
   \reference{use-plugin} can be invoked multiple times.
 
-  {-
-    TODO: having an example plugin bundled with Booklit, other than
-    booklitdoc, would be nice
-  -}
+  Note: \reference{section}{inline sections} inherit plugins from their parent
+  sections, but \reference{include-section}{included sections} do not.
 }
 
 \section{
   \title{Writing Plugins}{using-plugins}
 
-  To write a new plugin, first you'll need to create a directory for your
-  plugin's package in your \code{$GOPATH}. Let's just call it something cute
-  like \code{pluglit}.
+  Plugins are just Go packages that register a \italic{plugin factory} with
+  Booklit when they're imported with the \code{--plugin} flag.
+
+  It's possible to use Booklit without writing any plugins of your own, but
+  being able to write a plugin help you get the most out of Booklit.
+
+  To create a new plugin, create a directory within your Go module (where
+  \code{go.mod} lives) - let's call it \code{example} for this example:
 
   \syntax{bash}{{{
-  mkdir $GOPATH/src/pluglit
+  mkdir example
   }}}
 
   Then, we'll create the initial skeleton for our plugin at
-  \code{$GOPATH/src/pluglit/plugin.go}:
+  \code{example/plugin.go}:
 
   \syntax{go}{{{
-  package pluglit
+  package example
 
   import (
     "github.com/vito/booklit"
   )
 
   func init() {
-    booklit.RegisterPlugin("pluglit", NewPlugin)
+    booklit.RegisterPlugin("example", NewPlugin)
   }
 
   func NewPlugin(sec *booklit.Section) booklit.Plugin {
@@ -107,10 +112,11 @@ reference when writing your own plugin.
   }
   }}}
 
-  This registers a plugin that effectively does nothing. But it does it well.
+  This registers a plugin that does nothing. Let's define some document
+  functions!
 
-  Let's define some document functions! Functions work by simply defining
-  methods on the plugin. Let's define a basic one with no arguments:
+  Functions work by simply defining methods on the plugin struct. Let's define
+  a basic one with no arguments:
 
   \syntax{go}{{{
   func (plugin Plugin) HelloWorld() booklit.Content {
@@ -121,16 +127,20 @@ reference when writing your own plugin.
   Now let's create a Booklit document that uses it as \code{hello-plugins.lit}:
 
   \lit-syntax{{{
-  \use-plugin{pluglit}
+  \title{Hello Plugins}
+
+  \use-plugin{example}
 
   Zero args: \hello-world
   }}}
 
-  And build it like so:
+  To build this document, pass the package import path (including your module
+  name) as the \code{--plugin} flag. For example, if your \code{go.mod} says
+  \code{module foo}, the flag would be:
 
   \syntax{bash}{{{
   booklit -i hello-plugins.lit -o out \
-      --plugin pluglit
+      --plugin foo/example
   }}}
 
   This should result in a page showing:

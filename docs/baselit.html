@@ -24,9 +24,9 @@
         
           <li><a href="html-renderer.html">HTML Renderer</a></li>
         
-          <li><a href="plugins.html">Writing Plugins</a></li>
+          <li><a href="plugins.html">Plugin System</a></li>
         
-          <li><a href="syntax.html">Syntax</a></li>
+          <li><a href="booklit-syntax.html">Syntax</a></li>
         
           <li><a href="thanks.html">Thanks</a></li>
         
@@ -149,7 +149,7 @@ Hello, world!
   <pre class="definition-thumb"><a id="use-plugin"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{<em>name</em>}</code></pre>
 
   <div class="definition-content">
-    <p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Writing Plugins</a> for more information.</p>
+    <p>Register the plugin identified by <em>name</em> in the section. The plugin must be specified by <code>--plugin</code> on the command-line. See <a href="plugins.html">Plugin System</a> for more information.</p>
   </div>
 </div><div class="definition">
   <pre class="definition-thumb"><a id="styled"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#styled">styled</a></span>{<em>name</em>}</code></pre>
@@ -161,7 +161,7 @@ Hello, world!
   <pre class="definition-thumb"><a id="set-partial"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#set-partial">set-partial</a></span>{<em>name</em>}{<em>content</em>}</code></pre>
 
   <div class="definition-content">
-    <p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Writing Plugins</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p>
+    <p>Define the partial <em>name</em> in the section with <em>content</em> as its content.</p><p>This is useful for communicating content to either <a href="plugins.html">Plugin System</a> or custom templates given to the <a href="html-renderer.html">HTML renderer</a>.</p>
   </div>
 </div>
 
@@ -201,7 +201,7 @@ Hello, world!
   <pre class="definition-thumb"><a id="code"></a><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#code">code</a></span>{<em>text</em>}</code></pre>
 
   <div class="definition-content">
-    <p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a single line, it is presented as inline code. If it is in paragraph form, it is presented as its own block. See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>This is often used with <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace). See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>For example:</p><div class="lit-syntax"><div class="highlight"><pre style="">I&#39;m a sentence with some <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#code">code</a></span>{code bits} in it.
+    <p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a single line, it is presented as inline code. If it is in paragraph form, it is presented as its own block. See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>This is often used with <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to ignore escaping (in addition to preserving whitespace). See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>For example:</p><div class="lit-syntax"><div class="highlight"><pre style="">I&#39;m a sentence with some <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#code">code</a></span>{code bits} in it.
 </pre></div></div><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#code">code</a></span>{{
   This is a code block.
 }}

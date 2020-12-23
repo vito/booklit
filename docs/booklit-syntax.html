@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Syntax</title>
+    <link rel="stylesheet" type="text/css" href="css/iosevka.css" />
+    <link rel="stylesheet" type="text/css" href="css/booklit.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="page-header">
+        <a href="index.html">Booklit</a>
+        <p class="tagline">the little static site engine that could</p>
+      </div>
+
+      <nav class="top-nav">
+        <ul>
+        
+          <li><a href="getting-started.html">Getting Started</a></li>
+        
+          <li><a href="baselit.html">Basic Functions</a></li>
+        
+          <li><a href="html-renderer.html">HTML Renderer</a></li>
+        
+          <li><a href="plugins.html">Plugin System</a></li>
+        
+          <li class="current"><a href="booklit-syntax.html">Syntax</a></li>
+        
+          <li><a href="thanks.html">Thanks</a></li>
+        
+        </ul>
+      </nav>
+
+      <h1 class="section-header"><a id="booklit-syntax"></a><span class="section-number"><a href="booklit-syntax.html">5</a> </span>Syntax</h1>
+
+<p>Booklit documents are basically just text files with special syntax for <a href="booklit-syntax.html#function-syntax">function calls</a>. Aside from those, everything is either text or a comment.</p>
+<nav>
+  <ul>
+  
+    <li>
+      <a href="booklit-syntax.html#prose-syntax">5.1 Prose Syntax</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="booklit-syntax.html#comment-syntax">5.2 Comment Syntax</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="booklit-syntax.html#function-syntax">5.3 Function Syntax</a>
+
+      
+    </li>
+  
+  </ul>
+</nav>
+
+
+
+  
+    <h2 class="section-header"><a id="prose-syntax"></a><span class="section-number"><a href="booklit-syntax.html#prose-syntax">5.1</a> </span>Prose Syntax</h2>
+
+<p>Text files are bit more complicated than they sound, though, so here are the rules:</p><ul>
+
+  <li><p>The top-level of a document is a series of <em>paragraphs</em>, separated by one or more blank lines.</p></li>
+
+  <li><p>A <em>paragraph</em> is a series of <em>lines</em>, separated by linebreaks.</p></li>
+
+  <li><p>A <em>line</em> is a series of <em>words</em>.</p></li>
+
+  <li><p>A <em>word</em> is either a <em>string</em>, an <em>invoke</em>, or an <em>interpolated word</em>.</p></li>
+
+  <li><p>A <em>string</em> is a series of characters other than <code>{}\</code>, or a <code>\</code> followed by one of those characters, all within one line.</p></li>
+
+  <li><p>An <em>invoke</em> is a <a href="booklit-syntax.html#function-syntax">function call</a>.</p></li>
+
+  <li><p>An <em>interpolated word</em> is a <em>word</em> wrapped in curly braces (<code>{}</code>). This is useful for cases where a zero-argument <em>invoke</em> has to be smashed in the middle of a word, <code>just{\like}this</code>.</p></li>
+
+</ul>
+
+
+  
+
+  
+    <h2 class="section-header"><a id="comment-syntax"></a><span class="section-number"><a href="booklit-syntax.html#comment-syntax">5.2</a> </span>Comment Syntax</h2>
+
+<p>Comments are delimited by <code>{-</code> and <code>-}</code>. They can be multi-line, appear in between words, and they can also be nested. This makes commenting out large blocks of content easy:</p><div class="lit-syntax"><div class="highlight"><pre style="">Hi, I&#39;m<span style="color:#c29d7c;font-style:italic">{-</span><span style="color:#c29d7c;font-style:italic"> a comment </span><span style="color:#c29d7c;font-style:italic">-}</span> in the middle of a sentence!
+
+<span style="color:#c29d7c;font-style:italic">{-</span><span style="color:#c29d7c;font-style:italic">
+</span><span style="color:#c29d7c;font-style:italic">  I&#39;m hanging out at the top level,
+</span><span style="color:#c29d7c;font-style:italic">
+</span><span style="color:#c29d7c;font-style:italic">  </span><span style="color:#c29d7c;font-style:italic">{-</span><span style="color:#c29d7c;font-style:italic"> being nested and stuff </span><span style="color:#c29d7c;font-style:italic">-}</span><span style="color:#c29d7c;font-style:italic">
+</span><span style="color:#c29d7c;font-style:italic">
+</span><span style="color:#c29d7c;font-style:italic">  with multiple lines.
+</span><span style="color:#c29d7c;font-style:italic"></span><span style="color:#c29d7c;font-style:italic">-}</span>
+</pre></div></div>
+
+
+  
+
+  
+    <h2 class="section-header"><a id="function-syntax"></a><span class="section-number"><a href="booklit-syntax.html#function-syntax">5.3</a> </span>Function Syntax</h2>
+
+<p>Function calls are denoted by a single backslash (<code>\</code>), followed by series of alphanumeric characters and hyphens (<code>foo-bar</code>), forming the function <em>name</em>.</p><p>Following the name, there may be any number of <em>arguments</em>, which can come in a few different forms:</p><dl>
+  
+  <dt><code>{line}</code></dt>
+    <dd><p>With no linebreak after the <code>{</code>, the argument forms a single line.</p></dd>
+  
+  <dt><div class="lit-syntax"><div class="highlight"><pre style="">{word wrapped
+line}
+</pre></div></div></dt>
+    <dd><p>As above, but the word wrapping point gets converted into a single space, as if it were written as <code>{word wrapped line}</code>.</p></dd>
+  
+  <dt><div class="lit-syntax"><div class="highlight"><pre style="">{
+  paragraph 1
+
+  paragraph 2
+}
+</pre></div></div></dt>
+    <dd><p>With a linebreak after the <code>{</code>, the argument forms a block of paragraphs.</p></dd>
+  
+  <dt><div class="lit-syntax"><div class="highlight"><pre style="">{{
+  paragraph 1
+
+    indented paragraph 2
+
+  <span style="color:#ed6c30;font-weight:bold">\with</span>{syntax}
+}}
+</pre></div></div></dt>
+    <dd><p>With doubled-up curly braces, whitespace is preserved in the content, rather than being parsed into paragraphs.</p><p>Note that the first line of the content determines an indentation level that is then skipped for all lines. It is the only whitespace that is ignored.</p></dd>
+  
+  <dt><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#fcc21b">{{{</span><span style="color:#fcc21b">
+</span><span style="color:#fcc21b">  paragraph 1
+</span><span style="color:#fcc21b">
+</span><span style="color:#fcc21b">    indented {paragraph</span><span style="color:#fcc21b">} </span><span style="color:#fcc21b">2
+</span><span style="color:#fcc21b">
+</span><span style="color:#fcc21b">  \with{no-syntax</span><span style="color:#fcc21b">}
+</span><span style="color:#fcc21b"></span><span style="color:#fcc21b">}}}</span>
+</pre></div></div></dt>
+    <dd><p>Tripled-up curly braces form a verbatim argument. Similar to preformatted, whitespace is preserved. In addition, there is no interpreting or parsing of Booklit syntax within. This is useful for large code blocks where the content may contain special characters that Booklit normally may interpret (e.g. <code>\</code>, <code>{</code>, <code>}</code>).</p></dd>
+  
+</dl>
+
+
+  
+
+  
+
+    </div>
+    <script data-goatcounter="https://booklit.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  </body>
+</html>

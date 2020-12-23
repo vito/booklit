@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Writing Plugins</title>
+    <title>Plugin System</title>
     <link rel="stylesheet" type="text/css" href="css/iosevka.css" />
     <link rel="stylesheet" type="text/css" href="css/booklit.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -24,54 +24,48 @@
         
           <li><a href="html-renderer.html">HTML Renderer</a></li>
         
-          <li class="current"><a href="plugins.html">Writing Plugins</a></li>
+          <li class="current"><a href="plugins.html">Plugin System</a></li>
         
-          <li><a href="syntax.html">Syntax</a></li>
+          <li><a href="booklit-syntax.html">Syntax</a></li>
         
           <li><a href="thanks.html">Thanks</a></li>
         
         </ul>
       </nav>
 
-      <h1 class="section-header"><a id="plugins"></a><span class="section-number"><a href="plugins.html">4</a> </span>Writing Plugins</h1>
+      <h1 class="section-header"><a id="plugins"></a><span class="section-number"><a href="plugins.html">4</a> </span>Plugin System</h1>
 
-<p>Plugins are what provide the functionality behind function calls like <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\foo</span>{bar}</code>. Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic primives like <a href="baselit.html#title"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span></code></a> and <a href="baselit.html#section"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\section</span></code></a> in addition to support for basic markup like <a href="baselit.html#italic"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\italic</span></code></a> and <a href="baselit.html#bold"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\bold</span></code></a>. It also serves as a good reference when writing your own plugin.</p>
+<p>Plugins provide the functionality behind function calls like <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\foo</span>{bar}</code>.</p><p>Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic functions like <a href="baselit.html#title"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\title</span></code></a>, <a href="baselit.html#section"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\section</span></code></a>, <a href="baselit.html#italic"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\italic</span></code></a>, and <a href="baselit.html#bold"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\bold</span></code></a>.</p><p>More functions can be added by writing plugins and using them in your documents.</p><p>If you&#39;ve skipped ahead, you may want to check out <a href="getting-started.html">Getting Started</a> to see how to set up your Go module.</p>
 <nav>
   <ul>
   
     <li>
-      <a href="plugins.html#get-going">4.1 Get Going</a>
+      <a href="plugins.html#using-plugins">4.1 Using Plugins</a>
 
       
     </li>
   
     <li>
-      <a href="plugins.html#using-plugins">4.2 Using Plugins</a>
-
-      
-    </li>
-  
-    <li>
-      <a href="plugins.html#using-plugins">4.3 Writing Plugins</a>
+      <a href="plugins.html#using-plugins">4.2 Writing Plugins</a>
 
       
 <nav>
   <ul>
   
     <li>
-      <a href="plugins.html#argument-types">4.3.1 Argument Types</a>
+      <a href="plugins.html#argument-types">4.2.1 Argument Types</a>
 
       
     </li>
   
     <li>
-      <a href="plugins.html#return-values">4.3.2 Return Values</a>
+      <a href="plugins.html#return-values">4.2.2 Return Values</a>
 
       
     </li>
   
     <li>
-      <a href="plugins.html#a-full-example">4.3.3 A Full Example</a>
+      <a href="plugins.html#a-full-example">4.2.3 A Full Example</a>
 
       
     </li>
@@ -87,41 +81,41 @@
 
 
   
-    <h2 class="section-header"><a id="get-going"></a><span class="section-number"><a href="plugins.html#get-going">4.1</a> </span>Get Going</h2>
+    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.1</a> </span>Using Plugins</h2>
 
-<p>Plugins are implemented in the <a href="https://golang.org">Go programming language</a>, so if you&#39;re planning on writing or using one, make sure you&#39;ve got it installed.</p><p>First you&#39;ll need to get your <code>$GOPATH</code> sorted out. By default, Go sets this value to <code>~/go</code>, but if that&#39;s not sufficient you can set it to something else. This is the path under which Go source code and compiled binaries will live.</p><p>One suggestion: you may want to set the root of your Booklit content as your <code>$GOPATH</code>, so that your content can live alongside its plugins, whether they&#39;re all third-party or whether you&#39;ll be writing some yourself.</p><p>For starters, let&#39;s fetch Booklit itself into your <code>$GOPATH</code>:</p><div class="highlight"><pre style="">go get github.com/vito/booklit
-</pre></div><p>This fetch is necessary even if you already have the <code>booklit</code> binary installed, as plugins make use of Booklit&#39;s Go API.</p>
+<p>To use a plugin, pass its Go package&#39;s import path as <code>--plugin</code> to the <code>booklit</code> command when building your docs.</p><p>For example, Booklit comes with a <code>chroma</code> plugin for syntax highlighting. To use it, run:</p><div class="highlight"><pre style="">booklit -i index.lit -o out <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>  --plugin github.com/vito/booklit/chroma/plugin
+</pre></div><p>The <code>--plugin</code> flag must be passed every time you build your docs, so you may want to put it in a script:</p><div class="highlight"><pre style=""><span style="color:#c29d7c">#!/bin/bash
+</span><span style="color:#c29d7c"></span>
+booklit -i lit/index.lit -o public <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>  --plugin github.com/vito/booklit/chroma/plugin <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>  <span style="color:#fcc21b">&#34;</span>$@<span style="color:#fcc21b">&#34;</span> <span style="color:#c29d7c;font-style:italic"># forward args from script to booklit</span>
+</pre></div><p>Booklit imports all specified plugins at build time, automatically adding them to <code>go.mod</code>. When imported, plugins register themselves under a certain name - typically guessable from the import path.</p><p>To use the plugin in your documents, call <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> with its registered name:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{My Section}
 
+<span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{chroma}
 
-  
+<span style="color:#ed6c30;font-weight:bold">\syntax</span>{ruby}<span style="color:#fcc21b">{{{</span><span style="color:#fcc21b">
+</span><span style="color:#fcc21b">  def fib(n)
+</span><span style="color:#fcc21b">    fib(n - 2) + fib(n - 1)
+</span><span style="color:#fcc21b">  end
+</span><span style="color:#fcc21b"></span><span style="color:#fcc21b">}}}</span>
+</pre></div></div><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> can be invoked multiple times.</p><p>Note: <a href="baselit.html#section">inline sections</a> inherit plugins from their parent sections, but <a href="baselit.html#include-section">included sections</a> do not.</p>
 
-  
-    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.2</a> </span>Using Plugins</h2>
-
-<p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><div class="highlight"><pre style="">booklit -i index.lit -o out <span style="color:#fcc21b">\
-</span><span style="color:#fcc21b"></span>    --plugin my/fancyplugin
-</pre></div><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> in your <code>.lit</code> document to add it to the section:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{My Section}
-
-<span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{fancyplugin}
-
-Blah blah.
-</pre></div></div><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> can be invoked multiple times.</p>
-
-
-  
 
   
-    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.3</a> </span>Writing Plugins</h2>
 
-<p>To write a new plugin, first you&#39;ll need to create a directory for your plugin&#39;s package in your <code>$GOPATH</code>. Let&#39;s just call it something cute like <code>pluglit</code>.</p><div class="highlight"><pre style="">mkdir $GOPATH/src/pluglit
-</pre></div><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>$GOPATH/src/pluglit/plugin.go</code>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">package</span> pluglit
+  
+    <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.2</a> </span>Writing Plugins</h2>
+
+<p>Plugins are just Go packages that register a <em>plugin factory</em> with Booklit when they&#39;re imported with the <code>--plugin</code> flag.</p><p>It&#39;s possible to use Booklit without writing any plugins of your own, but being able to write a plugin help you get the most out of Booklit.</p><p>To create a new plugin, create a directory within your Go module (where <code>go.mod</code> lives) - let&#39;s call it <code>example</code> for this example:</p><div class="highlight"><pre style="">mkdir example
+</pre></div><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>example/plugin.go</code>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">package</span> example
 
 <span style="color:#ed6c30;font-weight:bold">import</span> (
   <span style="color:#fcc21b">&#34;github.com/vito/booklit&#34;</span>
 )
 
 <span style="color:#ed6c30;font-weight:bold">func</span> init() {
-  booklit.RegisterPlugin(<span style="color:#fcc21b">&#34;pluglit&#34;</span>, NewPlugin)
+  booklit.RegisterPlugin(<span style="color:#fcc21b">&#34;example&#34;</span>, NewPlugin)
 }
 
 <span style="color:#ed6c30;font-weight:bold">func</span> NewPlugin(sec *booklit.Section) booklit.Plugin {
@@ -133,22 +127,24 @@ Blah blah.
 <span style="color:#ed6c30;font-weight:bold">type</span> Plugin <span style="color:#ed6c30;font-weight:bold">struct</span> {
   section *booklit.Section
 }
-</pre></div><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) HelloWorld() booklit.Content {
+</pre></div><p>This registers a plugin that does nothing. Let&#39;s define some document functions!</p><p>Functions work by simply defining methods on the plugin struct. Let&#39;s define a basic one with no arguments:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) HelloWorld() booklit.Content {
   <span style="color:#ed6c30;font-weight:bold">return</span> booklit.String(<span style="color:#fcc21b">&#34;Hello, world!&#34;</span>)
 }
-</pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{pluglit}
+</pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello Plugins}
+
+<span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{example}
 
 Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>
-</pre></div></div><p>And build it like so:</p><div class="highlight"><pre style="">booklit -i hello-plugins.lit -o out <span style="color:#fcc21b">\
-</span><span style="color:#fcc21b"></span>    --plugin pluglit
+</pre></div></div><p>To build this document, pass the package import path (including your module name) as the <code>--plugin</code> flag. For example, if your <code>go.mod</code> says <code>module foo</code>, the flag would be:</p><div class="highlight"><pre style="">booklit -i hello-plugins.lit -o out <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>    --plugin foo/example
 </pre></div><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
 
 
   
-    <h3 class="section-header"><a id="argument-types"></a><span class="section-number"><a href="plugins.html#argument-types">4.3.1</a> </span>Argument Types</h3>
+    <h3 class="section-header"><a id="argument-types"></a><span class="section-number"><a href="plugins.html#argument-types">4.2.1</a> </span>Argument Types</h3>
 
 <p>Functions can be invoked with any number of arguments, like so:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}
-</pre></div></div><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
+</pre></div></div><p>See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
   <dt><a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
@@ -165,7 +161,7 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-starte
   
 
   
-    <h3 class="section-header"><a id="return-values"></a><span class="section-number"><a href="plugins.html#return-values">4.3.2</a> </span>Return Values</h3>
+    <h3 class="section-header"><a id="return-values"></a><span class="section-number"><a href="plugins.html#return-values">4.2.2</a> </span>Return Values</h3>
 
 <p>Plugin methods can then return one of the following:</p><ul>
 
@@ -183,7 +179,7 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-starte
   
 
   
-    <h3 class="section-header"><a id="a-full-example"></a><span class="section-number"><a href="plugins.html#a-full-example">4.3.3</a> </span>A Full Example</h3>
+    <h3 class="section-header"><a id="a-full-example"></a><span class="section-number"><a href="plugins.html#a-full-example">4.2.3</a> </span>A Full Example</h3>
 
 <p>Putting the pieces together, let&#39;s extend our <code>pluglit</code> plugin from earlier write a real function that does something useful:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) DescribeFruit(
   name <span style="color:#ed6c30">string</span>,

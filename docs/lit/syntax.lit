@@ -1,6 +1,6 @@
 \use-plugin{booklitdoc}
 
-\title{Syntax}{syntax}
+\title{Syntax}{booklit-syntax}
 
 Booklit documents are basically just text files with special syntax for
 \reference{function-syntax}{function calls}. Aside from those, everything is
