@@ -35,7 +35,11 @@
 
       <h1 class="section-header"><a id="html-renderer"></a><span class="section-number"><a href="html-renderer.html">3</a> </span>The HTML Renderer</h1>
 
-<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, first create a directory for your <code>.tmpl</code> files, and then provide the <code>--html-templates</code> flag when building your docs:</p><div class="highlight"><pre style="">booklit -i ./index.any -o ./docs --html-templates ./html
+<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, create a directory for your <code>.tmpl</code> files and pass it to Booklit with the <code>--html-templates</code> flag.</p><p>The <code>--html-templates</code> flag must be passed every time you build your docs, so you may want to put it in a script:</p><div class="highlight"><pre style=""><span style="color:#c29d7c">#!/bin/bash
+</span><span style="color:#c29d7c"></span>
+booklit -i lit/index.lit -o public <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>  --html-templates ./html <span style="color:#fcc21b">\
+</span><span style="color:#fcc21b"></span>  <span style="color:#fcc21b">&#34;</span>$@<span style="color:#fcc21b">&#34;</span> <span style="color:#c29d7c;font-style:italic"># forward args from script to booklit</span>
 </pre></div>
 <nav>
   <ul>
@@ -84,7 +88,7 @@
   
     <h2 class="section-header"><a id="base-templates"></a><span class="section-number"><a href="html-renderer.html#base-templates">3.1</a> </span>Base Templates</h2>
 
-<p>The following template files will be executed if present under <code>./html</code>, with the corresponding data type as <code>.</code>:</p><table>
+<p>The following template files will be executed if present in the HTML templates directory, with the corresponding data type as <code>.</code>:</p><table>
   
   <tr>
     

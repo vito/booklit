@@ -12,11 +12,18 @@ styling at all. You'll probably want to change that.
 
 The HTML renderer uses Go's built-in
 \link{\code{html/template}}{https://golang.org/pkg/html/template} package. To
-override templates, first create a directory for your \code{.tmpl} files, and
-then provide the \code{--html-templates} flag when building your docs:
+override templates, create a directory for your \code{.tmpl} files and pass it
+to Booklit with the \code{--html-templates} flag.
+
+The \code{--html-templates} flag must be passed every time you build your docs,
+so you may want to put it in a script:
 
 \syntax{bash}{{{
-booklit -i ./index.any -o ./docs --html-templates ./html
+#!/bin/bash
+
+booklit -i lit/index.lit -o public \
+  --html-templates ./html \
+  "$@" # forward args from script to booklit
 }}}
 
 \table-of-contents
@@ -24,8 +31,8 @@ booklit -i ./index.any -o ./docs --html-templates ./html
 \section{
   \title{Base Templates}
 
-  The following template files will be executed if present under \code{./html},
-  with the corresponding data type as \code{.}:
+  The following template files will be executed if present in the HTML
+  templates directory, with the corresponding data type as \code{.}:
 
   \table{
     \table-row{template}{type for \code{.}}
