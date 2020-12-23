@@ -35,8 +35,12 @@
 
       <h1 class="section-header"><a id="getting-started"></a><span class="section-number"><a href="getting-started.html">1</a> </span>Getting Started</h1>
 
-<p>First you&#39;ll need to grab the <code>booklit</code> CLI. This can be fetched from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>. Download the appropriate binary for your platform, <code>chmod &#43;x</code> it, and drop it somewhere in your <code>$PATH</code>.</p><p>The <code>chmod</code>ing and copying can be done in one fell swoop with <code>install</code>, like so:</p><div class="highlight"><pre style="">$ install ~/Downloads/booklit_* ~/bin/booklit
-</pre></div><p>Then, run <code>booklit -v</code>. You should see the version number printed out, assuming <code>~/bin</code> is in your <code>$PATH</code>.</p>
+<p>Getting started with Booklit assumes basic knowledge of the <a href="https://golang.org">Go programming language</a>. Be sure to have it installed!</p><p>The best way to get started with Booklit is to create a <a href="https://golang.org">Go</a> module with Booklit as a dependency:</p><div class="highlight"><pre style=""><span style="color:#c29d7c;font-style:italic"># create go.mod and go.sum</span>
+go mod init example
+
+<span style="color:#c29d7c;font-style:italic"># add booklit to go.mod, install booklit CLI</span>
+go get github.com/vito/booklit/cmd/booklit
+</pre></div><p><em>(If you see <code>booklit: command not found</code>, you may need to add <code>~/go/bin</code> to your <code>$PATH</code>.)</em></p><p>It&#39;s also possible to just grab the <code>booklit</code> executable from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>, but tracking it as a dependency will make it easier to <a href="plugins.html">write a plugin</a> later on.</p>
 <nav>
   <ul>
   
@@ -81,8 +85,9 @@
 <p>First, create a file called <code>hello.lit</code> with the following content:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
-</pre></div><p>Then, run the following to build it as <code>./docs/hello.html</code>:</p><div class="highlight"><pre style="">$ booklit -i hello.lit -o docs
-</pre></div><p>Each of the changes in the following sections will necessitate re-building. This can be done by running the above command again.</p><p>Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server showing your generated content:</p><pre>$ booklit -i hello.lit -o docs -s 8000</pre><p>Then, browse to <a href="http://127.0.0.1:8000/hello.html">http://127.0.0.1:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and served.</p>
+</pre></div><p>This file can exist anywhere, but one common convention is to place <code>.lit</code> documents under <code>lit/</code>, HTML templates under <code>html/</code>, and plugin code under <code>go/</code>.</p><p>Run the following to build and render the file to <code>./docs/hello.html</code>:</p><div class="highlight"><pre style="">$ booklit -i hello.lit -o docs
+</pre></div><p>Each of the changes in the following sections will require re-building, which can be done by running the above command again. Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server:</p><pre>$ booklit -i hello.lit -s 8000
+<span class="syntax-hl">INFO</span>[0000] listening              port=8000</pre><p>Once this says &#39;listening&#39;, browse to <a href="http://localhost:8000/hello.html">http://localhost:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and re-rendered.</p>
 
 
   
@@ -99,7 +104,7 @@ I&#39;m a Booklit document!
 
   I&#39;m so organized!
 }
-</pre></div><p>Upon building this you should see something like:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and will be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it.</p>
+</pre></div><p>After building, you should see something like this:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and will be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it.</p>
 
 
   
@@ -173,7 +178,7 @@ I&#39;m a Booklit document! Consult
 
 <p>What we&#39;ve gone over should carry you pretty far. But you&#39;ll likely want to know a lot more.</p><ul>
 
-  <li><p>To learn all the <code>\functions</code> you can call in a document out-of-the-box, consult <a href="baselit.html">Basic Functions</a>.</p></li>
+  <li><p>To learn all the <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> you can call in a document out-of-the-box, consult <a href="baselit.html">Basic Functions</a>.</p></li>
 
   <li><p>To change how your generated content looks, check out the <a href="html-renderer.html">HTML renderer</a>.</p></li>
 

@@ -255,7 +255,7 @@
 
   Content: content,
 }
-</pre></div><p>...where <code>booklit.StyleBold</code> is a <code>const</code> whose value is <code>&#34;bold&#34;</code>, but could just as easily be any other string.</p><p>Booklit&#39;s base templates then include a <code>bold.tmpl</code> template:</p><div class="highlight"><pre style="">&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;{{.Content | render}}&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;
+</pre></div><p>...where <code>booklit.StyleBold</code> is a <code>const</code> whose value is <code>&#34;bold&#34;</code>, but could just as easily be any other string.</p><p>Booklit&#39;s base templates then include a <code>bold.tmpl</code> template:</p><div class="highlight"><pre style="">&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;<span style="color:#c29d7c">{{</span>.Content | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;
 </pre></div><p>Thus, when content is styled with <code>&#34;bold&#34;</code>, it will render in <strong>strong tags</strong>.</p>
 
 
@@ -272,9 +272,9 @@
   },
 }
 </pre></div><p>Then, with <code>my-wackadoo-style.tmpl</code> as the following:</p><div class="highlight"><pre style="">&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;wack&#34;</span>&gt;
-  &lt;<span style="color:#fcc21b;font-weight:bold">h1</span>&gt;{{.Partial &#34;Title&#34; | render}}&lt;/<span style="color:#fcc21b;font-weight:bold">h1</span>&gt;
+  &lt;<span style="color:#fcc21b;font-weight:bold">h1</span>&gt;<span style="color:#c29d7c">{{</span>.Partial <span style="color:#fcc21b">&#34;Title&#34;</span> | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">h1</span>&gt;
 
-  {{.Content | render}}
+  <span style="color:#c29d7c">{{</span>.Content | render<span style="color:#c29d7c">}}</span>
 &lt;/<span style="color:#fcc21b;font-weight:bold">div</span>&gt;
 </pre></div><p>This would result with <code>title</code> rendered in between the <code>&lt;h1&gt;</code> tags, and <code>content</code> rendered below.</p>
 
@@ -298,15 +298,15 @@ I&#39;m a fancy section!
   I&#39;m a normal sub-section!
 }
 </pre></div><p>...and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><div class="highlight"><pre style="">&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
-  &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;{{.Title | render}}&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
+  &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;<span style="color:#c29d7c">{{</span>.Title | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
 
-  {{.Body | render}}
+  <span style="color:#c29d7c">{{</span>.Body | render<span style="color:#c29d7c">}}</span>
 
-  {{if not .SplitSections}}
-    {{range .Children}}
-      {{. | render}}
-    {{end}}
-  {{end}}
+  <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">if</span> <span style="color:#ed6c30;font-weight:bold">not</span> .SplitSections<span style="color:#c29d7c">}}</span>
+    <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">range</span> .Children<span style="color:#c29d7c">}}</span>
+      <span style="color:#c29d7c">{{</span>. | render<span style="color:#c29d7c">}}</span>
+    <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">end</span><span style="color:#c29d7c">}}</span>
+  <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">end</span><span style="color:#c29d7c">}}</span>
 &lt;/<span style="color:#fcc21b;font-weight:bold">div</span>&gt;
 </pre></div><p>...the following will be the rendered HTML for the section:</p><div class="highlight"><pre style="">&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
   &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;Fancy Section&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
