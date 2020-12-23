@@ -125,7 +125,7 @@ booklit -i ./index.any -o ./docs --html-templates ./html
 
   Booklit's base templates then include a \code{bold.tmpl} template:
 
-  \syntax{html}{{{
+  \syntax{go-html-template}{{{
   <strong>{{.Content | render}}</strong>
   }}}
 
@@ -152,7 +152,7 @@ booklit -i ./index.any -o ./docs --html-templates ./html
 
     Then, with \code{my-wackadoo-style.tmpl} as the following:
 
-    \syntax{html}{{{
+    \syntax{go-html-template}{{{
     <div class="wack">
       <h1>{{.Partial "Title" | render}}</h1>
 
@@ -196,7 +196,7 @@ booklit -i ./index.any -o ./docs --html-templates ./html
   ...and the following as \code{fancy.tmpl} under the given templates path
   (\code{--html-templates}):
 
-  \syntax{html}{{{
+  \syntax{go-html-template}{{{
   <div class="fancy">
     <em><strong>{{.Title | render}}</strong></em>
 
@@ -212,7 +212,7 @@ booklit -i ./index.any -o ./docs --html-templates ./html
 
   ...the following will be the rendered HTML for the section:
 
-  \syntax{html}{{{
+  \syntax{go-html-template}{{{
   <div class="fancy">
     <em><strong>Fancy Section</strong></em>
 

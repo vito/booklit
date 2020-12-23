@@ -13,11 +13,13 @@ methods useful for writing prose.
   \title{Defining Sections}{sections}
 
   \define{\title{text}{tags...}}{
-    Sets the title and optional \italic{tags} as repeated arguments. For
-    example, the \code{title} invocation for this section is:
+    Sets the title of the current section, along with optional \italic{tags} as
+    repeated arguments.
+
+    For example, the \code{title} invocation for this section is:
 
     \lit-syntax{{{
-    \title{The \code{baselit} Plugin}{baselit}
+    \title{Basic Functions}{baselit}
     }}}
 
     To specify multiple tags, pass multiple arguments:
@@ -26,9 +28,9 @@ methods useful for writing prose.
     \title{I'm a taggy section!}{tag-1}{tag-1}
     }}}
 
-    You can also just specify the title, in which case the section's tag will
-    default to a sanitized form of the title (e.g. \italic{I'm a fancy title!}
-    becomes \code{im-a-fancy-title}).
+    If no tags are specified, the section's tag defaults to a sanitized form of
+    the title (e.g. \italic{I'm a fancy title!} becomes
+    \code{im-a-fancy-title}).
   }
 
   \define{\aux{content}}{

@@ -1,0 +1,7 @@
+\title{Quotes}
+
+\use-plugin{example}
+
+\quote{
+  It's \bold{lit}!
+}{Travis Scott}

@@ -18,7 +18,7 @@ func init() {
 	booklit.RegisterPlugin("booklitdoc", NewPlugin)
 
 	styles.Fallback = chroma.MustNewStyle("booklitdoc", chroma.StyleEntries{
-		chroma.Comment:               "italic",
+		chroma.Comment:               "#c29d7c italic", // lighten(@background, 50%)
 		chroma.CommentPreproc:        "noitalic",
 		chroma.Keyword:               "#ed6c30 bold",
 		chroma.KeywordPseudo:         "nobold",

@@ -5,43 +5,55 @@
 
 \styled{splash}
 
+Booklit is a tool for building static websites from semantic documents.
+
+Booklit's goal is to make it easy to restructure your content by providing a
+clean separation between \bold{content}, \bold{logic}, and \bold{presentation}.
+
 \columns{
   \column-header{content in \code{*.lit}}
 
-  Booklit documents are text files which invoke \syntax{lit}{\\functions} to
-  produce content or configure the current section.
+  Booklit documents are text files which evaluate \syntax{lit}{\\functions} to
+  produce a section (along with any subsections).
 
-  Booklit makes it easy to reorganize and refactor your entire website without
-  breaking links or manually adjusting header sizes.
+  Sections are easy to move around, allowing you to refactor your entire
+  website without having to tweak header sizes and update internal links.
 }{
   \lit-syntax{{{
     \title{Hello}
 
-    Hello, world!
+    Hello, world! I'm a Booklit document.
 
-    \testimonial{Jacques Berman Webster II}{
-      It's lit!
-    }
+    \include-section{quotes.lit}
+  }}}
+
+  \lit-syntax{{{
+    \title{Quotes}
+
+    \use-plugin{example}
+
+    \quote{
+      It's \bold{lit}!
+    }{Travis Scott}
   }}}
 }
 
 \columns{
-  \column-header{plugins in \code{*.go}}
+  \column-header{logic in \code{*.go}}
 
-  Plugins are written in the \link{Go programming
-  language}{https://golang.org}. Go is popular yet pretty boring, allowing you
-  to focus on content while having \link{plenty of
-  libraries}{https://pkg.go.dev/} around when you need them.
+  Logic is implemented by \syntax{lit}{\\functions} which are provided by
+  plugins written \link{Go}{https://golang.org}. Go is a simple language with
+  \link{plenty of libraries}{https://pkg.go.dev/} around if you need them.
 
-  Plugins allow documents to be expressive, providing meaningful syntax for
-  repeated patterns and abstractions.
+  Plugins allow your content to be semantic - saying what it means, not how it
+  should be created or displayed.
 }{
   \syntax{go}{{{
-  func (p MyPlugin) Testimonial(
-    source, quote booklit.Content,
+  func (Example) Quote(
+    quote, source booklit.Content,
   ) booklit.Content {
     return booklit.Styled{
-      Style: "testimonial",
+      Style: "quote",
       Content: quote,
       Partials: booklit.Partials{
         "Source": source,
@@ -54,14 +66,31 @@
 \columns{
   \column-header{presentation in \code{*.tmpl}}
 
-  The \reference{html-renderer} is powered by Go's prolific
-  \link{\code{html/template} package}{https://golang.org/pkg/html/template/}.
+  Booklit separates presentation into a final rendering phase which determines
+  the output format.
 
-  All templates can be overridden and different sections can be
-  \reference{styled}, providing full control over presentation.
+  The \reference{html-renderer} is powered by Go's standard
+  \link{\code{html/template} package}{https://golang.org/pkg/html/template/}.
+  More renderers may be implemented in the future.
+
+  All \reference{base-templates}{base templates} can be overridden, sections
+  can be individually \reference{styled}, and plugins can return
+  \godoc{booklit.Styled} content, so you have full control over what comes out.
 }{
-  \syntax{html}{{{
-  <blockquote class="testimonial">
+  \syntax{go-html-template}{{{
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>{{.Title.String}}</title>
+    </head>
+    <body>
+      {{. | render}}
+    </body>
+  </html>
+  }}}
+
+  \syntax{go-html-template}{{{
+  <blockquote class="quote">
     {{.Content | render}}
 
     <footer>
@@ -74,10 +103,11 @@
 \columns{
   \column-header{build with \code{booklit}}
 
-  \code{booklit} a single command for rendering content.
+  The \code{booklit} CLI is a single command which loads Booklit documents
+  and renders them.
 
-  When an error occurs, Booklit will show the precise location of the error and
-  suggest a fix (if possible).
+  When an error occurs, Booklit will show the location of the error and try to
+  suggest a fix.
 }{
   \code{{
     $ booklit -i ./index.lit -o ./public/
@@ -98,11 +128,10 @@
 \columns{
   \column-header{run with \code{booklit -s $PORT}}
 
-  In server mode, content is generated on each request with only plugin changes
-  requiring a server restart. The feedback loop is \italic{wicked fast}.
+  In server mode, Booklit renders content on each request with only plugin
+  changes requiring a server restart.
 
-  If building the page fails, the error will be shown on the page instead, and
-  be just as helpful.
+  The feedback loop is \italic{wicked fast}.
 }{
   \code{{
     $ booklit -i ./index.lit -s 3000

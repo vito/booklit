@@ -1,9 +1,5 @@
 \title{Hello}{index}
 
-\use-plugin{hello}
+Hello, world! I'm a Booklit document.
 
-Hello, world!
-
-\testimonial{Jacques Berman Webster II}{
-  It's lit!
-}
+\include-section{quotes.lit}

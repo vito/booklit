@@ -3,20 +3,27 @@
 
 \title{Getting Started}
 
-First you'll need to grab the \code{booklit} CLI. This can be fetched from the
-latest \link{GitHub release}{https://github.com/vito/booklit/releases/latest}.
-Download the appropriate binary for your platform, \code{chmod +x} it, and drop
-it somewhere in your \code{$PATH}.
+Getting started with Booklit assumes basic knowledge of the \link{Go
+programming language}{https://golang.org}. Be sure to have it installed!
 
-The \code{chmod}ing and copying can be done in one fell swoop with
-\code{install}, like so:
+The best way to get started with Booklit is to create a
+\link{Go}{https://golang.org} module with Booklit as a dependency:
 
-\syntax{bash}{{{
-$ install ~/Downloads/booklit_* ~/bin/booklit
+\syntax{sh}{{{
+# create go.mod and go.sum
+go mod init example
+
+# add booklit to go.mod, install booklit CLI
+go get github.com/vito/booklit/cmd/booklit
 }}}
 
-Then, run \code{booklit -v}. You should see the version number printed out,
-assuming \code{~/bin} is in your \code{$PATH}.
+\italic{(If you see \code{booklit: command not found}, you may need to add
+\code{~/go/bin} to your \code{$PATH}.)}
+
+It's also possible to just grab the \code{booklit} executable from the latest
+\link{GitHub release}{https://github.com/vito/booklit/releases/latest}, but
+tracking it as a dependency will make it easier to \reference{plugins}{write a
+plugin} later on.
 
 \table-of-contents
 
@@ -31,26 +38,29 @@ assuming \code{~/bin} is in your \code{$PATH}.
     I'm a Booklit document!
   }}}
 
-  Then, run the following to build it as \code{./docs/hello.html}:
+  This file can exist anywhere, but one common convention is to place
+  \code{.lit} documents under \code{lit/}, HTML templates under \code{html/},
+  and plugin code under \code{go/}.
+
+  Run the following to build and render the file to \code{./docs/hello.html}:
 
   \syntax{bash}{{{
   $ booklit -i hello.lit -o docs
   }}}
 
-  Each of the changes in the following sections will necessitate re-building.
-  This can be done by running the above command again.
-
-  Alternatively, you can run \code{booklit} with the \code{-s} flag to start a
-  HTTP server showing your generated content:
+  Each of the changes in the following sections will require re-building, which
+  can be done by running the above command again. Alternatively, you can run
+  \code{booklit} with the \code{-s} flag to start a HTTP server:
 
   \code{{
-  $ booklit -i hello.lit -o docs -s 8000
+  $ booklit -i hello.lit -s 8000
+  \syntax-hl{INFO}[0000] listening              port=8000
   }}
 
-  Then, browse to
-  \link{http://127.0.0.1:8000/hello.html}{http://127.0.0.1:8000/hello.html}.
+  Once this says 'listening', browse to
+  \link{http://localhost:8000/hello.html}{http://localhost:8000/hello.html}.
   When you change anything, just refresh and your content will be rebuilt and
-  served.
+  re-rendered.
 }
 
 \section{
@@ -70,7 +80,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
     }
   }}}
 
-  Upon building this you should see something like:
+  After building, you should see something like this:
 
   \inset{
     \larger{\larger{\larger{Hello, world!}}}
@@ -183,7 +193,7 @@ assuming \code{~/bin} is in your \code{$PATH}.
   know a lot more.
 
   \list{
-    To learn all the \code{\\functions} you can call in a document
+    To learn all the \syntax{lit}{\\functions} you can call in a document
     out-of-the-box, consult \reference{baselit}.
   }{
     To change how your generated content looks, check out the

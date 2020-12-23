@@ -1,24 +1,24 @@
-package plugin
+package example
 
 import "github.com/vito/booklit"
 
 func init() {
-	booklit.RegisterPlugin("hello", NewPlugin)
+	booklit.RegisterPlugin("example", NewPlugin)
 }
 
-type MyPlugin struct {
+type Example struct {
 	section *booklit.Section
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {
-	return MyPlugin{section: section}
+	return Example{section: section}
 }
 
-func (p MyPlugin) Testimonial(
-	source, quote booklit.Content,
+func (Example) Quote(
+	quote, source booklit.Content,
 ) booklit.Content {
 	return booklit.Styled{
-		Style:   "testimonial",
+		Style:   "quote",
 		Content: quote,
 		Partials: booklit.Partials{
 			"Source": source,

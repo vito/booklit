@@ -467,6 +467,10 @@ h2,
 h3 {
   margin-top: 3rem;
 }
+b,
+strong {
+  color: #f3ebe4;
+}
 .page {
   padding: 50px 30px;
   max-width: 800px;
@@ -572,13 +576,13 @@ h3 {
 .aside p:last-child {
   margin-bottom: 0;
 }
-@media (min-width: 961px) {
+@media (min-width: 1460px) {
   .aside {
     box-sizing: border-box;
     margin: 0;
-    width: 200px;
+    width: 300px;
     position: absolute;
-    right: -200px;
+    right: -300px;
   }
 }
 .top .section-header {
@@ -623,7 +627,7 @@ h3 {
 }
 .columns {
   display: flex;
-  margin-bottom: 40px;
+  margin: 40px 0;
   flex-direction: column;
 }
 @media (min-width: 860px) {
@@ -640,12 +644,12 @@ h3 {
 .columns .column .output-frame {
   background: white;
   overflow: hidden;
-  border: 3.5px solid #1a120c;
-  border-radius: 0.21em;
-  width: 280px;
-  height: 190px;
-  margin: 40.71428571px 60px;
-  transform: scale(1.42857143);
+  border: 3.75px solid #1a120c;
+  border-radius: 0.225em;
+  width: 300px;
+  height: 250px;
+  margin: 41.66666667px 50px;
+  transform: scale(1.33333333);
 }
 .column.title {
   flex-shrink: 0;
