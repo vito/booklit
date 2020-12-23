@@ -1,5 +1,7 @@
 package booklit
 
+import "github.com/sirupsen/logrus"
+
 // Plugin is an arbitrary object which is initialized with the Section that is
 // using the plugin.
 //
@@ -22,6 +24,7 @@ var plugins = map[string]PluginFactory{}
 // This is typically called by a plugin package's init() function.
 func RegisterPlugin(name string, factory PluginFactory) {
 	plugins[name] = factory
+	logrus.WithField("plugin", name).Info("plugin registered")
 }
 
 // LookupPlugin looks up the given plugin factory.
