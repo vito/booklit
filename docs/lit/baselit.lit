@@ -3,9 +3,11 @@
 
 \title{Basic Functions}{baselit}
 
-Booklit comes with a default plugin called \code{baselit}. It provides the
-basic set of functions needed for authoring Booklit documents, plus many common
-methods useful for writing prose.
+Booklit comes with a default plugin. It's called \code{baselit}, but you don't
+need to know that, since all sections have it by default!
+
+The default plugin provides the basic set of functions needed for authoring
+Booklit documents, plus many common functions useful for writing prose.
 
 \table-of-contents
 
@@ -13,7 +15,7 @@ methods useful for writing prose.
   \title{Defining Sections}{sections}
 
   \define{\title{text}{tags...}}{
-    Sets the title of the current section, along with optional \italic{tags} as
+    Set the title of the current section, along with optional \italic{tags} as
     repeated arguments.
 
     For example, the \code{title} invocation for this section is:
@@ -34,8 +36,11 @@ methods useful for writing prose.
   }
 
   \define{\aux{content}}{
+    Denote auxiliary content which can be stripped in certain contexts without
+    losing meaning.
+
     Used within a title declaration to provide content that will show up on the
-    section page itself, but will be omitted when referencing the section. This
+    section page itself but will be omitted when referencing the section. This
     is handy for sub-titles that you don't care to show anywhere but the
     section's page itself.
 
@@ -70,43 +75,70 @@ methods useful for writing prose.
     }}}
 
     Sections can be nested arbitrarily deep, however it is recommended to keep
-    a maximum depth of two on a single page. Sections can be split on to
-    separate pages by invoking \reference{split-sections}.
+    a maximum depth of two on a single page.
+
+    Sections can be rendered on separate pages by invoking
+    \reference{split-sections}.
   }
 
   \define{\include-section{path}}{
-    Introduce a sub-section located at \italic{path}, relative to the current
-    section's file. The included section will \bold{not} inherit the plugins of
-    the parent section. Instead, it should explicitly call
-    \reference{use-plugin} on its own, so that it's self-contained.
+    Load the Booklit document located at \italic{path} (relative to the current
+    section's file) and set it as a child section.
+
+    The included section \bold{does not} inherit the plugins of the parent
+    section. Instead, it should explicitly call \reference{use-plugin} on its
+    own, so that it's self-contained.
   }
 
   \define{\split-sections}{
-    Configures the renderer to generate a separate page for each sub-section,
-    rather than inlining them under smaller headings.
+    Configure the renderer to generate a separate page for each immediate
+    sub-section rather than inlining them under smaller headings.
   }
 
   \define{\single-page}{
     When declared in a section, it overrules any \reference{split-sections} in
-    the section and any child sections (recursively), in order to force them
-    all on to one page. Each section's header sizing is preserved, however.
+    the section and any child sections (recursively) in order to force them all
+    on to one page. Each section's header sizing is preserved, however.
 
     This is useful for having all of your content which is normally split
-    across many pages joined in to an additional "single-page" format, for
+    across many pages joined in to an additional "single-page" format for
     quick skimming and searching.
   }
 
   \define{\table-of-contents}{
-    This generates a block element that becomes the table of contents from this
+    Generate a block element that displays the table of contents from this
     section downward upon rendering. Often used in combination with
     \reference{split-sections}.
   }
 
   \define{\omit-children-from-table-of-contents}{
-    Configures the section to omit its children from table of contents
-    listings. This is appropriate when the sub-sections within a section are
-    not quite standalone; they may be brief and meant to be consumed all at
-    once, so navigating to them individually would not make sense.
+    Configure the section to omit its children from table of contents listings.
+    This is appropriate when the sub-sections within a section are not quite
+    standalone; they may be brief and meant to be consumed all at once, so
+    navigating to them individually would not make sense.
+  }
+}
+
+\section{
+  \title{Customizing Sections}
+
+  \define{\use-plugin{name}}{
+    Register the plugin identified by \italic{name} in the section. The plugin
+    must be specified by \code{--plugin} on the command-line. See
+    \reference{plugins} for more information.
+  }
+
+  \define{\styled{name}}{
+    Set the template's style to \italic{name}. The renderer may then use this
+    to present the section in a different way. See \reference{styled-sections}.
+  }
+
+  \define{\set-partial{name}{content}}{
+    Define the partial \italic{name} in the section with \italic{content} as
+    its content.
+
+    This is useful for communicating content to either \reference{plugins} or
+    custom templates given to the \reference{html-renderer}{HTML renderer}.
   }
 }
 
@@ -126,7 +158,7 @@ methods useful for writing prose.
   }
 
   \define{\reference{tag}{display?}}{
-    Generate a link to the target associated with \italic{tag}. If the optional
+    Link to the target associated with \italic{tag}. If the optional
     \italic{display} argument is specified, it will be used as the link's
     content. Otherwise, the tag's configured display will be rendered.
 
@@ -135,7 +167,7 @@ methods useful for writing prose.
   }
 
   \define{\target{tag}{display?}}{
-    Generate a target element that can be \reference{reference}d by
+    Generate a target element that can be \reference{reference}d as
     \italic{tag}. If \italic{display} is specified, references will default to
     showing it as their link. Otherwise, \italic{tag} itself will be the
     default.
@@ -319,28 +351,5 @@ methods useful for writing prose.
     }{
       \definition{b}{2}
     }
-  }
-}
-
-\section{
-  \title{Customizing Sections}
-
-  \define{\use-plugin{name}}{
-    Register the plugin identified by \italic{name} in the section. The plugin
-    must be specified by \code{--plugin} on the command-line. See
-    \reference{plugins} for more information.
-  }
-
-  \define{\set-partial{name}{content}}{
-    Define the partial \italic{name} in the section with \italic{content} as
-    its content.
-
-    This is useful for communicating content to either \reference{plugins} or
-    custom templates given to the \reference{html-renderer}{HTML renderer}.
-  }
-
-  \define{\styled{name}}{
-    Set the template's style to \italic{name}. The renderer may then use this
-    to present the section in a different way. See \reference{styled-sections}.
   }
 }

@@ -36,19 +36,19 @@
       <p>Booklit is a tool for building static websites from semantic documents.</p><p>Booklit&#39;s goal is to make it easy to restructure your content by providing a clean separation between <strong>content</strong>, <strong>logic</strong>, and <strong>presentation</strong>.</p><div class="columns">
   <div class="column title"><div class="column-header">content in <code>*.lit</code></div><p>Booklit documents are text files which evaluate <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> to produce a section (along with any subsections).</p><p>Sections are easy to move around, allowing you to refactor your entire website without having to tweak header sizes and update internal links.</p></div>
   
-  <div class="column"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello}
+  <div class="column"><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello}
 
 Hello, world! I&#39;m a Booklit document.
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#include-section">include-section</a></span>{quotes.lit}
-</pre></div><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Quotes}
+</pre></div></div><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Quotes}
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{example}
 
 <span style="color:#ed6c30;font-weight:bold">\quote</span>{
   It&#39;s <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#bold">bold</a></span>{lit}!
 }{Travis Scott}
-</pre></div></div>
+</pre></div></div></div>
   
 </div><div class="columns">
   <div class="column title"><div class="column-header">logic in <code>*.go</code></div><p>Logic is implemented by <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> which are provided by plugins written <a href="https://golang.org">Go</a>. Go is a simple language with <a href="https://pkg.go.dev/">plenty of libraries</a> around if you need them.</p><p>Plugins allow your content to be semantic - saying what it means, not how it should be created or displayed.</p></div>

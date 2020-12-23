@@ -38,9 +38,9 @@
 <p>Getting started with Booklit assumes basic knowledge of the <a href="https://golang.org">Go programming language</a>. Be sure to have it installed!</p><p>The best way to get started with Booklit is to create a <a href="https://golang.org">Go</a> module with Booklit as a dependency:</p><div class="highlight"><pre style=""><span style="color:#c29d7c;font-style:italic"># create go.mod and go.sum</span>
 go mod init example
 
-<span style="color:#c29d7c;font-style:italic"># add booklit to go.mod, install booklit CLI</span>
+<span style="color:#c29d7c;font-style:italic"># add booklit to go.mod and install CLI</span>
 go get github.com/vito/booklit/cmd/booklit
-</pre></div><p><em>(If you see <code>booklit: command not found</code>, you may need to add <code>~/go/bin</code> to your <code>$PATH</code>.)</em></p><p>It&#39;s also possible to just grab the <code>booklit</code> executable from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>, but tracking it as a dependency will make it easier to <a href="plugins.html">write a plugin</a> later on.</p>
+</pre></div><p>It&#39;s also possible to download the <code>booklit</code> executable from the latest <a href="https://github.com/vito/booklit/releases/latest">GitHub release</a>, but tracking it as a dependency will make it easier to <a href="plugins.html">write a plugin</a> later on.</p>
 <nav>
   <ul>
   
@@ -82,12 +82,12 @@ go get github.com/vito/booklit/cmd/booklit
   
     <h2 class="section-header"><a id="hello-world"></a><span class="section-number"><a href="getting-started.html#hello-world">1.1</a> </span>Hello, world!</h2>
 
-<p>First, create a file called <code>hello.lit</code> with the following content:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
+<p>First, create a file called <code>hello.lit</code> with the following content:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
-</pre></div><p>This file can exist anywhere, but one common convention is to place <code>.lit</code> documents under <code>lit/</code>, HTML templates under <code>html/</code>, and plugin code under <code>go/</code>.</p><p>Run the following to build and render the file to <code>./docs/hello.html</code>:</p><div class="highlight"><pre style="">$ booklit -i hello.lit -o docs
+</pre></div></div><p>This file can exist anywhere, but one common convention is to place <code>.lit</code> documents under <code>lit/</code>, HTML templates under <code>html/</code>, and plugin code under <code>go/</code>.</p><p>Run the following to build and render the file to <code>./docs/hello.html</code>:</p><div class="highlight"><pre style="">$ booklit -i hello.lit -o docs
 </pre></div><p>Each of the changes in the following sections will require re-building, which can be done by running the above command again. Alternatively, you can run <code>booklit</code> with the <code>-s</code> flag to start a HTTP server:</p><pre>$ booklit -i hello.lit -s 8000
-<span class="syntax-hl">INFO</span>[0000] listening              port=8000</pre><p>Once this says &#39;listening&#39;, browse to <a href="http://localhost:8000/hello.html">http://localhost:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and re-rendered.</p>
+<span class="syntax-hl">INFO</span>[0000] listening              port=8000</pre><p>Once Booklit says &#39;listening&#39;, browse to <a href="http://localhost:8000/hello.html">http://localhost:8000/hello.html</a>. When you change anything, just refresh and your content will be rebuilt and re-rendered.</p>
 
 
   
@@ -95,7 +95,7 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a id="organizing-with-sections"></a><span class="section-number"><a href="getting-started.html#organizing-with-sections">1.2</a> </span>Organizing with Sections</h2>
 
-<p>Next, let&#39;s try adding a section within our document:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
+<p>Next, let&#39;s try adding a section within our document:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 I&#39;m a Booklit document!
 
@@ -104,7 +104,7 @@ I&#39;m a Booklit document!
 
   I&#39;m so organized!
 }
-</pre></div><p>After building, you should see something like this:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and will be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it.</p>
+</pre></div></div><p>After building, you should see something like this:</p><div style="margin: 0 2em 1em" class="inset"><p><span style="font-size: 120%"><span style="font-size: 120%"><span style="font-size: 120%">Hello, world!</span></span></span></p><p>I&#39;m a Booklit document!</p><p><span style="font-size: 120%"><span style="font-size: 120%">1 Hi there!</span></span></p><p>I&#39;m so organized!</p></div><p>That number &#34;1&#34; might look a bit weird at the moment, but it&#39;s the section number, and it&#39;ll be something like &#34;3.2&#34; for a nested section. You can always remove it by specifying your own template (more on that later), but for now let&#39;s leave it there.</p>
 
 
   
@@ -112,7 +112,7 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a id="splitting-sections"></a><span class="section-number"><a href="getting-started.html#splitting-sections">1.3</a> </span>Splitting Sections</h2>
 
-<p>To render each sub-section on its own page, simply call <code>\split-sections</code> somewhere in the section.</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
+<p>To render each sub-section on its own page, simply call <a href="baselit.html#split-sections"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\split-sections</span></code></a> somewhere in the section.</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#split-sections">split-sections</a></span>
 
@@ -123,7 +123,7 @@ I&#39;m a Booklit document!
 
   I&#39;m so organized!
 }
-</pre></div><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done generally with <a href="baselit.html#table-of-contents"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></a>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
+</pre></div></div><p>So far we&#39;ve just made the section disappear, which isn&#39;t very helpful. Let&#39;s at least make it so we can browse to it! This can be done with <a href="baselit.html#table-of-contents"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></a>:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#split-sections">split-sections</a></span>
 
@@ -136,7 +136,7 @@ I&#39;m a Booklit document!
 
   I&#39;m so organized!
 }
-</pre></div><p>Note that when viewing the sub-section, its header is now a <code>&lt;h1&gt;</code> rather than the <code>&lt;h2&gt;</code> it was before, since it stands on its own page.</p>
+</pre></div></div><p>Note that when viewing the sub-section, its header is now a <code>&lt;h1&gt;</code> rather than the <code>&lt;h2&gt;</code> it was before, since it stands on its own page.</p>
 
 
   
@@ -144,31 +144,30 @@ I&#39;m a Booklit document!
   
     <h2 class="section-header"><a id="references-and-tagging"></a><span class="section-number"><a href="getting-started.html#references-and-tagging">1.4</a> </span>References &amp; Tagging</h2>
 
-<p>Having a <a href="baselit.html#table-of-contents"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
+<p>Having a <a href="baselit.html#table-of-contents"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\table-of-contents</span></code></a> is great and all, but more often you&#39;ll want to reference sections from each other directly and in context. This can be done with <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#split-sections">split-sections</a></span>
 
-I&#39;m a Booklit document! To read further, see
-<span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#reference">reference</a></span>{hi-there}.
+I&#39;m a Booklit document! To read further, see <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#reference">reference</a></span>{hi-there}.
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#section">section</a></span>{
   <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hi there!}
 
   I&#39;m so organized!
 }
-</pre></div><p>The first argument to <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag, and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
+</pre></div></div><p>The first argument to <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a> is the name of a tag to link. At build time, references will <em>resolve</em> to their tag and generate a link to it. By default, the name of the link is determined by the tag, so for a section it&#39;ll be the section&#39;s title. This can be overridden by passing a second argument to <a href="baselit.html#reference"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\reference</span></code></a>:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello, world!}{hello}
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#split-sections">split-sections</a></span>
 
-I&#39;m a Booklit document! Consult
-<span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#reference">reference</a></span>{hi-there}{this section} for more.
+I&#39;m a Booklit document! Consult <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#reference">reference</a></span>{hi-there}{this section} for
+more.
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#section">section</a></span>{
   <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hi there!}
 
   I&#39;m so organized!
 }
-</pre></div>
+</pre></div></div>
 
 
   
@@ -178,11 +177,11 @@ I&#39;m a Booklit document! Consult
 
 <p>What we&#39;ve gone over should carry you pretty far. But you&#39;ll likely want to know a lot more.</p><ul>
 
-  <li><p>To learn all the <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> you can call in a document out-of-the-box, consult <a href="baselit.html">Basic Functions</a>.</p></li>
-
   <li><p>To change how your generated content looks, check out the <a href="html-renderer.html">HTML renderer</a>.</p></li>
 
-  <li><p>Once you&#39;ve identified patterns or abstractions that you want to introduce, consult <a href="plugins.html">Writing Plugins</a>.</p></li>
+  <li><p>To learn the <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> that come with Booklit, check out <a href="baselit.html">Basic Functions</a>.</p></li>
+
+  <li><p>To extend your documents with your own <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code>, check out <a href="plugins.html">Writing Plugins</a>.</p></li>
 
 </ul>
 

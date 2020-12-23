@@ -664,3 +664,6 @@ strong {
 .highlight a {
   color: inherit;
 }
+.lit-syntax pre {
+  white-space: pre-wrap;
+}

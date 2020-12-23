@@ -125,7 +125,15 @@ var argTransformer = chromap.Transformer{
 }
 
 func (plugin Plugin) LitSyntax(code booklit.Content) (booklit.Content, error) {
-	return plugin.chroma.SyntaxTransform("lit", code, styles.Fallback, linkTransformer)
+	syntax, err := plugin.chroma.SyntaxTransform("lit", code, styles.Fallback, linkTransformer)
+	if err != nil {
+		return nil, err
+	}
+
+	return booklit.Styled{
+		Style:   "lit-syntax",
+		Content: syntax,
+	}, nil
 }
 
 func (plugin Plugin) Godoc(ref string) (booklit.Content, error) {

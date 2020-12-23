@@ -13,14 +13,11 @@ The best way to get started with Booklit is to create a
 # create go.mod and go.sum
 go mod init example
 
-# add booklit to go.mod, install booklit CLI
+# add booklit to go.mod and install CLI
 go get github.com/vito/booklit/cmd/booklit
 }}}
 
-\italic{(If you see \code{booklit: command not found}, you may need to add
-\code{~/go/bin} to your \code{$PATH}.)}
-
-It's also possible to just grab the \code{booklit} executable from the latest
+It's also possible to download the \code{booklit} executable from the latest
 \link{GitHub release}{https://github.com/vito/booklit/releases/latest}, but
 tracking it as a dependency will make it easier to \reference{plugins}{write a
 plugin} later on.
@@ -57,7 +54,7 @@ plugin} later on.
   \syntax-hl{INFO}[0000] listening              port=8000
   }}
 
-  Once this says 'listening', browse to
+  Once Booklit says 'listening', browse to
   \link{http://localhost:8000/hello.html}{http://localhost:8000/hello.html}.
   When you change anything, just refresh and your content will be rebuilt and
   re-rendered.
@@ -93,16 +90,16 @@ plugin} later on.
   }
 
   That number "1" might look a bit weird at the moment, but it's the section
-  number, and will be something like "3.2" for a nested section. You can always
+  number, and it'll be something like "3.2" for a nested section. You can always
   remove it by specifying your own template (more on that later), but for now
-  let's leave it.
+  let's leave it there.
 }
 
 \section{
   \title{Splitting Sections}
 
   To render each sub-section on its own page, simply call
-  \code{\\split-sections} somewhere in the section.
+  \reference{split-sections} somewhere in the section.
 
   \lit-syntax{{{
     \title{Hello, world!}{hello}
@@ -119,7 +116,7 @@ plugin} later on.
   }}}
 
   So far we've just made the section disappear, which isn't very helpful. Let's
-  at least make it so we can browse to it! This can be done generally with
+  at least make it so we can browse to it! This can be done with
   \reference{table-of-contents}:
 
   \lit-syntax{{{
@@ -154,8 +151,7 @@ plugin} later on.
 
     \split-sections
 
-    I'm a Booklit document! To read further, see
-    \reference{hi-there}.
+    I'm a Booklit document! To read further, see \reference{hi-there}.
 
     \section{
       \title{Hi there!}
@@ -165,9 +161,9 @@ plugin} later on.
   }}}
 
   The first argument to \reference{reference} is the name of a tag to link. At
-  build time, references will \italic{resolve} to their tag, and generate a
-  link to it. By default, the name of the link is determined by the tag, so for
-  a section it'll be the section's title. This can be overridden by passing a
+  build time, references will \italic{resolve} to their tag and generate a link
+  to it. By default, the name of the link is determined by the tag, so for a
+  section it'll be the section's title. This can be overridden by passing a
   second argument to \reference{reference}:
 
   \lit-syntax{{{
@@ -175,8 +171,8 @@ plugin} later on.
 
     \split-sections
 
-    I'm a Booklit document! Consult
-    \reference{hi-there}{this section} for more.
+    I'm a Booklit document! Consult \reference{hi-there}{this section} for
+    more.
 
     \section{
       \title{Hi there!}
@@ -193,13 +189,13 @@ plugin} later on.
   know a lot more.
 
   \list{
-    To learn all the \syntax{lit}{\\functions} you can call in a document
-    out-of-the-box, consult \reference{baselit}.
-  }{
     To change how your generated content looks, check out the
     \reference{html-renderer}{HTML renderer}.
   }{
-    Once you've identified patterns or abstractions that you want to introduce,
-    consult \reference{plugins}.
+    To learn the \syntax{lit}{\\functions} that come with Booklit, check out
+    \reference{baselit}.
+  }{
+    To extend your documents with your own \syntax{lit}{\\functions}, check out
+    \reference{plugins}.
   }
 }

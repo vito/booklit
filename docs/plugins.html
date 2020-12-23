@@ -100,12 +100,12 @@
 
 <p>To use a plugin, you&#39;ll need to pass its Go import path to the <code>booklit</code> command when building your docs via the <code>--plugin</code> flag, like so:</p><div class="highlight"><pre style="">booklit -i index.lit -o out <span style="color:#fcc21b">\
 </span><span style="color:#fcc21b"></span>    --plugin my/fancyplugin
-</pre></div><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> in your <code>.lit</code> document to add it to the section:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{My Section}
+</pre></div><p>The plugin will then be pulled in at runtime, and it will register itself under a certain name (conventionally, the same name as its package). Next, execute <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> in your <code>.lit</code> document to add it to the section:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{My Section}
 
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{fancyplugin}
 
 Blah blah.
-</pre></div><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> can be invoked multiple times.</p>
+</pre></div></div><p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></a> can be invoked multiple times.</p>
 
 
   
@@ -136,10 +136,10 @@ Blah blah.
 </pre></div><p>This registers a plugin that effectively does nothing. But it does it well.</p><p>Let&#39;s define some document functions! Functions work by simply defining methods on the plugin. Let&#39;s define a basic one with no arguments:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) HelloWorld() booklit.Content {
   <span style="color:#ed6c30;font-weight:bold">return</span> booklit.String(<span style="color:#fcc21b">&#34;Hello, world!&#34;</span>)
 }
-</pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{pluglit}
+</pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{pluglit}
 
 Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>
-</pre></div><p>And build it like so:</p><div class="highlight"><pre style="">booklit -i hello-plugins.lit -o out <span style="color:#fcc21b">\
+</pre></div></div><p>And build it like so:</p><div class="highlight"><pre style="">booklit -i hello-plugins.lit -o out <span style="color:#fcc21b">\
 </span><span style="color:#fcc21b"></span>    --plugin pluglit
 </pre></div><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
 
@@ -147,8 +147,8 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-starte
   
     <h3 class="section-header"><a id="argument-types"></a><span class="section-number"><a href="plugins.html#argument-types">4.3.1</a> </span>Argument Types</h3>
 
-<p>Functions can be invoked with any number of arguments, like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}
-</pre></div><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
+<p>Functions can be invoked with any number of arguments, like so:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}
+</pre></div></div><p>See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
   <dt><a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
@@ -229,12 +229,12 @@ Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-starte
 
   <li><p>the function name, <code>describe-fruit</code>, corresponds to the method name <code>DescribeFruit</code></p></li>
 
-</ul><p>This function would be called like so:</p><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\describe-fruit</span>{banana}{
+</ul><p>This function would be called like so:</p><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\describe-fruit</span>{banana}{
   A banana is a yellow fruit that only really tastes
   good in its original form. Banana flavored
   anything is a pit of dispair.
 }{banana-opinion}
-</pre></div><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a id="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code>\reference{banana-opinion}</code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
+</pre></div></div><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a id="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code>\reference{banana-opinion}</code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
 
 
   
