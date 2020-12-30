@@ -129,10 +129,9 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 	return booklit.Styled{
 		Style:   style,
 		Block:   !code.IsFlow(),
-		Content: code,
+		Content: highlighted,
 		Partials: booklit.Partials{
 			"Language": booklit.String(language),
-			"HTML":     highlighted,
 		},
 	}, nil
 }
