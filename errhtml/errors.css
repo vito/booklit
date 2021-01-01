@@ -523,3 +523,6 @@ strong {
 .annotated-line .line .eof {
   color: #ed6c30;
 }
+pre.raw-error {
+  white-space: pre-wrap;
+}
