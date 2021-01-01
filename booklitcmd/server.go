@@ -1,6 +1,8 @@
 package booklitcmd
 
 import (
+	"bytes"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -62,11 +64,19 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	log.Info("rendering")
 
-	err = server.Engine.RenderSection(w, section)
+	rendered := new(bytes.Buffer)
+	err = server.Engine.RenderSection(rendered, section)
 	if err != nil {
 		log.Errorf("failed to render: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		booklit.ErrorResponse(w, err)
+		return
+	}
+
+	_, err = io.Copy(w, rendered)
+	if err != nil {
+		log.Errorf("failed to write response: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
