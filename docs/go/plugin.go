@@ -130,8 +130,13 @@ func (plugin Plugin) LitSyntax(code booklit.Content) (booklit.Content, error) {
 		return nil, err
 	}
 
+	var style booklit.Style = "lit-block"
+	if code.IsFlow() {
+		style = "lit-flow"
+	}
+
 	return booklit.Styled{
-		Style:   "lit-syntax",
+		Style:   style,
 		Content: syntax,
 	}, nil
 }
