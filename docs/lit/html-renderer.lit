@@ -37,35 +37,35 @@ booklit -i lit/index.lit -o public \
   \table{
     \table-row{template}{type for \code{.}}
   }{
-    \table-row{\code{page.tmpl}}{\godoc{*booklit.Section}}
+    \table-row{\template-link{page.tmpl}}{\godoc{*booklit.Section}}
   }{
-    \table-row{\code{section.tmpl}}{\godoc{*booklit.Section}}
+    \table-row{\template-link{section.tmpl}}{\godoc{*booklit.Section}}
   }{
-    \table-row{\code{link.tmpl}}{\godoc{booklit.Link}}
+    \table-row{\template-link{link.tmpl}}{\godoc{booklit.Link}}
   }{
-    \table-row{\code{list.tmpl}}{\godoc{booklit.List}}
+    \table-row{\template-link{list.tmpl}}{\godoc{booklit.List}}
   }{
-    \table-row{\code{paragraph.tmpl}}{\godoc{booklit.Paragraph}}
+    \table-row{\template-link{paragraph.tmpl}}{\godoc{booklit.Paragraph}}
   }{
-    \table-row{\code{preformatted.tmpl}}{\godoc{booklit.Preformatted}}
+    \table-row{\template-link{preformatted.tmpl}}{\godoc{booklit.Preformatted}}
   }{
-    \table-row{\code{reference.tmpl}}{\godoc{*booklit.Reference}}
+    \table-row{\template-link{reference.tmpl}}{\godoc{*booklit.Reference}}
   }{
-    \table-row{\code{sequence.tmpl}}{\godoc{booklit.Sequence}}
+    \table-row{\template-link{sequence.tmpl}}{\godoc{booklit.Sequence}}
   }{
-    \table-row{\code{string.tmpl}}{\godoc{booklit.String}}
+    \table-row{\template-link{string.tmpl}}{\godoc{booklit.String}}
   }{
-    \table-row{\code{target.tmpl}}{\godoc{booklit.Target}}
+    \table-row{\template-link{target.tmpl}}{\godoc{booklit.Target}}
   }{
-    \table-row{\code{toc.tmpl}}{\godoc{*booklit.Section}}
+    \table-row{\template-link{toc.tmpl}}{\godoc{*booklit.Section}}
   }{
-    \table-row{\code{aside.tmpl}}{\godoc{booklit.Aside}}
+    \table-row{\template-link{aside.tmpl}}{\godoc{booklit.Aside}}
   }{
-    \table-row{\code{definitions.tmpl}}{\godoc{booklit.Definitions}}
+    \table-row{\template-link{definitions.tmpl}}{\godoc{booklit.Definitions}}
   }{
-    \table-row{\code{table.tmpl}}{\godoc{booklit.Table}}
+    \table-row{\template-link{table.tmpl}}{\godoc{booklit.Table}}
   }{
-    \table-row{\code{image.tmpl}}{\godoc{booklit.Image}}
+    \table-row{\template-link{image.tmpl}}{\godoc{booklit.Image}}
   }
 
   The most impactful of these is \code{page.tmpl}, which is used for the

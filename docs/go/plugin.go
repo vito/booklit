@@ -158,6 +158,16 @@ func (plugin Plugin) Godoc(ref string) (booklit.Content, error) {
 	), nil
 }
 
+func (plugin Plugin) TemplateLink(tmpl string) (booklit.Content, error) {
+	return plugin.base.Link(
+		booklit.Styled{
+			Style:   booklit.StyleVerbatim,
+			Content: booklit.String(tmpl),
+		},
+		"https://github.com/vito/booklit/blob/master/render/html/"+tmpl,
+	), nil
+}
+
 func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Content, error) {
 	invoke := node.(ast.Sequence)[0].(ast.Invoke)
 
