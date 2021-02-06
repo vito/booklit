@@ -33,8 +33,8 @@
         </ul>
       </nav>
 
-      <p>Booklit is a tool for building static websites from semantic documents.</p><p>Booklit&#39;s goal is to make it easy to restructure your content by providing a clean separation between <strong>content</strong>, <strong>logic</strong>, and <strong>presentation</strong>.</p><div class="columns">
-  <div class="column title"><div class="column-header">content in <code>*.lit</code></div><p>Booklit documents are text files which evaluate <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> to produce a section (along with any subsections).</p><p>Sections are easy to move around, allowing you to refactor your entire website without having to tweak header sizes and update internal links.</p></div>
+      <p>Booklit is a tool for building static websites from semantic documents.</p><p>Booklit enforces a tidy separation between <strong>content</strong>, <strong>logic</strong>, and <strong>presentation</strong> that makes it well-suited for writing and refactoring websites of any size and complexity.</p><div class="columns">
+  <div class="column title"><div class="column-header">content in <code>*.lit</code></div><p>Booklit documents are text files which evaluate <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> to generate content, ultimately resulting in a tree of sections.</p><p>Sections are easy to move around, allowing you to continuously refactor and restructure your content without having to tweak header sizes and update internal links.</p></div>
   
   <div class="column"><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello}
 
@@ -51,7 +51,7 @@ Hello, world! I&#39;m a Booklit document.
 </pre></div></div></div>
   
 </div><div class="columns">
-  <div class="column title"><div class="column-header">logic in <code>*.go</code></div><p>Logic is implemented by <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> which are provided by plugins written <a href="https://golang.org">Go</a>. Go is a simple language with <a href="https://pkg.go.dev/">plenty of libraries</a> around if you need them.</p><p>Plugins allow your content to be semantic - saying what it means, not how it should be created or displayed.</p></div>
+  <div class="column title"><div class="column-header">logic in <code>*.go</code></div><p>Logic is implemented by <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> which are provided by plugins written <a href="https://golang.org">Go</a>. Go is a simple language with <a href="https://pkg.go.dev/">plenty of libraries</a> around if you need them.</p><p>Plugins allow your content to be semantic - saying what it means, decoupled from how it should be computed or displayed.</p></div>
   
   <div class="column"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (Example) Quote(
   quote, source booklit.Content,
@@ -67,7 +67,7 @@ Hello, world! I&#39;m a Booklit document.
 </pre></div></div>
   
 </div><div class="columns">
-  <div class="column title"><div class="column-header">presentation in <code>*.tmpl</code></div><p>Booklit separates presentation into a final rendering phase which determines the output format.</p><p>The <a href="html-renderer.html">HTML Renderer</a> is powered by Go&#39;s standard <a href="https://golang.org/pkg/html/template/"><code>html/template</code> package</a>. More renderers may be implemented in the future.</p><p>All <a href="html-renderer.html#base-templates">base templates</a> can be overridden, sections can be individually <a href="baselit.html#styled"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\styled</span></code></a>, and plugins can return <a href="https://pkg.go.dev/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a> content, so you have full control over what comes out.</p></div>
+  <div class="column title"><div class="column-header">presentation in <code>*.tmpl</code></div><p>Booklit separates presentation into a final rendering phase which determines the output format.</p><p>The <a href="html-renderer.html">HTML Renderer</a> is powered by Go&#39;s standard <a href="https://golang.org/pkg/html/template/"><code>html/template</code> package</a>. More renderers may be implemented in the future.</p><p>All <a href="html-renderer.html#base-templates">base templates</a> can be overridden, sections can be individually <a href="baselit.html#styled"><code class="highlight"><span style="color:#ed6c30;font-weight:bold">\styled</span></code></a>, and plugins can return <a href="https://pkg.go.dev/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a> content, giving the author full control over what comes out.</p></div>
   
   <div class="column"><div class="highlight"><pre style=""><span style="color:#c29d7c">&lt;!DOCTYPE html&gt;</span>
 &lt;<span style="color:#fcc21b;font-weight:bold">html</span>&gt;

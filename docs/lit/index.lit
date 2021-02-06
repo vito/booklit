@@ -7,17 +7,19 @@
 
 Booklit is a tool for building static websites from semantic documents.
 
-Booklit's goal is to make it easy to restructure your content by providing a
-clean separation between \bold{content}, \bold{logic}, and \bold{presentation}.
+Booklit enforces a tidy separation between \bold{content}, \bold{logic}, and
+\bold{presentation} that makes it well-suited for writing and refactoring
+websites of any size and complexity.
 
 \columns{
   \column-header{content in \code{*.lit}}
 
   Booklit documents are text files which evaluate \syntax{lit}{\\functions} to
-  produce a section (along with any subsections).
+  generate content, ultimately resulting in a tree of sections.
 
-  Sections are easy to move around, allowing you to refactor your entire
-  website without having to tweak header sizes and update internal links.
+  Sections are easy to move around, allowing you to continuously refactor and
+  restructure your content without having to tweak header sizes and update
+  internal links.
 }{
   \lit-syntax{{{
     \title{Hello}
@@ -45,8 +47,8 @@ clean separation between \bold{content}, \bold{logic}, and \bold{presentation}.
   plugins written \link{Go}{https://golang.org}. Go is a simple language with
   \link{plenty of libraries}{https://pkg.go.dev/} around if you need them.
 
-  Plugins allow your content to be semantic - saying what it means, not how it
-  should be created or displayed.
+  Plugins allow your content to be semantic - saying what it means, decoupled
+  from how it should be computed or displayed.
 }{
   \syntax{go}{{{
   func (Example) Quote(
@@ -75,7 +77,8 @@ clean separation between \bold{content}, \bold{logic}, and \bold{presentation}.
 
   All \reference{base-templates}{base templates} can be overridden, sections
   can be individually \reference{styled}, and plugins can return
-  \godoc{booklit.Styled} content, so you have full control over what comes out.
+  \godoc{booklit.Styled} content, giving the author full control over what
+  comes out.
 }{
   \syntax{go-html-template}{{{
   <!DOCTYPE html>
