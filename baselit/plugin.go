@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	booklit.RegisterPlugin("base", NewPlugin)
+	booklit.RegisterPlugin("baselit", NewPlugin)
 }
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {
