@@ -1,4 +1,4 @@
-targets=ast/booklit.peg.go docs/css/booklit.css errhtml/errors.css errhtml/bindata.go render/html/bindata.go render/text/bindata.go
+targets=ast/booklit.peg.go docs/css/booklit.css errhtml/errors.css errhtml/bindata.go render/html/bindata.go render/text/bindata.go docs/outputs/index.html
 
 all: $(targets)
 
@@ -23,8 +23,8 @@ render/html/bindata.go: render/html render/html/*.tmpl
 render/text/bindata.go: render/text render/text/*.tmpl
 	go-bindata -o render/text/bindata.go -pkg text render/text/*.tmpl
 
-clean:
-	rm -f $(targets)
-
 docs/outputs/index.html: docs/hello/*.lit docs/hello/html/*.tmpl docs/hello/go/*
 	cd docs/hello && booklit --plugin github.com/vito/booklit/docs/hello/go --html-templates html -i index.lit -o ../outputs
+
+clean:
+	rm -f $(targets)
