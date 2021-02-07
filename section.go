@@ -432,10 +432,6 @@ func (con *Section) SplitSectionsPrevented() bool {
 func (con *Section) filterTags(up bool, exclude *Section, match func(string) bool) []Tag {
 	tags := []Tag{}
 
-	if match(con.Title.String()) {
-		tags = append(tags, con.PrimaryTag)
-	}
-
 	for _, t := range con.Tags {
 		if match(t.Name) {
 			tags = append(tags, t)
