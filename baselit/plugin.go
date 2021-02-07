@@ -44,12 +44,12 @@ func (plugin Plugin) Title(title booklit.Content, tags ...string) error {
 	if plugin.section.Title != booklit.Empty {
 		return booklit.TitleTwiceError{
 			TitleLocation: booklit.ErrorLocation{
-				FilePath:     plugin.section.Path,
+				FilePath:     plugin.section.FilePath(),
 				NodeLocation: plugin.section.TitleLocation,
 				Length:       len("\\title"),
 			},
 			ErrorLocation: booklit.ErrorLocation{
-				FilePath:     plugin.section.Path,
+				FilePath:     plugin.section.FilePath(),
 				NodeLocation: plugin.section.InvokeLocation,
 				Length:       len("\\title"),
 			},
