@@ -24,7 +24,7 @@
         
           <li><a href="html-renderer.html">HTML Renderer</a></li>
         
-          <li><a href="plugins.html">Plugin System</a></li>
+          <li><a href="plugins.html">Plugins</a></li>
         
           <li><a href="booklit-syntax.html">Syntax</a></li>
         
@@ -33,25 +33,26 @@
         </ul>
       </nav>
 
-      <p>Booklit is a tool for building static websites from semantic documents.</p><p>Booklit enforces a tidy separation between <strong>content</strong>, <strong>logic</strong>, and <strong>presentation</strong> that makes it well-suited for writing and refactoring websites of any size and complexity.</p><div class="columns">
+      <span style="font-size: 120%"><p>Booklit is a tool for building static websites from semantic documents.</p></span><p>Booklit enforces a tidy separation between <strong>content</strong>, <strong>logic</strong>, and <strong>presentation</strong> that makes it easy to write and refactor websites for anything from technical documentation to slide decks to blogs.</p><div class="columns">
   <div class="column title"><div class="column-header">content in <code>*.lit</code></div><p>Booklit documents are text files which evaluate <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> to generate content, ultimately resulting in a tree of sections.</p><p>Sections are easy to move around, allowing you to continuously refactor and restructure your content without having to tweak header sizes and update internal links.</p></div>
   
-  <div class="column"><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello}
+  <div class="column"><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello}{index}
 
 Hello, world! I&#39;m a Booklit document.
 
+Check out my favorite <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#reference">reference</a></span>{quotes}!
+
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#include-section">include-section</a></span>{quotes.lit}
 </pre></div></div><div class="lit-syntax"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Quotes}
-
 <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{example}
 
 <span style="color:#ed6c30;font-weight:bold">\quote</span>{
-  It&#39;s <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#bold">bold</a></span>{lit}!
+  It&#39;s lit!
 }{Travis Scott}
 </pre></div></div></div>
   
 </div><div class="columns">
-  <div class="column title"><div class="column-header">logic in <code>*.go</code></div><p>Logic is implemented by <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> which are provided by plugins written <a href="https://golang.org">Go</a>. Go is a simple language with <a href="https://pkg.go.dev/">plenty of libraries</a> around if you need them.</p><p>Plugins allow your content to be semantic - saying what it means, decoupled from how it should be computed or displayed.</p></div>
+  <div class="column title"><div class="column-header">logic in <code>*.go</code></div><p>Sections use plugins to invoke <code class="highlight"><span style="color:#ed6c30;font-weight:bold">\functions</span></code> written <a href="https://golang.org">Go</a>. Go is a simple and fast language with <a href="https://pkg.go.dev/">plenty of packages</a> around if you need them.</p><p>Plugins allow your content to be semantic - saying what it means, decoupled from how it should be computed or displayed.</p></div>
   
   <div class="column"><div class="highlight"><pre style=""><span style="color:#ed6c30;font-weight:bold">func</span> (Example) Quote(
   quote, source booklit.Content,
@@ -91,8 +92,7 @@ Hello, world! I&#39;m a Booklit document.
   <div class="column title"><div class="column-header">build with <code>booklit</code></div><p>The <code>booklit</code> CLI is a single command which loads Booklit documents and renders them.</p><p>When an error occurs, Booklit will show the location of the error and try to suggest a fix.</p></div>
   
   <div class="column"><pre>$ booklit -i ./index.lit -o ./public/
-<span class="syntax-hl">INFO</span>[0000] rendering
-$ booklit -i ./to-err-is-human.lit
+<span class="syntax-hl">INFO</span>[0000] rendering</pre><pre>$ booklit -i ./to-err-is-human.lit
 to-err-is-human.lit:5: unknown tag &#39;helo&#39;
 
    5| Say \reference{helo}!
@@ -104,7 +104,7 @@ These tags seem similar:
 Did you mean one of these?</pre></div>
   
 </div><div class="columns">
-  <div class="column title"><div class="column-header">run with <code>booklit -s $PORT</code></div><p>In server mode, Booklit renders content on each request with only plugin changes requiring a server restart.</p><p>The feedback loop is <em>wicked fast</em>.</p></div>
+  <div class="column title"><div class="column-header">serve with <code>booklit -s $PORT</code></div><p>In server mode, Booklit renders content on each request with only plugin changes requiring a server restart.</p><p>The feedback loop is <em>wicked fast</em>.</p></div>
   
   <div class="column"><pre>$ booklit -i ./index.lit -s 3000
 <span class="syntax-hl">INFO</span>[0000] listening</pre><p><iframe class="output-frame" scrolling="no" src="outputs/index.html"></iframe></p></div>
