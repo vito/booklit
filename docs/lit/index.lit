@@ -5,11 +5,13 @@
 
 \styled{splash}
 
-Booklit is a tool for building static websites from semantic documents.
+\larger{
+  Booklit is a tool for building static websites from semantic documents.
+}
 
 Booklit enforces a tidy separation between \bold{content}, \bold{logic}, and
-\bold{presentation} that makes it well-suited for writing and refactoring
-websites of any size and complexity.
+\bold{presentation} that makes it easy to write and refactor websites for
+anything from technical documentation to slide decks to blogs.
 
 \columns{
   \column-header{content in \code{*.lit}}
@@ -22,20 +24,21 @@ websites of any size and complexity.
   internal links.
 }{
   \lit-syntax{{{
-    \title{Hello}
+    \title{Hello}{index}
 
     Hello, world! I'm a Booklit document.
+
+    Check out my favorite \reference{quotes}!
 
     \include-section{quotes.lit}
   }}}
 
   \lit-syntax{{{
     \title{Quotes}
-
     \use-plugin{example}
 
     \quote{
-      It's \bold{lit}!
+      It's lit!
     }{Travis Scott}
   }}}
 }
@@ -43,9 +46,9 @@ websites of any size and complexity.
 \columns{
   \column-header{logic in \code{*.go}}
 
-  Logic is implemented by \syntax{lit}{\\functions} which are provided by
-  plugins written \link{Go}{https://golang.org}. Go is a simple language with
-  \link{plenty of libraries}{https://pkg.go.dev/} around if you need them.
+  Sections use plugins to invoke \syntax{lit}{\\functions} written
+  \link{Go}{https://golang.org}. Go is a simple and fast language with
+  \link{plenty of packages}{https://pkg.go.dev/} around if you need them.
 
   Plugins allow your content to be semantic - saying what it means, decoupled
   from how it should be computed or displayed.
@@ -115,6 +118,9 @@ websites of any size and complexity.
   \code{{
     $ booklit -i ./index.lit -o ./public/
     \syntax-hl{INFO}[0000] rendering
+  }}
+
+  \code{{
     $ booklit -i ./to-err-is-human.lit
     to-err-is-human.lit:5: unknown tag 'helo'
 
@@ -129,7 +135,7 @@ websites of any size and complexity.
 }
 
 \columns{
-  \column-header{run with \code{booklit -s $PORT}}
+  \column-header{serve with \code{booklit -s $PORT}}
 
   In server mode, Booklit renders content on each request with only plugin
   changes requiring a server restart.

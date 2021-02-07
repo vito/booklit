@@ -1,7 +1,7 @@
 \use-plugin{booklitdoc}
 \use-plugin{chroma}
 
-\title{Plugin System}{plugins}
+\title{Plugins}{plugins}
 
 Plugins provide the functionality behind function calls like
 \syntax{lit}{\\foo\{bar\}}.

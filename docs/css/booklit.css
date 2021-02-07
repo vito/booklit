@@ -627,7 +627,7 @@ strong {
 }
 .columns {
   display: flex;
-  margin: 40px 0;
+  margin: 60px 0;
   flex-direction: column;
 }
 @media (min-width: 860px) {
@@ -647,8 +647,8 @@ strong {
   border: 3.75px solid #1a120c;
   border-radius: 0.225em;
   width: 300px;
-  height: 250px;
-  margin: 41.66666667px 50px;
+  height: 280px;
+  margin: 46.66666667px 50px;
   transform: scale(1.33333333);
 }
 .column.title {
