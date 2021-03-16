@@ -140,14 +140,16 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		}
 	}
 
+	loc := booklit.ErrorLocation{
+		FilePath:     eval.Section.FilePath(),
+		NodeLocation: invoke.Location,
+		Length:       len("\\" + invoke.Function),
+	}
+
 	if !method.IsValid() {
 		return booklit.UndefinedFunctionError{
-			Function: invoke.Function,
-			ErrorLocation: booklit.ErrorLocation{
-				FilePath:     eval.Section.FilePath(),
-				NodeLocation: invoke.Location,
-				Length:       len("\\" + invoke.Function),
-			},
+			Function:      invoke.Function,
+			ErrorLocation: loc,
 		}
 	}
 
@@ -209,14 +211,9 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 				}
 
 				return booklit.FailedFunctionError{
-					Function: invoke.Function,
-					Err:      val.(error),
-
-					ErrorLocation: booklit.ErrorLocation{
-						FilePath:     eval.Section.FilePath(),
-						NodeLocation: invoke.Location,
-						Length:       len("\\" + invoke.Function),
-					},
+					Function:      invoke.Function,
+					Err:           val.(error),
+					ErrorLocation: loc,
 				}
 			}
 		case *booklit.Content:
@@ -235,13 +232,9 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 				}
 
 				return booklit.FailedFunctionError{
-					Function: invoke.Function,
-					Err:      second.(error),
-
-					ErrorLocation: booklit.ErrorLocation{
-						FilePath:     eval.Section.FilePath(),
-						NodeLocation: invoke.Location,
-					},
+					Function:      invoke.Function,
+					Err:           second.(error),
+					ErrorLocation: loc,
 				}
 			}
 		default:
