@@ -37,6 +37,10 @@ var HTMLFuncs = template.FuncMap{
 		return template.HTML(con.String())
 	},
 
+	"rawHTMLAttr": func(con booklit.Content) template.HTMLAttr {
+		return template.HTMLAttr(con.String())
+	},
+
 	"walkContext": func(current *booklit.Section, section *booklit.Section) WalkContext {
 		return WalkContext{
 			Current: current,

@@ -91,6 +91,10 @@ booklit -i lit/index.lit -o public \
       render the string as raw HTML, unescaped
     }
   }{
+    \definition{\code{\{\{string | rawHTMLAttr\}\}}}{
+      render the string as raw HTML attribute, unescaped
+    }
+  }{
     \definition{\code{\{\{content | render\}\}}}{
       render the content
     }
