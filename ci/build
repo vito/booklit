@@ -1,31 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bass
 
-set -e -u
+(def [ref version]
+  (case *args*
+    []  ["HEAD" "0.0.0-dev"]
+    [r] [r "0.0.0-dev"]
+    _   *args*))
 
-export GOPATH=$PWD/gopath
-export PATH=$PWD/gopath/bin:$PATH
+(def project
+  (load (*dir*/../project)))
 
-assets=$PWD/assets
+(def booklit
+  (load (*dir*/booklit)))
 
-version="0.0.0-dev"
-if [ -d version ]; then
-  version="$(cat version/version)"
-fi
+(defn final-inspection [bin]
+  (from "ubuntu"
+    ($ ls -alh $bin)
+    ($ ldd $bin)
+    ($ $bin --version)))
 
-pushd booklit
-  for os in linux darwin windows; do
-    ext=""
-    if [ "$os" = "windows" ]; then
-      ext=".exe"
-    fi
-
-    echo "building $os binary..."
-    GOOS=$os go build \
-      --ldflags "-X github.com/vito/booklit.Version=${version}" \
-      -o $assets/booklit_${os}_amd64${ext} \
-      github.com/vito/booklit/cmd/booklit
-  done
-popd
-
-echo "printing version..."
-./assets/booklit_$(go env GOOS)_$(go env GOARCH) --version
+(let [src (booklit:checkout ref)
+      binaries (project:build-all src version)]
+  (run (final-inspection binaries:linux))
+  (emit binaries *stdout*))

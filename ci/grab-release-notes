@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -e -u
-
-version="v$(cat final-version/version)"
-
-cp ./release-notes/${version}/* ./release-info/

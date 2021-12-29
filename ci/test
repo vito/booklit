@@ -1,25 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bass
 
-set -e -u
+(def [sha & testflags]
+  *args*)
 
-export GOPATH=$PWD/gopath
-export PATH=$PWD/gopath/bin:$PATH
+(def project
+  (load (*dir*/../project)))
 
-cd booklit
+(def booklit
+  (load (*dir*/booklit)))
 
-echo "installing ginkgo..."
-go install github.com/onsi/ginkgo/ginkgo
-
-function emit_coveralls() {
-  if [ -n "$COVERALLS_TOKEN" ]; then
-    echo "emitting code coverage..."
-    go get github.com/mattn/goveralls
-    goveralls -service concourse \
-      -coverprofile <(find . -name '*.coverprofile' | xargs cat | grep -v 'booklit.peg.go\|render/bindata.go')
-  fi
-}
-
-trap emit_coveralls EXIT
-
-echo "running tests..."
-./scripts/test -p "$@"
+(run (project:test (booklit:checkout sha) testflags))

@@ -1,0 +1,11 @@
+(def repo
+  "https://github.com/vito/booklit")
+
+(def git
+  (load (.git "alpine/git")))
+
+(defn ls-remote [ref]
+  (git:ls-remote repo ref))
+
+(defn checkout [sha]
+  (git:checkout repo sha))
