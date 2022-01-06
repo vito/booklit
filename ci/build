@@ -13,7 +13,7 @@
   (load (*dir*/booklit)))
 
 (defn final-inspection [bin]
-  (from "ubuntu"
+  (from (linux/ubuntu)
     ($ ls -alh $bin)
     ($ ldd $bin)
     ($ $bin --version)))

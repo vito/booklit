@@ -8,7 +8,7 @@
     (with-mount thk /booklit/cache/gopath/ /go/))
 
   (defn test [src testflags]
-    (from "golang"
+    (from (linux/golang)
       (cd src
         (go-cache ($ go install "github.com/onsi/ginkgo/ginkgo"))
         (go-cache ($ ./scripts/test -p & $testflags)))))
@@ -27,7 +27,7 @@
           (with-mount /booklit/cache/gopath/ /go/)
           (with-env {:GOOS os :GOARCH arch})
           (in-dir src)
-          (in-image "golang")
+          (in-image (linux/golang))
           (path exe))))
 
   (defn build-all [src version]
