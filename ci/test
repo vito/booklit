@@ -9,4 +9,4 @@
 (def booklit
   (load (*dir*/booklit)))
 
-(run (project:test (booklit:checkout sha) testflags))
+(run (project:tests (booklit:checkout sha) testflags))
