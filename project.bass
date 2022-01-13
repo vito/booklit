@@ -2,7 +2,7 @@
 (def *root*
   *dir*)
 
-(provide [test
+(provide [tests
           build build-all]
   (defn go-cache [thk]
     (with-mount thk /booklit/cache/gopath/ /go/))

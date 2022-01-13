@@ -1,8 +1,7 @@
 (def repo
   "https://github.com/vito/booklit")
 
-(def git
-  (load (.git "alpine/git")))
+(use (.git (linux/alpine/git)))
 
 (defn ls-remote [ref]
   (git:ls-remote repo ref))
