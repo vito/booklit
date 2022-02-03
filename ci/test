@@ -3,7 +3,5 @@
 (use (*dir*/../project)
      (*dir*/booklit))
 
-(def [sha & testflags]
-  *args*)
-
-(run (project:tests (booklit:checkout sha) testflags))
+(defn main [sha & testflags]
+  (run (project:tests (booklit:checkout sha) testflags)))

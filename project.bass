@@ -26,9 +26,9 @@
              ./cmd/booklit)
           (with-mount /booklit/cache/gopath/ /go/)
           (with-env {:GOOS os :GOARCH arch})
-          (in-dir src)
-          (in-image (linux/golang))
-          (path exe))))
+          (with-dir src)
+          (with-image (linux/golang))
+          (subpath exe))))
 
   (defn build-all [src version]
     {:linux (build src version "linux" "amd64")

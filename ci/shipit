@@ -5,15 +5,14 @@
      (*dir*/release-info)
      (git:github/vito/tabs/ref/main/gh/release))
 
-(def [sha version] *args*)
-
 (def booklit-release
   (release:auth "vito/booklit" secrets:access-token))
 
-(let [test (run ($ *dir*/test $sha))
-      binaries (run ($ *dir*/build $sha $version))
-      assets (values (next binaries))
-      info (release-info:fetch version)]
-  (log (release:create! version sha assets
-                        {:title info:title
-                         :notes-file info:notes})))
+(defn main [sha version]
+  (let [test (run ($ *dir*/test $sha))
+        binaries (run ($ *dir*/build $sha $version))
+        assets (values (next binaries))
+        info (release-info:fetch version)]
+    (log (release:create! version sha assets
+                          {:title info:title
+                           :notes-file info:notes}))))

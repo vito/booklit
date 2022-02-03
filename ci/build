@@ -3,19 +3,18 @@
 (use (*dir*/../project)
      (*dir*/booklit))
 
-(def [ref version]
-  (case *args*
-    []  ["HEAD" "0.0.0-dev"]
-    [r] [r "0.0.0-dev"]
-    _   *args*))
-
 (defn final-inspection [bin]
   (from (linux/ubuntu)
     ($ ls -alh $bin)
     ($ ldd $bin)
     ($ $bin --version)))
 
-(let [src (booklit:checkout ref)
-      binaries (project:build-all src version)]
-  (run (final-inspection binaries:linux))
-  (emit binaries *stdout*))
+(defn main args
+  (let [[ref version] (case args
+                        []  ["HEAD" "0.0.0-dev"]
+                        [r] [r "0.0.0-dev"]
+                        _   args)
+        src (booklit:checkout ref)
+        binaries (project:build-all src version)]
+    (run (final-inspection binaries:linux))
+    (emit binaries *stdout*)))
