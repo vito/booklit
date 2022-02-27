@@ -3,7 +3,7 @@ package tests
 import (
 	"strings"
 
-	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo/v2"
 	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
 )
 

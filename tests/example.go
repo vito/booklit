@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/onsi/ginkgo"
+	"github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/vito/booklit"
@@ -36,7 +36,7 @@ func (example Example) Run() {
 
 	defer os.RemoveAll(dir)
 
-	sectionPath := filepath.Join(dir, ginkgo.CurrentGinkgoTestDescription().TestText+".lit")
+	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+".lit")
 
 	err = ioutil.WriteFile(sectionPath, []byte(example.Input), 0644)
 	Expect(err).ToNot(HaveOccurred())

@@ -1,7 +1,7 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo/v2"
 )
 
 var _ = DescribeTable("Blocks", (Example).Run,
