@@ -13,6 +13,20 @@ Booklit enforces a tidy separation between \bold{content}, \bold{logic}, and
 \bold{presentation} that makes it easy to write and refactor websites for
 anything from technical documentation to slide decks to blogs.
 
+For live examples, check out \link{Bass}{https://bass-lang.org},
+\link{Concourse CI}{https://concourse-ci.org}, and the site you're currently
+viewing (\link{src}{https://github.com/vito/booklit/tree/master/docs/lit}).
+
+You're probably wondering "why does the world need another static site
+generator?" The truth is I built this for myself; I had a lot of technical
+content to maintain, and I didn't like the state of the art. I wanted something
+more like \link{Scribble}{https://docs.racket-lang.org/scribble/index.html} so
+I could write code to minimize toil.
+
+Booklit has been serving me well across multiple projects for years with little
+modification needed, so I think it's good enough to share.
+
+
 \columns{
   \column-header{content in \code{*.lit}}
 
