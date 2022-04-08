@@ -1,18 +1,8 @@
 #!/bin/bash
 
-set -e -u
-
-if [ "$#" -lt 1 ]; then
-  echo "usage: $0 <src> -- <booklit args...>" >&2
-  exit 1
-fi
-
-src=$1
-shift
-
 out=$PWD/docs
 
-cd $src
+cd $(dirname $0)/..
 
 go run ./cmd/booklit \
   -i docs/lit/index.lit \
