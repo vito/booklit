@@ -3,10 +3,13 @@ package booklitcmd
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime/pprof"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
@@ -33,6 +36,9 @@ type Command struct {
 	Debug bool `long:"debug" short:"d" description:"Log at debug level."`
 
 	AllowBrokenReferences bool `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
+
+	HTTPProfilePort int    `long:"http-profile" description:"Start the Go net/http/pprof server on this port."`
+	CPUProfilePath  string `long:"cpu-profile"  description:"Write a CPU profile to this path."`
 
 	HTMLEngine struct {
 		Templates string `long:"templates" description:"Directory containing .tmpl files to load."`
@@ -61,6 +67,29 @@ func (cmd *Command) Execute(args []string) error {
 		os.Exit(exitCode)
 
 		return nil
+	}
+
+	if cmd.HTTPProfilePort != 0 {
+		logrus.Debugf("serving pprof on :%d", cmd.HTTPProfilePort)
+
+		l, err := net.Listen("tcp", fmt.Sprintf(":%d", cmd.HTTPProfilePort))
+		if err != nil {
+			return err
+		}
+
+		go http.Serve(l, nil)
+	}
+
+	if cmd.CPUProfilePath != "" {
+		profFile, err := os.Create(cmd.CPUProfilePath)
+		if err != nil {
+			return err
+		}
+
+		defer profFile.Close()
+
+		pprof.StartCPUProfile(profFile)
+		defer pprof.StopCPUProfile()
 	}
 
 	if cmd.ServerPort != 0 {
