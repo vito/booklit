@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime/pprof"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
@@ -35,7 +36,8 @@ type Command struct {
 
 	Debug bool `long:"debug" short:"d" description:"Log at debug level."`
 
-	AllowBrokenReferences bool `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
+	AllowBrokenReferences bool          `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
+	SlowInvokeThreshold   time.Duration `long:"slow-invoke-threshold" description:"Warn about slow invoke calls after this duration." default:"5s"`
 
 	HTTPProfilePort int    `long:"http-profile" description:"Start the Go net/http/pprof server on this port."`
 	CPUProfilePath  string `long:"cpu-profile"  description:"Write a CPU profile to this path."`
@@ -104,6 +106,7 @@ func (cmd *Command) Serve() error {
 		In: cmd.In,
 		Processor: &load.Processor{
 			AllowBrokenReferences: cmd.AllowBrokenReferences,
+			SlowInvokeThreshold:   cmd.SlowInvokeThreshold,
 		},
 
 		Templates:  cmd.HTMLEngine.Templates,
@@ -123,6 +126,7 @@ var basePluginFactories = []booklit.PluginFactory{
 func (cmd *Command) Build() error {
 	processor := &load.Processor{
 		AllowBrokenReferences: cmd.AllowBrokenReferences,
+		SlowInvokeThreshold:   cmd.SlowInvokeThreshold,
 	}
 
 	var engine render.Engine

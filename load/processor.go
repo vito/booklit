@@ -22,6 +22,7 @@ import (
 // parsing of sub-sections when section content changes.
 type Processor struct {
 	AllowBrokenReferences bool
+	SlowInvokeThreshold   time.Duration
 
 	parsed  map[string]parsedNode
 	parsedL sync.Mutex
@@ -166,7 +167,8 @@ func (processor *Processor) evaluateSection(section *booklit.Section, node ast.N
 	}
 
 	evaluator := &stages.Evaluate{
-		Section: section,
+		Section:             section,
+		SlowInvokeThreshold: processor.SlowInvokeThreshold,
 	}
 
 	err := node.Visit(evaluator)

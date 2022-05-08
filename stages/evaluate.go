@@ -2,8 +2,12 @@ package stages
 
 import (
 	"fmt"
+	"os"
 	"reflect"
+	"sync"
+	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 )
@@ -14,6 +18,9 @@ type Evaluate struct {
 	// The section which acts as the evaluation context. The section's plugins
 	// are used for evaluating Invoke nodes.
 	Section *booklit.Section
+
+	// Duration after which to log a warning for a slow \invoke.
+	SlowInvokeThreshold time.Duration
 
 	// The evaluated content after calling (ast.Node).Visit.
 	Result booklit.Content
@@ -110,6 +117,8 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 	return nil
 }
 
+var complainL = new(sync.Mutex)
+
 // VisitInvoke uses reflection to evaluate the corresponding method on the
 // section's plugins, trying them in order.
 //
@@ -152,6 +161,27 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 			ErrorLocation: loc,
 		}
 	}
+
+	start := time.Now()
+	complain := time.AfterFunc(eval.SlowInvokeThreshold, func() {
+		complainL.Lock()
+		defer complainL.Unlock()
+		logrus.WithField("elapsed", time.Since(start)).
+			Warn(loc.Annotate("slow invoke: \\%s (still running)", invoke.Function))
+		loc.AnnotateLocation(os.Stderr)
+	})
+
+	defer func() {
+		complainL.Lock()
+		defer complainL.Unlock()
+		if complain.Stop() {
+			logrus.WithField("duration", time.Since(start)).
+				Debug(loc.Annotate("fast invoke: \\%s", invoke.Function))
+		} else {
+			logrus.WithField("duration", time.Since(start)).
+				Info(loc.Annotate("slow invoke: \\%s (finished)", invoke.Function))
+		}
+	}()
 
 	methodType := method.Type()
 
@@ -286,7 +316,8 @@ func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, err
 
 func (eval Evaluate) evalArg(node ast.Node) (booklit.Content, error) {
 	subEval := &Evaluate{
-		Section: eval.Section,
+		Section:             eval.Section,
+		SlowInvokeThreshold: eval.SlowInvokeThreshold,
 	}
 
 	err := node.Visit(subEval)
