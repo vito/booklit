@@ -15,6 +15,9 @@ go mod init example
 
 # add booklit to go.mod and install CLI
 go get github.com/vito/booklit/cmd/booklit
+
+# add GOPATH/bin to your $PATH
+export PATH=$(go env GOPATH)/bin:$PATH
 }}}
 
 It's also possible to download the \code{booklit} executable from the latest
