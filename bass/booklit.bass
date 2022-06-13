@@ -1,0 +1,43 @@
+(def repo
+  "https://github.com/vito/booklit")
+
+(use (.git (linux/alpine/git)))
+
+(defn ls-remote [ref]
+  (git:ls-remote repo ref))
+
+(defn checkout [sha]
+  (git:checkout repo sha))
+
+(provide [tests
+          build build-all]
+  (defn go-cache [thk]
+    (with-mount thk /booklit/cache/gopath/ /go/))
+
+  (defn tests [src testflags]
+    (from (linux/golang)
+      (cd src
+        (go-cache ($ go install -mod=mod "github.com/onsi/ginkgo/v2/ginkgo"))
+        (go-cache ($ ./scripts/test -p & $testflags)))))
+
+  (defn filename [os arch]
+    (let [ext (if (= os "windows") ".exe" "")
+          fname (str "booklit_" os "_" arch ext)]
+      (string->fs-path fname)))
+
+  (defn build [src version os arch]
+    (let [exe (filename os arch)]
+      (-> ($ go build
+             -o (subpath ../ exe)
+             --ldflags (str "-X github.com/vito/booklit.Version=" version)
+             ./cmd/booklit)
+          (with-mount /booklit/cache/gopath/ /go/)
+          (with-env {:GOOS os :GOARCH arch})
+          (with-dir src)
+          (with-image (linux/golang))
+          (subpath exe))))
+
+  (defn build-all [src version]
+    {:linux (build src version "linux" "amd64")
+     :darwin (build src version "darwin" "amd64")
+     :windows (build src version "windows" "amd64")}))

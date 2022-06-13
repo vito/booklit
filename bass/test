@@ -1,0 +1,7 @@
+#!/usr/bin/env bass
+
+(use (*dir*/booklit.bass))
+
+(defn main testflags
+  (for [{:src src} *stdin*]
+    (run (booklit:tests src testflags))))

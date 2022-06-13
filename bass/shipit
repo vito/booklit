@@ -1,9 +1,9 @@
 #!/usr/bin/env bass
 
 (use (.git (linux/alpine/git))
-     (*dir*/secrets)
-     (*dir*/release-info)
-     (git:github/vito/tabs/ref/main/gh/release))
+     (*dir*/secrets.bass)
+     (*dir*/release-info.bass)
+     (git:github/vito/tabs/ref/main/gh/release.bass))
 
 (def booklit-release
   (release:auth "vito/booklit" secrets:access-token))

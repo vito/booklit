@@ -1,0 +1,16 @@
+#!/usr/bin/env bass
+
+(use (*dir*/booklit.bass))
+
+(defn final-inspection [bin]
+  (from (linux/ubuntu)
+    ($ ls -alh $bin)
+    ($ ldd $bin)
+    ($ $bin --version)))
+
+(defn main args
+  (for [{:src src
+         (:version "0.0.0-dev") version} *stdin*]
+    (let [binaries (booklit:build-all src version)]
+      (run (final-inspection binaries:linux))
+      (emit binaries *stdout*))))

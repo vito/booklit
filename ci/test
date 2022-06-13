@@ -1,7 +1,0 @@
-#!/usr/bin/env bass
-
-(use (*dir*/../project)
-     (*dir*/booklit))
-
-(defn main [sha & testflags]
-  (run (project:tests (booklit:checkout sha) testflags)))
