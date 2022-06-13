@@ -1,13 +1,14 @@
 (use (.git (linux/alpine/git))
-     (git:github/vito/bass-loop/ref/main/bass/github.bass))
+     (git:github/vito/bass-loop/ref/main/bass/github.bass)
+     (*dir*/bass/booklit.bass))
 
 (provide [checks]
   ; a set of validations to run against a checkout of the repo
   (defn checks [src]
-    {:tests (tests src [])
-     :build-linux (ls (build src "dev" "linux" "amd64"))
-     :build-darwin (ls (build src "dev" "darwin" "amd64"))
-     :build-windows (ls (build src "dev" "windows" "amd64"))})
+    {:tests (booklit:tests src [])
+     :build-linux (ls (booklit:build src "dev" "linux" "amd64"))
+     :build-darwin (ls (booklit:build src "dev" "darwin" "amd64"))
+     :build-windows (ls (booklit:build src "dev" "windows" "amd64"))})
 
   (defn ls paths
     (from (linux/alpine)

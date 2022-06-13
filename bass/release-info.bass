@@ -1,14 +1,10 @@
 #!/usr/bin/env bass
 
 (provide [fetch]
-  (import (load (*dir*/../project))
-          *root*)
-
-  (def booklit
-    (load (*dir*/booklit)))
+  (use (*dir*/booklit.bass))
 
   (defn fetch [version]
     (let [version-info (booklit:checkout (booklit:ls-remote "version"))
           info (subpath version-info (string->dir version))]
-      {:title (trim (read info/name))
+      {:title (trim (read info/name :raw))
        :notes info/notes.md})))
