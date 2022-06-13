@@ -1,18 +1,20 @@
 #!/usr/bin/env bass
 
 (use (.git (linux/alpine/git))
-     (*dir*/secrets.bass)
-     (*dir*/release-info.bass)
-     (git:github/vito/tabs/ref/main/gh/release.bass))
+     (*dir*/booklit.bass)
+     (git:github/vito/tabs/ref/main/gh.bass))
 
-(def booklit-release
-  (release:auth "vito/booklit" secrets:access-token))
+(def release
+  (gh:release "vito/booklit" (mask *env*:GITHUB_TOKEN :github-token)))
 
 (defn main [sha version]
-  (let [test (run ($ *dir*/test $sha))
-        binaries (run ($ *dir*/build $sha $version))
-        assets (values (next binaries))
-        info (release-info:fetch version)]
-    (log (release:create! version sha assets
-                          {:title info:title
-                           :notes-file info:notes}))))
+  (let [src (booklit:checkout sha)
+        test (run (*dir*/test {:src src}))
+        binaries (booklit:build-all src version)
+        assets (vals binaries)
+        {:title title :notes notes} (booklit:release-info version)]
+    (log (release:create!
+           version assets
+           :target sha
+           :title title
+           :notes-file notes))))

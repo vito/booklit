@@ -41,3 +41,9 @@
     {:linux (build src version "linux" "amd64")
      :darwin (build src version "darwin" "amd64")
      :windows (build src version "windows" "amd64")}))
+
+(defn release-info [version]
+  (let [version-info (checkout (ls-remote "version"))
+        info (subpath version-info (string->dir version))]
+    {:title (trim (next (read info/name :raw)))
+     :notes info/notes.md}))
