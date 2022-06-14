@@ -162,26 +162,28 @@ func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
 		}
 	}
 
-	start := time.Now()
-	complain := time.AfterFunc(eval.SlowInvokeThreshold, func() {
-		complainL.Lock()
-		defer complainL.Unlock()
-		logrus.WithField("elapsed", time.Since(start)).
-			Warn(loc.Annotate("slow invoke: \\%s (still running)", invoke.Function))
-		loc.AnnotateLocation(os.Stderr)
-	})
+	if eval.SlowInvokeThreshold > 0 {
+		start := time.Now()
+		complain := time.AfterFunc(eval.SlowInvokeThreshold, func() {
+			complainL.Lock()
+			defer complainL.Unlock()
+			logrus.WithField("elapsed", time.Since(start)).
+				Warn(loc.Annotate("slow invoke: \\%s (still running)", invoke.Function))
+			loc.AnnotateLocation(os.Stderr)
+		})
 
-	defer func() {
-		complainL.Lock()
-		defer complainL.Unlock()
-		if complain.Stop() {
-			logrus.WithField("duration", time.Since(start)).
-				Debug(loc.Annotate("fast invoke: \\%s", invoke.Function))
-		} else {
-			logrus.WithField("duration", time.Since(start)).
-				Info(loc.Annotate("slow invoke: \\%s (finished)", invoke.Function))
-		}
-	}()
+		defer func() {
+			complainL.Lock()
+			defer complainL.Unlock()
+			if complain.Stop() {
+				logrus.WithField("duration", time.Since(start)).
+					Debug(loc.Annotate("fast invoke: \\%s", invoke.Function))
+			} else {
+				logrus.WithField("duration", time.Since(start)).
+					Info(loc.Annotate("slow invoke: \\%s (finished)", invoke.Function))
+			}
+		}()
+	}
 
 	methodType := method.Type()
 
