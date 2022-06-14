@@ -1,13 +1,4 @@
-(def repo
-  "https://github.com/vito/booklit")
-
 (use (.git (linux/alpine/git)))
-
-(defn ls-remote [ref]
-  (git:ls-remote repo ref))
-
-(defn checkout [sha]
-  (git:checkout repo sha))
 
 (provide [tests
           build build-all]
@@ -43,7 +34,7 @@
      :windows (build src version "windows" "amd64")}))
 
 (defn release-info [version]
-  (let [version-info (checkout (ls-remote "version"))
-        info (subpath version-info (string->dir version))]
+  (let [version-dir (string->dir version)
+        info (git:github/vito/booklit/ref/version/ version-dir)]
     {:title (trim (next (read info/name :raw)))
      :notes info/notes.md}))

@@ -8,7 +8,7 @@
   (gh:release "vito/booklit" (mask *env*:GITHUB_TOKEN :github-token)))
 
 (defn main [sha version]
-  (let [src (booklit:checkout sha)
+  (let [src (git:github/vito/booklit/sha/ sha)
         test (run (*dir*/test {:src src}))
         binaries (booklit:build-all src version)
         assets (vals binaries)
