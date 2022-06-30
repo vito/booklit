@@ -172,3 +172,8 @@ func (collect *Collect) VisitDefinitions(con booklit.Definitions) error {
 
 	return nil
 }
+
+// VisitLazy does nothing.
+func (collect *Collect) VisitLazy(con *booklit.Lazy) error {
+	return nil
+}

@@ -13,7 +13,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \banana{attack}
 `,
 
-		Err: gomega.ContainSubstring("undefined function \\banana"),
+		LoadErr: gomega.ContainSubstring("undefined function \\banana"),
 	}),
 
 	Entry("erroring single-return function", Example{
@@ -26,7 +26,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-return-fail{some arg}
 `,
 
-		Err: gomega.ContainSubstring("function \\single-fail returned an error: oh no"),
+		LoadErr: gomega.ContainSubstring("function \\single-fail returned an error: oh no"),
 	}),
 
 	Entry("erroring multi-return function", Example{
@@ -37,7 +37,7 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-fail{some arg}
 `,
 
-		Err: gomega.ContainSubstring("function \\multi-fail returned an error: oh no"),
+		LoadErr: gomega.ContainSubstring("function \\multi-fail returned an error: oh no"),
 	}),
 
 	Entry("ambiguous references", Example{
@@ -58,7 +58,7 @@ See also \reference{dupe-tag}{this tag}.
 }
 `,
 
-		Err: gomega.MatchRegexp(`ambiguous target for tag 'dupe-tag'`),
+		RenderErr: gomega.MatchRegexp(`ambiguous target for tag 'dupe-tag'`),
 	}),
 
 	Entry("missing references", Example{
@@ -67,7 +67,7 @@ See also \reference{dupe-tag}{this tag}.
 See also \reference{missing-tag}{this tag}.
 `,
 
-		Err: gomega.MatchRegexp(`unknown tag 'missing-tag'`),
+		RenderErr: gomega.MatchRegexp(`unknown tag 'missing-tag'`),
 	}),
 
 	Entry("setting title twice", Example{
@@ -76,6 +76,6 @@ See also \reference{missing-tag}{this tag}.
 \title{BAM}
 `,
 
-		Err: gomega.ContainSubstring("cannot set title twice"),
+		LoadErr: gomega.ContainSubstring("cannot set title twice"),
 	}),
 )

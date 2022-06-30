@@ -1,1 +1,7 @@
-{{if .Tag}}<a href="{{.Tag | url}}">{{.Display | stripAux | render}}</a>{{else}}{{.Content | stripAux | render}}{{end}}
+{{- if .Tag -}}
+<a href="{{.Tag | url}}">
+  {{- .Display | stripAux | render -}}
+</a>
+{{- else -}}
+  {{- .Content | stripAux | render -}}
+{{- end -}}

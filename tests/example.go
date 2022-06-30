@@ -19,7 +19,8 @@ type Example struct {
 	Inputs      Files
 	Outputs     Files
 	SearchIndex string
-	Err         interface{}
+	LoadErr     interface{}
+	RenderErr   interface{}
 }
 
 type Files map[string]string
@@ -50,8 +51,8 @@ func (example Example) Run() {
 	}
 
 	section, err := processor.LoadFile(sectionPath, pluginFactories)
-	if example.Err != nil {
-		Expect(err).To(MatchError(example.Err))
+	if example.LoadErr != nil {
+		Expect(err).To(MatchError(example.LoadErr))
 		return
 	}
 
@@ -68,6 +69,11 @@ func (example Example) Run() {
 	}
 
 	err = writer.WriteSection(section)
+	if example.RenderErr != nil {
+		Expect(err).To(MatchError(example.RenderErr))
+		return
+	}
+
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Outputs {

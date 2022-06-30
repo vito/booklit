@@ -57,6 +57,8 @@ func (cmd *Command) Execute(args []string) error {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
+	booklit.AllowBrokenReferences = cmd.AllowBrokenReferences
+
 	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
 	if !isReexec && len(cmd.Plugins) > 0 {
 		logrus.Debug("plugins configured; reexecing")
@@ -105,8 +107,7 @@ func (cmd *Command) Serve() error {
 	http.Handle("/", &Server{
 		In: cmd.In,
 		Processor: &load.Processor{
-			AllowBrokenReferences: cmd.AllowBrokenReferences,
-			SlowInvokeThreshold:   cmd.SlowInvokeThreshold,
+			SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 		},
 
 		Templates:  cmd.HTMLEngine.Templates,
@@ -125,8 +126,7 @@ var basePluginFactories = []booklit.PluginFactory{
 
 func (cmd *Command) Build() error {
 	processor := &load.Processor{
-		AllowBrokenReferences: cmd.AllowBrokenReferences,
-		SlowInvokeThreshold:   cmd.SlowInvokeThreshold,
+		SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 	}
 
 	var engine render.Engine
