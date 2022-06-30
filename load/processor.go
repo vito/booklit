@@ -21,8 +21,7 @@ import (
 // Document parsing is cached based on file modification time to avoid repeated
 // parsing of sub-sections when section content changes.
 type Processor struct {
-	AllowBrokenReferences bool
-	SlowInvokeThreshold   time.Duration
+	SlowInvokeThreshold time.Duration
 
 	parsed  map[string]parsedNode
 	parsedL sync.Mutex
@@ -189,15 +188,6 @@ func (processor *Processor) runStages(section *booklit.Section) (*booklit.Sectio
 	}
 
 	err := section.Visit(collector)
-	if err != nil {
-		return nil, err
-	}
-
-	resolver := &stages.Resolve{
-		AllowBrokenReferences: processor.AllowBrokenReferences,
-	}
-
-	err = section.Visit(resolver)
 	if err != nil {
 		return nil, err
 	}
