@@ -32,4 +32,5 @@ type Visitor interface {
 	VisitList(List) error
 	VisitTable(Table) error
 	VisitDefinitions(Definitions) error
+	VisitLazy(*Lazy) error
 }

@@ -93,20 +93,23 @@ func (plugin Plugin) Columns(title booklit.Content, rest ...booklit.Content) boo
 	}
 }
 
-var linkTransformer = chromap.Transformer{
-	Pattern: regexp.MustCompile(`\\([a-z-]+)`),
-	Transform: func(invoke string) booklit.Content {
-		function := strings.TrimPrefix(invoke, `\`)
+func linkTransformer(sec *booklit.Section) chromap.Transformer {
+	return chromap.Transformer{
+		Pattern: regexp.MustCompile(`\\([a-z-]+)`),
+		Transform: func(invoke string) booklit.Content {
+			function := strings.TrimPrefix(invoke, `\`)
 
-		return booklit.Sequence{
-			booklit.String(`\`),
-			&booklit.Reference{
-				TagName:  function,
-				Content:  booklit.String(function),
-				Optional: true,
-			},
-		}
-	},
+			return booklit.Sequence{
+				booklit.String(`\`),
+				&booklit.Reference{
+					Section:  sec,
+					TagName:  function,
+					Content:  booklit.String(function),
+					Optional: true,
+				},
+			}
+		},
+	}
 }
 
 var argTransformer = chromap.Transformer{
@@ -125,7 +128,7 @@ var argTransformer = chromap.Transformer{
 }
 
 func (plugin Plugin) LitSyntax(code booklit.Content) (booklit.Content, error) {
-	syntax, err := plugin.chroma.SyntaxTransform("lit", code, styles.Fallback, linkTransformer)
+	syntax, err := plugin.chroma.SyntaxTransform("lit", code, styles.Fallback, linkTransformer(plugin.section))
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +179,7 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Con
 		return nil, err
 	}
 
-	thumb, err := plugin.chroma.SyntaxTransform("lit", plugin.renderInvoke(invoke), styles.Fallback, linkTransformer, argTransformer)
+	thumb, err := plugin.chroma.SyntaxTransform("lit", plugin.renderInvoke(invoke), styles.Fallback, linkTransformer(plugin.section), argTransformer)
 	if err != nil {
 		return nil, err
 	}

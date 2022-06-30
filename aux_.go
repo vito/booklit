@@ -126,6 +126,11 @@ func (strip *stripAuxVisitor) VisitDefinitions(con Definitions) error {
 	return nil
 }
 
+func (strip *stripAuxVisitor) VisitLazy(con *Lazy) error {
+	strip.Result = con
+	return nil
+}
+
 func stripAuxSeq(seq []Content) []Content {
 	stripped := []Content{}
 

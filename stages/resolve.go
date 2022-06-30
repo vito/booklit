@@ -1,8 +1,6 @@
 package stages
 
 import (
-	"fmt"
-
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 )
@@ -11,8 +9,6 @@ import (
 // booklit.Reference.
 type Resolve struct {
 	AllowBrokenReferences bool
-
-	Section *booklit.Section
 }
 
 // VisitString does nothing.
@@ -69,64 +65,10 @@ func (resolve *Resolve) VisitPreformatted(con booklit.Preformatted) error {
 // If AllowBrokenReferences is true, a made-up tag is assigned on the Reference
 // instead of returning either of the above errors.
 func (resolve *Resolve) VisitReference(con *booklit.Reference) error {
-	tags := resolve.Section.FindTag(con.TagName)
-
-	var err error
-	switch len(tags) {
-	case 0:
-		err = booklit.UnknownTagError{
-			TagName:     con.TagName,
-			SimilarTags: resolve.Section.SimilarTags(con.TagName),
-			ErrorLocation: booklit.ErrorLocation{
-				FilePath:     resolve.Section.FilePath(),
-				NodeLocation: con.Location,
-				Length:       len("\\reference"),
-			},
-		}
-	case 1:
-		con.Tag = &tags[0]
-	default:
-		locs := []booklit.ErrorLocation{}
-		for _, t := range tags {
-			locs = append(locs, booklit.ErrorLocation{
-				FilePath:     t.Section.FilePath(),
-				NodeLocation: t.Location,
-			})
-		}
-
-		err = booklit.AmbiguousReferenceError{
-			TagName:          con.TagName,
-			DefinedLocations: locs,
-			ErrorLocation: booklit.ErrorLocation{
-				FilePath:     resolve.Section.FilePath(),
-				NodeLocation: con.Location,
-				Length:       len("\\reference"),
-			},
-		}
-	}
-
-	if err == nil {
-		return nil
-	}
-
-	if con.Optional {
-		// allow nonexistant tag; template must handle nil Tag
-		return nil
-	}
-
-	if resolve.AllowBrokenReferences {
-		logrus.WithFields(logrus.Fields{
-			"section": resolve.Section.Path,
-		}).Warnf("broken reference: %s", err)
-
-		con.Tag = &booklit.Tag{
-			Name:     con.TagName,
-			Anchor:   "broken",
-			Title:    booklit.String(fmt.Sprintf("{broken reference: %s}", con.TagName)),
-			Section:  resolve.Section,
-			Location: con.Location,
-		}
-
+	_, err := con.Tag()
+	if err != nil && resolve.AllowBrokenReferences {
+		logrus.WithFields(logrus.Fields{"section": con.Section.Path}).
+			Warnf("broken reference: %s", err)
 		return nil
 	}
 
@@ -154,12 +96,7 @@ func (resolve *Resolve) VisitSection(con *booklit.Section) error {
 	}
 
 	for _, child := range con.Children {
-		subResolver := &Resolve{
-			AllowBrokenReferences: resolve.AllowBrokenReferences,
-			Section:               child,
-		}
-
-		err := child.Visit(subResolver)
+		err := child.Visit(resolve)
 		if err != nil {
 			return err
 		}
@@ -261,5 +198,10 @@ func (resolve *Resolve) VisitDefinitions(con booklit.Definitions) error {
 		}
 	}
 
+	return nil
+}
+
+// VisitLazy does nothing.
+func (resolve *Resolve) VisitLazy(con *booklit.Lazy) error {
 	return nil
 }

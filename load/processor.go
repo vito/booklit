@@ -195,8 +195,6 @@ func (processor *Processor) runStages(section *booklit.Section) (*booklit.Sectio
 
 	resolver := &stages.Resolve{
 		AllowBrokenReferences: processor.AllowBrokenReferences,
-
-		Section: section,
 	}
 
 	err = section.Visit(resolver)

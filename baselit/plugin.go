@@ -193,6 +193,8 @@ func (plugin Plugin) Link(content booklit.Content, target string) booklit.Conten
 
 func (plugin Plugin) Reference(tag string, content ...booklit.Content) booklit.Content {
 	ref := &booklit.Reference{
+		Section: plugin.section,
+
 		TagName: tag,
 
 		Location: plugin.section.InvokeLocation,

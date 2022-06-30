@@ -283,6 +283,16 @@ func (engine *HTMLEngine) VisitDefinitions(con booklit.Definitions) error {
 	return engine.setTmpl("definitions")
 }
 
+// VisitLazy forces the content to evaluate and renders its result.
+func (engine *HTMLEngine) VisitLazy(con *booklit.Lazy) error {
+	content, err := con.Force()
+	if err != nil {
+		return fmt.Errorf("lazy render: %w", err)
+	}
+
+	return content.Visit(engine)
+}
+
 func (engine *HTMLEngine) setTmpl(name string) error {
 	tmpl := engine.tmpl.Lookup(name + ".tmpl")
 
