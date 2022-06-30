@@ -3,6 +3,7 @@ package booklit
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -22,7 +23,8 @@ func init() {
 	errorTmpl = template.New("errors").Funcs(template.FuncMap{
 		"error": func(err error) (template.HTML, error) {
 			buf := new(bytes.Buffer)
-			if prettyErr, ok := err.(PrettyError); ok {
+			var prettyErr PrettyError
+			if errors.As(err, &prettyErr) {
 				renderErr := prettyErr.PrettyHTML(buf)
 				if renderErr != nil {
 					return "", renderErr
