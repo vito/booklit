@@ -7,7 +7,7 @@
   (defn with-go-cache [thk]
     (with-mount thk (cache-dir "booklit-go-cache") /go/))
 
-  (defn tests [src testflags]
+  (defn tests [src & testflags]
     (from (linux/golang)
       (cd src
         (with-go-cache ($ go install -mod=mod "github.com/onsi/ginkgo/v2/ginkgo"))

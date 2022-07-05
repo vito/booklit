@@ -9,7 +9,7 @@
 (provide [checks]
   ; a set of validations to run against a checkout of the repo
   (defn checks [src]
-    {:tests (booklit:tests src [])
+    {:tests (booklit:tests src)
      :build-linux (ls (booklit:build src "dev" "linux" "amd64"))
      :build-darwin (ls (booklit:build src "dev" "darwin" "amd64"))
      :build-windows (ls (booklit:build src "dev" "windows" "amd64"))})
