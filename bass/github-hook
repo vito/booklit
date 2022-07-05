@@ -1,3 +1,5 @@
+#!/usr/bin/env bass
+
 (use (.git (linux/alpine/git))
      (git:github/vito/bass-loop/ref/main/bass/github.bass)
      (*dir*/bass/booklit.bass))
@@ -15,5 +17,6 @@
       ($ ls & $paths))))
 
 ; called by bass-loop
-(defn github-hook [event client]
-  (github:check-hook event client git checks))
+(defn main []
+  (for [event *stdin*]
+    (github:check-hook event git:checkout checks)))
