@@ -1,15 +1,17 @@
+(def *memos* *dir*/bass.lock)
+
 (use (.git (linux/alpine/git)))
 
 (provide [tests
           build build-all]
-  (defn go-cache [thk]
-    (with-mount thk /booklit/cache/gopath/ /go/))
+  (defn with-go-cache [thk]
+    (with-mount thk (cache-dir "booklit-go-cache") /go/))
 
   (defn tests [src testflags]
     (from (linux/golang)
       (cd src
-        (go-cache ($ go install -mod=mod "github.com/onsi/ginkgo/v2/ginkgo"))
-        (go-cache ($ ./scripts/test -p & $testflags)))))
+        (with-go-cache ($ go install -mod=mod "github.com/onsi/ginkgo/v2/ginkgo"))
+        (with-go-cache ($ ./scripts/test -p & $testflags)))))
 
   (defn filename [os arch]
     (let [ext (if (= os "windows") ".exe" "")
@@ -22,7 +24,7 @@
              -o (subpath ../ exe)
              --ldflags (str "-X github.com/vito/booklit.Version=" version)
              ./cmd/booklit)
-          (with-mount /booklit/cache/gopath/ /go/)
+          with-go-cache
           (with-env {:GOOS os :GOARCH arch})
           (with-dir src)
           (with-image (linux/golang))

@@ -1,8 +1,10 @@
 #!/usr/bin/env bass
 
+(def *memos* *dir*/bass.lock)
+
 (use (.git (linux/alpine/git))
      (git:github/vito/bass-loop/ref/main/bass/github.bass)
-     (*dir*/bass/booklit.bass))
+     (*dir*/booklit.bass))
 
 (provide [checks]
   ; a set of validations to run against a checkout of the repo

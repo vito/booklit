@@ -1,5 +1,7 @@
 #!/usr/bin/env bass
 
+(def *memos* *dir*/bass.lock)
+
 (use (.git (linux/alpine/git))
      (*dir*/booklit.bass)
      (git:github/vito/tabs/ref/main/gh.bass))
