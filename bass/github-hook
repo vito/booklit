@@ -32,7 +32,7 @@
 
 (defn nix-checks [src]
   (from (linux/ubuntu)
-    ($ apt -y update)
+    (-> ($ apt -y update) (with-label :at (now 0)))
     ($ apt -y install spell)
     ($ echo "Spewing a bunch of output...")
     ($ grep dag /usr/share/dict/words)
