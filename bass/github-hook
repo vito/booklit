@@ -1,22 +1,52 @@
 #!/usr/bin/env bass
 
-(def *memos* *dir*/bass.lock)
-
+; load dependencies
 (use (.git (linux/alpine/git))
-     (git:github/vito/bass-loop/ref/main/bass/github.bass)
-     (*dir*/booklit.bass))
+     (git:github/vito/bass-loop/ref/main/bass/github.bass))
 
-(provide [checks]
-  ; a set of validations to run against a checkout of the repo
-  (defn checks [src]
-    {:tests (booklit:tests src)
-     :build-linux (ls (booklit:build src "dev" "linux" "amd64"))
-     :build-darwin (ls (booklit:build src "dev" "darwin" "amd64"))
-     :build-windows (ls (booklit:build src "dev" "windows" "amd64"))})
+(defn build [src os arch]
+  (let [filename (case os "windows" ./booklit.exe _ ./booklit)]
+    (subpath
+      (from (linux/golang)
+        (cd src
+          (-> ($ go build ./cmd/booklit)
+              (with-env {:GOOS os :GOARCH arch}))))
+      filename)))
 
-  (defn ls paths
-    (from (linux/alpine)
-      ($ ls & $paths))))
+(defn tests [src]
+  (from (linux/golang)
+    (cd src
+      ($ go install -mod=mod "github.com/onsi/ginkgo/v2/ginkgo")
+      ($ ginkgo -r -p))))
+
+(defn docs [src]
+  (subpath
+    (from (linux/golang)
+      (cd src
+        ($ ./scripts/build-docs)))
+    ./docs/))
+
+(defn ls paths
+  (from (linux/alpine)
+    ($ ls & $paths)))
+
+(defn nix-checks [src]
+  (from (linux/ubuntu)
+    ($ apt -y update)
+    ($ apt -y install spell)
+    ($ echo "Spewing a bunch of output...")
+    ($ grep dag /usr/share/dict/words)
+    ($ sh -c "echo nix not installed; exit 1")))
+
+; standard suite of validations for the repo
+(defn checks [src]
+  {:build-linux (ls (build src "linux" "amd64"))
+   :build-darwin (ls (build src "darwin" "amd64")
+                     (build src "darwin" "arm64"))
+   :build-windows (ls (build src "windows" "amd64"))
+   :docs (ls (docs src))
+   :test (tests src)
+   :nix (nix-checks src)})
 
 ; called by bass-loop
 (defn main []
