@@ -21,11 +21,11 @@
   (defn build [src version os arch]
     (let [exe (filename os arch)]
       (-> ($ go build
-             -o (subpath ../ exe)
+             -o $exe
              --ldflags (str "-X github.com/vito/booklit.Version=" version)
              ./cmd/booklit)
           with-go-cache
-          (with-env {:GOOS os :GOARCH arch})
+          (with-env {:GOOS os :GOARCH arch :CGO_ENABLED "0"})
           (with-dir src)
           (with-image (linux/golang))
           (subpath exe))))

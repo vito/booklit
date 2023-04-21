@@ -4,5 +4,9 @@
 
 (defn main args
   (for [{:src src
-         (:version "0.0.0-dev") version} *stdin*]
-    (emit (booklit:build-all src version) *stdout*)))
+         (:out *dir*/booklit) out
+         (:version "0.0.0-dev") version
+         (:platform "linux") platform
+         (:arch "amd64") arch} *stdin*]
+    (write (booklit:build src version platform arch)
+           out)))
