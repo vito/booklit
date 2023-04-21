@@ -7,9 +7,17 @@
   (defn with-go-cache [thk]
     (with-mount thk (cache-dir "booklit-go-cache") /go/))
 
+  (defn code [src]
+    (glob src
+          ./scripts/*
+          ./**/*.go
+          ./**/go.mod
+          ./**/go.sum
+          ./**/*.tmpl))
+
   (defn tests [src & testflags]
     (from (linux/golang)
-      (cd src
+      (cd (code src)
         (with-go-cache ($ go install -mod=mod "github.com/onsi/ginkgo/v2/ginkgo"))
         (with-go-cache ($ ./scripts/test -p & $testflags)))))
 
@@ -20,13 +28,13 @@
 
   (defn build [src version os arch]
     (let [exe (filename os arch)]
-      (-> ($ go build
-             -o $exe
-             --ldflags (str "-X github.com/vito/booklit.Version=" version)
-             ./cmd/booklit)
+      (-> (cd (code src)
+            ($ go build
+               -o $exe
+               --ldflags (str "-X github.com/vito/booklit.Version=" version)
+               ./cmd/booklit))
           with-go-cache
           (with-env {:GOOS os :GOARCH arch :CGO_ENABLED "0"})
-          (with-dir src)
           (with-image (linux/golang))
           (subpath exe))))
 
