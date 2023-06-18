@@ -15,6 +15,7 @@ from source:
 
 ```bash
 go get github.com/vito/booklit/cmd/booklit
+go install github.com/vito/booklit/cmd/booklit
 ```
 
 ## usage
