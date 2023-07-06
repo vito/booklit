@@ -74,7 +74,7 @@ func apko(ctx dagger.Context, ic any) *dagger.Container {
 		WithMountedFile("/config.yml", configDir.File("config.yml")).
 		WithDirectory("/layout", ctx.Client().Directory()).
 		WithMountedCache("/apkache", ctx.Client().CacheVolume("apko")).
-		Focus().
+		WithFocus().
 		WithExec([]string{
 			"build",
 			"--debug",
