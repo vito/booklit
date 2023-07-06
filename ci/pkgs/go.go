@@ -85,9 +85,9 @@ func GoBuild(ctx dagger.Context, base *dagger.Container, src *dagger.Directory, 
 	cmd = append(cmd, opts.Packages...)
 
 	out := ctr.
-		Focus().
+		WithFocus().
 		WithExec(cmd).
-		Unfocus().
+		WithoutFocus().
 		Directory("/out")
 
 	if opts.Subdir != "" {
@@ -133,7 +133,7 @@ func GoTest(
 		With(GoCache(ctx)).
 		WithMountedDirectory("/src", src).
 		WithWorkdir("/src").
-		Focus().
+		WithFocus().
 		WithExec(cmd)
 }
 
@@ -180,7 +180,7 @@ func Gotestsum(
 		With(GoCache(ctx)).
 		WithMountedDirectory("/src", src).
 		WithWorkdir("/src").
-		Focus().
+		WithFocus().
 		WithExec(cmd)
 }
 
@@ -192,7 +192,7 @@ func GoGenerate(
 	return base.
 		With(GoCache(ctx)).
 		With(Cd("/src", src)).
-		Focus().
+		WithFocus().
 		WithExec([]string{"go", "generate", "./..."}).
 		Directory("/src")
 }

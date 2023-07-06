@@ -20,7 +20,7 @@ func Nixpkgs(ctx dagger.Context, nixpkgs *dagger.Directory, packages ...string) 
 			WithMountedDirectory("/src", drv).
 			WithMountedDirectory("/flake", nixpkgs).
 			WithMountedTemp("/tmp").
-			Focus().
+			WithFocus().
 			// TODO: --option filter-syscalls false to let Apple Silicon
 			// cross-compile to Intel
 			WithExec([]string{"nix", "build", "-f", "/src/image.nix"}).
@@ -28,7 +28,7 @@ func Nixpkgs(ctx dagger.Context, nixpkgs *dagger.Directory, packages ...string) 
 				"skopeo", "--insecure-policy",
 				"copy", "docker-archive:./result", "oci:./layout:latest",
 			}).
-			Unfocus()
+			WithoutFocus()
 
 	return ctx.Client().Container().
 		ImportDir(build.Directory("./layout")).
