@@ -2,14 +2,16 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"github.com/vito/booklit/ci/pkgs"
+	"github.com/dagger/dagger/universe/apkoenv"
+	"github.com/dagger/dagger/universe/goenv"
 )
 
 func main() {
-	dagger.ServeCommands(
-		Build,
-		Test,
-	)
+	ctx := dagger.DefaultContext()
+	ctx.Client().Environment().
+		WithCheck_(Unit).
+		WithCommand_(Build).
+		Serve(ctx)
 }
 
 func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
@@ -17,19 +19,19 @@ func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
 		version = "dev"
 	}
 
-	return pkgs.GoBuild(ctx, Base(ctx), Code(ctx), pkgs.GoBuildOpts{
+	return goenv.Build(ctx, Base(ctx), Code(ctx), goenv.GoBuildOpts{
 		Packages: []string{"./cmd/booklit"},
 		Xdefs:    []string{"github.com/vito/booklit.Version=" + version},
 		Static:   true,
 	}), nil
 }
 
-func Test(ctx dagger.Context) (string, error) {
-	return pkgs.GoTest(ctx, Base(ctx), Code(ctx)).Stdout(ctx)
+func Unit(ctx dagger.Context) (string, error) {
+	return goenv.Test(ctx, Base(ctx), Code(ctx)).Stdout(ctx)
 }
 
 func Base(ctx dagger.Context) *dagger.Container {
-	return pkgs.Wolfi(ctx, []string{"go"})
+	return apkoenv.Wolfi(ctx, []string{"go"})
 }
 
 func Code(ctx dagger.Context) *dagger.Directory {
