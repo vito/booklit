@@ -2,7 +2,6 @@ package booklitcmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -81,7 +80,7 @@ func (cmd *Command) Execute(args []string) error {
 			return err
 		}
 
-		go http.Serve(l, nil)
+		go http.Serve(l, nil) // nolint:errcheck
 	}
 
 	if cmd.CPUProfilePath != "" {
@@ -92,7 +91,7 @@ func (cmd *Command) Execute(args []string) error {
 
 		defer profFile.Close()
 
-		pprof.StartCPUProfile(profFile)
+		pprof.StartCPUProfile(profFile) // nolint:errcheck
 		defer pprof.StopCPUProfile()
 	}
 
@@ -204,7 +203,7 @@ func (cmd *Command) Build() error {
 }
 
 func (cmd *Command) reexec() (int, error) {
-	tmpdir, err := ioutil.TempDir("", "booklit-reexec")
+	tmpdir, err := os.MkdirTemp("", "booklit-reexec")
 	if err != nil {
 		return 0, err
 	}
@@ -225,7 +224,7 @@ func (cmd *Command) reexec() (int, error) {
 	goSrc += "	booklitcmd.Main()\n"
 	goSrc += "}\n"
 
-	err = ioutil.WriteFile(src, []byte(goSrc), 0644)
+	err = os.WriteFile(src, []byte(goSrc), 0644)
 	if err != nil {
 		return 0, err
 	}
