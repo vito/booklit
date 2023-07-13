@@ -33,8 +33,7 @@ type Reference struct {
 	Location ast.Location
 
 	// The result of Resolving the reference.
-	tag    *Tag
-	broken bool
+	tag *Tag
 }
 
 // IsFlow returns true.

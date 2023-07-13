@@ -333,31 +333,24 @@ func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
 
 // AnnotateLocation writes a plaintext snippet of the location in the Booklit
 // document.
-func (loc ErrorLocation) AnnotateLocation(out io.Writer) error {
+func (loc ErrorLocation) AnnotateLocation(out io.Writer) {
 	if loc.NodeLocation.Line == 0 {
 		// location unavailable
-		return nil
+		return
 	}
 
 	line, err := loc.lineInQuestion()
 	if err != nil {
-		return err
+		fmt.Fprintln(out, err)
+		return
 	}
 
 	prefix := fmt.Sprintf("% 4d| ", loc.NodeLocation.Line)
 
-	_, err = fmt.Fprintf(out, "%s%s\n", prefix, line)
-	if err != nil {
-		return err
-	}
+	fmt.Fprintf(out, "%s%s\n", prefix, line)
 
 	pad := strings.Repeat(" ", len(prefix)+loc.NodeLocation.Col-1)
-	_, err = fmt.Fprintf(out, "%s\x1b[31m%s\x1b[0m\n", pad, strings.Repeat("^", loc.Length))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	fmt.Fprintf(out, "%s\x1b[31m%s\x1b[0m\n", pad, strings.Repeat("^", loc.Length))
 }
 
 type annotationData struct {

@@ -2,7 +2,12 @@
 // a Node.
 package ast
 
-import "strings"
+import (
+	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
 
 // Node is a Booklit syntax tree.
 type Node interface {
@@ -52,9 +57,8 @@ func (node Invoke) Visit(visitor Visitor) error {
 func (node Invoke) Method() string {
 	camel := ""
 	for _, word := range strings.Split(node.Function, "-") {
-		camel += strings.Title(word)
+		camel += cases.Title(language.AmericanEnglish).String(word)
 	}
-
 	return camel
 }
 
