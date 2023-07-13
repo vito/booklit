@@ -39,7 +39,7 @@ func Lint(ctx dagger.Context) (string, error) {
 }
 
 func Base(ctx dagger.Context) *dagger.Container {
-	return apkoenv.Wolfi(ctx, []string{"go"})
+	return apkoenv.Wolfi(ctx, []string{"go", "golangci-lint"})
 }
 
 func Code(ctx dagger.Context) *dagger.Directory {
