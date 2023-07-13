@@ -30,7 +30,9 @@ func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
 
 // Unit runs all Go tests.
 func Unit(ctx dagger.Context) (string, error) {
-	return goenv.Test(ctx, Base(ctx), Code(ctx)).Stdout(ctx)
+	return goenv.Test(ctx, Base(ctx), Code(ctx), goenv.GoTestOpts{
+		Verbose: true,
+	}).Stdout(ctx)
 }
 
 // Lint runs golangci-lint against all Go code.
