@@ -68,10 +68,10 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/vektah/gqlparser/v2 v2.5.6 h1:Ou14T0N1s191eRMZ1gARVqohcbe1e8FrcONScsq8cRU=
 github.com/vektah/gqlparser/v2 v2.5.6/go.mod h1:z8xXUff237NntSuH8mLFijZ+1tjV1swDbpDqjJmk6ME=
-github.com/vito/dagger v0.0.0-20230712225502-336f428abfae h1:xJ3ytfJO5CYAg3SFnRgj5cYLPiHTRQoA0b66LIEBjOA=
-github.com/vito/dagger v0.0.0-20230712225502-336f428abfae/go.mod h1:cEOsszSPc2OsGixkhKOJRP8egIULq+k8WK1EVMcZPxE=
-github.com/vito/dagger/sdk/go v0.0.0-20230712225502-336f428abfae h1:ayP5Pb2zg7Ucp9syG0FmmU3ZLw7yKe5KnjCAjVAmFhg=
-github.com/vito/dagger/sdk/go v0.0.0-20230712225502-336f428abfae/go.mod h1:yKWtdsI27JpawAkOBKRMUFydfQ8+Es7uMuw8sUtWi4I=
+github.com/vito/dagger v0.0.0-20230713012757-685d8b7011ae h1:iWSM+HvDw5Mi446lxyiwFttgK+6+SQCkboEx65Ot2Zs=
+github.com/vito/dagger v0.0.0-20230713012757-685d8b7011ae/go.mod h1:cEOsszSPc2OsGixkhKOJRP8egIULq+k8WK1EVMcZPxE=
+github.com/vito/dagger/sdk/go v0.0.0-20230713012757-685d8b7011ae h1:WsFdStSyg5bXtioUM69RQ8Ym6pXZqlYKqANGvkOwpEM=
+github.com/vito/dagger/sdk/go v0.0.0-20230713012757-685d8b7011ae/go.mod h1:yKWtdsI27JpawAkOBKRMUFydfQ8+Es7uMuw8sUtWi4I=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/mod v0.11.0 h1:bUO06HqtnRcc/7l71XBe4WcqTZ+3AH1J59zWDDwLKgU=
 golang.org/x/mod v0.11.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=

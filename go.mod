@@ -40,6 +40,6 @@ require (
 
 go 1.18
 
-replace dagger.io/dagger => github.com/vito/dagger/sdk/go v0.0.0-20230712225502-336f428abfae
+replace dagger.io/dagger => github.com/vito/dagger/sdk/go v0.0.0-20230713012757-685d8b7011ae
 
-replace github.com/dagger/dagger => github.com/vito/dagger v0.0.0-20230712225502-336f428abfae
+replace github.com/dagger/dagger => github.com/vito/dagger v0.0.0-20230713012757-685d8b7011ae
