@@ -10,10 +10,12 @@ func main() {
 	ctx := dagger.DefaultContext()
 	ctx.Client().Environment().
 		WithCheck_(Unit).
+		WithCheck_(Lint).
 		WithCommand_(Build).
 		Serve(ctx)
 }
 
+// Build builds the booklit binary, with an optional version.
 func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
 	if version == "" {
 		version = "dev"
@@ -26,8 +28,14 @@ func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
 	}), nil
 }
 
+// Unit runs all Go tests.
 func Unit(ctx dagger.Context) (string, error) {
 	return goenv.Test(ctx, Base(ctx), Code(ctx)).Stdout(ctx)
+}
+
+// Lint runs golangci-lint against all Go code.
+func Lint(ctx dagger.Context) (string, error) {
+	return goenv.GolangCILint(ctx, Base(ctx), Code(ctx)).Stdout(ctx)
 }
 
 func Base(ctx dagger.Context) *dagger.Container {
