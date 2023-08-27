@@ -1,27 +1,22 @@
 package main
 
-import (
-	"dagger.io/dagger"
-	"github.com/dagger/dagger/universe/apkoenv"
-	"github.com/dagger/dagger/universe/goenv"
-)
+import "context"
 
 func main() {
-	ctx := dagger.DefaultContext()
-	ctx.Client().Environment().
-		WithCheck_(Unit).
-		WithCheck_(Lint).
-		WithCommand_(Build).
-		Serve(ctx)
+	dag.Environment().
+		WithCheck(Unit).
+		WithCheck(Lint).
+		WithCommand(Build).
+		Serve()
 }
 
 // Build builds the booklit binary, with an optional version.
-func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
+func Build(ctx context.Context, version string) (*Directory, error) {
 	if version == "" {
 		version = "dev"
 	}
 
-	return goenv.Build(ctx, Base(ctx), Code(ctx), goenv.GoBuildOpts{
+	return dag.Go().Build(Base(), Code(), GoBuildOpts{
 		Packages: []string{"./cmd/booklit"},
 		Xdefs:    []string{"github.com/vito/booklit.Version=" + version},
 		Static:   true,
@@ -29,23 +24,23 @@ func Build(ctx dagger.Context, version string) (*dagger.Directory, error) {
 }
 
 // Unit runs all Go tests.
-func Unit(ctx dagger.Context) (string, error) {
-	return goenv.Test(ctx, Base(ctx), Code(ctx), goenv.GoTestOpts{
+func Unit(ctx context.Context) *EnvironmentCheck {
+	return dag.Go().Test(Base(), Code(), GoTestOpts{
 		Verbose: true,
-	}).Stdout(ctx)
+	})
 }
 
 // Lint runs golangci-lint against all Go code.
-func Lint(ctx dagger.Context) (string, error) {
-	return goenv.GolangCILint(ctx, Base(ctx), Code(ctx)).Stdout(ctx)
+func Lint(ctx context.Context) (string, error) {
+	return dag.Go().GolangCilint(Base(), Code()).Stdout(ctx)
 }
 
-func Base(ctx dagger.Context) *dagger.Container {
-	return apkoenv.Wolfi(ctx, []string{"go", "golangci-lint"})
+func Base() *Container {
+	return dag.Apko().Wolfi([]string{"go", "golangci-lint"})
 }
 
-func Code(ctx dagger.Context) *dagger.Directory {
-	return ctx.Client().Host().Directory(".", dagger.HostDirectoryOpts{
+func Code() *Directory {
+	return dag.Host().Directory(".", HostDirectoryOpts{
 		Include: []string{
 			"**/*.go",
 			"**/go.mod",
