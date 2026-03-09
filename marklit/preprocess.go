@@ -17,6 +17,7 @@ const invokePlaceholderPrefix = "\x00BLI"
 type extractedInvoke struct {
 	Function string
 	RawArgs  [][]byte
+	ArgTypes []ArgType // parallel to RawArgs
 }
 
 // preprocess scans source for @name{...} patterns where the braces span
@@ -70,7 +71,7 @@ func preprocess(source []byte) ([]byte, []extractedInvoke) {
 
 		// Check if this brace-group spans multiple lines
 		// (i.e. contains a newline before the matching close brace)
-		args, endPos, multiline := parseAllBracedArgs(source, i)
+		args, argTypes, endPos, multiline := parseAllBracedArgs(source, i)
 		if !multiline {
 			// Single-line invocation — leave for the inline parser
 			result = append(result, source[start:i]...)
@@ -82,6 +83,7 @@ func preprocess(source []byte) ([]byte, []extractedInvoke) {
 		extractions = append(extractions, extractedInvoke{
 			Function: funcName,
 			RawArgs:  args,
+			ArgTypes: argTypes,
 		})
 
 		marker := fmt.Sprintf("%s%d\x00", invokePlaceholderPrefix, idx)
@@ -92,34 +94,77 @@ func preprocess(source []byte) ([]byte, []extractedInvoke) {
 	return result, extractions
 }
 
-// parseAllBracedArgs parses consecutive {...} groups starting at pos.
-// Returns the raw content of each arg, the position after the last },
-// and whether any arg was multiline.
-func parseAllBracedArgs(source []byte, pos int) (args [][]byte, endPos int, multiline bool) {
+// parseAllBracedArgs parses consecutive {...} / {{...}} / {{{...}}} groups
+// starting at pos. Returns the raw content of each arg, the type of each arg,
+// the position after the last closing brace(s), and whether any arg was
+// multiline.
+func parseAllBracedArgs(source []byte, pos int) (args [][]byte, argTypes []ArgType, endPos int, multiline bool) {
 	i := pos
 	for i < len(source) && source[i] == '{' {
-		content, end, ml := parseBracedContent(source, i)
+		content, end, ml, at := parseBracedContent(source, i)
 		if end < 0 {
 			// Unbalanced — return what we have
-			return args, i, multiline
+			return args, argTypes, i, multiline
 		}
 		args = append(args, content)
+		argTypes = append(argTypes, at)
 		if ml {
 			multiline = true
 		}
 		i = end
 	}
-	return args, i, multiline
+	return args, argTypes, i, multiline
 }
 
-// parseBracedContent reads a single {...} group starting at pos (which must
-// point to '{'). Returns the inner content, the position after '}', and
-// whether it spans multiple lines.
-func parseBracedContent(source []byte, pos int) (content []byte, endPos int, multiline bool) {
+// parseBracedContent reads a single braced group starting at pos (which must
+// point to '{'). Detects {{{…}}} (verbatim), {{…}} (preformatted, requires
+// newline after {{), and {…} (normal). Returns the inner content, the
+// position after the closing brace(s), whether it spans multiple lines, and
+// the argument type.
+func parseBracedContent(source []byte, pos int) (content []byte, endPos int, multiline bool, argType ArgType) {
 	if pos >= len(source) || source[pos] != '{' {
-		return nil, -1, false
+		return nil, -1, false, ArgNormal
 	}
 
+	// Check for {{{…}}} verbatim
+	if pos+2 < len(source) && source[pos+1] == '{' && source[pos+2] == '{' {
+		start := pos + 3
+		for i := start; i+2 < len(source); i++ {
+			if source[i] == '}' && source[i+1] == '}' && source[i+2] == '}' {
+				content := source[start:i]
+				ml := bytes.ContainsAny(content, "\n\r")
+				return content, i + 3, ml, ArgVerbatim
+			}
+		}
+		return nil, -1, true, ArgVerbatim
+	}
+
+	// Check for {{…}} preformatted (must be followed by newline)
+	if pos+1 < len(source) && source[pos+1] == '{' {
+		afterOpen := pos + 2
+		if afterOpen < len(source) && (source[afterOpen] == '\n' || source[afterOpen] == '\r') {
+			start := afterOpen
+			depth := 0
+			for i := start; i < len(source); i++ {
+				switch source[i] {
+				case '{':
+					depth++
+				case '}':
+					if depth > 0 {
+						depth--
+					} else if i+1 < len(source) && source[i+1] == '}' {
+						content := source[start:i]
+						ml := bytes.ContainsAny(content, "\n\r")
+						return content, i + 2, ml, ArgPreformatted
+					}
+				}
+			}
+			return nil, -1, true, ArgPreformatted
+		}
+		// {{ not followed by newline — fall through to normal {…} parsing
+	}
+
+	// Normal {…} with brace depth
 	depth := 0
 	start := pos + 1 // skip opening {
 
@@ -132,14 +177,12 @@ func parseBracedContent(source []byte, pos int) (content []byte, endPos int, mul
 			if depth == 0 {
 				content := source[start:i]
 				ml := bytes.ContainsAny(content, "\n\r")
-				return content, i + 1, ml
+				return content, i + 1, ml, ArgNormal
 			}
-		case '\n', '\r':
-			multiline = true
 		}
 	}
 
-	return nil, -1, multiline
+	return nil, -1, true, ArgNormal
 }
 
 // resolvePlaceholders walks a string looking for placeholder markers and

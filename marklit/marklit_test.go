@@ -372,6 +372,161 @@ func TestMixedMarkdownAndInvokes(t *testing.T) {
 	}
 }
 
+func TestVerbatimArgInline(t *testing.T) {
+	node := marklit.Parse([]byte("@code{{{hello world}}}"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.Invoke{
+				Function:  "code",
+				Arguments: []ast.Node{ast.String("hello world")},
+			},
+		},
+	})
+}
+
+func TestVerbatimArgNoMarkdown(t *testing.T) {
+	// Inside {{{…}}}, Markdown formatting and @invoke are not parsed.
+	// Note: content cannot contain }}} — same limitation as the old parser.
+	node := marklit.Parse([]byte("@code{{{*not bold* @not-parsed}}}"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.Invoke{
+				Function:  "code",
+				Arguments: []ast.Node{ast.String("*not bold* @not-parsed")},
+			},
+		},
+	})
+}
+
+func TestVerbatimArgMultiline(t *testing.T) {
+	input := "@code{{{\n  line one\n  line two\n}}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	// Should contain a code invoke with a Preformatted arg
+	// After indent stripping (2 spaces), lines are "line one" and "line two"
+	expected := "P([I(code,Pre([S(line one)]|[S(line two)]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestVerbatimArgIndentStripping(t *testing.T) {
+	input := "@code{{{\n    func main() {\n        fmt.Println(\"hello\")\n    }\n}}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	expected := "P([I(code,Pre([S(func main() {)]|[S(    fmt.Println(\"hello\"))]|[S(})]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestVerbatimArgPreservesAtSigns(t *testing.T) {
+	// Verbatim should not parse @invoke syntax
+	input := "@lit-syntax{{{\n  @title{Hello}\n  @section{Body}\n}}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	expected := "P([I(lit-syntax,Pre([S(@title{Hello})]|[S(@section{Body})]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestPreformattedArgBasic(t *testing.T) {
+	input := "@code{{\n  line one\n  line two\n}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	// Preformatted preserves line structure, no Markdown formatting
+	expected := "P([I(code,Pre([S(line one)]|[S(line two)]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestPreformattedArgWithInvoke(t *testing.T) {
+	input := "@code{{\n  $ booklit -i ./index.lit\n  @syntax-hl{INFO}[0000] listening\n}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	// @syntax-hl should be parsed as an invoke within the preformatted content.
+	// ParseInlineArg wraps the arg in a Sequence: [S(INFO)].
+	expected := "P([I(code,Pre([S($ booklit -i ./index.lit)]|[I(syntax-hl,[S(INFO)]) S([0000] listening)]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestPreformattedArgNoMarkdown(t *testing.T) {
+	input := "@code{{\n  *not bold* [not a link](x)\n}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	// Markdown formatting should NOT be applied in preformatted args.
+	// After indent stripping (2 spaces), content is a single Preformatted line.
+	expected := "P([I(code,Pre([S(*not bold* [not a link](x))]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestPreformattedArgAtEscape(t *testing.T) {
+	input := "@code{{\n  user@@example.com\n}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	// After indent stripping (2 spaces), content is "user@@example.com".
+	// @@ is escaped to literal @.
+	expected := "P([I(code,Pre([S(user) S(@) S(example.com)]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestMixedArgTypes(t *testing.T) {
+	// First arg is normal {…}, second is verbatim {{{…}}}
+	input := "@syntax{go}{{{func main() {}\n}}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	// "go" is parsed as inline arg. Verbatim content after stripIndent is
+	// single-line "func main() {}" → String (matching old VerbatimLine
+	// behavior).
+	expected := "P([I(syntax,[S(go)],S(func main() {}))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestVerbatimArgWithBalancedBraces(t *testing.T) {
+	// Go template syntax {{.Content | render}} inside verbatim.
+	// Single-line after indent stripping → String.
+	input := "@code{{{\n  {{.Content | render}}\n}}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	expected := "P([I(code,S({{.Content | render}}))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestPreformattedArgWithTemplateCode(t *testing.T) {
+	// Go template {{…}} inside preformatted — braces are balanced so }}
+	// closure is found correctly after the template expressions.
+	// ParsePreformattedArg always returns Preformatted.
+	input := "@code{{\n  {{.Title | render}}\n}}"
+	node := marklit.Parse([]byte(input))
+
+	str := nodeString(node)
+	expected := "P([I(code,Pre([S({{.Title | render}})]))])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
 // assertNode compares a Booklit AST node to an expected value using a
 // recursive structural comparison via string representation.
 func assertNode(t *testing.T, got, want ast.Node) {

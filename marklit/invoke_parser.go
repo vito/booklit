@@ -48,42 +48,68 @@ func (p *invokeInlineParser) Parse(parent gast.Node, block text.Reader, pc parse
 
 	node := NewInvokeNode(funcName)
 
-	// Parse zero or more {arg} sequences
+	// Parse zero or more {arg} / {{arg}} / {{{arg}}} sequences
 	for {
 		line, _ = block.PeekLine()
 		if len(line) == 0 || line[0] != '{' {
 			break
 		}
 
-		raw, consumed := parseBracedArg(block)
+		raw, argType, consumed := parseBracedArg(block)
 		if consumed == 0 {
 			break
 		}
 
 		node.RawArgs = append(node.RawArgs, raw)
+		node.ArgTypes = append(node.ArgTypes, argType)
 	}
 
 	return node
 }
 
-// parseBracedArg reads a single {...} argument from the reader, handling
-// nested braces. Returns the inner content (without outer braces) and the
-// total bytes consumed. Returns 0 consumed if the braces are unbalanced.
-func parseBracedArg(block text.Reader) (content []byte, consumed int) {
-	// We need to read potentially across multiple lines to find the
-	// matching close brace.
+// parseBracedArg reads a single braced argument from the reader. Detects
+// {{{…}}} (verbatim), {{…}} (preformatted, requires newline), and {…}
+// (normal). Returns the inner content, the argument type, and a consumed
+// flag (0 = failure, >0 = success).
+func parseBracedArg(block text.Reader) (content []byte, argType ArgType, consumed int) {
 	saveLine, savePos := block.Position()
 
+	line, _ := block.PeekLine()
+
+	// Check for {{{…}}} verbatim
+	if len(line) >= 3 && line[0] == '{' && line[1] == '{' && line[2] == '{' {
+		block.Advance(3)
+		var buf []byte
+		for {
+			line, _ = block.PeekLine()
+			if line == nil {
+				block.SetPosition(saveLine, savePos)
+				return nil, ArgVerbatim, 0
+			}
+			for i := 0; i+2 < len(line); i++ {
+				if line[i] == '}' && line[i+1] == '}' && line[i+2] == '}' {
+					buf = append(buf, line[:i]...)
+					block.Advance(i + 3)
+					return buf, ArgVerbatim, 1
+				}
+			}
+			buf = append(buf, line...)
+			block.AdvanceLine()
+		}
+	}
+
+	// Normal {…} with brace depth ({{…}} without newline falls through here
+	// and is treated as { followed by content starting with {, matching old
+	// parser behavior)
 	var buf []byte
 	depth := 0
 	started := false
 
 	for {
-		line, _ := block.PeekLine()
+		line, _ = block.PeekLine()
 		if line == nil {
-			// EOF without matching close brace — rollback
 			block.SetPosition(saveLine, savePos)
-			return nil, 0
+			return nil, ArgNormal, 0
 		}
 
 		for i := 0; i < len(line); i++ {
@@ -97,9 +123,8 @@ func parseBracedArg(block text.Reader) (content []byte, consumed int) {
 			} else if ch == '}' {
 				depth--
 				if depth == 0 {
-					// Found matching close brace
 					block.Advance(i + 1)
-					return buf, 1 // consumed > 0 signals success
+					return buf, ArgNormal, 1
 				}
 			}
 			if started {

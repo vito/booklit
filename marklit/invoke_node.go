@@ -23,6 +23,10 @@ type InvokeNode struct {
 	// that need to be passed as ast.Node (unevaluated).
 	RawArgs [][]byte
 
+	// ArgTypes tracks whether each argument used {…}, {{…}}, or {{{…}}}.
+	// Parallel to RawArgs.
+	ArgTypes []ArgType
+
 	// Line/Col for error reporting.
 	Line int
 	Col  int

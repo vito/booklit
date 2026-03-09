@@ -157,14 +157,26 @@ func (c *converter) tryResolvePlaceholder(text string) ast.Node {
 	invoke := ast.Invoke{
 		Function: ext.Function,
 	}
-	for _, raw := range ext.RawArgs {
-		// Use inline parsing for single-line args, block parsing for
-		// multi-line args. This preserves the distinction between
-		// @func{simple arg} and @func{\nblock content\n}.
-		if bytes.ContainsAny(raw, "\n\r") {
-			invoke.Arguments = append(invoke.Arguments, ParseArg(raw))
-		} else {
-			invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
+	for i, raw := range ext.RawArgs {
+		argType := ArgNormal
+		if i < len(ext.ArgTypes) {
+			argType = ext.ArgTypes[i]
+		}
+
+		switch argType {
+		case ArgVerbatim:
+			invoke.Arguments = append(invoke.Arguments, verbatimToNode(raw))
+		case ArgPreformatted:
+			invoke.Arguments = append(invoke.Arguments, ParsePreformattedArg(raw))
+		default:
+			// Use inline parsing for single-line args, block parsing for
+			// multi-line args. This preserves the distinction between
+			// @func{simple arg} and @func{\nblock content\n}.
+			if bytes.ContainsAny(raw, "\n\r") {
+				invoke.Arguments = append(invoke.Arguments, ParseArg(raw))
+			} else {
+				invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
+			}
 		}
 	}
 	return invoke
@@ -332,10 +344,24 @@ func (c *converter) convertInvoke(n *InvokeNode) ast.Node {
 		},
 	}
 
-	for _, raw := range n.RawArgs {
-		// Parse the argument content as Markdown to get nested Booklit nodes.
-		// This allows things like @title{Hello *world*} to work.
-		argNode := ParseInlineArg(raw)
+	for i, raw := range n.RawArgs {
+		argType := ArgNormal
+		if i < len(n.ArgTypes) {
+			argType = n.ArgTypes[i]
+		}
+
+		var argNode ast.Node
+		switch argType {
+		case ArgVerbatim:
+			argNode = verbatimToNode(raw)
+		case ArgPreformatted:
+			argNode = ParsePreformattedArg(raw)
+		default:
+			// Parse the argument content as Markdown to get nested Booklit
+			// nodes. This allows things like @title{Hello *world*} to work.
+			argNode = ParseInlineArg(raw)
+		}
+
 		invoke.Arguments = append(invoke.Arguments, argNode)
 	}
 
