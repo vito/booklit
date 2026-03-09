@@ -42,7 +42,49 @@ func ParseInlineArg(source []byte) ast.Node {
 		return ast.String(source)
 	}
 	node := Parse(source)
-	return unwrapInlineResult(node)
+	node = unwrapInlineResult(node)
+
+	// Goldmark trims leading/trailing whitespace from paragraph text.
+	// In Booklit inline args, whitespace is significant (e.g.
+	// @aux{The } needs the trailing space). Restore any stripped
+	// whitespace by comparing against the original source.
+	leading := leadingWhitespace(source)
+	trailing := trailingWhitespace(source)
+	if leading == "" && trailing == "" {
+		return node
+	}
+
+	var nodes []ast.Node
+	if leading != "" {
+		nodes = append(nodes, ast.String(leading))
+	}
+	if seq, ok := node.(ast.Sequence); ok {
+		nodes = append(nodes, seq...)
+	} else {
+		nodes = append(nodes, node)
+	}
+	if trailing != "" {
+		nodes = append(nodes, ast.String(trailing))
+	}
+	return ast.Sequence(nodes)
+}
+
+func leadingWhitespace(s []byte) string {
+	for i, ch := range s {
+		if ch != ' ' && ch != '\t' {
+			return string(s[:i])
+		}
+	}
+	return string(s)
+}
+
+func trailingWhitespace(s []byte) string {
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] != ' ' && s[i] != '\t' {
+			return string(s[i+1:])
+		}
+	}
+	return string(s)
 }
 
 // unwrapInlineResult strips unnecessary Paragraph/Sequence wrapping from
