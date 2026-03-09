@@ -10,10 +10,10 @@ import (
 type ArgType int
 
 const (
-	// ArgNormal is a standard {…} argument parsed as Markdown with @invoke.
+	// ArgNormal is a standard {…} argument parsed as Markdown with \invoke.
 	ArgNormal ArgType = iota
 	// ArgPreformatted is a {{…}} argument with preserved whitespace
-	// and @invoke parsing but no Markdown formatting.
+	// and \invoke parsing but no Markdown formatting.
 	ArgPreformatted
 	// ArgVerbatim is a {{{…}}} argument with no parsing at all.
 	ArgVerbatim
@@ -89,7 +89,7 @@ func verbatimToNode(raw []byte) ast.Node {
 }
 
 // ParsePreformattedArg parses preformatted argument content ({{…}}).
-// Whitespace structure is preserved and @invoke syntax is recognized, but
+// Whitespace structure is preserved and \invoke syntax is recognized, but
 // Markdown formatting (* / ** / []() etc.) is not applied.
 //
 // Always produces ast.Preformatted (block content), matching the old parser's
@@ -112,7 +112,7 @@ func ParsePreformattedArg(source []byte) ast.Node {
 }
 
 // parsePreformattedLine parses a single line of preformatted content,
-// recognizing @invoke{arg} patterns but treating everything else as literal
+// recognizing \invoke{arg} patterns but treating everything else as literal
 // text.
 func parsePreformattedLine(line []byte) ast.Sequence {
 	var nodes []ast.Node
@@ -120,23 +120,23 @@ func parsePreformattedLine(line []byte) ast.Sequence {
 	textStart := 0
 
 	for i < len(line) {
-		if line[i] != '@' {
+		if line[i] != '\\' {
 			i++
 			continue
 		}
 
-		// @@ escape
-		if i+1 < len(line) && line[i+1] == '@' {
+		// \\ escape — produces literal backslash
+		if i+1 < len(line) && line[i+1] == '\\' {
 			if textStart < i {
 				nodes = append(nodes, ast.String(line[textStart:i]))
 			}
-			nodes = append(nodes, ast.String("@"))
+			nodes = append(nodes, ast.String("\\"))
 			i += 2
 			textStart = i
 			continue
 		}
 
-		// Try @name
+		// Try \name
 		j := i + 1
 		if j >= len(line) || !isLowerAlpha(line[j]) {
 			i++

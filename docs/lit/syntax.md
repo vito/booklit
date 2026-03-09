@@ -1,19 +1,19 @@
-@use-plugin{booklitdoc}
+\use-plugin{booklitdoc}
 
 # Syntax {#booklit-syntax}
 
 Booklit documents are Markdown files extended with a special syntax for
-@reference{function-syntax}{function calls}. Standard Markdown formatting
+\reference{function-syntax}{function calls}. Standard Markdown formatting
 (emphasis, bold, links, code, lists, etc.) is supported natively, and
-everything else is either text or an `@invoke` call.
+everything else is either text or an `\invoke` call.
 
-@table-of-contents
+\table-of-contents
 
 ## Prose Syntax {#prose-syntax}
 
 Booklit builds on top of standard Markdown, so the prose rules are familiar:
 
-@list{
+\list{
   The top-level of a document is a series of *paragraphs*, separated
   by one or more blank lines.
 }{
@@ -31,34 +31,35 @@ Booklit builds on top of standard Markdown, so the prose rules are familiar:
   *Images* are written as `![alt text](path)`.
 }{
   *Headings* can be written with `#` prefix, which maps to
-  @reference{title}.
+  \reference{title}.
 }{
-  In addition to Markdown formatting, @reference{function-syntax}{function
+  In addition to Markdown formatting, \reference{function-syntax}{function
   calls} can be used inline or at the block level.
 }
 
 ## Function Syntax {#function-syntax}
 
-Function calls are denoted by `@` followed by a series of alphanumeric
+Function calls are denoted by `\` followed by a series of alphanumeric
 characters and hyphens (`foo-bar`), forming the function *name*.
 
-To produce a literal `@` character, use `@@`.
+To produce a literal `\` character, use `\\` (standard Markdown backslash
+escape).
 
 Following the name, there may be any number of *arguments*, which can
 come in a few different forms:
 
-@definitions{
-  @definition{`{line}`}{
+\definitions{
+  \definition{`{line}`}{
     With no linebreak after the `{`, the argument forms a single
     line. Markdown formatting is applied within the argument.
   }
 }{
-  @definition{`{word wrapped line}`}{
+  \definition{`{word wrapped line}`}{
     As above, but soft line breaks are converted into a single
     space, as if it were written as `{word wrapped line}`.
   }
 }{
-  @definition{@lit-syntax{{{
+  \definition{\lit-syntax{{{
 {
   paragraph 1
 
@@ -69,17 +70,17 @@ come in a few different forms:
     paragraphs with full Markdown and function call support.
   }
 }{
-  @definition{@lit-syntax{{{
+  \definition{\lit-syntax{{{
 {{
   paragraph 1
 
     indented paragraph 2
 
-  @with{syntax}
+  \with{syntax}
 }}
   }}}}{
     With doubled-up curly braces, whitespace is preserved in the content,
-    rather than being parsed into paragraphs. Function calls (`@invoke`)
+    rather than being parsed into paragraphs. Function calls (`\invoke`)
     are still recognized within preformatted blocks.
 
     Note that the first line of the content determines an indentation level
@@ -87,19 +88,19 @@ come in a few different forms:
     ignored.
   }
 }{
-  @definition{@lit-syntax{{
+  \definition{\lit-syntax{{
 {{{
   paragraph 1
 
     indented {paragraph} 2
 
-  @@not-parsed{no-syntax}
+  \\not-parsed{no-syntax}
 }}}
   }}}{
     Tripled-up curly braces form a verbatim argument. Similar to
     preformatted, whitespace is preserved. In addition, there is no
     interpreting or parsing of function calls or Markdown within.
     This is useful for large code blocks where the content may contain
-    special characters like `@`, `{`, or `}`.
+    special characters like `\`, `{`, or `}`.
   }
 }

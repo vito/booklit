@@ -1,6 +1,7 @@
 package marklit
 
 import (
+	"bytes"
 	"strings"
 
 	"github.com/vito/booklit/ast"
@@ -366,7 +367,10 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 		return c.resolveEmbeddedPlaceholders(text)
 	}
 
-	s := ast.String(value)
+	// Strip Markdown backslash escapes. Goldmark's text segments contain
+	// raw escape sequences (e.g. \* \[ \\) — its own renderer strips them,
+	// but since we produce Booklit AST we need to strip them here.
+	s := ast.String(stripBackslashEscapes(value))
 	if t.SoftLineBreak() {
 		// Soft line breaks become spaces in flow content
 		return ast.Sequence{s, ast.String(" ")}
@@ -375,6 +379,29 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 		return ast.Sequence{s, ast.String("\n")}
 	}
 	return s
+}
+
+// stripBackslashEscapes removes Markdown backslash escapes from text.
+// In CommonMark, \ followed by an ASCII punctuation character produces the
+// literal punctuation character. The escape backslash is stripped.
+func stripBackslashEscapes(b []byte) []byte {
+	if !bytes.ContainsRune(b, '\\') {
+		return b
+	}
+	var out []byte
+	for i := 0; i < len(b); i++ {
+		if b[i] == '\\' && i+1 < len(b) && isASCIIPunct(b[i+1]) {
+			// Skip the escape backslash; the next char will be appended
+			continue
+		}
+		out = append(out, b[i])
+	}
+	return out
+}
+
+func isASCIIPunct(c byte) bool {
+	return (c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
+		(c >= '[' && c <= '`') || (c >= '{' && c <= '~')
 }
 
 // resolveEmbeddedPlaceholders splits text at placeholder markers and returns

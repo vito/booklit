@@ -6,35 +6,33 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-// invokeInlineParser parses @function-name{arg1}{arg2} syntax inline.
+// invokeInlineParser parses \function-name{arg1}{arg2} syntax inline.
+// It triggers on '\' and parses when followed by a lowercase letter.
+// When '\' is followed by punctuation, the parser returns nil and
+// goldmark handles it as a standard Markdown backslash escape.
 type invokeInlineParser struct{}
 
 var defaultInvokeInlineParser = &invokeInlineParser{}
 
-// NewInvokeInlineParser returns a new InlineParser for @invoke syntax.
+// NewInvokeInlineParser returns a new InlineParser for \invoke syntax.
 func NewInvokeInlineParser() parser.InlineParser {
 	return defaultInvokeInlineParser
 }
 
-// Trigger returns '@' as the trigger character.
+// Trigger returns '\' as the trigger character.
 func (p *invokeInlineParser) Trigger() []byte {
-	return []byte{'@'}
+	return []byte{'\\'}
 }
 
-// Parse parses an @function{arg1}{arg2} invocation.
+// Parse parses a \function{arg1}{arg2} invocation.
 func (p *invokeInlineParser) Parse(parent gast.Node, block text.Reader, pc parser.Context) gast.Node {
-	line, segment := block.PeekLine()
-	if len(line) == 0 || line[0] != '@' {
+	line, _ := block.PeekLine()
+	if len(line) == 0 || line[0] != '\\' {
 		return nil
 	}
 
-	// Check for @@ escape sequence
-	if len(line) > 1 && line[1] == '@' {
-		block.Advance(2)
-		return gast.NewTextSegment(text.NewSegment(segment.Start+1, segment.Start+2))
-	}
-
-	// Parse function name: @[a-z][a-z0-9-]*
+	// If next char is not a lowercase letter, bail out and let goldmark
+	// handle it (e.g. \\ escape, \* escape, etc.)
 	i := 1
 	if i >= len(line) || !isLowerAlpha(line[i]) {
 		return nil

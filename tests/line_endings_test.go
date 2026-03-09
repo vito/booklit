@@ -8,7 +8,7 @@ import (
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("CRLF line endings", Example{
-		Input: crlf(`@title{Hello, world!}
+		Input: crlf(`\title{Hello, world!}
 
 How are you?
 This is the same paragraph.

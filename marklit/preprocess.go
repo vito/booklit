@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// invokePlaceholder is used to replace block-level @invoke{...} sequences
+// invokePlaceholder is used to replace block-level \invoke{...} sequences
 // before goldmark parsing. After parsing, these are converted back.
 // We use \x00 + "BLI" + decimal + \x00 to avoid goldmark splitting on
 // punctuation/emphasis characters.
@@ -20,11 +20,11 @@ type extractedInvoke struct {
 	ArgTypes []ArgType // parallel to RawArgs
 }
 
-// preprocess scans source for @name{...} patterns where the braces span
+// preprocess scans source for \name{...} patterns where the braces span
 // multiple lines (block-level invocations). It extracts them and replaces
 // them with unique inline markers that survive goldmark's block parsing.
 //
-// Single-line @name{...} invocations are left alone for the inline parser
+// Single-line \name{...} invocations are left alone for the inline parser
 // to handle.
 func preprocess(source []byte) ([]byte, []extractedInvoke) {
 	var extractions []extractedInvoke
@@ -32,20 +32,20 @@ func preprocess(source []byte) ([]byte, []extractedInvoke) {
 
 	i := 0
 	for i < len(source) {
-		// Look for @ followed by a valid function name
-		if source[i] != '@' {
+		// Look for \ followed by a valid function name
+		if source[i] != '\\' {
 			result = append(result, source[i])
 			i++
 			continue
 		}
 
-		// Try to parse @name
+		// Try to parse \name
 		start := i
-		i++ // skip @
+		i++ // skip \
 
-		// @@ escape
-		if i < len(source) && source[i] == '@' {
-			result = append(result, '@', '@')
+		// \\ escape — pass through for goldmark to handle
+		if i < len(source) && source[i] == '\\' {
+			result = append(result, '\\', '\\')
 			i++
 			continue
 		}

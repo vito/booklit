@@ -7,12 +7,12 @@ import (
 
 var _ = DescribeTable("Blocks", (Example).Run,
 	Entry("lists", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@list{a}{
+\list{a}{
 b
 }{
-@code{c}
+\code{c}
 }
 `,
 
@@ -26,12 +26,12 @@ b
 	}),
 
 	Entry("tables", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@table{
-@table-row{a}{1}
+\table{
+\table-row{a}{1}
 }{
-@table-row{b}{2}
+\table-row{b}{2}
 }
 `,
 
@@ -54,12 +54,12 @@ b
 	}),
 
 	Entry("definitions", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@definitions{
-@definition{a}{1}
+\definitions{
+\definition{a}{1}
 }{
-@definition{b}{2}
+\definition{b}{2}
 }
 `,
 
@@ -79,9 +79,9 @@ b
 	}),
 
 	Entry("inset", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@inset{
+\inset{
 Hello.
 }
 `,
@@ -98,9 +98,9 @@ Hello.
 	}),
 
 	Entry("aside", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@aside{
+\aside{
 Hello.
 }
 `,
@@ -117,12 +117,12 @@ Hello.
 	}),
 
 	Entry("ordered lists", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@ordered-list{a}{
+\ordered-list{a}{
 b
 }{
-@code{c}
+\code{c}
 }
 `,
 
@@ -136,11 +136,11 @@ b
 	}),
 
 	Entry("arbitrary styles", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-@use-plugin{arbitrary-style}
+\use-plugin{arbitrary-style}
 
-@arbitrary-style{
+\arbitrary-style{
 Sup!
 }
 `,

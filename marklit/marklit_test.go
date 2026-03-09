@@ -103,7 +103,7 @@ func TestHeading(t *testing.T) {
 }
 
 func TestInvokeNoArgs(t *testing.T) {
-	node := marklit.Parse([]byte("@table-of-contents"))
+	node := marklit.Parse([]byte(`\table-of-contents`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{Function: "table-of-contents"},
@@ -112,7 +112,7 @@ func TestInvokeNoArgs(t *testing.T) {
 }
 
 func TestInvokeOneArg(t *testing.T) {
-	node := marklit.Parse([]byte("@title{Hello world}"))
+	node := marklit.Parse([]byte(`\title{Hello world}`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{
@@ -124,7 +124,7 @@ func TestInvokeOneArg(t *testing.T) {
 }
 
 func TestInvokeMultipleArgs(t *testing.T) {
-	node := marklit.Parse([]byte("@link{click here}{https://example.com}"))
+	node := marklit.Parse([]byte(`\link{click here}{https://example.com}`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{
@@ -139,7 +139,7 @@ func TestInvokeMultipleArgs(t *testing.T) {
 }
 
 func TestInvokeInlineWithMarkdown(t *testing.T) {
-	node := marklit.Parse([]byte("@title{Hello *world*}"))
+	node := marklit.Parse([]byte(`\title{Hello *world*}`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{
@@ -159,7 +159,7 @@ func TestInvokeInlineWithMarkdown(t *testing.T) {
 }
 
 func TestInvokeNested(t *testing.T) {
-	node := marklit.Parse([]byte("@bold{@italic{wow}}"))
+	node := marklit.Parse([]byte(`\bold{\italic{wow}}`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{
@@ -180,7 +180,7 @@ func TestInvokeNested(t *testing.T) {
 }
 
 func TestInvokeMixedWithProse(t *testing.T) {
-	node := marklit.Parse([]byte("Hello @bold{world} today"))
+	node := marklit.Parse([]byte(`Hello \bold{world} today`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.String("Hello "),
@@ -195,13 +195,14 @@ func TestInvokeMixedWithProse(t *testing.T) {
 	})
 }
 
-func TestAtEscape(t *testing.T) {
-	node := marklit.Parse([]byte("user@@example.com"))
+func TestBackslashEscape(t *testing.T) {
+	// \\ in Markdown produces a literal backslash. Goldmark preserves the
+	// raw \\ in text segments; our converter strips the escape backslash.
+	node := marklit.Parse([]byte(`user\\example.com`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.String("user"),
-			ast.String("@"),
-			ast.String("example.com"),
+			ast.String(`\example.com`),
 		},
 	})
 }
@@ -299,7 +300,7 @@ func TestSoftLineBreak(t *testing.T) {
 }
 
 func TestInvokeMultilineArg(t *testing.T) {
-	input := "@section{\nHello world\n\nSecond paragraph.\n}"
+	input := "\\section{\nHello world\n\nSecond paragraph.\n}"
 	node := marklit.Parse([]byte(input))
 
 	// Block args use ParseArg which preserves paragraph structure
@@ -311,7 +312,7 @@ func TestInvokeMultilineArg(t *testing.T) {
 }
 
 func TestBlockInvokeWithTitle(t *testing.T) {
-	input := "@section{\n# My Section\n\nBody text here.\n}"
+	input := "\\section{\n# My Section\n\nBody text here.\n}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -323,7 +324,7 @@ func TestBlockInvokeWithTitle(t *testing.T) {
 }
 
 func TestMultipleBlockInvokes(t *testing.T) {
-	input := "# Top\n\nIntro.\n\n@section{\n# Sub A\n\nBody A.\n}\n\n@section{\n# Sub B\n\nBody B.\n}"
+	input := "# Top\n\nIntro.\n\n\\section{\n# Sub A\n\nBody A.\n}\n\n\\section{\n# Sub B\n\nBody B.\n}"
 	node := marklit.Parse([]byte(input))
 
 	seq, ok := node.(ast.Sequence)
@@ -338,7 +339,7 @@ func TestMultipleBlockInvokes(t *testing.T) {
 }
 
 func TestBlockInvokeMultipleArgs(t *testing.T) {
-	input := "@define{key}{\nvalue across\nmultiple lines\n}"
+	input := "\\define{key}{\nvalue across\nmultiple lines\n}"
 	node := marklit.Parse([]byte(input))
 	str := nodeString(node)
 	t.Logf("block invoke multiple args: %s", str)
@@ -349,7 +350,7 @@ func TestBlockInvokeMultipleArgs(t *testing.T) {
 }
 
 func TestHeadingWithInvokesBelow(t *testing.T) {
-	input := "# My Title\n\nSome body text.\n\n@table-of-contents"
+	input := "# My Title\n\nSome body text.\n\n\\table-of-contents"
 	node := marklit.Parse([]byte(input))
 
 	seq, ok := node.(ast.Sequence)
@@ -362,7 +363,7 @@ func TestHeadingWithInvokesBelow(t *testing.T) {
 }
 
 func TestMixedMarkdownAndInvokes(t *testing.T) {
-	input := "# Welcome\n\nHello *world*, see @reference{my-tag} for details."
+	input := "# Welcome\n\nHello *world*, see \\reference{my-tag} for details."
 	node := marklit.Parse([]byte(input))
 	str := nodeString(node)
 	// Should contain title invoke, italic invoke, and reference invoke
@@ -373,7 +374,7 @@ func TestMixedMarkdownAndInvokes(t *testing.T) {
 }
 
 func TestVerbatimArgInline(t *testing.T) {
-	node := marklit.Parse([]byte("@code{{{hello world}}}"))
+	node := marklit.Parse([]byte(`\code{{{hello world}}}`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{
@@ -385,21 +386,21 @@ func TestVerbatimArgInline(t *testing.T) {
 }
 
 func TestVerbatimArgNoMarkdown(t *testing.T) {
-	// Inside {{{…}}}, Markdown formatting and @invoke are not parsed.
+	// Inside {{{…}}}, Markdown formatting and \invoke are not parsed.
 	// Note: content cannot contain }}} — same limitation as the old parser.
-	node := marklit.Parse([]byte("@code{{{*not bold* @not-parsed}}}"))
+	node := marklit.Parse([]byte(`\code{{{*not bold* \not-parsed}}}`))
 	assertNode(t, node, ast.Paragraph{
 		ast.Sequence{
 			ast.Invoke{
 				Function:  "code",
-				Arguments: []ast.Node{ast.String("*not bold* @not-parsed")},
+				Arguments: []ast.Node{ast.String(`*not bold* \not-parsed`)},
 			},
 		},
 	})
 }
 
 func TestVerbatimArgMultiline(t *testing.T) {
-	input := "@code{{{\n  line one\n  line two\n}}}"
+	input := "\\code{{{\n  line one\n  line two\n}}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -412,7 +413,7 @@ func TestVerbatimArgMultiline(t *testing.T) {
 }
 
 func TestVerbatimArgIndentStripping(t *testing.T) {
-	input := "@code{{{\n    func main() {\n        fmt.Println(\"hello\")\n    }\n}}}"
+	input := "\\code{{{\n    func main() {\n        fmt.Println(\"hello\")\n    }\n}}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -422,20 +423,20 @@ func TestVerbatimArgIndentStripping(t *testing.T) {
 	}
 }
 
-func TestVerbatimArgPreservesAtSigns(t *testing.T) {
-	// Verbatim should not parse @invoke syntax
-	input := "@lit-syntax{{{\n  @title{Hello}\n  @section{Body}\n}}}"
+func TestVerbatimArgPreservesBackslashes(t *testing.T) {
+	// Verbatim should not parse \invoke syntax
+	input := "\\lit-syntax{{{\n  \\title{Hello}\n  \\section{Body}\n}}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
-	expected := "P([I(lit-syntax,Pre([S(@title{Hello})]|[S(@section{Body})]))])"
+	expected := "P([I(lit-syntax,Pre([S(\\title{Hello})]|[S(\\section{Body})]))])"
 	if str != expected {
 		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
 	}
 }
 
 func TestPreformattedArgBasic(t *testing.T) {
-	input := "@code{{\n  line one\n  line two\n}}"
+	input := "\\code{{\n  line one\n  line two\n}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -447,11 +448,11 @@ func TestPreformattedArgBasic(t *testing.T) {
 }
 
 func TestPreformattedArgWithInvoke(t *testing.T) {
-	input := "@code{{\n  $ booklit -i ./index.lit\n  @syntax-hl{INFO}[0000] listening\n}}"
+	input := "\\code{{\n  $ booklit -i ./index.lit\n  \\syntax-hl{INFO}[0000] listening\n}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
-	// @syntax-hl should be parsed as an invoke within the preformatted content.
+	// \syntax-hl should be parsed as an invoke within the preformatted content.
 	// ParseInlineArg wraps the arg in a Sequence: [S(INFO)].
 	expected := "P([I(code,Pre([S($ booklit -i ./index.lit)]|[I(syntax-hl,[S(INFO)]) S([0000] listening)]))])"
 	if str != expected {
@@ -460,7 +461,7 @@ func TestPreformattedArgWithInvoke(t *testing.T) {
 }
 
 func TestPreformattedArgNoMarkdown(t *testing.T) {
-	input := "@code{{\n  *not bold* [not a link](x)\n}}"
+	input := "\\code{{\n  *not bold* [not a link](x)\n}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -472,14 +473,14 @@ func TestPreformattedArgNoMarkdown(t *testing.T) {
 	}
 }
 
-func TestPreformattedArgAtEscape(t *testing.T) {
-	input := "@code{{\n  user@@example.com\n}}"
+func TestPreformattedArgBackslashEscape(t *testing.T) {
+	input := "\\code{{\n  user\\\\example.com\n}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
-	// After indent stripping (2 spaces), content is "user@@example.com".
-	// @@ is escaped to literal @.
-	expected := "P([I(code,Pre([S(user) S(@) S(example.com)]))])"
+	// After indent stripping (2 spaces), content is "user\\example.com".
+	// \\ is escaped to literal \.
+	expected := "P([I(code,Pre([S(user) S(\\) S(example.com)]))])"
 	if str != expected {
 		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
 	}
@@ -487,7 +488,7 @@ func TestPreformattedArgAtEscape(t *testing.T) {
 
 func TestMixedArgTypes(t *testing.T) {
 	// First arg is normal {…}, second is verbatim {{{…}}}
-	input := "@syntax{go}{{{func main() {}\n}}}"
+	input := "\\syntax{go}{{{func main() {}\n}}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -504,7 +505,7 @@ func TestVerbatimArgWithBalancedBraces(t *testing.T) {
 	// Go template syntax {{.Content | render}} inside verbatim.
 	// Block-form (raw starts with \n) → Preformatted even if single line
 	// after indent stripping. This ensures block-level rendering.
-	input := "@code{{{\n  {{.Content | render}}\n}}}"
+	input := "\\code{{{\n  {{.Content | render}}\n}}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -518,7 +519,7 @@ func TestPreformattedArgWithTemplateCode(t *testing.T) {
 	// Go template {{…}} inside preformatted — braces are balanced so }}
 	// closure is found correctly after the template expressions.
 	// ParsePreformattedArg always returns Preformatted.
-	input := "@code{{\n  {{.Title | render}}\n}}"
+	input := "\\code{{\n  {{.Title | render}}\n}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
@@ -570,7 +571,7 @@ func TestThreeLevelSections(t *testing.T) {
 }
 
 func TestContentBeforeFirstHeading(t *testing.T) {
-	input := "@use-plugin{foo}\n\n# Title\n\nBody.\n"
+	input := "\\use-plugin{foo}\n\n# Title\n\nBody.\n"
 	node := marklit.Parse([]byte(input))
 	str := nodeString(node)
 	expected := "[P([I(use-plugin,[S(foo)])]) P([I(title,[S(Title)])]) P([S(Body.)])]"

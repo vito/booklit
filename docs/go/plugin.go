@@ -95,12 +95,12 @@ func (plugin Plugin) Columns(title booklit.Content, rest ...booklit.Content) boo
 
 func linkTransformer(sec *booklit.Section) chromap.Transformer {
 	return chromap.Transformer{
-		Pattern: regexp.MustCompile(`@([a-z][a-z0-9-]*)`),
+		Pattern: regexp.MustCompile(`\\([a-z][a-z0-9-]*)`),
 		Transform: func(invoke string) booklit.Content {
-			function := strings.TrimPrefix(invoke, `@`)
+			function := strings.TrimPrefix(invoke, `\`)
 
 			return booklit.Sequence{
-				booklit.String(`@`),
+				booklit.String(`\`),
 				&booklit.Reference{
 					Section:  sec,
 					TagName:  function,
@@ -174,7 +174,7 @@ func (plugin Plugin) TemplateLink(tmpl string) (booklit.Content, error) {
 func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Content, error) {
 	invoke := node.(ast.Sequence)[0].(ast.Invoke)
 
-	title, err := plugin.chroma.Syntax("lit", booklit.String("@"+invoke.Function))
+	title, err := plugin.chroma.Syntax("lit", booklit.String("\\"+invoke.Function))
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Con
 }
 
 func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {
-	str := fmt.Sprintf(`@%s`, invoke.Function)
+	str := fmt.Sprintf(`\%s`, invoke.Function)
 
 	for _, arg := range invoke.Arguments {
 		str += "{"

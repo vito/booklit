@@ -6,20 +6,20 @@ import (
 
 var _ = DescribeTable("Search Index", (Example).Run,
 	Entry("sections", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 How are you?
 
 Here's another paragraph.
 
-@section{
-@title{How I'm doing}
+\section{
+\title{How I'm doing}
 
 Good, thanks! And you?
 }
 
-@section{
-@title{Their Reply}
+\section{
+\title{Their Reply}
 
 Good, thanks!
 }
@@ -51,18 +51,18 @@ Good, thanks!
 	}),
 
 	Entry("targets", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 How are you?
 
 Here's another paragraph.
 
-@section{
-@title{Sub-Section}
+\section{
+\title{Sub-Section}
 
 Sub-section content.
 
-@target{some-target}{Some Target}{
+\target{some-target}{Some Target}{
 This is more information about some-target.
 }
 }
@@ -94,16 +94,16 @@ This is more information about some-target.
 	}),
 
 	Entry("interesting content", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 How are you?
 
-Here's a paragraph with @code{code}, a @link{link}{https://example.com},
-and a @reference{sub-section}.
+Here's a paragraph with \code{code}, a \link{link}{https://example.com},
+and a \reference{sub-section}.
 
-@table-of-contents
+\table-of-contents
 
-@list{
+\list{
 Item 1
 
 Another line
@@ -111,29 +111,29 @@ Another line
 Item 2
 }
 
-@ordered-list{
+\ordered-list{
 Ordered Item 1
 }{
 Ordered Item 2
 }
 
-@code{line 1
+\code{line 1
 line 2}
 
-@table{
-@table-row{a}{1}
+\table{
+\table-row{a}{1}
 }{
-@table-row{b}{2}
+\table-row{b}{2}
 }
 
-@definitions{
-@definition{a}{1}
+\definitions{
+\definition{a}{1}
 }{
-@definition{b}{2}
+\definition{b}{2}
 }
 
-@section{
-@title{Sub-Section}
+\section{
+\title{Sub-Section}
 
 Sub-section content.
 }

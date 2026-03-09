@@ -7,7 +7,7 @@ import (
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("simple 'Hello World'", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 How are you?
 `,
@@ -22,7 +22,7 @@ How are you?
 	}),
 
 	Entry("no trailing linebreak", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 How are you?`,
 
@@ -36,9 +36,9 @@ How are you?`,
 	}),
 
 	Entry("link", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @link{you}{https://example.com}?
+How are \link{you}{https://example.com}?
 `,
 
 		Outputs: Files{
@@ -51,9 +51,9 @@ How are @link{you}{https://example.com}?
 	}),
 
 	Entry("images", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-Here's an @image{foo.png}{with alt text} and another @image{without.gif}.
+Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
 `,
 
 		Outputs: Files{
@@ -66,9 +66,9 @@ Here's an @image{foo.png}{with alt text} and another @image{without.gif}.
 	}),
 
 	Entry("italics", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @italic{you}?
+How are \italic{you}?
 `,
 
 		Outputs: Files{
@@ -81,9 +81,9 @@ How are @italic{you}?
 	}),
 
 	Entry("bold", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @bold{you}?
+How are \bold{you}?
 `,
 
 		Outputs: Files{
@@ -96,9 +96,9 @@ How are @bold{you}?
 	}),
 
 	Entry("larger", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @larger{you}?
+How are \larger{you}?
 `,
 
 		Outputs: Files{
@@ -111,9 +111,9 @@ How are @larger{you}?
 	}),
 
 	Entry("smaller", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @smaller{you}?
+How are \smaller{you}?
 `,
 
 		Outputs: Files{
@@ -126,9 +126,9 @@ How are @smaller{you}?
 	}),
 
 	Entry("strike", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @strike{you}?
+How are \strike{you}?
 `,
 
 		Outputs: Files{
@@ -141,9 +141,9 @@ How are @strike{you}?
 	}),
 
 	Entry("superscript", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @superscript{you}?
+How are \superscript{you}?
 `,
 
 		Outputs: Files{
@@ -156,9 +156,9 @@ How are @superscript{you}?
 	}),
 
 	Entry("subscript", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-How are @subscript{you}?
+How are \subscript{you}?
 `,
 
 		Outputs: Files{
@@ -171,7 +171,7 @@ How are @subscript{you}?
 	}),
 
 	Entry("multiple paragraphs", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 How are you?
 
@@ -191,7 +191,7 @@ I'm good, thanks!
 	}),
 
 	Entry("word-wrapped paragraphs", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur accumsan a
 ligula id feugiat. Quisque luctus semper ex sodales vulputate. Sed mi mi,
@@ -218,9 +218,9 @@ varius molestie.
 	}),
 
 	Entry("inline code", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-This is some @code{inline} code.
+This is some \code{inline} code.
 `,
 
 		Outputs: Files{
@@ -234,13 +234,13 @@ This is some @code{inline} code.
 	}),
 
 	Entry("empty arguments", Example{
-		Input: `@title{Hello, world!}
+		Input: `\title{Hello, world!}
 
-This is an @italic{} empty italic.
+This is an \italic{} empty italic.
 
-This is a @italic{ } space italic.
+This is a \italic{ } space italic.
 
-This is an @italic{  } even more spaced italic.
+This is an \italic{  } even more spaced italic.
 `,
 
 		Outputs: Files{

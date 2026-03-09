@@ -1,23 +1,23 @@
-@use-plugin{booklitdoc}
-@use-plugin{chroma}
+\use-plugin{booklitdoc}
+\use-plugin{chroma}
 
 # Plugins {#plugins}
 
 Plugins provide the functionality behind function calls like
-@syntax{lit}{@@foo{bar}}.
+\syntax{lit}{\\foo{bar}}.
 
 Out of the box, Booklit comes with a plugin called
-@reference{baselit}{`baselit`} which provides basic functions like
-@reference{title}, @reference{section}, @reference{italic}, and
-@reference{bold}.
+\reference{baselit}{`baselit`} which provides basic functions like
+\reference{title}, \reference{section}, \reference{italic}, and
+\reference{bold}.
 
 More functions can be added by writing plugins and using them in your
 documents.
 
-If you've skipped ahead, you may want to check out @reference{getting-started}
+If you've skipped ahead, you may want to check out \reference{getting-started}
 to see how to set up your Go module.
 
-@table-of-contents
+\table-of-contents
 
 ## Using Plugins {#using-plugins}
 
@@ -27,7 +27,7 @@ To use a plugin, pass its Go package's import path as `--plugin` to the
 For example, Booklit comes with a `chroma` plugin for syntax
 highlighting. To use it, run:
 
-@syntax{bash}{{{
+\syntax{bash}{{{
 booklit -i index.lit -o out \
   --plugin github.com/vito/booklit/chroma/plugin
 }}}
@@ -35,7 +35,7 @@ booklit -i index.lit -o out \
 The `--plugin` flag must be passed every time you build your docs,
 so you may want to put it in a script:
 
-@syntax{bash}{{{
+\syntax{bash}{{{
 #!/bin/bash
 
 booklit -i lit/index.lit -o public \
@@ -48,15 +48,15 @@ Booklit imports all specified plugins at build time, automatically adding
 them to `go.mod`. When imported, plugins register themselves under a
 certain name - typically guessable from the import path.
 
-To use the plugin in your documents, call @reference{use-plugin} with its
+To use the plugin in your documents, call \reference{use-plugin} with its
 registered name:
 
-@lit-syntax{{{
-@title{My Section}
+\lit-syntax{{{
+\title{My Section}
 
-@use-plugin{chroma}
+\use-plugin{chroma}
 
-@syntax{ruby}{{{
+\syntax{ruby}{{{
   def fib(n)
     fib(n - 2) + fib(n - 1)
   end
@@ -64,10 +64,10 @@ registered name:
 }}}
 
 The `--plugin` flag can be specified multiple times, and
-@reference{use-plugin} can be invoked multiple times.
+\reference{use-plugin} can be invoked multiple times.
 
-Note: @reference{section}{inline sections} inherit plugins from their parent
-sections, but @reference{include-section}{included sections} do not.
+Note: \reference{section}{inline sections} inherit plugins from their parent
+sections, but \reference{include-section}{included sections} do not.
 
 ## Writing Plugins {#using-plugins}
 
@@ -80,14 +80,14 @@ being able to write a plugin help you get the most out of Booklit.
 To create a new plugin, create a directory within your Go module (where
 `go.mod` lives) - let's call it `example` for this example:
 
-@syntax{bash}{{{
+\syntax{bash}{{{
 mkdir example
 }}}
 
 Then, we'll create the initial skeleton for our plugin at
 `example/plugin.go`:
 
-@syntax{go}{{{
+\syntax{go}{{{
 package example
 
 import (
@@ -115,7 +115,7 @@ functions!
 Functions work by simply defining methods on the plugin struct. Let's define
 a basic one with no arguments:
 
-@syntax{go}{{{
+\syntax{go}{{{
 func (plugin Plugin) HelloWorld() booklit.Content {
   return booklit.String("Hello, world!")
 }
@@ -123,26 +123,26 @@ func (plugin Plugin) HelloWorld() booklit.Content {
 
 Now let's create a Booklit document that uses it as `hello-plugins.lit`:
 
-@lit-syntax{{{
-@title{Hello Plugins}
+\lit-syntax{{{
+\title{Hello Plugins}
 
-@use-plugin{example}
+\use-plugin{example}
 
-Zero args: @hello-world
+Zero args: \hello-world
 }}}
 
 To build this document, pass the package import path (including your module
 name) as the `--plugin` flag. For example, if your `go.mod` says
 `module foo`, the flag would be:
 
-@syntax{bash}{{{
+\syntax{bash}{{{
 booklit -i hello-plugins.lit -o out \
     --plugin foo/example
 }}}
 
 This should result in a page showing:
 
-@inset{
+\inset{
   Zero args: Hello, world!
 }
 
@@ -150,34 +150,34 @@ This should result in a page showing:
 
 Functions can be invoked with any number of arguments, like so:
 
-@lit-syntax{{{
-@hello-world{arg1}{arg2}
+\lit-syntax{{{
+\hello-world{arg1}{arg2}
 }}}
 
-See @reference{function-syntax} for more information.
+See \reference{function-syntax} for more information.
 
 Each argument to the function corresponds to an argument for the plugin's
 method, which may be variadic.
 
 The plugin's arguments must each be one of the following types:
 
-@definitions{
-  @definition{@godoc{booklit.Content}}{
+\definitions{
+  \definition{\godoc{booklit.Content}}{
     The evaluated content. This can be just about anything from a word to a
     sentence to a series of paragraphs, depending on how the function is
     invoked. It is typically used unmodified.
   }
 }{
-  @definition{`string`}{
+  \definition{`string`}{
     The evaluated content, converted into a string. This is useful when the
     content is expected to be something simple, like a word or line of
-    text. The @reference{title} function, for example, uses this type for
+    text. The \reference{title} function, for example, uses this type for
     its variadic *tags* argument.
   }
 }{
-  @definition{@godoc{booklit/ast.Node}}{
+  \definition{\godoc{booklit/ast.Node}}{
     The unevaluated syntax tree for the content. This is useful when doing
-    meta-level things like @reference{section} which need to control the
+    meta-level things like \reference{section} which need to control the
     evaluation context of the content.
   }
 }
@@ -186,14 +186,14 @@ The plugin's arguments must each be one of the following types:
 
 Plugin methods can then return one of the following:
 
-@list{
+\list{
   nothing
 }{
   `error`
 }{
-  @godoc{booklit.Content}
+  \godoc{booklit.Content}
 }{
-  `(`@godoc{booklit.Content}`, error)`
+  `(`\godoc{booklit.Content}`, error)`
 }
 
 If a method returns a non-nil `error` value, it will bubble up and
@@ -204,7 +204,7 @@ the building will fail.
 Putting the pieces together, let's extend our `pluglit` plugin from
 earlier write a real function that does something useful:
 
-@syntax{go}{{{
+\syntax{go}{{{
 func (plugin Plugin) DescribeFruit(
   name string,
   definition booklit.Content,
@@ -241,16 +241,16 @@ func (plugin Plugin) DescribeFruit(
 
 There are many things to note here:
 
-@list{
+\list{
   there are two required arguments; *name* is a `string` and
-  *value* is a @godoc{booklit.Content}
+  *value* is a \godoc{booklit.Content}
 }{
   there's a variadic argument, *tags*, which is of type
   `[]string`
 }{
   this function generates content, and can raise an error when building
 }{
-  the @godoc{booklit.Target} elements will result in tags being registered
+  the \godoc{booklit.Target} elements will result in tags being registered
   in the section the function is called from
 }{
   the function name, `describe-fruit`, corresponds to the method name
@@ -259,8 +259,8 @@ There are many things to note here:
 
 This function would be called like so:
 
-@lit-syntax{{{
-@describe-fruit{banana}{
+\lit-syntax{{{
+\describe-fruit{banana}{
   A banana is a yellow fruit that only really tastes
   good in its original form. Banana flavored
   anything is a pit of dispair.
@@ -269,13 +269,13 @@ This function would be called like so:
 
 ...and will result in something like the following:
 
-@inset{
-  @describe-fruit{banana}{
+\inset{
+  \describe-fruit{banana}{
     A banana is a yellow fruit that only really tastes
     good in its original form. Banana flavored
     anything is a pit of dispair.
   }{banana-opinion}
 }
 
-...which can be referenced as @syntax{lit}{@@reference{banana-opinion}}, which
-results in a link like this: @reference{banana-opinion}.
+...which can be referenced as \syntax{lit}{\\reference{banana-opinion}}, which
+results in a link like this: \reference{banana-opinion}.
