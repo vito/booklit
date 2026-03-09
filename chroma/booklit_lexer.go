@@ -18,6 +18,7 @@ var Booklit = lexers.Register(MustNewLexer(
 			"root": {
 				{Pattern: "[^\\\\{}`]+", Type: Text, Mutator: nil},
 				{Pattern: `\{\{\{`, Type: StringDouble, Mutator: Push("verbatim")},
+				{Pattern: `\{-`, Type: CommentMultiline, Mutator: Push("comment")},
 				{Pattern: `\\\\`, Type: Text, Mutator: nil},
 				{Pattern: `\\([a-z][a-z0-9-]*)`, Type: Keyword, Mutator: nil},
 				{Pattern: "[`]+", Type: StringBacktick, Mutator: nil},
@@ -27,6 +28,12 @@ var Booklit = lexers.Register(MustNewLexer(
 				{Pattern: `\}\}\}`, Type: StringDouble, Mutator: Pop(1)},
 				{Pattern: `[^}]+`, Type: StringDouble, Mutator: nil},
 				{Pattern: `}[^\}]`, Type: StringDouble, Mutator: nil},
+			},
+			"comment": {
+				{Pattern: `[^-{}]+`, Type: CommentMultiline, Mutator: nil},
+				{Pattern: `\{-`, Type: CommentMultiline, Mutator: Push("comment")},
+				{Pattern: `-\}`, Type: CommentMultiline, Mutator: Pop(1)},
+				{Pattern: `[-{}]`, Type: CommentMultiline, Mutator: nil},
 			},
 		}
 	},
