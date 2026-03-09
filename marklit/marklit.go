@@ -3,6 +3,8 @@
 package marklit
 
 import (
+	"bytes"
+
 	"github.com/vito/booklit/ast"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/parser"
@@ -30,8 +32,34 @@ func Parse(source []byte) ast.Node {
 // ParseInlineArg parses inline argument content (single-line, no block
 // elements) into a Booklit AST node. Used for parsing the content inside
 // @invoke{...} braces.
+//
+// Unlike Parse, this unwraps single-paragraph results so that inline
+// arguments produce flat content rather than block-wrapped content.
+// This matches the behavior of the old PEG parser where inline args
+// like \title{Hello} produced a Sequence, not a Paragraph.
 func ParseInlineArg(source []byte) ast.Node {
-	return Parse(source)
+	if len(bytes.TrimSpace(source)) == 0 {
+		return ast.String(source)
+	}
+	node := Parse(source)
+	return unwrapInlineResult(node)
+}
+
+// unwrapInlineResult strips unnecessary Paragraph/Sequence wrapping from
+// a parsed inline argument. If the result is a single Paragraph with one
+// line, we return just the line's contents.
+func unwrapInlineResult(node ast.Node) ast.Node {
+	// Single paragraph with one line → return the line content
+	if para, ok := node.(ast.Paragraph); ok && len(para) == 1 {
+		return para[0]
+	}
+	// Sequence containing a single paragraph → unwrap that too
+	if seq, ok := node.(ast.Sequence); ok && len(seq) == 1 {
+		if para, ok := seq[0].(ast.Paragraph); ok && len(para) == 1 {
+			return para[0]
+		}
+	}
+	return node
 }
 
 // ParseArg parses a full argument (may contain block elements, paragraphs,

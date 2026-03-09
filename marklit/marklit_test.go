@@ -117,7 +117,7 @@ func TestInvokeOneArg(t *testing.T) {
 		ast.Sequence{
 			ast.Invoke{
 				Function:  "title",
-				Arguments: []ast.Node{ast.Paragraph{ast.Sequence{ast.String("Hello world")}}},
+				Arguments: []ast.Node{ast.Sequence{ast.String("Hello world")}},
 			},
 		},
 	})
@@ -130,8 +130,8 @@ func TestInvokeMultipleArgs(t *testing.T) {
 			ast.Invoke{
 				Function: "link",
 				Arguments: []ast.Node{
-					ast.Paragraph{ast.Sequence{ast.String("click here")}},
-					ast.Paragraph{ast.Sequence{ast.String("https://example.com")}},
+					ast.Sequence{ast.String("click here")},
+					ast.Sequence{ast.String("https://example.com")},
 				},
 			},
 		},
@@ -145,13 +145,11 @@ func TestInvokeInlineWithMarkdown(t *testing.T) {
 			ast.Invoke{
 				Function: "title",
 				Arguments: []ast.Node{
-					ast.Paragraph{
-						ast.Sequence{
-							ast.String("Hello "),
-							ast.Invoke{
-								Function:  "italic",
-								Arguments: []ast.Node{ast.Sequence{ast.String("world")}},
-							},
+					ast.Sequence{
+						ast.String("Hello "),
+						ast.Invoke{
+							Function:  "italic",
+							Arguments: []ast.Node{ast.Sequence{ast.String("world")}},
 						},
 					},
 				},
@@ -167,13 +165,11 @@ func TestInvokeNested(t *testing.T) {
 			ast.Invoke{
 				Function: "bold",
 				Arguments: []ast.Node{
-					ast.Paragraph{
-						ast.Sequence{
-							ast.Invoke{
-								Function: "italic",
-								Arguments: []ast.Node{
-									ast.Paragraph{ast.Sequence{ast.String("wow")}},
-								},
+					ast.Sequence{
+						ast.Invoke{
+							Function: "italic",
+							Arguments: []ast.Node{
+								ast.Sequence{ast.String("wow")},
 							},
 						},
 					},
@@ -191,7 +187,7 @@ func TestInvokeMixedWithProse(t *testing.T) {
 			ast.Invoke{
 				Function: "bold",
 				Arguments: []ast.Node{
-					ast.Paragraph{ast.Sequence{ast.String("world")}},
+					ast.Sequence{ast.String("world")},
 				},
 			},
 			ast.String(" today"),
@@ -306,19 +302,12 @@ func TestInvokeMultilineArg(t *testing.T) {
 	input := "@section{\nHello world\n\nSecond paragraph.\n}"
 	node := marklit.Parse([]byte(input))
 
-	assertNode(t, node, ast.Paragraph{
-		ast.Sequence{
-			ast.Invoke{
-				Function: "section",
-				Arguments: []ast.Node{
-					ast.Sequence{
-						ast.Paragraph{ast.Sequence{ast.String("Hello world")}},
-						ast.Paragraph{ast.Sequence{ast.String("Second paragraph.")}},
-					},
-				},
-			},
-		},
-	})
+	// Block args use ParseArg which preserves paragraph structure
+	str := nodeString(node)
+	expected := "P([I(section,[P([S(Hello world)]) P([S(Second paragraph.)])])])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
 }
 
 func TestBlockInvokeWithTitle(t *testing.T) {

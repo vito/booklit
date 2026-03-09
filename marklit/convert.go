@@ -1,6 +1,7 @@
 package marklit
 
 import (
+	"bytes"
 	"strings"
 
 	"github.com/vito/booklit/ast"
@@ -157,7 +158,14 @@ func (c *converter) tryResolvePlaceholder(text string) ast.Node {
 		Function: ext.Function,
 	}
 	for _, raw := range ext.RawArgs {
-		invoke.Arguments = append(invoke.Arguments, ParseArg(raw))
+		// Use inline parsing for single-line args, block parsing for
+		// multi-line args. This preserves the distinction between
+		// @func{simple arg} and @func{\nblock content\n}.
+		if bytes.ContainsAny(raw, "\n\r") {
+			invoke.Arguments = append(invoke.Arguments, ParseArg(raw))
+		} else {
+			invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
+		}
 	}
 	return invoke
 }
