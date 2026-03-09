@@ -7,6 +7,7 @@ import (
 
 	"github.com/vito/booklit/ast"
 	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
@@ -130,8 +131,8 @@ func parseArg(source []byte, doStripIndent bool) ast.Node {
 	return result
 }
 
-// newParser builds a goldmark parser with the Booklit @invoke extension
-// registered.
+// newParser builds a goldmark parser with the Booklit \invoke extension
+// and GFM table support registered.
 func newParser() parser.Parser {
 	return parser.NewParser(
 		parser.WithBlockParsers(parser.DefaultBlockParsers()...),
@@ -141,7 +142,15 @@ func newParser() parser.Parser {
 				util.Prioritized(NewInvokeInlineParser(), 100),
 			)...,
 		),
-		parser.WithParagraphTransformers(parser.DefaultParagraphTransformers()...),
+		parser.WithParagraphTransformers(
+			append(
+				parser.DefaultParagraphTransformers(),
+				util.Prioritized(extension.NewTableParagraphTransformer(), 200),
+			)...,
+		),
+		parser.WithASTTransformers(
+			util.Prioritized(extension.NewTableASTTransformer(), 0),
+		),
 		parser.WithHeadingAttribute(),
 	)
 }

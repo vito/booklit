@@ -590,6 +590,47 @@ func TestNoHeadingsUnchanged(t *testing.T) {
 	}
 }
 
+func TestMarkdownTable(t *testing.T) {
+	input := "| A | B |\n| --- | --- |\n| 1 | 2 |\n| 3 | 4 |\n"
+	node := marklit.Parse([]byte(input))
+	assertNode(t, node, ast.Invoke{
+		Function: "table",
+		Arguments: []ast.Node{
+			ast.Invoke{
+				Function: "table-row",
+				Arguments: []ast.Node{
+					ast.Sequence{ast.String("A")},
+					ast.Sequence{ast.String("B")},
+				},
+			},
+			ast.Invoke{
+				Function: "table-row",
+				Arguments: []ast.Node{
+					ast.Sequence{ast.String("1")},
+					ast.Sequence{ast.String("2")},
+				},
+			},
+			ast.Invoke{
+				Function: "table-row",
+				Arguments: []ast.Node{
+					ast.Sequence{ast.String("3")},
+					ast.Sequence{ast.String("4")},
+				},
+			},
+		},
+	})
+}
+
+func TestMarkdownTableWithFormatting(t *testing.T) {
+	input := "| Name | Status |\n| --- | --- |\n| foo | **ok** |\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "I(table,I(table-row,[S(Name)],[S(Status)]),I(table-row,[S(foo)],[I(bold,[S(ok)])]))"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
 func TestCommentInline(t *testing.T) {
 	node := marklit.Parse([]byte("Hello {- comment -}world"))
 	assertNode(t, node, ast.Paragraph{

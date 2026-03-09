@@ -6,6 +6,7 @@ import (
 
 	"github.com/vito/booklit/ast"
 	gast "github.com/yuin/goldmark/ast"
+	east "github.com/yuin/goldmark/extension/ast"
 )
 
 type converter struct {
@@ -266,6 +267,9 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 		return c.convertInvokeBlock(n.(*InvokeBlockNode))
 
 	default:
+		if n.Kind() == east.KindTable {
+			return c.convertTable(n.(*east.Table))
+		}
 		// Unknown node type — try converting children
 		return c.convertChildren(n)
 	}
@@ -647,6 +651,35 @@ func (c *converter) convertList(l *gast.List) ast.Node {
 	return ast.Invoke{
 		Function:  funcName,
 		Arguments: items,
+	}
+}
+
+func (c *converter) convertTable(t *east.Table) ast.Node {
+	var rows []ast.Node
+	for child := t.FirstChild(); child != nil; child = child.NextSibling() {
+		// Each child is a TableHeader or TableRow; both contain TableCells
+		row := c.convertTableRow(child)
+		rows = append(rows, row)
+	}
+	return ast.Invoke{
+		Function:  "table",
+		Arguments: rows,
+	}
+}
+
+func (c *converter) convertTableRow(row gast.Node) ast.Node {
+	var cells []ast.Node
+	for cell := row.FirstChild(); cell != nil; cell = cell.NextSibling() {
+		inlines := c.collectInlines(cell)
+		if len(inlines) == 0 {
+			cells = append(cells, ast.String(""))
+		} else {
+			cells = append(cells, ast.Sequence(inlines))
+		}
+	}
+	return ast.Invoke{
+		Function:  "table-row",
+		Arguments: cells,
 	}
 }
 
