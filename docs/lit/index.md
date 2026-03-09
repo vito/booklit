@@ -170,9 +170,9 @@ your own? Let's @reference{getting-started}{get started}!
 
 @split-sections
 
-@include-section{getting-started.lit}
-@include-section{baselit.lit}
-@include-section{html-renderer.lit}
-@include-section{plugins.lit}
-@include-section{syntax.lit}
-@include-section{thanks.lit}
+@include-section{getting-started.md}
+@include-section{baselit.md}
+@include-section{html-renderer.md}
+@include-section{plugins.md}
+@include-section{syntax.md}
+@include-section{thanks.md}

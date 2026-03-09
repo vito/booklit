@@ -5,7 +5,7 @@ out=$PWD/docs
 cd $(dirname $0)/..
 
 go run ./cmd/booklit \
-  -i docs/lit/index.lit \
+  -i docs/lit/index.md \
   -o $out \
   --html-templates docs/html \
   --plugin github.com/vito/booklit/docs/go \
