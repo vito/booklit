@@ -590,6 +590,40 @@ func TestNoHeadingsUnchanged(t *testing.T) {
 	}
 }
 
+func TestCommentInline(t *testing.T) {
+	node := marklit.Parse([]byte("Hello {- comment -}world"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{ast.String("Hello world")},
+	})
+}
+
+func TestCommentBlock(t *testing.T) {
+	input := "First paragraph.\n\n{- this is\na block comment -}\n\nSecond paragraph.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "[P([S(First paragraph.)]) P([S(Second paragraph.)])]"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestCommentNested(t *testing.T) {
+	node := marklit.Parse([]byte("Hello {- outer {- inner -} still comment -}world"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{ast.String("Hello world")},
+	})
+}
+
+func TestCommentUnmatched(t *testing.T) {
+	// Unmatched {- is left as-is
+	node := marklit.Parse([]byte("Hello {- no end"))
+	str := nodeString(node)
+	if str == "" {
+		t.Fatal("expected non-empty result")
+	}
+	t.Logf("unmatched comment: %s", str)
+}
+
 // assertNode compares a Booklit AST node to an expected value using a
 // recursive structural comparison via string representation.
 func assertNode(t *testing.T, got, want ast.Node) {

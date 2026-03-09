@@ -27,6 +27,9 @@ type extractedInvoke struct {
 // Single-line \name{...} invocations are left alone for the inline parser
 // to handle.
 func preprocess(source []byte) ([]byte, []extractedInvoke) {
+	// Strip {- ... -} comments (possibly nested) before goldmark sees the source.
+	source = stripComments(source)
+
 	var extractions []extractedInvoke
 	var result []byte
 
@@ -235,4 +238,53 @@ func isPlaceholder(text string) (int, bool) {
 		return -1, false
 	}
 	return idx, true
+}
+
+// stripComments removes {- ... -} comments from source. Comments may be
+// nested: {- outer {- inner -} still comment -}. Unmatched {- is left as-is.
+func stripComments(source []byte) []byte {
+	// Quick check: if there's no {- at all, return as-is.
+	if !bytes.Contains(source, []byte("{-")) {
+		return source
+	}
+
+	var out []byte
+	i := 0
+	for i < len(source) {
+		if i+1 < len(source) && source[i] == '{' && source[i+1] == '-' {
+			end := findCommentEnd(source, i)
+			if end >= 0 {
+				i = end
+				continue
+			}
+		}
+		out = append(out, source[i])
+		i++
+	}
+	return out
+}
+
+// findCommentEnd finds the end of a (possibly nested) {- ... -} comment
+// starting at pos. Returns the index after the closing -}, or -1 if
+// unmatched.
+func findCommentEnd(source []byte, pos int) int {
+	depth := 1
+	i := pos + 2 // skip opening {-
+	for i < len(source) {
+		if i+1 < len(source) && source[i] == '{' && source[i+1] == '-' {
+			depth++
+			i += 2
+			continue
+		}
+		if i+1 < len(source) && source[i] == '-' && source[i+1] == '}' {
+			depth--
+			i += 2
+			if depth == 0 {
+				return i
+			}
+			continue
+		}
+		i++
+	}
+	return -1 // unmatched
 }
