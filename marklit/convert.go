@@ -304,8 +304,10 @@ func (c *converter) splitInvokeOnlyParagraph(n gast.Node) ast.Node {
 		case gast.KindText:
 			t := child.(*gast.Text)
 			value := t.Value(c.source)
-			text := strings.TrimSpace(string(value))
-			if text != "" && !strings.HasPrefix(text, invokePlaceholderPrefix) {
+			text := string(value)
+			// Strip all placeholder markers, then check if only whitespace remains
+			stripped := stripPlaceholders(text)
+			if strings.TrimSpace(stripped) != "" {
 				return nil
 			}
 		default:
@@ -364,7 +366,14 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 	// Check if text contains embedded placeholders (block invocations that
 	// appeared inline within a sentence, e.g. "easier to \x00BLI1\x00 later")
 	if strings.Contains(text, invokePlaceholderPrefix) {
-		return c.resolveEmbeddedPlaceholders(text)
+		node := c.resolveEmbeddedPlaceholders(text)
+		if t.SoftLineBreak() {
+			return ensureSequence(node, ast.String(" "))
+		}
+		if t.HardLineBreak() {
+			return ensureSequence(node, ast.String("\n"))
+		}
+		return node
 	}
 
 	// Strip Markdown backslash escapes. Goldmark's text segments contain
@@ -440,6 +449,36 @@ func (c *converter) resolveEmbeddedPlaceholders(text string) ast.Node {
 		return nodes[0]
 	}
 	return ast.Sequence(nodes)
+}
+
+// stripPlaceholders removes all \x00BLI<n>\x00 placeholder markers from text,
+// returning only the non-placeholder content.
+func stripPlaceholders(text string) string {
+	var result strings.Builder
+	for {
+		idx := strings.Index(text, invokePlaceholderPrefix)
+		if idx < 0 {
+			result.WriteString(text)
+			break
+		}
+		result.WriteString(text[:idx])
+		rest := text[idx+len(invokePlaceholderPrefix):]
+		nullIdx := strings.IndexByte(rest, 0)
+		if nullIdx < 0 {
+			result.WriteString(text[idx:])
+			break
+		}
+		text = rest[nullIdx+1:]
+	}
+	return result.String()
+}
+
+// ensureSequence appends extra to node, wrapping in a Sequence if needed.
+func ensureSequence(node ast.Node, extra ast.Node) ast.Node {
+	if seq, ok := node.(ast.Sequence); ok {
+		return append(seq, extra)
+	}
+	return ast.Sequence{node, extra}
 }
 
 // tryResolvePlaceholder checks if a text string is a placeholder marker and

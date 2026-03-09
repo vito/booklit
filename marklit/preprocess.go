@@ -27,6 +27,9 @@ type extractedInvoke struct {
 // Single-line \name{...} invocations are left alone for the inline parser
 // to handle.
 func preprocess(source []byte) ([]byte, []extractedInvoke) {
+	// Normalize CRLF to LF so all downstream processing only deals with \n.
+	source = bytes.ReplaceAll(source, []byte("\r\n"), []byte("\n"))
+
 	// Strip {- ... -} comments (possibly nested) before goldmark sees the source.
 	source = stripComments(source)
 
@@ -231,6 +234,10 @@ func isPlaceholder(text string) (int, bool) {
 	// Find the null terminator
 	nullIdx := strings.IndexByte(rest, 0)
 	if nullIdx < 0 {
+		return -1, false
+	}
+	// The null terminator must be the last character (exact placeholder match)
+	if nullIdx+1 != len(rest) {
 		return -1, false
 	}
 	idx, err := strconv.Atoi(rest[:nullIdx])

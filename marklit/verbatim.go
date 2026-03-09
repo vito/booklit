@@ -34,11 +34,11 @@ func stripIndent(content []byte) []byte {
 		return content
 	}
 
-	// Detect indentation from first line
-	indent := 0
+	// Detect indentation prefix from first line
+	var prefix []byte
 	for _, ch := range content {
 		if ch == ' ' || ch == '\t' {
-			indent++
+			prefix = append(prefix, ch)
 		} else {
 			break
 		}
@@ -51,13 +51,13 @@ func stripIndent(content []byte) []byte {
 		lines = lines[:len(lines)-1]
 	}
 
-	// Strip common indentation
-	if indent > 0 {
+	// Strip common indentation prefix
+	if len(prefix) > 0 {
 		for i, line := range lines {
-			if len(line) >= indent {
-				lines[i] = line[indent:]
+			if bytes.HasPrefix(line, prefix) {
+				lines[i] = line[len(prefix):]
 			} else {
-				lines[i] = bytes.TrimRight(line, " \t")
+				lines[i] = bytes.TrimLeft(line, " \t")
 			}
 		}
 	}
@@ -96,7 +96,7 @@ func verbatimToNode(raw []byte) ast.Node {
 // {{…}} behavior which required a newline after {{ and always produced a
 // preformatted block.
 func ParsePreformattedArg(source []byte) ast.Node {
-	content := stripIndent(source)
+	content := stripIndent(stripComments(source))
 
 	if len(content) == 0 {
 		return ast.Preformatted{ast.Sequence{ast.String("")}}

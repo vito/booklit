@@ -104,11 +104,11 @@ func ParseArg(source []byte) ast.Node {
 }
 
 func parseArg(source []byte, doStripIndent bool) ast.Node {
-	processed, extractions := preprocess(source)
-
 	if doStripIndent {
-		processed = stripIndent(processed)
+		source = stripIndent(source)
 	}
+
+	processed, extractions := preprocess(source)
 
 	p := newParser()
 	reader := text.NewReader(processed)
@@ -118,7 +118,16 @@ func parseArg(source []byte, doStripIndent bool) ast.Node {
 		source:      processed,
 		extractions: extractions,
 	}
-	return c.convertChildren(doc)
+	result := c.convertChildren(doc)
+	// An empty or whitespace-only arg should produce an empty String,
+	// not an empty Sequence (which evaluates to nil and panics).
+	if result == nil {
+		return ast.String("")
+	}
+	if seq, ok := result.(ast.Sequence); ok && len(seq) == 0 {
+		return ast.String("")
+	}
+	return result
 }
 
 // newParser builds a goldmark parser with the Booklit @invoke extension
