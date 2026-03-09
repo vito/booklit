@@ -106,7 +106,8 @@
   
     <h2 class="section-header"><a id="using-plugins"></a><span class="section-number"><a href="plugins.html#using-plugins">4.2</a> </span>Writing Plugins</h2>
 
-<p>Plugins are just Go packages that register a <em>plugin factory</em> with Booklit when they&#39;re imported with the <code>--plugin</code> flag.</p><p>It&#39;s possible to use Booklit without writing any plugins of your own, but being able to write a plugin help you get the most out of Booklit.</p><p>To create a new plugin, create a directory within your Go module (where <code>go.mod</code> lives) - let&#39;s call it <code>example</code> for this example:</p><p><code class="highlight"><span style="display:flex;"><span>mkdir example</span></span></code></p><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>example/plugin.go</code>:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">package</span> example
+<p>Plugins are just Go packages that register a <em>plugin factory</em> with Booklit when they&#39;re imported with the <code>--plugin</code> flag.</p><p>It&#39;s possible to use Booklit without writing any plugins of your own, but being able to write a plugin help you get the most out of Booklit.</p><p>To create a new plugin, create a directory within your Go module (where <code>go.mod</code> lives) - let&#39;s call it <code>example</code> for this example:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>mkdir example
+</span></span></code></pre></div><p>Then, we&#39;ll create the initial skeleton for our plugin at <code>example/plugin.go</code>:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">package</span> example
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">import</span> (
 </span></span><span style="display:flex;"><span>  <span style="color:#fcc21b">&#34;github.com/vito/booklit&#34;</span>
@@ -141,7 +142,8 @@
   
     <h3 class="section-header"><a id="argument-types"></a><span class="section-number"><a href="plugins.html#argument-types">4.2.1</a> </span>Argument Types</h3>
 
-<p>Functions can be invoked with any number of arguments, like so:</p><p><code class="highlight"><code class="highlight"><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}</span></span></code></code></p><p>See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
+<p>Functions can be invoked with any number of arguments, like so:</p><div class="lit-syntax"><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}
+</span></span></code></pre></div></div><p>See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
   <dt><a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
