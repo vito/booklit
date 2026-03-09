@@ -6,26 +6,26 @@ import (
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("references to other sections on the same page", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-See also \reference{section-c}{the last section}.
+See also @reference{section-c}{the last section}.
 
-\section{
-	\title{Section A}
+@section{
+@title{Section A}
 
-	See also \reference{section-b}.
+See also @reference{section-b}.
 }
 
-\section{
-	\title{Section B}
+@section{
+@title{Section B}
 
-	See also \reference{section-a}.
+See also @reference{section-a}.
 }
 
-\section{
-	\title{Section C}
+@section{
+@title{Section C}
 
-	See also \reference{hello-world}.
+See also @reference{hello-world}.
 }
 `,
 
@@ -52,28 +52,28 @@ See also \reference{section-c}{the last section}.
 	}),
 
 	Entry("references to other sections on split pages", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-See also \reference{section-c}{the last section}.
+See also @reference{section-c}{the last section}.
 
-\split-sections
+@split-sections
 
-\section{
-	\title{Section A}
+@section{
+@title{Section A}
 
-	See also \reference{section-b}.
+See also @reference{section-b}.
 }
 
-\section{
-	\title{Section B}
+@section{
+@title{Section B}
 
-	See also \reference{section-a}.
+See also @reference{section-a}.
 }
 
-\section{
-	\title{Section C}
+@section{
+@title{Section C}
 
-	See also \reference{hello-world}.
+See also @reference{hello-world}.
 }
 `,
 
@@ -106,24 +106,24 @@ See also \reference{section-c}{the last section}.
 	}),
 
 	Entry("explicit target elements", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\reference{target-a}
+@reference{target-a}
 
-\reference{target-a}{with display}
+@reference{target-a}{with display}
 
-\reference{target-without-display}
+@reference{target-without-display}
 
-\reference{target-without-display}{with display}
+@reference{target-without-display}{with display}
 
-\section{
-	\title{Some Section}
+@section{
+@title{Some Section}
 
-	Foo bar.
+Foo bar.
 
-	\target{target-a}{Target A} Here's target A.
+@target{target-a}{Target A} Here's target A.
 
-	\target{target-without-display} Here's another target.
+@target{target-without-display} Here's another target.
 }
 `,
 
@@ -147,28 +147,28 @@ See also \reference{section-c}{the last section}.
 	}),
 
 	Entry("aux", Example{
-		Input: `\title{Hello, world!\aux{: Foo Bar}}
+		Input: `@title{Hello, world!@aux{: Foo Bar}}
 
-See also \reference{section-c}{the last section}.
+See also @reference{section-c}{the last section}.
 
-\table-of-contents
+@table-of-contents
 
-\section{
-	\title{Section A}
+@section{
+@title{Section A}
 
-	See also \reference{section-b}.
+See also @reference{section-b}.
 }
 
-\section{
-	\title{Section B\aux{aby}}
+@section{
+@title{Section B@aux{aby}}
 
-	See also \reference{some-anchor}.
+See also @reference{some-anchor}.
 }
 
-\section{
-	\title{Section C}
+@section{
+@title{Section C}
 
-	\target{some-anchor}{I'm an\aux{ awesome} anchor.}See also \reference{hello-world}.
+@target{some-anchor}{I'm an@aux{ awesome} anchor.}See also @reference{hello-world}.
 }
 `,
 

@@ -7,12 +7,12 @@ import (
 
 var _ = DescribeTable("Partials", (Example).Run,
 	Entry("set in section and rendered via template", Example{
-		Input: `\title{Set Partial Read Template}
+		Input: `@title{Set Partial Read Template}
 
 I want to be some body.
 
-\set-partial{FooBar}{
-	I'm a partial!
+@set-partial{FooBar}{
+I'm a partial!
 }
 
 Some more body.
@@ -39,19 +39,19 @@ Some more body.
 	}),
 
 	Entry("targets and references are collected and resolved", Example{
-		Input: `\title{Set Partial Read Template}
+		Input: `@title{Set Partial Read Template}
 
 I want to be some body.
 
-\set-partial{FooBar}{
-	\target{some-target}{Hello.}
+@set-partial{FooBar}{
+@target{some-target}{Hello.}
 
-	I'm a partial!
+I'm a partial!
 
-	\reference{set-partial-read-template}
+@reference{set-partial-read-template}
 }
 
-Some more body. \reference{some-target}
+Some more body. @reference{some-target}
 `,
 
 		Outputs: Files{
@@ -83,13 +83,13 @@ Some more body. \reference{some-target}
 	}),
 
 	Entry("set in plugin and rendered in template", Example{
-		Input: `\title{Set Partial Read Template}
+		Input: `@title{Set Partial Read Template}
 
-\use-plugin{set-partials}
+@use-plugin{set-partials}
 
 I want to be some body.
 
-\set-the-partial
+@set-the-partial
 
 Some more body.
 `,

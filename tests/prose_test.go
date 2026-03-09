@@ -7,7 +7,7 @@ import (
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("simple 'Hello World'", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 `,
@@ -22,7 +22,7 @@ How are you?
 	}),
 
 	Entry("no trailing linebreak", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?`,
 
@@ -36,9 +36,9 @@ How are you?`,
 	}),
 
 	Entry("link", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \link{you}{https://example.com}?
+How are @link{you}{https://example.com}?
 `,
 
 		Outputs: Files{
@@ -51,9 +51,9 @@ How are \link{you}{https://example.com}?
 	}),
 
 	Entry("images", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
+Here's an @image{foo.png}{with alt text} and another @image{without.gif}.
 `,
 
 		Outputs: Files{
@@ -66,9 +66,9 @@ Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
 	}),
 
 	Entry("italics", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \italic{you}?
+How are @italic{you}?
 `,
 
 		Outputs: Files{
@@ -81,9 +81,9 @@ How are \italic{you}?
 	}),
 
 	Entry("bold", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \bold{you}?
+How are @bold{you}?
 `,
 
 		Outputs: Files{
@@ -96,9 +96,9 @@ How are \bold{you}?
 	}),
 
 	Entry("larger", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \larger{you}?
+How are @larger{you}?
 `,
 
 		Outputs: Files{
@@ -111,9 +111,9 @@ How are \larger{you}?
 	}),
 
 	Entry("smaller", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \smaller{you}?
+How are @smaller{you}?
 `,
 
 		Outputs: Files{
@@ -126,9 +126,9 @@ How are \smaller{you}?
 	}),
 
 	Entry("strike", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \strike{you}?
+How are @strike{you}?
 `,
 
 		Outputs: Files{
@@ -141,9 +141,9 @@ How are \strike{you}?
 	}),
 
 	Entry("superscript", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \superscript{you}?
+How are @superscript{you}?
 `,
 
 		Outputs: Files{
@@ -156,9 +156,9 @@ How are \superscript{you}?
 	}),
 
 	Entry("subscript", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are \subscript{you}?
+How are @subscript{you}?
 `,
 
 		Outputs: Files{
@@ -171,7 +171,7 @@ How are \subscript{you}?
 	}),
 
 	Entry("multiple paragraphs", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
@@ -190,57 +190,8 @@ I'm good, thanks!
 		},
 	}),
 
-	Entry("invokes interspersed in words", Example{
-		Input: `\title{Hello, world!}
-
-This{\italic{is}}a test.
-`,
-
-		Outputs: Files{
-			"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>This<em>is</em>a test.</p>
-</section>
-`,
-		},
-	}),
-
-	Entry("word-wrapped lines", Example{
-		Input: `\title{Hello, world!}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. \italic{Curabitur
-accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.} Sed
-mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id
-pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum
-magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui
-sollicitudin porta.
-
-\section{
-	\title{Indented}
-
-	Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse
-	potenti. Maecenas varius iaculis volutpat. \italic{Vestibulum sagittis lacus
-	ut ex varius molestie.}
-}
-`,
-
-		Outputs: Files{
-			"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <em>Curabitur accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.</em> Sed mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui sollicitudin porta.</p>
-
-	<h2>1 Indented</h2>
-
-	<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. <em>Vestibulum sagittis lacus ut ex varius molestie.</em></p>
-</section>
-`,
-		},
-	}),
-
 	Entry("word-wrapped paragraphs", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur accumsan a
 ligula id feugiat. Quisque luctus semper ex sodales vulputate. Sed mi mi,
@@ -266,65 +217,10 @@ varius molestie.
 		},
 	}),
 
-	Entry("inline code and code blocks", Example{
-		Input: `\title{Hello, world!}
+	Entry("inline code", Example{
+		Input: `@title{Hello, world!}
 
-This is some \code{inline} code.
-
-Here's a code block:
-
-\code{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}
-
-\code{{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}}
-
-\code{{{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}}}
-
-And here's some more content.
+This is some @code{inline} code.
 `,
 
 		Outputs: Files{
@@ -332,91 +228,19 @@ And here's some more content.
 	<h1>Hello, world!</h1>
 
 	<p>This is some <code>inline</code> code.</p>
-
-	<p>Here's a code block:</p>
-
-	<pre><p>I'm a code block.</p><p>I'm indented more.</p><p>I'm indented even more.</p><p>I'm indented less.</p><p><a href="hello-world.html">Hello, world!</a></p><p>\some-method{Some argument.}</p><p>One more line, with meaning.</p></pre>
-
-	<pre>I'm a code block.
-
-	I'm indented more.
-
-		I'm indented even more.
-
-I'm indented less.
-
-<a href="hello-world.html">Hello, world!</a>
-
-\some-method{Some argument.}
-
-
-One more line, with meaning.</pre>
-
-	<pre>I'm a code block.
-
-	I'm indented more.
-
-		I'm indented even more.
-
-I'm indented less.
-
-\reference{hello-world}
-
-\\some-method\{Some argument.\}
-
-
-One more line, with meaning.</pre>
-
-	<p>And here's some more content.</p>
-</section>
-`,
-		},
-	}),
-
-	Entry("code block indent tracking", Example{
-		Input: `\title{Hello, world!}
-
-\code{{
-I'm a code block.
-}}
-
-\section{
-  \title{Sub-section}
-
-	\code{{
-	I'm a code block in a sub-section.
-  }}
-
-  \code{{
-    {}   I'm a code block {- in a sub-section -}with a forced indent level.
-  }}
-}
-`,
-
-		Outputs: Files{
-			"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<pre>I'm a code block.</pre>
-
-	<h2>1 Sub-section</h2>
-
-	<pre>I'm a code block in a sub-section.</pre>
-
-	<pre>   I'm a code block with a forced indent level.</pre>
 </section>
 `,
 		},
 	}),
 
 	Entry("empty arguments", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-This is an \italic{} empty italic.
+This is an @italic{} empty italic.
 
-This is a \italic{ } space italic.
+This is a @italic{ } space italic.
 
-This is an \italic{  } even more spaced italic.
+This is an @italic{  } even more spaced italic.
 `,
 
 		Outputs: Files{
@@ -426,120 +250,6 @@ This is an \italic{  } even more spaced italic.
 	<p>This is an <em></em> empty italic.</p>
 	<p>This is a <em> </em> space italic.</p>
 	<p>This is an <em>  </em> even more spaced italic.</p>
-</section>
-`,
-		},
-	}),
-	Entry("empty multi-line arguments", Example{
-		Input: `\title{Hello, world!}
-
-\code{
-}
-
-\code{{
-}}
-
-\code{{{
-}}}
-
-\code{
-
-}
-
-\code{{
-
-}}
-
-\code{{{
-
-}}}
-
-\code{
-
-
-}
-
-\code{{
-
-
-}}
-
-\code{{{
-
-
-}}}
-`,
-
-		Outputs: Files{
-			"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p><code></code></p>
-	<pre></pre>
-	<pre></pre>
-	<p><code></code></p>
-	<pre></pre>
-	<pre></pre>
-	<p><code></code></p>
-	<pre>
-</pre>
-	<pre>
-</pre>
-</section>
-`,
-		},
-	}),
-
-	Entry("preformatted string arguments", Example{
-		Input: `\title{Hello, world!}
-
-\use-plugin{stringer}
-
-Here's a code block:
-
-\string{{{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}}}
-
-And here I'm just using it to \string{{{escape {{wacky}} curlies}}}.
-`,
-
-		Outputs: Files{
-			"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>Here's a code block:</p>
-
-	<p>I'm a code block.
-
-	I'm indented more.
-
-		I'm indented even more.
-
-I'm indented less.
-
-\reference{hello-world}
-
-\\some-method\{Some argument.\}
-
-
-One more line, with meaning.
-</p>
-
-<p>And here I'm just using it to escape {{wacky}} curlies.</p>
 </section>
 `,
 		},

@@ -7,14 +7,12 @@ import (
 
 var _ = DescribeTable("Blocks", (Example).Run,
 	Entry("lists", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\list{a}{
-	b
+@list{a}{
+b
 }{
-	\code{{
-	c
-	}}
+@code{c}
 }
 `,
 
@@ -22,18 +20,18 @@ var _ = DescribeTable("Blocks", (Example).Run,
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<ul><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ul>
+<ul><li>a</li><li><p>b</p></li><li><p><code>c</code></p></li></ul>
 </section>`,
 		},
 	}),
 
 	Entry("tables", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\table{
-	\table-row{a}{1}
+@table{
+@table-row{a}{1}
 }{
-	\table-row{b}{2}
+@table-row{b}{2}
 }
 `,
 
@@ -56,12 +54,12 @@ var _ = DescribeTable("Blocks", (Example).Run,
 	}),
 
 	Entry("definitions", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\definitions{
-	\definition{a}{1}
+@definitions{
+@definition{a}{1}
 }{
-	\definition{b}{2}
+@definition{b}{2}
 }
 `,
 
@@ -81,10 +79,10 @@ var _ = DescribeTable("Blocks", (Example).Run,
 	}),
 
 	Entry("inset", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\inset{
-	Hello.
+@inset{
+Hello.
 }
 `,
 
@@ -100,10 +98,10 @@ var _ = DescribeTable("Blocks", (Example).Run,
 	}),
 
 	Entry("aside", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\aside{
-	Hello.
+@aside{
+Hello.
 }
 `,
 
@@ -119,14 +117,12 @@ var _ = DescribeTable("Blocks", (Example).Run,
 	}),
 
 	Entry("ordered lists", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\ordered-list{a}{
-	b
+@ordered-list{a}{
+b
 }{
-	\code{{
-	c
-	}}
+@code{c}
 }
 `,
 
@@ -134,18 +130,18 @@ var _ = DescribeTable("Blocks", (Example).Run,
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<ol><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ol>
+<ol><li>a</li><li><p>b</p></li><li><p><code>c</code></p></li></ol>
 </section>`,
 		},
 	}),
 
 	Entry("arbitrary styles", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\use-plugin{arbitrary-style}
+@use-plugin{arbitrary-style}
 
-\arbitrary-style{
-	Sup!
+@arbitrary-style{
+Sup!
 }
 `,
 

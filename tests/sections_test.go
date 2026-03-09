@@ -6,20 +6,20 @@ import (
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("sub-sections", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\section{
-	\title{How I'm doing}
+@section{
+@title{How I'm doing}
 
-	Good, thanks! And you?
+Good, thanks! And you?
 }
 
-\section{
-	\title{Their Reply}
+@section{
+@title{Their Reply}
 
-	Good, thanks!
+Good, thanks!
 }
 `,
 
@@ -42,21 +42,21 @@ How are you?
 	}),
 
 	Entry("sub-sections from files", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\include-section{how-im-doing.lit}
+@include-section{how-im-doing.lit}
 
-\section{
-	\title{Their Reply}
+@section{
+@title{Their Reply}
 
-	Good, thanks!
+Good, thanks!
 }
 `,
 
 		Inputs: Files{
-			"how-im-doing.lit": `\title{How I'm doing}
+			"how-im-doing.lit": `@title{How I'm doing}
 
 Good, thanks! And you?
 `,
@@ -81,41 +81,41 @@ Good, thanks! And you?
 	}),
 
 	Entry("including sections relative to the section's path", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\include-section{./sub-path/how-im-doing.lit}
+@include-section{./sub-path/how-im-doing.lit}
 
-\section{
-	\title{Their Reply}
+@section{
+@title{Their Reply}
 
-	Good, thanks!
+Good, thanks!
 }
 `,
 
 		Inputs: Files{
-			"sub-path/how-im-doing.lit": `\title{How I'm doing}
+			"sub-path/how-im-doing.lit": `@title{How I'm doing}
 
 Good, thanks! And you?
 
-\include-section{another-section.lit}
+@include-section{another-section.lit}
 `,
 
-			"sub-path/another-section.lit": `\title{My Response}
+			"sub-path/another-section.lit": `@title{My Response}
 
 Not bad, not bad.
 
-\section{
-	\title{Including in an Inline Section}
+@section{
+@title{Including in an Inline Section}
 
-	That's great.
+That's great.
 
-	\include-section{yet-another-section.lit}
+@include-section{yet-another-section.lit}
 }
 `,
 
-			"sub-path/yet-another-section.lit": `\title{Their Response to My Response}
+			"sub-path/yet-another-section.lit": `@title{Their Response to My Response}
 
 Sick.
 `,
@@ -152,24 +152,24 @@ Sick.
 	}),
 
 	Entry("nested sub-sections", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\section{
-	\title{How I'm doing}
+@section{
+@title{How I'm doing}
 
-	\section{
-		\title{After Much Deliberation}
+@section{
+@title{After Much Deliberation}
 
-		I have decided that I'm doing well. How about you?
-	}
+I have decided that I'm doing well. How about you?
+}
 }
 
-\section{
-	\title{Their Reply}
+@section{
+@title{Their Reply}
 
-	Good, thanks!
+Good, thanks!
 }
 `,
 
@@ -194,16 +194,16 @@ How are you?
 	}),
 
 	Entry("split sub-sections", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\split-sections
+@split-sections
 
-\section{
-	\title{How I'm Doing}
+@section{
+@title{How I'm Doing}
 
-	Good, thanks!
+Good, thanks!
 }
 `,
 
@@ -224,51 +224,52 @@ How are you?
 	}),
 
 	Entry("forcing sections onto one page", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-How are you? See \reference{deep-inlined}.
+How are you? See @reference{deep-inlined}.
 
-\single-page
-\split-sections
+@single-page
 
-\section{
-	\title{Section A}
+@split-sections
 
-	\split-sections
+@section{
+@title{Section A}
 
-	Blah blah in section A.
+@split-sections
 
-	\section{
-		\title{Nested Section}
+Blah blah in section A.
 
-		Good, thanks!
-	}
+@section{
+@title{Nested Section}
+
+Good, thanks!
+}
 }
 
-\section{
-	\title{Section B}
+@section{
+@title{Section B}
 
-	Blah blah in section B.
+Blah blah in section B.
 
-	\section{
-		\title{Nested Section 2}
+@section{
+@title{Nested Section 2}
 
-		Foo bar.
-	}
+Foo bar.
+}
 
-	\section{
-		\title{Nested Section 3}
+@section{
+@title{Nested Section 3}
 
-		\split-sections
+@split-sections
 
-		Fizz buzz.
+Fizz buzz.
 
-		\section{
-			\title{Super Duple Wrapped}{deep-inlined}
+@section{
+@title{Super Duple Wrapped}{deep-inlined}
 
-			Whoooooa.
-		}
-	}
+Whoooooa.
+}
+}
 }
 `,
 
@@ -307,22 +308,22 @@ How are you? See \reference{deep-inlined}.
 	}),
 
 	Entry("split sub-sub-sections", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\section{
-	\title{How I'm Doing}
+@section{
+@title{How I'm Doing}
 
-	\split-sections
+@split-sections
 
-	Good, thanks!
+Good, thanks!
 
-	\section{
-		\title{Nested Section}
+@section{
+@title{Nested Section}
 
-		Sup.
-	}
+Sup.
+}
 }
 `,
 
@@ -347,50 +348,50 @@ How are you?
 	}),
 
 	Entry("tables of contents", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
 How are you?
 
-\table-of-contents
+@table-of-contents
 
 This is some more content.
 
-\section{
-	\title{Top Section A}
+@section{
+@title{Top Section A}
 
-	Foo bar.
+Foo bar.
 
-	\section{
-		\title{Nested Section}
+@section{
+@title{Nested Section}
 
-		Fizz buzz.
-	}
-
-	\section{
-		\title{Another Nested Section}
-
-		Fiddlesticks.
-	}
-
-	\section{
-		\title{Section with Omitted Children}
-
-		I omit my children.
-
-		\omit-children-from-table-of-contents
-
-		\section{
-			\title{Invisible Child}
-
-			Boo!
-		}
-	}
+Fizz buzz.
 }
 
-\section{
-	\title{Top Section B}
+@section{
+@title{Another Nested Section}
 
-	Fiddlesticks is as far as I go.
+Fiddlesticks.
+}
+
+@section{
+@title{Section with Omitted Children}
+
+I omit my children.
+
+@omit-children-from-table-of-contents
+
+@section{
+@title{Invisible Child}
+
+Boo!
+}
+}
+}
+
+@section{
+@title{Top Section B}
+
+Fiddlesticks is as far as I go.
 }
 `,
 
@@ -445,30 +446,30 @@ This is some more content.
 	}),
 
 	Entry("styled sections", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\styled{top-template}
+@styled{top-template}
 
 How are you?
 
-\section{
-	\title{How I'm doing}
+@section{
+@title{How I'm doing}
 
-	\styled{sub-template}
+@styled{sub-template}
 
-	Good, thanks! And you?
+Good, thanks! And you?
 
-	\section{
-		\title{After Much Deliberation}
+@section{
+@title{After Much Deliberation}
 
-		I have decided that I'm doing well. How about you?
-	}
+I have decided that I'm doing well. How about you?
+}
 }
 
-\section{
-	\title{Their Reply}
+@section{
+@title{Their Reply}
 
-	Good, thanks!
+Good, thanks!
 }
 `,
 

@@ -7,9 +7,9 @@ import (
 
 var _ = DescribeTable("Booklit", (Example).Run,
 	Entry("styled sections", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\styled{styled}
+@styled{styled}
 
 Sup?
 `,
@@ -24,9 +24,9 @@ Sup?
 		},
 	}),
 	Entry("styled pages", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\styled{full-styled}
+@styled{full-styled}
 
 Sup?
 `,
@@ -41,21 +41,21 @@ Sup?
 		},
 	}),
 	Entry("styling with partials", Example{
-		Input: `\title{Hello, world!}
+		Input: `@title{Hello, world!}
 
-\use-plugin{partial-style}
+@use-plugin{partial-style}
 
-\block-style{Title A}{
-	Hello, \target{target-a}{some target} \reference{target-b}!
+@block-style{Title A}{
+Hello, @target{target-a}{some target} @reference{target-b}!
 }
 
-\block-style{Title B}{
-	Hello again, \target{target-b}{some other target} \reference{target-a}!
+@block-style{Title B}{
+Hello again, @target{target-b}{some other target} @reference{target-a}!
 }
 
-This is an \inline-style{Title C}{inline style}!
+This is an @inline-style{Title C}{inline style}!
 
-\block-style{Title D}{This is a line forced into block style!}
+@block-style{Title D}{This is a line forced into block style|}
 `,
 
 		Outputs: Files{
@@ -79,7 +79,7 @@ This is an \inline-style{Title C}{inline style}!
 	<div class="custom-style">
 		<h3>Title D</h3>
 
-		This is a line forced into block style!
+		This is a line forced into block style|
 	</div>
 </section>
 `,
