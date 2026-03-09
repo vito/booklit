@@ -14,19 +14,7 @@ import (
 
 // Parse parses a Markdown+Booklit source document into a Booklit AST node.
 func Parse(source []byte) ast.Node {
-	// Pre-process to extract block-level @invoke{...} sequences that span
-	// multiple lines/paragraphs. These get replaced with markers.
-	processed, extractions := preprocess(source)
-
-	p := newParser()
-	reader := text.NewReader(processed)
-	doc := p.Parse(reader)
-
-	c := &converter{
-		source:      processed,
-		extractions: extractions,
-	}
-	return c.convertChildren(doc)
+	return parseArg(source, false)
 }
 
 // ParseInlineArg parses inline argument content (single-line, no block
@@ -107,12 +95,30 @@ func unwrapInlineResult(node ast.Node) ast.Node {
 // ParseArg parses a full argument (may contain block elements, paragraphs,
 // etc.) into a Booklit AST node. Used for block-level @invoke arguments.
 //
-// Leading common indentation is stripped before parsing to prevent goldmark
-// from interpreting indented content as code blocks. This is necessary
-// because args nested inside multiple invocations accumulate indentation
-// (e.g. @section{@table{  @table-row{...}}} has 4+ spaces).
+// Leading common indentation is stripped after preprocessing (which extracts
+// {{{...}}} verbatim blocks) but before goldmark parsing. This prevents
+// goldmark from interpreting indented content as code blocks without
+// corrupting verbatim content that has different indentation.
 func ParseArg(source []byte) ast.Node {
-	return Parse(stripIndent(source))
+	return parseArg(source, true)
+}
+
+func parseArg(source []byte, doStripIndent bool) ast.Node {
+	processed, extractions := preprocess(source)
+
+	if doStripIndent {
+		processed = stripIndent(processed)
+	}
+
+	p := newParser()
+	reader := text.NewReader(processed)
+	doc := p.Parse(reader)
+
+	c := &converter{
+		source:      processed,
+		extractions: extractions,
+	}
+	return c.convertChildren(doc)
 }
 
 // newParser builds a goldmark parser with the Booklit @invoke extension
