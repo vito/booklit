@@ -1,7 +1,6 @@
 package marklit
 
 import (
-	"bytes"
 	"strings"
 
 	"github.com/vito/booklit/ast"
@@ -188,10 +187,17 @@ func (c *converter) collectInlines(n gast.Node) []ast.Node {
 
 func (c *converter) convertText(t *gast.Text) ast.Node {
 	value := t.Value(c.source)
+	text := string(value)
 
-	// Check if this text contains a placeholder from preprocessing
-	if node := c.tryResolvePlaceholder(string(value)); node != nil {
+	// Check if the entire text is a placeholder
+	if node := c.tryResolvePlaceholder(text); node != nil {
 		return node
+	}
+
+	// Check if text contains embedded placeholders (block invocations that
+	// appeared inline within a sentence, e.g. "easier to \x00BLI1\x00 later")
+	if strings.Contains(text, invokePlaceholderPrefix) {
+		return c.resolveEmbeddedPlaceholders(text)
 	}
 
 	s := ast.String(value)
@@ -203,6 +209,44 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 		return ast.Sequence{s, ast.String("\n")}
 	}
 	return s
+}
+
+// resolveEmbeddedPlaceholders splits text at placeholder markers and returns
+// a Sequence with the text segments interspersed with resolved invoke nodes.
+func (c *converter) resolveEmbeddedPlaceholders(text string) ast.Node {
+	var nodes []ast.Node
+	for {
+		idx := strings.Index(text, invokePlaceholderPrefix)
+		if idx < 0 {
+			break
+		}
+		// Add text before the placeholder
+		if idx > 0 {
+			nodes = append(nodes, ast.String(text[:idx]))
+		}
+		// Find the null terminator after the index number
+		rest := text[idx:]
+		nullIdx := strings.IndexByte(rest[len(invokePlaceholderPrefix):], 0)
+		if nullIdx < 0 {
+			// Malformed placeholder — emit as text
+			nodes = append(nodes, ast.String(rest))
+			text = ""
+			break
+		}
+		placeholder := rest[:len(invokePlaceholderPrefix)+nullIdx+1]
+		if node := c.tryResolvePlaceholder(placeholder); node != nil {
+			nodes = append(nodes, node)
+		}
+		text = rest[len(placeholder):]
+	}
+	// Add remaining text
+	if len(text) > 0 {
+		nodes = append(nodes, ast.String(text))
+	}
+	if len(nodes) == 1 {
+		return nodes[0]
+	}
+	return ast.Sequence(nodes)
 }
 
 // tryResolvePlaceholder checks if a text string is a placeholder marker and
@@ -229,10 +273,11 @@ func (c *converter) tryResolvePlaceholder(text string) ast.Node {
 		case ArgPreformatted:
 			invoke.Arguments = append(invoke.Arguments, ParsePreformattedArg(raw))
 		default:
-			// Use inline parsing for single-line args, block parsing for
-			// multi-line args. This preserves the distinction between
-			// @func{simple arg} and @func{\nblock content\n}.
-			if bytes.ContainsAny(raw, "\n\r") {
+			// Use block parsing only for args that start with a newline
+			// (i.e. the content begins on the line after the opening {).
+			// Args with newlines in the middle are just soft-wrapped
+			// inline text (e.g. @ref{tag}{display text\nwrapped}).
+			if len(raw) > 0 && (raw[0] == '\n' || raw[0] == '\r') {
 				invoke.Arguments = append(invoke.Arguments, ParseArg(raw))
 			} else {
 				invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
