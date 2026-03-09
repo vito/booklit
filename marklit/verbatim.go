@@ -66,12 +66,16 @@ func stripIndent(content []byte) []byte {
 }
 
 // verbatimToNode converts raw verbatim content ({{{…}}}) into a Booklit AST
-// node. Multi-line content becomes ast.Preformatted; single-line content
-// becomes ast.String.
+// node. Block-form verbatim (where the raw content starts with a newline,
+// i.e. {{{<newline>...}}}) always produces ast.Preformatted — even if
+// stripping indent reduces it to a single line. This ensures block-level
+// rendering (e.g. <pre> for syntax-highlighted code). Inline-form verbatim
+// ({{{content}}}) produces ast.String for single-line content.
 func verbatimToNode(raw []byte) ast.Node {
 	content := stripIndent(raw)
+	rawIsBlock := len(raw) > 0 && (raw[0] == '\n' || raw[0] == '\r')
 
-	if !bytes.Contains(content, []byte("\n")) {
+	if !rawIsBlock && !bytes.Contains(content, []byte("\n")) {
 		return ast.String(content)
 	}
 

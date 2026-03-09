@@ -502,12 +502,13 @@ func TestMixedArgTypes(t *testing.T) {
 
 func TestVerbatimArgWithBalancedBraces(t *testing.T) {
 	// Go template syntax {{.Content | render}} inside verbatim.
-	// Single-line after indent stripping → String.
+	// Block-form (raw starts with \n) → Preformatted even if single line
+	// after indent stripping. This ensures block-level rendering.
 	input := "@code{{{\n  {{.Content | render}}\n}}}"
 	node := marklit.Parse([]byte(input))
 
 	str := nodeString(node)
-	expected := "P([I(code,S({{.Content | render}}))])"
+	expected := "P([I(code,Pre([S({{.Content | render}})]))])"
 	if str != expected {
 		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
 	}
