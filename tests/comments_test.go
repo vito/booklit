@@ -5,58 +5,95 @@ import (
 )
 
 var _ = DescribeTable("Comments", (Example).Run,
-	Entry("inline comment", Example{
+	Entry("inline comments", Example{
 		Input: `\title{Hello, world!}
 
-How {- secret -}are you?
+{- Goodbye, -}cruel world!
+
+Goodbye, {- cruel -}world!
+
+Goodbye, cruel{- world! -}
 `,
 
 		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p>How are you?</p>
-</section>
-`,
+<p>cruel world!</p>
+<p>Goodbye, world!</p>
+<p>Goodbye, cruel</p>
+</section>`,
 		},
 	}),
 
-	Entry("block comment", Example{
+	Entry("comments with delimitery things", Example{
 		Input: `\title{Hello, world!}
 
-First paragraph.
-
-{- this whole paragraph
-is commented out -}
-
-Second paragraph.
+Goodbye, {- {cru-el} -}world!
 `,
 
 		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p>First paragraph.</p>
-
-	<p>Second paragraph.</p>
-</section>
-`,
+<p>Goodbye, world!</p>
+</section>`,
 		},
 	}),
 
-	Entry("nested comment", Example{
+	Entry("nested comments", Example{
 		Input: `\title{Hello, world!}
 
-Hello {- outer {- inner -} still gone -}world.
+Goodbye, {- {cru-{- whoa -}el} -}world!
 `,
 
 		Outputs: Files{
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p>Hello world.</p>
-</section>
+<p>Goodbye, world!</p>
+</section>`,
+		},
+	}),
+
+	Entry("block comments", Example{
+		Input: `\title{Hello, world!}
+
+Goodbye, world!
+
+{-
+	I'm a big old block comment.
+-}
+
+I'm another paragraph.
+
+\section{
+	\title{Subsection}
+
+	Sup?
+
+	{-
+		I'm a big old indented block comment.
+	-}
+
+	Not much.
+}
 `,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<p>Goodbye, world!</p>
+
+<p>I'm another paragraph.</p>
+
+<h2>1 Subsection</h2>
+
+<p>Sup?</p>
+
+<p>Not much.</p>
+</section>`,
 		},
 	}),
 )

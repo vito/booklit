@@ -46,16 +46,16 @@ Sup?
 \use-plugin{partial-style}
 
 \block-style{Title A}{
-Hello, \target{target-a}{some target} \reference{target-b}!
+	Hello, \target{target-a}{some target} \reference{target-b}!
 }
 
 \block-style{Title B}{
-Hello again, \target{target-b}{some other target} \reference{target-a}!
+	Hello again, \target{target-b}{some other target} \reference{target-a}!
 }
 
 This is an \inline-style{Title C}{inline style}!
 
-\block-style{Title D}{This is a line forced into block style|}
+\block-style{Title D}{This is a line forced into block style!}
 `,
 
 		Outputs: Files{
@@ -79,7 +79,7 @@ This is an \inline-style{Title C}{inline style}!
 	<div class="custom-style">
 		<h3>Title D</h3>
 
-		This is a line forced into block style|
+		This is a line forced into block style!
 	</div>
 </section>
 `,
