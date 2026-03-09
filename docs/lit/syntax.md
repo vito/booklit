@@ -1,6 +1,6 @@
 @use-plugin{booklitdoc}
 
-@title{Syntax}{booklit-syntax}
+# Syntax {#booklit-syntax}
 
 Booklit documents are Markdown files extended with a special syntax for
 @reference{function-syntax}{function calls}. Standard Markdown formatting
@@ -9,70 +9,67 @@ everything else is either text or an `@invoke` call.
 
 @table-of-contents
 
-@section{
-  @title{Prose Syntax}{prose-syntax}
+## Prose Syntax {#prose-syntax}
 
-  Booklit builds on top of standard Markdown, so the prose rules are familiar:
+Booklit builds on top of standard Markdown, so the prose rules are familiar:
 
-  @list{
-    The top-level of a document is a series of *paragraphs*, separated
-    by one or more blank lines.
-  }{
-    A *paragraph* is a series of *lines*, separated by linebreaks.
-    Adjacent lines within a paragraph are joined (soft line breaks become
-    spaces).
-  }{
-    *Emphasis* is written with `*asterisks*` and **bold** with
-    `**double asterisks**`.
-  }{
-    *Inline code* is written with `` `backticks` ``.
-  }{
-    *Links* are written as `[display text](url)`.
-  }{
-    *Images* are written as `![alt text](path)`.
-  }{
-    *Headings* can be written with `#` prefix, which maps to
-    @reference{title}.
-  }{
-    In addition to Markdown formatting, @reference{function-syntax}{function
-    calls} can be used inline or at the block level.
-  }
+@list{
+  The top-level of a document is a series of *paragraphs*, separated
+  by one or more blank lines.
+}{
+  A *paragraph* is a series of *lines*, separated by linebreaks.
+  Adjacent lines within a paragraph are joined (soft line breaks become
+  spaces).
+}{
+  *Emphasis* is written with `*asterisks*` and **bold** with
+  `**double asterisks**`.
+}{
+  *Inline code* is written with `` `backticks` ``.
+}{
+  *Links* are written as `[display text](url)`.
+}{
+  *Images* are written as `![alt text](path)`.
+}{
+  *Headings* can be written with `#` prefix, which maps to
+  @reference{title}.
+}{
+  In addition to Markdown formatting, @reference{function-syntax}{function
+  calls} can be used inline or at the block level.
 }
 
-@section{
-  @title{Function Syntax}{function-syntax}
+## Function Syntax {#function-syntax}
 
-  Function calls are denoted by `@` followed by a series of alphanumeric
-  characters and hyphens (`foo-bar`), forming the function *name*.
+Function calls are denoted by `@` followed by a series of alphanumeric
+characters and hyphens (`foo-bar`), forming the function *name*.
 
-  To produce a literal `@` character, use `@@`.
+To produce a literal `@` character, use `@@`.
 
-  Following the name, there may be any number of *arguments*, which can
-  come in a few different forms:
+Following the name, there may be any number of *arguments*, which can
+come in a few different forms:
 
-  @definitions{
-    @definition{`{line}`}{
-      With no linebreak after the `{`, the argument forms a single
-      line. Markdown formatting is applied within the argument.
-    }
-  }{
-    @definition{`{word wrapped line}`}{
-      As above, but soft line breaks are converted into a single
-      space, as if it were written as `{word wrapped line}`.
-    }
-  }{
-    @definition{@lit-syntax{{{
+@definitions{
+  @definition{`{line}`}{
+    With no linebreak after the `{`, the argument forms a single
+    line. Markdown formatting is applied within the argument.
+  }
+}{
+  @definition{`{word wrapped line}`}{
+    As above, but soft line breaks are converted into a single
+    space, as if it were written as `{word wrapped line}`.
+  }
+}{
+  @definition{@lit-syntax{{{
 {
   paragraph 1
 
   paragraph 2
 }
-    }}}}{
-      With a linebreak after the `{`, the argument forms a block of
-      paragraphs with full Markdown and function call support.
-    }
-  }{
-    @definition{@lit-syntax{{{
+  }}}}{
+    With a linebreak after the `{`, the argument forms a block of
+    paragraphs with full Markdown and function call support.
+  }
+}{
+  @definition{@lit-syntax{{{
 {{
   paragraph 1
 
@@ -80,17 +77,17 @@ everything else is either text or an `@invoke` call.
 
   @with{syntax}
 }}
-    }}}}{
-      With doubled-up curly braces, whitespace is preserved in the content,
-      rather than being parsed into paragraphs. Function calls (`@invoke`)
-      are still recognized within preformatted blocks.
+  }}}}{
+    With doubled-up curly braces, whitespace is preserved in the content,
+    rather than being parsed into paragraphs. Function calls (`@invoke`)
+    are still recognized within preformatted blocks.
 
-      Note that the first line of the content determines an indentation level
-      that is then stripped for all lines. It is the only whitespace that is
-      ignored.
-    }
-  }{
-    @definition{@lit-syntax{{
+    Note that the first line of the content determines an indentation level
+    that is then stripped for all lines. It is the only whitespace that is
+    ignored.
+  }
+}{
+  @definition{@lit-syntax{{
 {{{
   paragraph 1
 
@@ -98,12 +95,11 @@ everything else is either text or an `@invoke` call.
 
   @@not-parsed{no-syntax}
 }}}
-    }}}{
-      Tripled-up curly braces form a verbatim argument. Similar to
-      preformatted, whitespace is preserved. In addition, there is no
-      interpreting or parsing of function calls or Markdown within.
-      This is useful for large code blocks where the content may contain
-      special characters like `@`, `{`, or `}`.
-    }
+  }}}{
+    Tripled-up curly braces form a verbatim argument. Similar to
+    preformatted, whitespace is preserved. In addition, there is no
+    interpreting or parsing of function calls or Markdown within.
+    This is useful for large code blocks where the content may contain
+    special characters like `@`, `{`, or `}`.
   }
 }

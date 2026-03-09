@@ -1,7 +1,7 @@
-@title{Booklit}{index}
-
 @use-plugin{booklitdoc}
 @use-plugin{chroma}
+
+# Booklit {#index}
 
 @styled{splash}
 

@@ -1,4 +1,4 @@
-@title{Thanks}
+# Thanks
 
 Booklit is very heavily inspired by
 [Scribble](https://docs.racket-lang.org/scribble/), the documentation tool

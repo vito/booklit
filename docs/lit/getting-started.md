@@ -1,7 +1,7 @@
 @use-plugin{chroma}
 @use-plugin{booklitdoc}
 
-@title{Getting Started}
+# Getting Started
 
 Getting started with Booklit assumes basic knowledge of the [Go
 programming language](https://golang.org). Be sure to have it installed!
@@ -27,178 +27,168 @@ plugin} later on.
 
 @table-of-contents
 
+## Hello, world!
+
+First, create a file called `hello.lit` with the following content:
+
+@lit-syntax{{{
+@title{Hello, world!}{hello}
+
+I'm a Booklit document!
+}}}
+
+This file can exist anywhere, but one common convention is to place
+`.lit` documents under `lit/`, HTML templates under `html/`,
+and plugin code under `go/`.
+
+Run the following to build and render the file to `./docs/hello.html`:
+
+@syntax{bash}{{{
+$ booklit -i hello.lit -o docs
+}}}
+
+Each of the changes in the following sections will require re-building, which
+can be done by running the above command again. Alternatively, you can run
+`booklit` with the `-s` flag to start a HTTP server:
+
+@code{{
+$ booklit -i hello.lit -s 8000
+@syntax-hl{INFO}[0000] listening              port=8000
+}}
+
+Once Booklit says 'listening', browse to
+[http://localhost:8000/hello.html](http://localhost:8000/hello.html).
+When you change anything, just refresh and your content will be rebuilt and
+re-rendered.
+
+## Organizing with Sections
+
+Next, let's try adding a section within our document:
+
+@lit-syntax{{{
+@title{Hello, world!}{hello}
+
+I'm a Booklit document!
+
 @section{
-  @title{Hello, world!}
+  @title{Hi there!}
 
-  First, create a file called `hello.lit` with the following content:
-
-  @lit-syntax{{{
-  @title{Hello, world!}{hello}
-
-  I'm a Booklit document!
-  }}}
-
-  This file can exist anywhere, but one common convention is to place
-  `.lit` documents under `lit/`, HTML templates under `html/`,
-  and plugin code under `go/`.
-
-  Run the following to build and render the file to `./docs/hello.html`:
-
-  @syntax{bash}{{{
-  $ booklit -i hello.lit -o docs
-  }}}
-
-  Each of the changes in the following sections will require re-building, which
-  can be done by running the above command again. Alternatively, you can run
-  `booklit` with the `-s` flag to start a HTTP server:
-
-  @code{{
-  $ booklit -i hello.lit -s 8000
-  @syntax-hl{INFO}[0000] listening              port=8000
-  }}
-
-  Once Booklit says 'listening', browse to
-  [http://localhost:8000/hello.html](http://localhost:8000/hello.html).
-  When you change anything, just refresh and your content will be rebuilt and
-  re-rendered.
+  I'm so organized!
 }
+}}}
 
-@section{
-  @title{Organizing with Sections}
+After building, you should see something like this:
 
-  Next, let's try adding a section within our document:
-
-  @lit-syntax{{{
-  @title{Hello, world!}{hello}
-
-  I'm a Booklit document!
-
-  @section{
-    @title{Hi there!}
-
-    I'm so organized!
-  }
-  }}}
-
-  After building, you should see something like this:
-
-  @inset{
-    @larger{@larger{@larger{Hello, world!}}}
-
-    I'm a Booklit document!
-
-    @larger{@larger{1 Hi there!}}
-
-    I'm so organized!
-  }
-
-  That number "1" might look a bit weird at the moment, but it's the section
-  number, and it'll be something like "3.2" for a nested section. You can always
-  remove it by specifying your own template (more on that later), but for now
-  let's leave it there.
-}
-
-@section{
-  @title{Splitting Sections}
-
-  To render each sub-section on its own page, simply call
-  @reference{split-sections} somewhere in the section.
-
-  @lit-syntax{{{
-  @title{Hello, world!}{hello}
-
-  @split-sections
+@inset{
+  @larger{@larger{@larger{Hello, world!}}}
 
   I'm a Booklit document!
 
-  @section{
-    @title{Hi there!}
+  @larger{@larger{1 Hi there!}}
 
-    I'm so organized!
-  }
-  }}}
-
-  So far we've just made the section disappear, which isn't very helpful. Let's
-  at least make it so we can browse to it! This can be done with
-  @reference{table-of-contents}:
-
-  @lit-syntax{{{
-  @title{Hello, world!}{hello}
-
-  @split-sections
-
-  I'm a Booklit document!
-
-  @table-of-contents
-
-  @section{
-    @title{Hi there!}
-
-    I'm so organized!
-  }
-  }}}
-
-  Note that when viewing the sub-section, its header is now a `<h1>`
-  rather than the `<h2>` it was before, since it stands on its own page.
+  I'm so organized!
 }
 
+That number "1" might look a bit weird at the moment, but it's the section
+number, and it'll be something like "3.2" for a nested section. You can always
+remove it by specifying your own template (more on that later), but for now
+let's leave it there.
+
+## Splitting Sections
+
+To render each sub-section on its own page, simply call
+@reference{split-sections} somewhere in the section.
+
+@lit-syntax{{{
+@title{Hello, world!}{hello}
+
+@split-sections
+
+I'm a Booklit document!
+
 @section{
-  @title{References & Tagging}
+  @title{Hi there!}
 
-  Having a @reference{table-of-contents} is great and all, but more often
-  you'll want to reference sections from each other directly and in context.
-  This can be done with @reference{reference}:
-
-  @lit-syntax{{{
-  @title{Hello, world!}{hello}
-
-  @split-sections
-
-  I'm a Booklit document! To read further, see @reference{hi-there}.
-
-  @section{
-    @title{Hi there!}
-
-    I'm so organized!
-  }
-  }}}
-
-  The first argument to @reference{reference} is the name of a tag to link. At
-  build time, references will *resolve* to their tag and generate a link
-  to it. By default, the name of the link is determined by the tag, so for a
-  section it'll be the section's title. This can be overridden by passing a
-  second argument to @reference{reference}:
-
-  @lit-syntax{{{
-  @title{Hello, world!}{hello}
-
-  @split-sections
-
-  I'm a Booklit document! Consult @reference{hi-there}{this section} for
-  more.
-
-  @section{
-    @title{Hi there!}
-
-    I'm so organized!
-  }
-  }}}
+  I'm so organized!
 }
+}}}
+
+So far we've just made the section disappear, which isn't very helpful. Let's
+at least make it so we can browse to it! This can be done with
+@reference{table-of-contents}:
+
+@lit-syntax{{{
+@title{Hello, world!}{hello}
+
+@split-sections
+
+I'm a Booklit document!
+
+@table-of-contents
 
 @section{
-  @title{Next Steps}
+  @title{Hi there!}
 
-  What we've gone over should carry you pretty far. But you'll likely want to
-  know a lot more.
+  I'm so organized!
+}
+}}}
 
-  @list{
-    To change how your generated content looks, check out the
-    @reference{html-renderer}{HTML renderer}.
-  }{
-    To learn the functions that come with Booklit, check out
-    @reference{baselit}.
-  }{
-    To extend your documents with your own functions, check out
-    @reference{plugins}.
-  }
+Note that when viewing the sub-section, its header is now a `<h1>`
+rather than the `<h2>` it was before, since it stands on its own page.
+
+## References & Tagging
+
+Having a @reference{table-of-contents} is great and all, but more often
+you'll want to reference sections from each other directly and in context.
+This can be done with @reference{reference}:
+
+@lit-syntax{{{
+@title{Hello, world!}{hello}
+
+@split-sections
+
+I'm a Booklit document! To read further, see @reference{hi-there}.
+
+@section{
+  @title{Hi there!}
+
+  I'm so organized!
+}
+}}}
+
+The first argument to @reference{reference} is the name of a tag to link. At
+build time, references will *resolve* to their tag and generate a link
+to it. By default, the name of the link is determined by the tag, so for a
+section it'll be the section's title. This can be overridden by passing a
+second argument to @reference{reference}:
+
+@lit-syntax{{{
+@title{Hello, world!}{hello}
+
+@split-sections
+
+I'm a Booklit document! Consult @reference{hi-there}{this section} for
+more.
+
+@section{
+  @title{Hi there!}
+
+  I'm so organized!
+}
+}}}
+
+## Next Steps
+
+What we've gone over should carry you pretty far. But you'll likely want
+to know a lot more.
+
+@list{
+  To change how your generated content looks, check out the
+  @reference{html-renderer}{HTML renderer}.
+}{
+  To learn the functions that come with Booklit, check out
+  @reference{baselit}.
+}{
+  To extend your documents with your own functions, check out
+  @reference{plugins}.
 }

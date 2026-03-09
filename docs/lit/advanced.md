@@ -1,9 +1,5 @@
-@title{Advanced Authoring}{advanced}
+# Advanced Authoring {#advanced}
 
-@section{
-  @title{Partials}{partials}
-}
+## Partials {#partials}
 
-@section{
-  @title{Templates}{templates}
-}
+## Templates {#templates}
