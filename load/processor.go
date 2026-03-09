@@ -4,6 +4,7 @@
 package load
 
 import (
+	"io"
 	"os"
 	"sync"
 	"time"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/marklit"
 	"github.com/vito/booklit/stages"
 )
 
@@ -87,21 +89,10 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 			return nil, err
 		}
 
-		result, err := ast.ParseReader(path, file)
+		source, err := io.ReadAll(file)
 		if err != nil {
-			astErr, ok := ast.UnpackError(err)
-			if !ok {
-				return nil, err
-			}
-
-			return nil, booklit.ParseError{
-				Err: astErr.Inner,
-				ErrorLocation: booklit.ErrorLocation{
-					FilePath:     path,
-					NodeLocation: astErr.Location,
-					Length:       1,
-				},
-			}
+			file.Close()
+			return nil, err
 		}
 
 		err = file.Close()
@@ -109,7 +100,7 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 			return nil, err
 		}
 
-		node = result.(ast.Node)
+		node = marklit.Parse(source)
 	}
 
 	section := &booklit.Section{
