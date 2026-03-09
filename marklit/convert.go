@@ -599,7 +599,10 @@ func (c *converter) convertCodeBlock(n gast.Node) ast.Node {
 	var lines []ast.Sequence
 	for i := 0; i < n.Lines().Len(); i++ {
 		seg := n.Lines().At(i)
-		lines = append(lines, ast.Sequence{ast.String(seg.Value(c.source))})
+		line := seg.Value(c.source)
+		// Strip trailing newline — Preformatted renders its own line separators
+		line = bytes.TrimRight(line, "\n")
+		lines = append(lines, ast.Sequence{ast.String(line)})
 	}
 
 	pre := ast.Preformatted(lines)
