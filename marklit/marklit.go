@@ -133,6 +133,7 @@ func newParser() parser.Parser {
 			)...,
 		),
 		parser.WithParagraphTransformers(parser.DefaultParagraphTransformers()...),
+		parser.WithHeadingAttribute(),
 	)
 }
 

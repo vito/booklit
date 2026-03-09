@@ -41,6 +41,62 @@ Good, thanks!
 		},
 	}),
 
+	Entry("sub-sections via headings", Example{
+		Input: `# Hello, world!
+
+How are you?
+
+## How I'm doing
+
+Good, thanks! And you?
+
+## Their Reply
+
+Good, thanks!
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm doing</h2>
+
+	<p>Good, thanks! And you?</p>
+
+	<h2>2 Their Reply</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+		},
+	}),
+
+	Entry("sub-sections via headings with tags", Example{
+		Input: `# Hello, world! {#hello}
+
+How are you?
+
+## How I'm doing {#how}
+
+Good, thanks!
+`,
+
+		Outputs: Files{
+			"hello.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>How are you?</p>
+
+	<h2>1 How I'm doing</h2>
+
+	<p>Good, thanks!</p>
+</section>
+`,
+		},
+	}),
+
 	Entry("sub-sections from files", Example{
 		Input: `@title{Hello, world!}
 

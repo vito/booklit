@@ -528,6 +528,67 @@ func TestPreformattedArgWithTemplateCode(t *testing.T) {
 	}
 }
 
+func TestHeadingSectionStructuring(t *testing.T) {
+	input := "# Top\n\nIntro.\n\n## Sub One\n\nSub content.\n\n## Sub Two\n\nMore content.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	// Should produce: title(Top), body, section(title(Sub One) + body), section(title(Sub Two) + body)
+	expected := "[P([I(title,[S(Top)])]) P([S(Intro.)]) P([I(section,[P([I(title,[S(Sub One)])]) P([S(Sub content.)])])]) P([I(section,[P([I(title,[S(Sub Two)])]) P([S(More content.)])])])]"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestHeadingWithTag(t *testing.T) {
+	input := "# Hello World {#hello}\n\nBody.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "[P([I(title,[S(Hello World)],S(hello))]) P([S(Body.)])]"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestSubsectionWithTag(t *testing.T) {
+	input := "# Top\n\n## Sub {#my-sub}\n\nContent.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "[P([I(title,[S(Top)])]) P([I(section,[P([I(title,[S(Sub)],S(my-sub))]) P([S(Content.)])])])]"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestThreeLevelSections(t *testing.T) {
+	input := "# Top\n\n## Mid\n\n### Deep\n\nDeep content.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "[P([I(title,[S(Top)])]) P([I(section,[P([I(title,[S(Mid)])]) P([I(section,[P([I(title,[S(Deep)])]) P([S(Deep content.)])])])])])]"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestContentBeforeFirstHeading(t *testing.T) {
+	input := "@use-plugin{foo}\n\n# Title\n\nBody.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "[P([I(use-plugin,[S(foo)])]) P([I(title,[S(Title)])]) P([S(Body.)])]"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
+func TestNoHeadingsUnchanged(t *testing.T) {
+	input := "Just a paragraph.\n"
+	node := marklit.Parse([]byte(input))
+	str := nodeString(node)
+	expected := "P([S(Just a paragraph.)])"
+	if str != expected {
+		t.Errorf("AST mismatch:\n  got:  %s\n  want: %s", str, expected)
+	}
+}
+
 // assertNode compares a Booklit AST node to an expected value using a
 // recursive structural comparison via string representation.
 func assertNode(t *testing.T, got, want ast.Node) {

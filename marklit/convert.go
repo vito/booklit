@@ -15,7 +15,20 @@ type converter struct {
 // convertChildren collects the Booklit AST for all children of a goldmark
 // node. Block-level children become paragraphs in a sequence; inline children
 // become a flat sequence.
+//
+// For Document nodes, headings are used to structure sections: the first
+// heading sets the section title, and subsequent headings at the same or
+// deeper level create sub-sections with their content grouped until the
+// next heading of the same or shallower level.
 func (c *converter) convertChildren(n gast.Node) ast.Node {
+	if n.Kind() == gast.KindDocument {
+		return c.convertDocument(n)
+	}
+	return c.convertChildrenFlat(n)
+}
+
+// convertChildrenFlat collects children without section structuring.
+func (c *converter) convertChildrenFlat(n gast.Node) ast.Node {
 	var paragraphs []ast.Node
 
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
@@ -32,6 +45,159 @@ func (c *converter) convertChildren(n gast.Node) ast.Node {
 		return paragraphs[0]
 	default:
 		return ast.Sequence(paragraphs)
+	}
+}
+
+// convertDocument handles section structuring based on headings.
+//
+// Headings create a hierarchy: `# Title` sets the top-level section title,
+// `## Sub` creates a sub-section, `### SubSub` creates a sub-sub-section,
+// etc. Content between headings becomes the body of the most recent section.
+// The `{#tag}` attribute on a heading becomes the tag for that section.
+func (c *converter) convertDocument(n gast.Node) ast.Node {
+	// Collect all children into a flat list
+	var children []sectionChild
+	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+		var h *gast.Heading
+		if child.Kind() == gast.KindHeading {
+			h = child.(*gast.Heading)
+		}
+		children = append(children, sectionChild{gmNode: child, heading: h})
+	}
+
+	// If there are no headings, just convert everything flat
+	hasHeading := false
+	for _, ch := range children {
+		if ch.heading != nil {
+			hasHeading = true
+			break
+		}
+	}
+	if !hasHeading {
+		return c.convertChildrenFlat(n)
+	}
+
+	// Find the first heading — it determines the "title level"
+	titleLevel := 0
+	for _, ch := range children {
+		if ch.heading != nil {
+			titleLevel = ch.heading.Level
+			break
+		}
+	}
+
+	// Build the result: content before the first heading is top-level body,
+	// the first heading at titleLevel is the @title call, deeper headings
+	// create @section blocks.
+	return c.structureSections(children, titleLevel)
+}
+
+// sectionChild holds a goldmark child node and its heading (if any).
+type sectionChild struct {
+	gmNode  gast.Node
+	heading *gast.Heading
+}
+
+// structureSections takes a flat list of goldmark children and a "title level"
+// and produces a Booklit AST with proper @title and @section nesting.
+func (c *converter) structureSections(children []sectionChild, titleLevel int) ast.Node {
+	var result []ast.Node
+
+	i := 0
+
+	// Content before the first heading at titleLevel is top-level body
+	for i < len(children) {
+		ch := children[i]
+		if ch.heading != nil && ch.heading.Level == titleLevel {
+			break
+		}
+		converted := c.convertNode(ch.gmNode)
+		if converted != nil {
+			result = append(result, converted)
+		}
+		i++
+	}
+
+	// First heading at titleLevel → @title invocation
+	if i < len(children) && children[i].heading != nil && children[i].heading.Level == titleLevel {
+		result = append(result, c.headingToTitle(children[i].heading))
+		i++
+	}
+
+	// Remaining content: nodes at body level, or sub-headings creating sections
+	for i < len(children) {
+		ch := children[i]
+		if ch.heading != nil && ch.heading.Level > titleLevel {
+			// Sub-heading: collect everything until the next heading at the
+			// same or shallower level
+			sectionLevel := ch.heading.Level
+			sectionStart := i
+			i++
+			for i < len(children) {
+				if children[i].heading != nil && children[i].heading.Level <= sectionLevel {
+					break
+				}
+				i++
+			}
+			sectionChildren := children[sectionStart:i]
+			sectionNode := c.buildSection(sectionChildren, sectionLevel)
+			result = append(result, sectionNode)
+		} else if ch.heading != nil && ch.heading.Level == titleLevel {
+			// Another heading at the same level — this would be unusual
+			// in a single document but handle it as another @title
+			result = append(result, c.headingToTitle(ch.heading))
+			i++
+		} else {
+			// Regular content
+			converted := c.convertNode(ch.gmNode)
+			if converted != nil {
+				result = append(result, converted)
+			}
+			i++
+		}
+	}
+
+	switch len(result) {
+	case 0:
+		return ast.Sequence{}
+	case 1:
+		return result[0]
+	default:
+		return ast.Sequence(result)
+	}
+}
+
+// buildSection creates a @section{...} invoke from a group of children
+// starting with a heading. The heading becomes the @title inside the section;
+// deeper headings create nested sub-sections.
+func (c *converter) buildSection(children []sectionChild, headingLevel int) ast.Node {
+	// The section body is built by recursively structuring the children
+	body := c.structureSections(children, headingLevel)
+
+	return ast.Paragraph{ast.Sequence{ast.Invoke{
+		Function:  "section",
+		Arguments: []ast.Node{body},
+	}}}
+}
+
+// headingToTitle converts a goldmark Heading into a @title invocation.
+// If the heading has an {#id} attribute, it becomes the tag argument.
+func (c *converter) headingToTitle(h *gast.Heading) ast.Node {
+	titleContent := c.collectInlines(h)
+	args := []ast.Node{ast.Sequence(titleContent)}
+
+	// Check for {#id} attribute → becomes the tag
+	if id, ok := h.AttributeString("id"); ok {
+		if idStr, ok := id.([]byte); ok {
+			args = append(args, ast.String(idStr))
+		}
+	}
+
+	return ast.Paragraph{
+		ast.Sequence{ast.Invoke{
+			Function:  "title",
+			Arguments: args,
+		}},
 	}
 }
 
@@ -288,14 +454,10 @@ func (c *converter) tryResolvePlaceholder(text string) ast.Node {
 }
 
 func (c *converter) convertHeading(h *gast.Heading) ast.Node {
-	titleContent := c.collectInlines(h)
-	args := []ast.Node{ast.Sequence(titleContent)}
-	return ast.Paragraph{
-		ast.Sequence{ast.Invoke{
-			Function:  "title",
-			Arguments: args,
-		}},
-	}
+	// When a heading is encountered outside of document-level section
+	// structuring (e.g. inside a blockquote or an @invoke arg), it
+	// falls back to a simple @title invocation.
+	return c.headingToTitle(h)
 }
 
 func (c *converter) convertEmphasis(e *gast.Emphasis) ast.Node {
