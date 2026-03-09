@@ -37,6 +37,24 @@ Booklit builds on top of standard Markdown, so the prose rules are familiar:
   calls} can be used inline or at the block level.
 }
 
+## Comment Syntax {#comment-syntax}
+
+Comments are delimited by `{-` and `-}`. They can be multi-line,
+appear in between words, and they can also be nested. This makes commenting
+out large blocks of content easy:
+
+\lit-syntax{{{
+Hi, I'm{- a comment -} in the middle of a sentence!
+
+{-
+  I'm hanging out at the top level,
+
+  {- being nested and stuff -}
+
+  with multiple lines.
+-}
+}}}
+
 ## Function Syntax {#function-syntax}
 
 Function calls are denoted by `\` followed by a series of alphanumeric

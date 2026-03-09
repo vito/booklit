@@ -258,6 +258,23 @@ func stripComments(source []byte) []byte {
 	var out []byte
 	i := 0
 	for i < len(source) {
+		// Skip backtick code spans — comments inside are literal
+		if source[i] == '`' {
+			end := skipBacktickSpan(source, i)
+			out = append(out, source[i:end+1]...)
+			i = end + 1
+			continue
+		}
+		// Skip over {{{...}}} verbatim blocks — comments inside are literal
+		if i+2 < len(source) && source[i] == '{' && source[i+1] == '{' && source[i+2] == '{' {
+			end := bytes.Index(source[i+3:], []byte("}}}"))
+			if end >= 0 {
+				end += i + 3 + 3 // past the closing }}}
+				out = append(out, source[i:end]...)
+				i = end
+				continue
+			}
+		}
 		if i+1 < len(source) && source[i] == '{' && source[i+1] == '-' {
 			end := findCommentEnd(source, i)
 			if end >= 0 {

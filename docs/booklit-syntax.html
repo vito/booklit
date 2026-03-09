@@ -46,7 +46,13 @@
     </li>
   
     <li>
-      <a href="booklit-syntax.html#function-syntax">5.2 Function Syntax</a>
+      <a href="booklit-syntax.html#comment-syntax">5.2 Comment Syntax</a>
+
+      
+    </li>
+  
+    <li>
+      <a href="booklit-syntax.html#function-syntax">5.3 Function Syntax</a>
 
       
     </li>
@@ -83,7 +89,24 @@
   
 
   
-    <h2 class="section-header"><a id="function-syntax"></a><span class="section-number"><a href="booklit-syntax.html#function-syntax">5.2</a> </span>Function Syntax</h2>
+    <h2 class="section-header"><a id="comment-syntax"></a><span class="section-number"><a href="booklit-syntax.html#comment-syntax">5.2</a> </span>Comment Syntax</h2>
+
+<p>Comments are delimited by <code>{-</code> and <code>-}</code>. They can be multi-line, appear in between words, and they can also be nested. This makes commenting out large blocks of content easy:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>Hi, I&#39;m<span style="color:#c29d7c;font-style:italic">{-</span><span style="color:#c29d7c;font-style:italic"> a comment </span><span style="color:#c29d7c;font-style:italic">-}</span> in the middle of a sentence!
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">{-</span><span style="color:#c29d7c;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">  I&#39;m hanging out at the top level,
+</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">  </span><span style="color:#c29d7c;font-style:italic">{-</span><span style="color:#c29d7c;font-style:italic"> being nested and stuff </span><span style="color:#c29d7c;font-style:italic">-}</span><span style="color:#c29d7c;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">  with multiple lines.
+</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic">-}</span>
+</span></span></code></pre></div></div>
+
+
+  
+
+  
+    <h2 class="section-header"><a id="function-syntax"></a><span class="section-number"><a href="booklit-syntax.html#function-syntax">5.3</a> </span>Function Syntax</h2>
 
 <p>Function calls are denoted by <code>\</code> followed by a series of alphanumeric characters and hyphens (<code>foo-bar</code>), forming the function <em>name</em>.</p><p>To produce a literal <code>\</code> character, use <code>\\</code> (standard Markdown backslash escape).</p><p>Following the name, there may be any number of <em>arguments</em>, which can come in a few different forms:</p><dl>
   
@@ -94,29 +117,29 @@
     <dd><p>As above, but soft line breaks are converted into a single space, as if it were written as <code>{word wrapped line}</code>.</p></dd>
   
   <dt><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  paragraph 1
+</span></span><span style="display:flex;"><span>paragraph 1
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  paragraph 2
+</span></span><span style="display:flex;"><span>paragraph 2
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div></div></dt>
     <dd><p>With a linebreak after the <code>{</code>, the argument forms a block of paragraphs with full Markdown and function call support.</p></dd>
   
   <dt><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>{{
-</span></span><span style="display:flex;"><span>  paragraph 1
+</span></span><span style="display:flex;"><span>paragraph 1
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    indented paragraph 2
+</span></span><span style="display:flex;"><span>  indented paragraph 2
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ed6c30;font-weight:bold">\with</span>{syntax}
+</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\with</span>{syntax}
 </span></span><span style="display:flex;"><span>}}
 </span></span></code></pre></div></div></dt>
     <dd><p>With doubled-up curly braces, whitespace is preserved in the content, rather than being parsed into paragraphs. Function calls (<code>\invoke</code>) are still recognized within preformatted blocks.</p><p>Note that the first line of the content determines an indentation level that is then stripped for all lines. It is the only whitespace that is ignored.</p></dd>
   
   <dt><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#fcc21b">{{{</span><span style="color:#fcc21b">
-</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  paragraph 1
+</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">paragraph 1
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">
-</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">    indented {paragraph</span><span style="color:#fcc21b">} </span><span style="color:#fcc21b">2
+</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  indented {paragraph</span><span style="color:#fcc21b">} </span><span style="color:#fcc21b">2
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">
-</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  \not-parsed{no-syntax</span><span style="color:#fcc21b">}
+</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">\not-parsed{no-syntax</span><span style="color:#fcc21b">}
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">}}}</span>
 </span></span></code></pre></div></div></dt>
     <dd><p>Tripled-up curly braces form a verbatim argument. Similar to preformatted, whitespace is preserved. In addition, there is no interpreting or parsing of function calls or Markdown within. This is useful for large code blocks where the content may contain special characters like <code>\</code>, <code>{</code>, or <code>}</code>.</p></dd>
