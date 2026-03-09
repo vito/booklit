@@ -147,6 +147,8 @@ func parseBracedContent(source []byte, pos int) (content []byte, endPos int, mul
 			depth := 0
 			for i := start; i < len(source); i++ {
 				switch source[i] {
+				case '`':
+					i = skipBacktickSpan(source, i)
 				case '{':
 					depth++
 				case '}':
@@ -164,12 +166,17 @@ func parseBracedContent(source []byte, pos int) (content []byte, endPos int, mul
 		// {{ not followed by newline — fall through to normal {…} parsing
 	}
 
-	// Normal {…} with brace depth
+	// Normal {…} with brace depth.
+	// Backtick code spans are skipped so that braces inside them
+	// (e.g. `{` or `}`) don't affect depth tracking.
 	depth := 0
 	start := pos + 1 // skip opening {
 
 	for i := pos; i < len(source); i++ {
 		switch source[i] {
+		case '`':
+			// Skip backtick code span
+			i = skipBacktickSpan(source, i)
 		case '{':
 			depth++
 		case '}':
@@ -183,6 +190,32 @@ func parseBracedContent(source []byte, pos int) (content []byte, endPos int, mul
 	}
 
 	return nil, -1, true, ArgNormal
+}
+
+// skipBacktickSpan skips over a backtick code span starting at pos.
+// Returns the index of the closing backtick(s). Handles runs of multiple
+// backticks (e.g. `` `` ... `` ``).
+func skipBacktickSpan(source []byte, pos int) int {
+	// Count opening backticks
+	n := 0
+	for pos+n < len(source) && source[pos+n] == '`' {
+		n++
+	}
+	// Find matching run of n backticks
+	for i := pos + n; i+n <= len(source); i++ {
+		match := true
+		for j := 0; j < n; j++ {
+			if source[i+j] != '`' {
+				match = false
+				break
+			}
+		}
+		if match {
+			return i + n - 1
+		}
+	}
+	// No closing backticks found — return pos (just skip the one char)
+	return pos
 }
 
 // resolvePlaceholders walks a string looking for placeholder markers and

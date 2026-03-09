@@ -64,8 +64,13 @@ func unwrapInlineResult(node ast.Node) ast.Node {
 
 // ParseArg parses a full argument (may contain block elements, paragraphs,
 // etc.) into a Booklit AST node. Used for block-level @invoke arguments.
+//
+// Leading common indentation is stripped before parsing to prevent goldmark
+// from interpreting indented content as code blocks. This is necessary
+// because args nested inside multiple invocations accumulate indentation
+// (e.g. @section{@table{  @table-row{...}}} has 4+ spaces).
 func ParseArg(source []byte) ast.Node {
-	return Parse(source)
+	return Parse(stripIndent(source))
 }
 
 // newParser builds a goldmark parser with the Booklit @invoke extension
