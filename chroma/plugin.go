@@ -22,10 +22,10 @@ import (
 	"bytes"
 	"regexp"
 
-	"github.com/alecthomas/chroma"
-	"github.com/alecthomas/chroma/formatters/html"
-	"github.com/alecthomas/chroma/lexers"
-	"github.com/alecthomas/chroma/styles"
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/vito/booklit"
 )
 
@@ -86,7 +86,12 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 		return nil, err
 	}
 
-	formatter := html.New(html.PreventSurroundingPre(code.IsFlow()))
+	var formatter *html.Formatter
+	if code.IsFlow() {
+		formatter = html.New(html.InlineCode(true))
+	} else {
+		formatter = html.New()
+	}
 
 	buf := new(bytes.Buffer)
 	err = formatter.Format(buf, chromaStyle, iterator)

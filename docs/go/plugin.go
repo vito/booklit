@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/alecthomas/chroma"
-	"github.com/alecthomas/chroma/styles"
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/baselit"
