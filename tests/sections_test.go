@@ -46,7 +46,7 @@ Good, thanks!
 
 How are you?
 
-@include-section{how-im-doing.lit}
+@include-section{how-im-doing.md}
 
 @section{
 @title{Their Reply}
@@ -56,7 +56,7 @@ Good, thanks!
 `,
 
 		Inputs: Files{
-			"how-im-doing.lit": `@title{How I'm doing}
+			"how-im-doing.md": `@title{How I'm doing}
 
 Good, thanks! And you?
 `,
@@ -85,7 +85,7 @@ Good, thanks! And you?
 
 How are you?
 
-@include-section{./sub-path/how-im-doing.lit}
+@include-section{./sub-path/how-im-doing.md}
 
 @section{
 @title{Their Reply}
@@ -95,14 +95,14 @@ Good, thanks!
 `,
 
 		Inputs: Files{
-			"sub-path/how-im-doing.lit": `@title{How I'm doing}
+			"sub-path/how-im-doing.md": `@title{How I'm doing}
 
 Good, thanks! And you?
 
-@include-section{another-section.lit}
+@include-section{another-section.md}
 `,
 
-			"sub-path/another-section.lit": `@title{My Response}
+			"sub-path/another-section.md": `@title{My Response}
 
 Not bad, not bad.
 
@@ -111,11 +111,11 @@ Not bad, not bad.
 
 That's great.
 
-@include-section{yet-another-section.lit}
+@include-section{yet-another-section.md}
 }
 `,
 
-			"sub-path/yet-another-section.lit": `@title{Their Response to My Response}
+			"sub-path/yet-another-section.md": `@title{Their Response to My Response}
 
 Sick.
 `,

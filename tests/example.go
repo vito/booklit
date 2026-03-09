@@ -37,7 +37,7 @@ func (example Example) Run() {
 
 	defer os.RemoveAll(dir)
 
-	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+".lit")
+	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+".md")
 
 	err = ioutil.WriteFile(sectionPath, []byte(example.Input), 0644)
 	Expect(err).ToNot(HaveOccurred())
