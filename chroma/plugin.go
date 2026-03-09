@@ -21,7 +21,6 @@ package chroma
 import (
 	"bytes"
 	"regexp"
-	"strings"
 
 	"github.com/alecthomas/chroma"
 	"github.com/alecthomas/chroma/formatters/html"
@@ -95,10 +94,6 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 		return nil, err
 	}
 
-	// Strip display:flex from line spans — chroma v0.10.0 hardcodes it on
-	// every Line token which breaks whitespace rendering inside <pre>.
-	highlighted := strings.ReplaceAll(buf.String(), `display:flex;`, ``)
-
 	var style booklit.Style
 	if code.IsFlow() {
 		style = "code-flow"
@@ -106,25 +101,25 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 		style = "code-block"
 	}
 
-	content := booklit.Sequence{booklit.String(highlighted)}
+	highlighted := booklit.Sequence{booklit.String(buf.String())}
 
 	for _, t := range transformers {
-		var newContent booklit.Sequence
-		for _, con := range content {
+		var newHighlighted booklit.Sequence
+		for _, con := range highlighted {
 			switch val := con.(type) {
 			case booklit.String:
-				newContent = append(newContent, t.TransformAll(val.String())...)
+				newHighlighted = append(newHighlighted, t.TransformAll(val.String())...)
 			default:
-				newContent = append(newContent, con)
+				newHighlighted = append(newHighlighted, con)
 			}
 		}
 
-		content = newContent
+		highlighted = newHighlighted
 	}
 
-	for i, con := range content {
+	for i, con := range highlighted {
 		if _, ok := con.(booklit.String); ok {
-			content[i] = booklit.Styled{
+			highlighted[i] = booklit.Styled{
 				Style:   "raw-html",
 				Content: con,
 			}
@@ -134,7 +129,7 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 	return booklit.Styled{
 		Style:   style,
 		Block:   !code.IsFlow(),
-		Content: content,
+		Content: highlighted,
 		Partials: booklit.Partials{
 			"Language": booklit.String(language),
 		},
