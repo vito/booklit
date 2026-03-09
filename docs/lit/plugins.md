@@ -35,13 +35,13 @@ booklit -i index.lit -o out \
 The `--plugin` flag must be passed every time you build your docs,
 so you may want to put it in a script:
 
-\syntax{bash}{{{
+```bash
 #!/bin/bash
 
 booklit -i lit/index.lit -o public \
   --plugin github.com/vito/booklit/chroma/plugin \
   "$@" # forward args from script to booklit
-}}}
+```
 
 
 Booklit imports all specified plugins at build time, automatically adding
@@ -87,7 +87,7 @@ mkdir example
 Then, we'll create the initial skeleton for our plugin at
 `example/plugin.go`:
 
-\syntax{go}{{{
+```go
 package example
 
 import (
@@ -107,7 +107,7 @@ func NewPlugin(sec *booklit.Section) booklit.Plugin {
 type Plugin struct {
   section *booklit.Section
 }
-}}}
+```
 
 This registers a plugin that does nothing. Let's define some document
 functions!
@@ -115,11 +115,11 @@ functions!
 Functions work by simply defining methods on the plugin struct. Let's define
 a basic one with no arguments:
 
-\syntax{go}{{{
+```go
 func (plugin Plugin) HelloWorld() booklit.Content {
   return booklit.String("Hello, world!")
 }
-}}}
+```
 
 Now let's create a Booklit document that uses it as `hello-plugins.lit`:
 
@@ -135,10 +135,10 @@ To build this document, pass the package import path (including your module
 name) as the `--plugin` flag. For example, if your `go.mod` says
 `module foo`, the flag would be:
 
-\syntax{bash}{{{
+```bash
 booklit -i hello-plugins.lit -o out \
     --plugin foo/example
-}}}
+```
 
 This should result in a page showing:
 
@@ -204,7 +204,7 @@ the building will fail.
 Putting the pieces together, let's extend our `pluglit` plugin from
 earlier write a real function that does something useful:
 
-\syntax{go}{{{
+```go
 func (plugin Plugin) DescribeFruit(
   name string,
   definition booklit.Content,
@@ -237,7 +237,7 @@ func (plugin Plugin) DescribeFruit(
 
   return content, nil
 }
-}}}
+```
 
 There are many things to note here:
 

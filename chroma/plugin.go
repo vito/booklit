@@ -4,13 +4,13 @@
 // To use this plugin, pass `--plugin github.com/vito/booklit/chroma/plugin`
 // and use it like so:
 //
-//   \use-plugin{chroma}
+//	\use-plugin{chroma}
 //
-//   \syntax{go}{{{
-//   package chroma
+//	\syntax{go}{{{
+//	package chroma
 //
-//   // ...
-//   }}}
+//	// ...
+//	}}}
 //
 // An optional style name may be specified as the third argument. To use a
 // custom style you may write your own plugin that embeds this plugin, or
@@ -37,6 +37,10 @@ func NewPlugin(section *booklit.Section) booklit.Plugin {
 
 type Plugin struct {
 	section *booklit.Section
+}
+
+func (plugin Plugin) CodeBlock(language string, code booklit.Content, styleName ...string) (booklit.Content, error) {
+	return plugin.Syntax(language, code, styleName...)
 }
 
 func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...string) (booklit.Content, error) {
