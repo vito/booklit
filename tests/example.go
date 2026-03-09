@@ -21,6 +21,7 @@ type Example struct {
 	SearchIndex string
 	LoadErr     interface{}
 	RenderErr   interface{}
+	Ext         string // file extension, defaults to ".md"
 }
 
 type Files map[string]string
@@ -37,7 +38,12 @@ func (example Example) Run() {
 
 	defer os.RemoveAll(dir)
 
-	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+".md")
+	ext := example.Ext
+	if ext == "" {
+		ext = ".md"
+	}
+
+	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+ext)
 
 	err = ioutil.WriteFile(sectionPath, []byte(example.Input), 0644)
 	Expect(err).ToNot(HaveOccurred())

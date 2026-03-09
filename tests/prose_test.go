@@ -191,6 +191,8 @@ I'm good, thanks!
 	}),
 
 	Entry("invokes interspersed in words", Example{
+		Ext: ".lit",
+
 		Input: `\title{Hello, world!}
 
 This{\italic{is}}a test.
@@ -267,6 +269,8 @@ varius molestie.
 	}),
 
 	Entry("inline code and code blocks", Example{
+		Ext: ".lit",
+
 		Input: `\title{Hello, world!}
 
 This is some \code{inline} code.
@@ -374,6 +378,8 @@ One more line, with meaning.</pre>
 	}),
 
 	Entry("code block indent tracking", Example{
+		Ext: ".lit",
+
 		Input: `\title{Hello, world!}
 
 \code{{
