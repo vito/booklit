@@ -42,10 +42,10 @@ everything else is either text or an `@invoke` call.
 @section{
   @title{Function Syntax}{function-syntax}
 
-  Function calls are denoted by `@@` followed by a series of alphanumeric
+  Function calls are denoted by `@` followed by a series of alphanumeric
   characters and hyphens (`foo-bar`), forming the function *name*.
 
-  To produce a literal `@@` character, use `@@@@`.
+  To produce a literal `@` character, use `@@`.
 
   Following the name, there may be any number of *arguments*, which can
   come in a few different forms:
@@ -82,7 +82,7 @@ everything else is either text or an `@invoke` call.
 }}
     }}}}{
       With doubled-up curly braces, whitespace is preserved in the content,
-      rather than being parsed into paragraphs. Function calls (`@@invoke`)
+      rather than being parsed into paragraphs. Function calls (`@invoke`)
       are still recognized within preformatted blocks.
 
       Note that the first line of the content determines an indentation level
@@ -90,15 +90,15 @@ everything else is either text or an `@invoke` call.
       ignored.
     }
   }{
-    @definition{@lit-syntax{{{
+    @definition{@lit-syntax{{
 {{{
   paragraph 1
 
     indented {paragraph} 2
 
-  @not-parsed{no-syntax}
+  @@not-parsed{no-syntax}
 }}}
-    }}}}{
+    }}}{
       Tripled-up curly braces form a verbatim argument. Similar to
       preformatted, whitespace is preserved. In addition, there is no
       interpreting or parsing of function calls or Markdown within.

@@ -285,7 +285,7 @@ to see how to set up your Go module.
       }{banana-opinion}
     }
 
-    ...which can be referenced as `@@reference{banana-opinion}`, which
+    ...which can be referenced as @syntax{lit}{@@reference{banana-opinion}}, which
     results in a link like this: @reference{banana-opinion}.
   }
 }

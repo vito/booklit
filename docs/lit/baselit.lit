@@ -149,7 +149,7 @@ Booklit documents, plus many common functions useful for writing prose.
     Link to *target* (i.e. a URL), with *display* as the link's
     text.
 
-    For example, `@@link{Example}{https://example.com}` becomes
+    For example, @syntax{lit}{@@link{Example}{https://example.com}} becomes
     [Example](https://example.com).
 
     Note that the argument order is the reverse of @reference{reference};
@@ -164,7 +164,7 @@ Booklit documents, plus many common functions useful for writing prose.
     *display* argument is specified, it will be used as the link's
     content. Otherwise, the tag's configured display will be rendered.
 
-    For example, `@@reference{links-and-references}` becomes
+    For example, @syntax{lit}{@@reference{links-and-references}} becomes
     @reference{links-and-references}.
   }
 
@@ -179,7 +179,7 @@ Booklit documents, plus many common functions useful for writing prose.
 
     @target{some-tag}{I'm just some tag!} I'm a targetable paragraph.
 
-    Then, we'll reference it with `@@reference{some-tag}`:
+    Then, we'll reference it with @syntax{lit}{@@reference{some-tag}}:
 
     @reference{some-tag}
 
