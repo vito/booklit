@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/segmentio/textio"
@@ -51,15 +50,18 @@ func init() {
 		},
 	})
 
-	for _, asset := range errhtml.AssetNames() {
-		info, err := errhtml.AssetInfo(asset)
+	entries, err := errhtml.Assets.ReadDir(".")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, entry := range entries {
+		content, err := errhtml.Assets.ReadFile(entry.Name())
 		if err != nil {
 			panic(err)
 		}
 
-		content := strings.TrimRight(string(errhtml.MustAsset(asset)), "\n")
-
-		_, err = errorTmpl.New(filepath.Base(info.Name())).Parse(content)
+		_, err = errorTmpl.New(entry.Name()).Parse(strings.TrimRight(string(content), "\n"))
 		if err != nil {
 			panic(err)
 		}

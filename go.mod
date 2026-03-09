@@ -3,7 +3,6 @@ module github.com/vito/booklit
 require (
 	github.com/agext/levenshtein v1.2.3
 	github.com/alecthomas/chroma/v2 v2.23.1
-	github.com/go-bindata/go-bindata v3.1.2+incompatible
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/mna/pigeon v1.0.1-0.20200224192238-18953b277063
 	github.com/onsi/ginkgo/v2 v2.9.1

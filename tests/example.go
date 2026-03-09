@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -34,7 +33,7 @@ func (example Example) Run() {
 		baselit.NewPlugin,
 	}
 
-	dir, err := ioutil.TempDir("", "booklit-tests")
+	dir, err := os.MkdirTemp("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())
 
 	defer os.RemoveAll(dir)
@@ -46,14 +45,14 @@ func (example Example) Run() {
 
 	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+ext)
 
-	err = ioutil.WriteFile(sectionPath, []byte(example.Input), 0644)
+	err = os.WriteFile(sectionPath, []byte(example.Input), 0644)
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Inputs {
 		err := os.MkdirAll(filepath.Join(dir, filepath.Dir(file)), 0755)
 		Expect(err).ToNot(HaveOccurred())
 
-		err = ioutil.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
+		err = os.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
 		Expect(err).ToNot(HaveOccurred())
 	}
 
@@ -84,7 +83,7 @@ func (example Example) Run() {
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Outputs {
-		fileContents, err := ioutil.ReadFile(filepath.Join(dir, file))
+		fileContents, err := os.ReadFile(filepath.Join(dir, file))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchXML(contents))
 	}
@@ -93,7 +92,7 @@ func (example Example) Run() {
 		err := writer.WriteSearchIndex(section, "search_index.json")
 		Expect(err).ToNot(HaveOccurred())
 
-		fileContents, err := ioutil.ReadFile(filepath.Join(dir, "search_index.json"))
+		fileContents, err := os.ReadFile(filepath.Join(dir, "search_index.json"))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchJSON(example.SearchIndex))
 	}

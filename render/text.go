@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -42,15 +41,18 @@ var TextFuncs = template.FuncMap{
 func init() {
 	initTextTmpl = template.New("engine").Funcs(TextFuncs)
 
-	for _, asset := range text.AssetNames() {
-		info, err := text.AssetInfo(asset)
+	entries, err := text.Assets.ReadDir(".")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, entry := range entries {
+		content, err := text.Assets.ReadFile(entry.Name())
 		if err != nil {
 			panic(err)
 		}
 
-		content := strings.TrimRight(string(text.MustAsset(asset)), "\n")
-
-		_, err = initTextTmpl.New(filepath.Base(info.Name())).Parse(content)
+		_, err = initTextTmpl.New(entry.Name()).Parse(strings.TrimRight(string(content), "\n"))
 		if err != nil {
 			panic(err)
 		}
@@ -128,7 +130,7 @@ func (engine *TextEngine) LoadTemplates(templatesDir string) error {
 	engine.resetTmpl()
 
 	for _, path := range templates {
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}

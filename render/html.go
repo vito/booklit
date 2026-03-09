@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -58,15 +57,18 @@ var HTMLFuncs = template.FuncMap{
 func init() {
 	initHTMLTmpl = template.New("engine").Funcs(HTMLFuncs)
 
-	for _, asset := range html.AssetNames() {
-		info, err := html.AssetInfo(asset)
+	entries, err := html.Assets.ReadDir(".")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, entry := range entries {
+		content, err := html.Assets.ReadFile(entry.Name())
 		if err != nil {
 			panic(err)
 		}
 
-		content := strings.TrimRight(string(html.MustAsset(asset)), "\n")
-
-		_, err = initHTMLTmpl.New(filepath.Base(info.Name())).Parse(content)
+		_, err = initHTMLTmpl.New(entry.Name()).Parse(strings.TrimRight(string(content), "\n"))
 		if err != nil {
 			panic(err)
 		}
@@ -133,7 +135,7 @@ func (engine *HTMLEngine) LoadTemplates(templatesDir string) error {
 	engine.resetTmpl()
 
 	for _, path := range templates {
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
