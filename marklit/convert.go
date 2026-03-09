@@ -106,11 +106,71 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 }
 
 func (c *converter) convertParagraph(n gast.Node) ast.Node {
+	// Check if this paragraph contains only invocations (and whitespace
+	// between them). In the old parser, each function call on its own line
+	// was a separate statement. Goldmark groups consecutive lines into one
+	// paragraph, so we split them back into individual paragraphs. This
+	// prevents spurious <p> </p> when side-effect-only calls like
+	// @use-plugin return empty content (the soft-break space between them
+	// would otherwise persist).
+	if invokes := c.splitInvokeOnlyParagraph(n); invokes != nil {
+		return invokes
+	}
+
 	inlines := c.collectInlines(n)
 	if len(inlines) == 0 {
 		return nil
 	}
 	return ast.Paragraph{ast.Sequence(inlines)}
+}
+
+// splitInvokeOnlyParagraph checks if a goldmark paragraph contains only
+// invoke nodes (and whitespace/soft-break text between them). If so, it
+// returns each invocation wrapped in its own ast.Paragraph (matching the
+// old parser behavior). Returns nil if the paragraph has non-invoke content.
+func (c *converter) splitInvokeOnlyParagraph(n gast.Node) ast.Node {
+	// First pass: verify the paragraph is invoke-only
+	invokeCount := 0
+	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+		switch child.Kind() {
+		case KindInvoke, KindInvokeBlock:
+			invokeCount++
+		case gast.KindText:
+			t := child.(*gast.Text)
+			value := t.Value(c.source)
+			text := strings.TrimSpace(string(value))
+			if text != "" && !strings.HasPrefix(text, invokePlaceholderPrefix) {
+				return nil
+			}
+		default:
+			return nil
+		}
+	}
+	if invokeCount < 2 {
+		return nil // single invoke: keep as normal paragraph
+	}
+
+	// Second pass: extract each invocation into its own paragraph
+	var nodes []ast.Node
+	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+		switch child.Kind() {
+		case KindInvoke, KindInvokeBlock:
+			converted := c.convertNode(child)
+			if converted != nil {
+				nodes = append(nodes, ast.Paragraph{ast.Sequence{converted}})
+			}
+		case gast.KindText:
+			t := child.(*gast.Text)
+			value := t.Value(c.source)
+			if node := c.tryResolvePlaceholder(string(value)); node != nil {
+				nodes = append(nodes, ast.Paragraph{ast.Sequence{node}})
+			}
+		}
+	}
+	if len(nodes) == 1 {
+		return nodes[0]
+	}
+	return ast.Sequence(nodes)
 }
 
 // collectInlines gathers all inline children of a block node into a flat
