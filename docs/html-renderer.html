@@ -35,11 +35,11 @@
 
       <h1 class="section-header"><a id="html-renderer"></a><span class="section-number"><a href="html-renderer.html">3</a> </span>TheHTML Renderer</h1>
 
-<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, create a directory for your <code>.tmpl</code> files and pass it to Booklit with the <code>--html-templates</code> flag.</p><p>The <code>--html-templates</code> flag must be passed every time you build your docs, so you may want to put it in a script:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span><span style="color:#c29d7c">#!/bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c"></span>
+<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, create a directory for your <code>.tmpl</code> files and pass it to Booklit with the <code>--html-templates</code> flag.</p><p>The <code>--html-templates</code> flag must be passed every time you build your docs, so you may want to put it in a script:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#c29d7c">#!/bin/bash
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>booklit -i lit/index.lit -o public <span style="color:#fcc21b">\
-</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b"></span>  --html-templates ./html <span style="color:#fcc21b">\
-</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b"></span>  <span style="color:#fcc21b">&#34;</span>$@<span style="color:#fcc21b">&#34;</span> <span style="color:#c29d7c;font-style:italic"># forward args from script to booklit</span>
+</span></span></span><span style="display:flex;"><span>  --html-templates ./html <span style="color:#fcc21b">\
+</span></span></span><span style="display:flex;"><span>  <span style="color:#fcc21b">&#34;</span>$@<span style="color:#fcc21b">&#34;</span> <span style="color:#c29d7c;font-style:italic"># forward args from script to booklit</span>
 </span></span></code></pre></div>
 <nav>
   <ul>
@@ -232,7 +232,7 @@
     <dd><p>generate a URL for the tag</p></dd>
   
   <dt><code>{{content | stripAux}}</code></dt>
-    <dd><p>strip <a href="baselit.html#aux"><code class="highlight"><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@aux</span></span></span></code></a> elements from the content</p></dd>
+    <dd><p>strip <a href="baselit.html#aux"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@aux</span></code></code></a> elements from the content</p></dd>
   
   <dt><code>{{string | rawHTML}}</code></dt>
     <dd><p>render the string as raw HTML, unescaped</p></dd>
@@ -257,18 +257,18 @@
   
     <h2 class="section-header"><a id="styled-content"></a><span class="section-number"><a href="html-renderer.html#styled-content">3.3</a> </span>Styled Content</h2>
 
-<p>Styled content, i.e. <a href="https://pkg.go.dev/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a>, instructs the HTML renderer to use the <code>*.tmpl</code> template named after the style.</p><p>For example, <a href="baselit.html#bold"><code class="highlight"><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@bold</span></span></span></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>booklit.Styled{
-</span></span><span style="display:flex;"><span>  Style:   booklit.StyleBold, <span style="color:#c29d7c;font-style:italic">// &#34;bold&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#c29d7c;font-style:italic"></span>  Content: content,
+<p>Styled content, i.e. <a href="https://pkg.go.dev/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a>, instructs the HTML renderer to use the <code>*.tmpl</code> template named after the style.</p><p>For example, <a href="baselit.html#bold"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@bold</span></code></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>booklit.Styled{
+</span></span><span style="display:flex;"><span>  Style:   booklit.StyleBold, <span style="color:#c29d7c;font-style:italic">// &#34;bold&#34;</span>
+</span></span><span style="display:flex;"><span>  Content: content,
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Booklit includes a <code>bold.tmpl</code> template which is evaluated with <code>.</code> as the <code>booklit.Styled</code> value:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;<span style="color:#c29d7c">{{</span>.Content | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;
+</span></span></code></pre></div><p>Booklit includes a <code>bold.tmpl</code> template which is evaluated with <code>.</code> as the <code>booklit.Styled</code> value:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;<span style="color:#c29d7c">{{</span>.Content | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;
 </span></span></code></pre></div><p>Thus, when content is styled with <code>&#34;bold&#34;</code>, it will render in <strong>strong tags</strong>.</p>
 
 
   
     <h3 class="section-header"><a id="styles-with-partials"></a><span class="section-number"><a href="html-renderer.html#styles-with-partials">3.3.1</a> </span>Styles with Partials</h3>
 
-<p>Additional content can be propagated to the template by setting it <code>Partials</code>:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>booklit.Styled{
+<p>Additional content can be propagated to the template by setting it <code>Partials</code>:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>booklit.Styled{
 </span></span><span style="display:flex;"><span>  Style:   <span style="color:#fcc21b">&#34;my-wackadoo-style&#34;</span>,
 </span></span><span style="display:flex;"><span>  Content: content,
 </span></span><span style="display:flex;"><span>
@@ -276,7 +276,7 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#fcc21b">&#34;Title&#34;</span>: title,
 </span></span><span style="display:flex;"><span>  },
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Then, with <code>my-wackadoo-style.tmpl</code> as the following:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;wack&#34;</span>&gt;
+</span></span></code></pre></div><p>Then, with <code>my-wackadoo-style.tmpl</code> as the following:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;wack&#34;</span>&gt;
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">h1</span>&gt;<span style="color:#c29d7c">{{</span>.Partial <span style="color:#fcc21b">&#34;Title&#34;</span> | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">h1</span>&gt;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#c29d7c">{{</span>.Content | render<span style="color:#c29d7c">}}</span>
@@ -291,7 +291,7 @@
   
     <h2 class="section-header"><a id="styled-sections"></a><span class="section-number"><a href="html-renderer.html#styled-sections">3.4</a> </span>Styled Sections</h2>
 
-<p>Using <a href="baselit.html#styled"><code class="highlight"><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@styled</span></span></span></code></a> instructs the HTML renderer to use <code>(name).tmpl</code> instead of <code>section.tmpl</code>, or <code>(name)-page.tmpl</code> instead of <code>page.tmpl</code> (if it exists).</p><p>So, given the following example:</p><div class="lit-syntax"><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#title">title</a></span>{Fancy Section}
+<p>Using <a href="baselit.html#styled"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@styled</span></code></code></a> instructs the HTML renderer to use <code>(name).tmpl</code> instead of <code>section.tmpl</code>, or <code>(name)-page.tmpl</code> instead of <code>page.tmpl</code> (if it exists).</p><p>So, given the following example:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#title">title</a></span>{Fancy Section}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#styled">styled</a></span>{fancy}
 </span></span><span style="display:flex;"><span>
@@ -302,7 +302,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  I&#39;m a normal sub-section!
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div></div><p>...and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
+</span></span></code></pre></div></div><p>...and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;<span style="color:#c29d7c">{{</span>.Title | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#c29d7c">{{</span>.Body | render<span style="color:#c29d7c">}}</span>
@@ -313,7 +313,7 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">end</span><span style="color:#c29d7c">}}</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">end</span><span style="color:#c29d7c">}}</span>
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#fcc21b;font-weight:bold">div</span>&gt;
-</span></span></code></pre></div><p>...the following will be the rendered HTML for the section:</p><div class="highlight"><pre tabindex="0" style=";"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
+</span></span></code></pre></div><p>...the following will be the rendered HTML for the section:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;Fancy Section&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">p</span>&gt;I&#39;m a fancy section!&lt;/<span style="color:#fcc21b;font-weight:bold">p</span>&gt;
