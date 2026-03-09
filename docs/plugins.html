@@ -35,7 +35,7 @@
 
       <h1 class="section-header"><a id="plugins"></a><span class="section-number"><a href="plugins.html">4</a> </span>Plugins</h1>
 
-<p>Plugins provide the functionality behind function calls like <code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@foo</span>{bar}</code></code>.</p><p>Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic functions like <a href="baselit.html#title"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@title</span></code></code></a>, <a href="baselit.html#section"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@section</span></code></code></a>, <a href="baselit.html#italic"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@italic</span></code></code></a>, and <a href="baselit.html#bold"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@bold</span></code></code></a>.</p><p>More functions can be added by writing plugins and using them in your documents.</p><p>If you&#39;ve skipped ahead, you may want to check out <a href="getting-started.html">Getting Started</a> to see how to set up your Go module.</p>
+<p>Plugins provide the functionality behind function calls like <code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\foo</span>{bar}</code></code>.</p><p>Out of the box, Booklit comes with a plugin called <a href="baselit.html"><code>baselit</code></a> which provides basic functions like <a href="baselit.html#title"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\title</span></code></code></a>, <a href="baselit.html#section"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\section</span></code></code></a>, <a href="baselit.html#italic"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\italic</span></code></code></a>, and <a href="baselit.html#bold"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\bold</span></code></code></a>.</p><p>More functions can be added by writing plugins and using them in your documents.</p><p>If you&#39;ve skipped ahead, you may want to check out <a href="getting-started.html">Getting Started</a> to see how to set up your Go module.</p>
 <nav>
   <ul>
   
@@ -90,15 +90,15 @@
 </span></span><span style="display:flex;"><span>booklit -i lit/index.lit -o public <span style="color:#fcc21b">\
 </span></span></span><span style="display:flex;"><span>  --plugin github.com/vito/booklit/chroma/plugin <span style="color:#fcc21b">\
 </span></span></span><span style="display:flex;"><span>  <span style="color:#fcc21b">&#34;</span>$@<span style="color:#fcc21b">&#34;</span> <span style="color:#c29d7c;font-style:italic"># forward args from script to booklit</span>
-</span></span></code></pre></div><p>Booklit imports all specified plugins at build time, automatically adding them to <code>go.mod</code>. When imported, plugins register themselves under a certain name - typically guessable from the import path.</p><p>To use the plugin in your documents, call <a href="baselit.html#use-plugin"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@use-plugin</span></code></code></a> with its registered name:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#title">title</a></span>{My Section}
+</span></span></code></pre></div><p>Booklit imports all specified plugins at build time, automatically adding them to <code>go.mod</code>. When imported, plugins register themselves under a certain name - typically guessable from the import path.</p><p>To use the plugin in your documents, call <a href="baselit.html#use-plugin"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></code></a> with its registered name:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{My Section}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#use-plugin">use-plugin</a></span>{chroma}
+</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{chroma}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@syntax</span>{ruby}<span style="color:#fcc21b">{{{</span><span style="color:#fcc21b">
+</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\syntax</span>{ruby}<span style="color:#fcc21b">{{{</span><span style="color:#fcc21b">
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  def fib(n)
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">    fib(n - 2) + fib(n - 1)
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  end
-</span></span></span></code></pre></div></div>}}}<p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@use-plugin</span></code></code></a> can be invoked multiple times.</p><p>Note: <a href="baselit.html#section">inline sections</a> inherit plugins from their parent sections, but <a href="baselit.html#include-section">included sections</a> do not.</p>
+</span></span></span></code></pre></div></div>}}}<p>The <code>--plugin</code> flag can be specified multiple times, and <a href="baselit.html#use-plugin"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\use-plugin</span></code></code></a> can be invoked multiple times.</p><p>Note: <a href="baselit.html#section">inline sections</a> inherit plugins from their parent sections, but <a href="baselit.html#include-section">included sections</a> do not.</p>
 
 
   
@@ -129,11 +129,11 @@
 </span></span></code></pre></div><p>This registers a plugin that does nothing. Let&#39;s define some document functions!</p><p>Functions work by simply defining methods on the plugin struct. Let&#39;s define a basic one with no arguments:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">func</span> (plugin Plugin) HelloWorld() booklit.Content {
 </span></span><span style="display:flex;"><span>  <span style="color:#ed6c30;font-weight:bold">return</span> booklit.String(<span style="color:#fcc21b">&#34;Hello, world!&#34;</span>)
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#title">title</a></span>{Hello Plugins}
+</span></span></code></pre></div><p>Now let&#39;s create a Booklit document that uses it as <code>hello-plugins.lit</code>:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Hello Plugins}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#use-plugin">use-plugin</a></span>{example}
+</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#use-plugin">use-plugin</a></span>{example}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Zero args: <span style="color:#ed6c30;font-weight:bold">@<a href="getting-started.html#hello-world">hello-world</a></span>
+</span></span><span style="display:flex;"><span>Zero args: <span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>
 </span></span></code></pre></div></div><p>To build this document, pass the package import path (including your module name) as the <code>--plugin</code> flag. For example, if your <code>go.mod</code> says <code>module foo</code>, the flag would be:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>booklit -i hello-plugins.lit -o out <span style="color:#fcc21b">\
 </span></span></span><span style="display:flex;"><span>    --plugin foo/example
 </span></span></code></pre></div><p>This should result in a page showing:</p><div style="margin: 0 2em 1em" class="inset"><p>Zero args: Hello, world!</p></div>
@@ -142,17 +142,17 @@
   
     <h3 class="section-header"><a id="argument-types"></a><span class="section-number"><a href="plugins.html#argument-types">4.2.1</a> </span>Argument Types</h3>
 
-<p>Functions can be invoked with any number of arguments, like so:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}
+<p>Functions can be invoked with any number of arguments, like so:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="getting-started.html#hello-world">hello-world</a></span>{arg1}{arg2}
 </span></span></code></pre></div></div><p>See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>Each argument to the function corresponds to an argument for the plugin&#39;s method, which may be variadic.</p><p>The plugin&#39;s arguments must each be one of the following types:</p><dl>
   
   <dt><a href="https://pkg.go.dev/github.com/vito/booklit#Content"><code>booklit.<strong>Content</strong></code></a></dt>
     <dd><p>The evaluated content. This can be just about anything from a word to a sentence to a series of paragraphs, depending on how the function is invoked. It is typically used unmodified.</p></dd>
   
   <dt><code>string</code></dt>
-    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or line of text. The <a href="baselit.html#title"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@title</span></code></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
+    <dd><p>The evaluated content, converted into a string. This is useful when the content is expected to be something simple, like a word or line of text. The <a href="baselit.html#title"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\title</span></code></code></a> function, for example, uses this type for its variadic <em>tags</em> argument.</p></dd>
   
   <dt><a href="https://pkg.go.dev/github.com/vito/booklit/ast#Node"><code>booklit/ast.<strong>Node</strong></code></a></dt>
-    <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@section</span></code></code></a> which need to control the evaluation context of the content.</p></dd>
+    <dd><p>The unevaluated syntax tree for the content. This is useful when doing meta-level things like <a href="baselit.html#section"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\section</span></code></code></a> which need to control the evaluation context of the content.</p></dd>
   
 </dl>
 
@@ -224,12 +224,12 @@
 
   <li><p>the function name, <code>describe-fruit</code>, corresponds to the method name <code>DescribeFruit</code></p></li>
 
-</ul><p>This function would be called like so:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@describe-fruit</span>{banana}{
+</ul><p>This function would be called like so:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\describe-fruit</span>{banana}{
 </span></span><span style="display:flex;"><span>  A banana is a yellow fruit that only really tastes
 </span></span><span style="display:flex;"><span>  good in its original form. Banana flavored
 </span></span><span style="display:flex;"><span>  anything is a pit of dispair.
 </span></span><span style="display:flex;"><span>}{banana-opinion}
-</span></span></code></pre></div></div><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a id="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@reference</span>{banana-opinion}</code></code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
+</span></span></code></pre></div></div><p>...and will result in something like the following:</p><div style="margin: 0 2em 1em" class="inset"><a id="banana-opinion"></a><p><strong>banana</strong></p><p>A banana is a yellow fruit that only really tastes good in its original form. Banana flavored anything is a pit of dispair.</p></div><p>...which can be referenced as <code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\reference</span>{banana-opinion}</code></code>, which results in a link like this: <a href="plugins.html#banana-opinion">banana</a>.</p>
 
 
   

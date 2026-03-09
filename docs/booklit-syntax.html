@@ -35,7 +35,7 @@
 
       <h1 class="section-header"><a id="booklit-syntax"></a><span class="section-number"><a href="booklit-syntax.html">5</a> </span>Syntax</h1>
 
-<p>Booklit documents are Markdown files extended with a special syntax for <a href="booklit-syntax.html#function-syntax">function calls</a>. Standard Markdown formatting (emphasis, bold, links, code, lists, etc.) is supported natively, and everything else is either text or an <code>@invoke</code> call.</p>
+<p>Booklit documents are Markdown files extended with a special syntax for <a href="booklit-syntax.html#function-syntax">function calls</a>. Standard Markdown formatting (emphasis, bold, links, code, lists, etc.) is supported natively, and everything else is either text or an <code>\invoke</code> call.</p>
 <nav>
   <ul>
   
@@ -73,7 +73,7 @@
 
   <li><p><em>Images</em> are written as <code>![alt text](path)</code>.</p></li>
 
-  <li><p><em>Headings</em> can be written with <code>#</code> prefix, which maps to <a href="baselit.html#title"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@title</span></code></code></a>.</p></li>
+  <li><p><em>Headings</em> can be written with <code>#</code> prefix, which maps to <a href="baselit.html#title"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\title</span></code></code></a>.</p></li>
 
   <li><p>In addition to Markdown formatting, <a href="booklit-syntax.html#function-syntax">function calls</a> can be used inline or at the block level.</p></li>
 
@@ -85,7 +85,7 @@
   
     <h2 class="section-header"><a id="function-syntax"></a><span class="section-number"><a href="booklit-syntax.html#function-syntax">5.2</a> </span>Function Syntax</h2>
 
-<p>Function calls are denoted by <code>@</code> followed by a series of alphanumeric characters and hyphens (<code>foo-bar</code>), forming the function <em>name</em>.</p><p>To produce a literal <code>@</code> character, use <code>@@</code>.</p><p>Following the name, there may be any number of <em>arguments</em>, which can come in a few different forms:</p><dl>
+<p>Function calls are denoted by <code>\</code> followed by a series of alphanumeric characters and hyphens (<code>foo-bar</code>), forming the function <em>name</em>.</p><p>To produce a literal <code>\</code> character, use <code>\\</code> (standard Markdown backslash escape).</p><p>Following the name, there may be any number of <em>arguments</em>, which can come in a few different forms:</p><dl>
   
   <dt><code>{line}</code></dt>
     <dd><p>With no linebreak after the <code>{</code>, the argument forms a single line. Markdown formatting is applied within the argument.</p></dd>
@@ -106,20 +106,20 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    indented paragraph 2
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#ed6c30;font-weight:bold">@with</span>{syntax}
+</span></span><span style="display:flex;"><span>  <span style="color:#ed6c30;font-weight:bold">\with</span>{syntax}
 </span></span><span style="display:flex;"><span>}}
 </span></span></code></pre></div></div></dt>
-    <dd><p>With doubled-up curly braces, whitespace is preserved in the content, rather than being parsed into paragraphs. Function calls (<code>@invoke</code>) are still recognized within preformatted blocks.</p><p>Note that the first line of the content determines an indentation level that is then stripped for all lines. It is the only whitespace that is ignored.</p></dd>
+    <dd><p>With doubled-up curly braces, whitespace is preserved in the content, rather than being parsed into paragraphs. Function calls (<code>\invoke</code>) are still recognized within preformatted blocks.</p><p>Note that the first line of the content determines an indentation level that is then stripped for all lines. It is the only whitespace that is ignored.</p></dd>
   
   <dt><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#fcc21b">{{{</span><span style="color:#fcc21b">
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  paragraph 1
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">    indented {paragraph</span><span style="color:#fcc21b">} </span><span style="color:#fcc21b">2
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">
-</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  @not-parsed{no-syntax</span><span style="color:#fcc21b">}
+</span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">  \not-parsed{no-syntax</span><span style="color:#fcc21b">}
 </span></span></span><span style="display:flex;"><span><span style="color:#fcc21b">}}}</span>
 </span></span></code></pre></div></div></dt>
-    <dd><p>Tripled-up curly braces form a verbatim argument. Similar to preformatted, whitespace is preserved. In addition, there is no interpreting or parsing of function calls or Markdown within. This is useful for large code blocks where the content may contain special characters like <code>@</code>, <code>{</code>, or <code>}</code>.</p></dd>
+    <dd><p>Tripled-up curly braces form a verbatim argument. Similar to preformatted, whitespace is preserved. In addition, there is no interpreting or parsing of function calls or Markdown within. This is useful for large code blocks where the content may contain special characters like <code>\</code>, <code>{</code>, or <code>}</code>.</p></dd>
   
 </dl>
 

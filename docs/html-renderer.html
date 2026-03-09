@@ -232,7 +232,7 @@
     <dd><p>generate a URL for the tag</p></dd>
   
   <dt><code>{{content | stripAux}}</code></dt>
-    <dd><p>strip <a href="baselit.html#aux"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@aux</span></code></code></a> elements from the content</p></dd>
+    <dd><p>strip <a href="baselit.html#aux"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\aux</span></code></code></a> elements from the content</p></dd>
   
   <dt><code>{{string | rawHTML}}</code></dt>
     <dd><p>render the string as raw HTML, unescaped</p></dd>
@@ -257,7 +257,7 @@
   
     <h2 class="section-header"><a id="styled-content"></a><span class="section-number"><a href="html-renderer.html#styled-content">3.3</a> </span>Styled Content</h2>
 
-<p>Styled content, i.e. <a href="https://pkg.go.dev/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a>, instructs the HTML renderer to use the <code>*.tmpl</code> template named after the style.</p><p>For example, <a href="baselit.html#bold"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@bold</span></code></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>booklit.Styled{
+<p>Styled content, i.e. <a href="https://pkg.go.dev/github.com/vito/booklit#Styled"><code>booklit.<strong>Styled</strong></code></a>, instructs the HTML renderer to use the <code>*.tmpl</code> template named after the style.</p><p>For example, <a href="baselit.html#bold"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\bold</span></code></code></a> is implemented in the <a href="baselit.html"><code>baselit</code></a> plugin by returning:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>booklit.Styled{
 </span></span><span style="display:flex;"><span>  Style:   booklit.StyleBold, <span style="color:#c29d7c;font-style:italic">// &#34;bold&#34;</span>
 </span></span><span style="display:flex;"><span>  Content: content,
 </span></span><span style="display:flex;"><span>}
@@ -291,14 +291,14 @@
   
     <h2 class="section-header"><a id="styled-sections"></a><span class="section-number"><a href="html-renderer.html#styled-sections">3.4</a> </span>Styled Sections</h2>
 
-<p>Using <a href="baselit.html#styled"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">@styled</span></code></code></a> instructs the HTML renderer to use <code>(name).tmpl</code> instead of <code>section.tmpl</code>, or <code>(name)-page.tmpl</code> instead of <code>page.tmpl</code> (if it exists).</p><p>So, given the following example:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#title">title</a></span>{Fancy Section}
+<p>Using <a href="baselit.html#styled"><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\styled</span></code></code></a> instructs the HTML renderer to use <code>(name).tmpl</code> instead of <code>section.tmpl</code>, or <code>(name)-page.tmpl</code> instead of <code>page.tmpl</code> (if it exists).</p><p>So, given the following example:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Fancy Section}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#styled">styled</a></span>{fancy}
+</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#styled">styled</a></span>{fancy}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>I&#39;m a fancy section!
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#section">section</a></span>{
-</span></span><span style="display:flex;"><span>  <span style="color:#ed6c30;font-weight:bold">@<a href="baselit.html#title">title</a></span>{Sub-section}
+</span></span><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#section">section</a></span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#title">title</a></span>{Sub-section}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  I&#39;m a normal sub-section!
 </span></span><span style="display:flex;"><span>}
