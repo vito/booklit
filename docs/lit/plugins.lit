@@ -4,7 +4,7 @@
 @title{Plugins}{plugins}
 
 Plugins provide the functionality behind function calls like
-`@@foo{bar}`.
+@syntax{lit}{@@foo{bar}}.
 
 Out of the box, Booklit comes with a plugin called
 @reference{baselit}{`baselit`} which provides basic functions like

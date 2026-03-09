@@ -30,7 +30,7 @@ modification needed, so I think it's good enough to share.
 @columns{
   @column-header{content in `*.lit`}
 
-  Booklit documents are text files which evaluate `@@functions` to
+  Booklit documents are text files which evaluate @syntax{lit}{@@functions} to
   generate content, ultimately resulting in a tree of sections.
 
   Sections are easy to move around, allowing you to continuously refactor and
@@ -60,7 +60,7 @@ modification needed, so I think it's good enough to share.
 @columns{
   @column-header{logic in `*.go`}
 
-  Sections use plugins to invoke `@@functions` written in
+  Sections use plugins to invoke @syntax{lit}{@@functions} written in
   [Go](https://golang.org). Go is a simple and fast language with
   [plenty of packages](https://pkg.go.dev/) around if you need them.
 
