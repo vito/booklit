@@ -398,7 +398,7 @@ func stripBackslashEscapes(b []byte) []byte {
 		return b
 	}
 	var out []byte
-	for i := 0; i < len(b); i++ {
+	for i := range b {
 		if b[i] == '\\' && i+1 < len(b) && isASCIIPunct(b[i+1]) {
 			// Skip the escape backslash; the next char will be appended
 			continue
@@ -463,12 +463,12 @@ func stripPlaceholders(text string) string {
 		}
 		result.WriteString(text[:idx])
 		rest := text[idx+len(invokePlaceholderPrefix):]
-		nullIdx := strings.IndexByte(rest, 0)
-		if nullIdx < 0 {
+		_, after, ok := strings.Cut(rest, "\x00")
+		if !ok {
 			result.WriteString(text[idx:])
 			break
 		}
-		text = rest[nullIdx+1:]
+		text = after
 	}
 	return result.String()
 }
@@ -540,15 +540,15 @@ func (c *converter) convertEmphasis(e *gast.Emphasis) ast.Node {
 
 func (c *converter) convertCodeSpan(n gast.Node) ast.Node {
 	// Code spans contain raw text children
-	var text string
+	var text strings.Builder
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
 		if t, ok := child.(*gast.Text); ok {
-			text += string(t.Value(c.source))
+			text.WriteString(string(t.Value(c.source)))
 		}
 	}
 	return ast.Invoke{
 		Function:  "code",
-		Arguments: []ast.Node{ast.String(text)},
+		Arguments: []ast.Node{ast.String(text.String())},
 	}
 }
 

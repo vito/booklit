@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -19,8 +20,8 @@ type Example struct {
 	Inputs      Files
 	Outputs     Files
 	SearchIndex string
-	LoadErr     interface{}
-	RenderErr   interface{}
+	LoadErr     any
+	RenderErr   any
 	Ext         string // file extension, defaults to ".md"
 }
 
@@ -103,11 +104,12 @@ func (example Example) Run() {
 // NB: this is really just to cut down on "missing" non-critical test
 // coverage. this should recursively stringify all the content.
 func stringifyEverything(section *booklit.Section) string {
-	str := section.String() + " " + section.Body.String()
+	var str strings.Builder
+	str.WriteString(section.String() + " " + section.Body.String())
 
 	for _, sub := range section.Children {
-		str += stringifyEverything(sub)
+		str.WriteString(stringifyEverything(sub))
 	}
 
-	return str
+	return str.String()
 }

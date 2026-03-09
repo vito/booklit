@@ -323,7 +323,7 @@ type ErrorLocation struct {
 }
 
 // Annotate prepends the source location to the given message.
-func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
+func (loc ErrorLocation) Annotate(msg string, args ...any) string {
 	if loc.NodeLocation.Line == 0 {
 		return fmt.Sprintf("%s: %s", loc.FilePath, fmt.Sprintf(msg, args...))
 	}

@@ -49,10 +49,7 @@ var HTMLFuncs = template.FuncMap{
 	},
 
 	"headerDepth": func(con *booklit.Section) int {
-		depth := con.PageDepth() + 1
-		if depth > 6 {
-			depth = 6
-		}
+		depth := min(con.PageDepth()+1, 6)
 
 		return depth
 	},
@@ -83,7 +80,7 @@ type HTMLEngine struct {
 	tmplModTimes map[string]time.Time
 
 	template *template.Template
-	data     interface{}
+	data     any
 }
 
 // NewHTMLEngine constructs a new HTMLEngine with the basic set of HTML

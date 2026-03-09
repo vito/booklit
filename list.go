@@ -22,7 +22,7 @@ func (con List) IsFlow() bool {
 
 // String summarizes the content for debugging purposes.
 func (con List) String() string {
-	var str string
+	var str strings.Builder
 	for i, c := range con.Items {
 		var text string
 		for _, line := range strings.Split(strings.TrimRight(c.String(), "\n"), "\n") {
@@ -36,13 +36,13 @@ func (con List) String() string {
 		}
 
 		if con.Ordered {
-			str += fmt.Sprintf("%d. %s\n\n", i+1, text)
+			str.WriteString(fmt.Sprintf("%d. %s\n\n", i+1, text))
 		} else {
-			str += fmt.Sprintf("* %s\n\n", text)
+			str.WriteString(fmt.Sprintf("* %s\n\n", text))
 		}
 	}
 
-	return str
+	return str.String()
 }
 
 // Visit calls VisitList.

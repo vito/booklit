@@ -3,6 +3,7 @@ package booklit
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/agext/levenshtein"
@@ -295,13 +296,7 @@ func (con *Section) IsOrHasChild(sub *Section) bool {
 		return true
 	}
 
-	for _, child := range con.Children {
-		if child == sub {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(con.Children, sub)
 }
 
 // Prev returns the previous section, i.e. the previous sibling section or the

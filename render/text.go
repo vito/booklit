@@ -68,7 +68,7 @@ type TextEngine struct {
 	tmplModTimes map[string]time.Time
 
 	template *template.Template
-	data     interface{}
+	data     any
 }
 
 // NewTextEngine constructs a new TextEngine with the basic set of text

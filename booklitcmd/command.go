@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime/pprof"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -215,16 +216,17 @@ func (cmd *Command) reexec() (int, error) {
 	src := filepath.Join(tmpdir, "main.go")
 	bin := filepath.Join(tmpdir, "main")
 
-	goSrc := "package main\n"
-	goSrc += "import \"github.com/vito/booklit/booklitcmd\"\n"
+	var goSrc strings.Builder
+	goSrc.WriteString("package main\n")
+	goSrc.WriteString("import \"github.com/vito/booklit/booklitcmd\"\n")
 	for _, p := range cmd.Plugins {
-		goSrc += "import _ \"" + p + "\"\n"
+		goSrc.WriteString("import _ \"" + p + "\"\n")
 	}
-	goSrc += "func main() {\n"
-	goSrc += "	booklitcmd.Main()\n"
-	goSrc += "}\n"
+	goSrc.WriteString("func main() {\n")
+	goSrc.WriteString("	booklitcmd.Main()\n")
+	goSrc.WriteString("}\n")
 
-	err = os.WriteFile(src, []byte(goSrc), 0644)
+	err = os.WriteFile(src, []byte(goSrc.String()), 0644)
 	if err != nil {
 		return 0, err
 	}
