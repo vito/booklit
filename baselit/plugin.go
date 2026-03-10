@@ -171,8 +171,8 @@ func (plugin Plugin) syntaxHighlight(language string, code booklit.Content, chro
 	}
 
 	return booklit.Styled{
-		Style:   style,
-		Block:   !code.IsFlow(),
+		Style: style,
+		Block: !code.IsFlow(),
 		Content: booklit.Styled{
 			Style:   "raw-html",
 			Content: booklit.String(buf.String()),

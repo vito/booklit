@@ -16,12 +16,13 @@ func (con Table) IsFlow() bool {
 func (con Table) String() string {
 	var text strings.Builder
 	for _, cols := range con.Rows {
-		row := "|"
+		var row strings.Builder
+		row.WriteString("|")
 		for _, col := range cols {
-			row += " " + col.String() + " |"
+			row.WriteString(" " + col.String() + " |")
 		}
 
-		text.WriteString(row + "\n")
+		text.WriteString(row.String() + "\n")
 	}
 
 	text.WriteString("\n")
