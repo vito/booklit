@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega" //nolint:staticcheck // dot import is idiomatic for gomega
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
@@ -36,7 +36,7 @@ func (example Example) Run() {
 	dir, err := os.MkdirTemp("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())
 
-	defer os.RemoveAll(dir)
+	defer os.RemoveAll(dir) //nolint:errcheck
 
 	ext := example.Ext
 	if ext == "" {

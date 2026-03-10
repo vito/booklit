@@ -94,7 +94,7 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 		case ".md":
 			source, err := io.ReadAll(file)
 			if err != nil {
-				file.Close()
+				file.Close() //nolint:errcheck
 				return nil, err
 			}
 
@@ -108,7 +108,7 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 		default: // .lit and any other extension: PEG parser
 			result, err := ast.ParseReader(path, file)
 			if err != nil {
-				file.Close()
+				file.Close() //nolint:errcheck
 
 				astErr, ok := ast.UnpackError(err)
 				if !ok {

@@ -36,9 +36,9 @@ func (con List) String() string {
 		}
 
 		if con.Ordered {
-			str.WriteString(fmt.Sprintf("%d. %s\n\n", i+1, text))
+			fmt.Fprintf(&str, "%d. %s\n\n", i+1, text)
 		} else {
-			str.WriteString(fmt.Sprintf("* %s\n\n", text))
+			fmt.Fprintf(&str, "* %s\n\n", text)
 		}
 	}
 

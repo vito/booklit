@@ -205,13 +205,13 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Con
 
 func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {
 	var str strings.Builder
-	str.WriteString(fmt.Sprintf(`\%s`, invoke.Function))
+	fmt.Fprintf(&str, `\%s`, invoke.Function)
 
 	for _, arg := range invoke.Arguments {
 		str.WriteString("{")
 
 		for _, n := range arg.(ast.Sequence) {
-			str.WriteString(fmt.Sprintf("%s", n))
+			fmt.Fprintf(&str, "%s", n)
 		}
 
 		str.WriteString("}")

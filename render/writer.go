@@ -125,7 +125,7 @@ func (writer Writer) writeSingleSection(section *booklit.Section) error {
 		return err
 	}
 
-	defer file.Close()
+	defer file.Close() //nolint:errcheck
 
 	logrus.WithFields(logrus.Fields{
 		"section":  section.Path,

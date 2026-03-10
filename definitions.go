@@ -22,7 +22,7 @@ func (con Definitions) IsFlow() bool {
 func (con Definitions) String() string {
 	var text strings.Builder
 	for _, def := range con {
-		text.WriteString(fmt.Sprintf("%s: %s\n", def.Subject, def.Definition))
+		fmt.Fprintf(&text, "%s: %s\n", def.Subject, def.Definition)
 	}
 
 	text.WriteString("\n")

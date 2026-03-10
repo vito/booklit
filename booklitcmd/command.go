@@ -90,7 +90,7 @@ func (cmd *Command) Execute(args []string) error {
 			return err
 		}
 
-		defer profFile.Close()
+		defer profFile.Close() //nolint:errcheck
 
 		pprof.StartCPUProfile(profFile) // nolint:errcheck
 		defer pprof.StopCPUProfile()
