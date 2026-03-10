@@ -26,7 +26,7 @@
         
           <li><a href="plugins.html">Plugins</a></li>
         
-          <li><a href="booklit-syntax.html">Syntax</a></li>
+          <li><a href="syntax.html">Syntax</a></li>
         
           <li><a href="thanks.html">Thanks</a></li>
         
@@ -201,7 +201,7 @@
   <pre class="definition-thumb"><a id="code"></a><code class="highlight"><code style=";-webkit-text-size-adjust:none;"><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#code">code</a></span>{<em>text</em>}</code></code></pre>
 
   <div class="definition-content">
-    <p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a single line, it is presented as inline code. If it is in paragraph form, it is presented as its own block. See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>This is often used with <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to produce verbatim content (in addition to preserving whitespace). See <a href="booklit-syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>You can also use Markdown backticks for inline code: <code>`code bits`</code>.</p><p>For example:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>I&#39;m a sentence with some <span style="color:#fcc21b">`</span>code bits<span style="color:#fcc21b">`</span> in it.
+    <p>Present <em>text</em> in a monospace font upon rendering.</p><p>If <em>text</em> is a single line, it is presented as inline code. If it is in paragraph form, it is presented as its own block. See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>This is often used with <code>{{two}}</code> braces to preserve whitespace, or <code>{{{three}}}</code> to produce verbatim content (in addition to preserving whitespace). See <a href="syntax.html#function-syntax">Function Syntax</a> for more information.</p><p>You can also use Markdown backticks for inline code: <code>`code bits`</code>.</p><p>For example:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>I&#39;m a sentence with some <span style="color:#fcc21b">`</span>code bits<span style="color:#fcc21b">`</span> in it.
 </span></span></code></pre></div></div><p>...renders as:</p><p>I&#39;m a sentence with some <code>code bits</code> in it.</p><p>While, this example:</p><div class="lit-syntax"><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#ed6c30;font-weight:bold">\<a href="baselit.html#code">code</a></span>{{
 </span></span><span style="display:flex;"><span>  This is a code block.
 </span></span><span style="display:flex;"><span>}}

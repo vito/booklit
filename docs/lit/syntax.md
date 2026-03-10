@@ -1,6 +1,6 @@
 \use-plugin{booklitdoc}
 
-# Syntax {#booklit-syntax}
+# Syntax {#syntax}
 
 Booklit documents are Markdown files extended with a special syntax for
 \reference{function-syntax}{function calls}. Standard Markdown formatting
