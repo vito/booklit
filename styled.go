@@ -22,6 +22,8 @@ type Style string
 // Common styled templated names.
 const (
 	StyleVerbatim    Style = "verbatim"
+	StyleCodeBlock   Style = "code-block"
+	StyleCodeFlow    Style = "code-flow"
 	StyleItalic      Style = "italic"
 	StyleBold        Style = "bold"
 	StyleLarger      Style = "larger"

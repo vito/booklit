@@ -1,21 +1,11 @@
-// Package chroma provides a basic plugin for implementing syntax highlighting
-// using Chroma (https://github.com/alecthomas/chroma).
+// Package chroma provides an advanced plugin for syntax highlighting with
+// support for content transformers (e.g. linkifying function names).
 //
-// To use this plugin, pass `--plugin github.com/vito/booklit/chroma/plugin`
-// and use it like so:
+// For basic syntax highlighting, use baselit's built-in \code-block or
+// \syntax functions instead — no plugin needed.
 //
-//	\use-plugin{chroma}
-//
-//	\syntax{go}{{{
-//	package chroma
-//
-//	// ...
-//	}}}
-//
-// An optional style name may be specified as the third argument. To use a
-// custom style you may write your own plugin that embeds this plugin, or
-// re-assign github.com/alecthomas/chroma/styles.Fallback to change the
-// default.
+// This plugin is useful when you need SyntaxTransform with custom Transformers
+// to post-process highlighted output.
 package chroma
 
 import (
@@ -25,31 +15,28 @@ import (
 	"github.com/alecthomas/chroma/v2"
 	"github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/alecthomas/chroma/v2/lexers"
-	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/vito/booklit"
+	"github.com/vito/booklit/baselit"
 )
 
 func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
 		section: section,
+		base:    baselit.NewPlugin(section).(baselit.Plugin),
 	}
 }
 
 type Plugin struct {
 	section *booklit.Section
+	base    baselit.Plugin
 }
 
 func (plugin Plugin) CodeBlock(language string, code booklit.Content, styleName ...string) (booklit.Content, error) {
-	return plugin.Syntax(language, code, styleName...)
+	return plugin.base.CodeBlock(language, code, styleName...)
 }
 
 func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...string) (booklit.Content, error) {
-	chromaStyle := styles.Fallback
-	if len(styleName) > 0 {
-		chromaStyle = styles.Get(styleName[0])
-	}
-
-	return plugin.SyntaxTransform(language, code, chromaStyle)
+	return plugin.base.Syntax(language, code, styleName...)
 }
 
 type Transformer struct {
@@ -105,9 +92,9 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 
 	var style booklit.Style
 	if code.IsFlow() {
-		style = "code-flow"
+		style = booklit.StyleCodeFlow
 	} else {
-		style = "code-block"
+		style = booklit.StyleCodeBlock
 	}
 
 	highlighted := booklit.Sequence{booklit.String(buf.String())}
