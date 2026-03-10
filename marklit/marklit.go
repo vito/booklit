@@ -1,4 +1,4 @@
-// Package marklit parses Markdown documents with Booklit @invoke extensions
+// Package marklit parses Markdown documents with Booklit \invoke extensions
 // and produces Booklit AST nodes.
 package marklit
 
@@ -20,7 +20,7 @@ func Parse(source []byte) ast.Node {
 
 // ParseInlineArg parses inline argument content (single-line, no block
 // elements) into a Booklit AST node. Used for parsing the content inside
-// @invoke{...} braces.
+// \invoke{...} braces.
 //
 // Unlike Parse, this unwraps single-paragraph results so that inline
 // arguments produce flat content rather than block-wrapped content.
@@ -35,7 +35,7 @@ func ParseInlineArg(source []byte) ast.Node {
 
 	// Goldmark trims leading/trailing whitespace from paragraph text.
 	// In Booklit inline args, whitespace is significant (e.g.
-	// @aux{The } needs the trailing space). Restore any stripped
+	// \aux{The } needs the trailing space). Restore any stripped
 	// whitespace by comparing against the original source.
 	leading := leadingWhitespace(source)
 	trailing := trailingWhitespace(source)
@@ -94,7 +94,7 @@ func unwrapInlineResult(node ast.Node) ast.Node {
 }
 
 // ParseArg parses a full argument (may contain block elements, paragraphs,
-// etc.) into a Booklit AST node. Used for block-level @invoke arguments.
+// etc.) into a Booklit AST node. Used for block-level \invoke arguments.
 //
 // Leading common indentation is stripped after preprocessing (which extracts
 // {{{...}}} verbatim blocks) but before goldmark parsing. This prevents
@@ -155,7 +155,7 @@ func newParser() parser.Parser {
 	)
 }
 
-// Extension is a goldmark.Extender that adds Booklit @invoke syntax support.
+// Extension is a goldmark.Extender that adds Booklit \invoke syntax support.
 type Extension struct{}
 
 // Extend implements goldmark.Extender.

@@ -10,7 +10,7 @@ import (
 // KindInvoke is a NodeKind for Booklit function invocations.
 var KindInvoke = gast.NewNodeKind("BooklitInvoke")
 
-// InvokeNode represents an @function{arg1}{arg2} invocation in the goldmark
+// InvokeNode represents a \function{arg1}{arg2} invocation in the goldmark
 // AST. Each argument is stored as a child node.
 type InvokeNode struct {
 	gast.BaseInline
@@ -59,7 +59,7 @@ func NewInvokeNode(function string) *InvokeNode {
 // KindInvokeBlock is a NodeKind for block-level Booklit invocations.
 var KindInvokeBlock = gast.NewNodeKind("BooklitInvokeBlock")
 
-// InvokeBlockNode represents a block-level @function{...} invocation.
+// InvokeBlockNode represents a block-level \function{...} invocation.
 // This is used when an invocation starts at the beginning of a line and
 // should be treated as block content rather than inline.
 type InvokeBlockNode struct {

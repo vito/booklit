@@ -89,8 +89,8 @@ func (c *converter) convertDocument(n gast.Node) ast.Node {
 	}
 
 	// Build the result: content before the first heading is top-level body,
-	// the first heading at titleLevel is the @title call, deeper headings
-	// create @section blocks.
+	// the first heading at titleLevel is the \title call, deeper headings
+	// create \section blocks.
 	return c.structureSections(children, titleLevel)
 }
 
@@ -101,7 +101,7 @@ type sectionChild struct {
 }
 
 // structureSections takes a flat list of goldmark children and a "title level"
-// and produces a Booklit AST with proper @title and @section nesting.
+// and produces a Booklit AST with proper \title and \section nesting.
 func (c *converter) structureSections(children []sectionChild, titleLevel int) ast.Node {
 	var result []ast.Node
 
@@ -120,7 +120,7 @@ func (c *converter) structureSections(children []sectionChild, titleLevel int) a
 		i++
 	}
 
-	// First heading at titleLevel → @title invocation
+	// First heading at titleLevel → \title invocation
 	if i < len(children) && children[i].heading != nil && children[i].heading.Level == titleLevel {
 		result = append(result, c.headingToTitle(children[i].heading))
 		i++
@@ -146,7 +146,7 @@ func (c *converter) structureSections(children []sectionChild, titleLevel int) a
 			result = append(result, sectionNode)
 		} else if ch.heading != nil && ch.heading.Level == titleLevel {
 			// Another heading at the same level — this would be unusual
-			// in a single document but handle it as another @title
+			// in a single document but handle it as another \title
 			result = append(result, c.headingToTitle(ch.heading))
 			i++
 		} else {
@@ -169,8 +169,8 @@ func (c *converter) structureSections(children []sectionChild, titleLevel int) a
 	}
 }
 
-// buildSection creates a @section{...} invoke from a group of children
-// starting with a heading. The heading becomes the @title inside the section;
+// buildSection creates a \section{...} invoke from a group of children
+// starting with a heading. The heading becomes the \title inside the section;
 // deeper headings create nested sub-sections.
 func (c *converter) buildSection(children []sectionChild, headingLevel int) ast.Node {
 	// The section body is built by recursively structuring the children
@@ -182,7 +182,7 @@ func (c *converter) buildSection(children []sectionChild, headingLevel int) ast.
 	}}}
 }
 
-// headingToTitle converts a goldmark Heading into a @title invocation.
+// headingToTitle converts a goldmark Heading into a \title invocation.
 // If the heading has an {#id} attribute, it becomes the tag argument.
 func (c *converter) headingToTitle(h *gast.Heading) ast.Node {
 	titleContent := c.collectInlines(h)
@@ -281,7 +281,7 @@ func (c *converter) convertParagraph(n gast.Node) ast.Node {
 	// was a separate statement. Goldmark groups consecutive lines into one
 	// paragraph, so we split them back into individual paragraphs. This
 	// prevents spurious <p> </p> when side-effect-only calls like
-	// @use-plugin return empty content (the soft-break space between them
+	// \use-plugin return empty content (the soft-break space between them
 	// would otherwise persist).
 	if invokes := c.splitInvokeOnlyParagraph(n); invokes != nil {
 		return invokes
@@ -402,9 +402,11 @@ func stripBackslashEscapes(b []byte) []byte {
 		return b
 	}
 	var out []byte
-	for i := range b {
+	for i := 0; i < len(b); i++ {
 		if b[i] == '\\' && i+1 < len(b) && isASCIIPunct(b[i+1]) {
-			// Skip the escape backslash; the next char will be appended
+			// Skip the escape backslash; emit the escaped char directly
+			i++
+			out = append(out, b[i])
 			continue
 		}
 		out = append(out, b[i])
@@ -525,8 +527,8 @@ func (c *converter) tryResolvePlaceholder(text string) ast.Node {
 
 func (c *converter) convertHeading(h *gast.Heading) ast.Node {
 	// When a heading is encountered outside of document-level section
-	// structuring (e.g. inside a blockquote or an @invoke arg), it
-	// falls back to a simple @title invocation.
+	// structuring (e.g. inside a blockquote or an \invoke arg), it
+	// falls back to a simple \title invocation.
 	return c.headingToTitle(h)
 }
 
@@ -727,7 +729,7 @@ func (c *converter) convertInvoke(n *InvokeNode) ast.Node {
 			argNode = ParsePreformattedArg(raw)
 		default:
 			// Parse the argument content as Markdown to get nested Booklit
-			// nodes. This allows things like @title{Hello *world*} to work.
+			// nodes. This allows things like \title{Hello *world*} to work.
 			argNode = ParseInlineArg(raw)
 		}
 
