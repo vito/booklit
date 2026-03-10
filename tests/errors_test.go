@@ -46,15 +46,15 @@ var _ = DescribeTable("Booklit", (Example).Run,
 See also \reference{dupe-tag}{this tag}.
 
 \section{
-\title{First Tag}
+	\title{First Tag}
 
-\target{dupe-tag}{I'm the first tag.}
+	\target{dupe-tag}{I'm the first tag.}
 }
 
 \section{
-\title{Second Tag}
+	\title{Second Tag}
 
-\target{dupe-tag}{I'm the second tag.}
+	\target{dupe-tag}{I'm the second tag.}
 }
 `,
 

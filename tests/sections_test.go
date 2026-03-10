@@ -11,15 +11,15 @@ var _ = DescribeTable("Booklit", (Example).Run,
 How are you?
 
 \section{
-\title{How I'm doing}
+	\title{How I'm doing}
 
-Good, thanks! And you?
+	Good, thanks! And you?
 }
 
 \section{
-\title{Their Reply}
+	\title{Their Reply}
 
-Good, thanks!
+	Good, thanks!
 }
 `,
 
@@ -102,17 +102,17 @@ Good, thanks!
 
 How are you?
 
-\include-section{how-im-doing.md}
+\include-section{how-im-doing.lit}
 
 \section{
-\title{Their Reply}
+	\title{Their Reply}
 
-Good, thanks!
+	Good, thanks!
 }
 `,
 
 		Inputs: Files{
-			"how-im-doing.md": `\title{How I'm doing}
+			"how-im-doing.lit": `\title{How I'm doing}
 
 Good, thanks! And you?
 `,
@@ -141,37 +141,37 @@ Good, thanks! And you?
 
 How are you?
 
-\include-section{./sub-path/how-im-doing.md}
+\include-section{./sub-path/how-im-doing.lit}
 
 \section{
-\title{Their Reply}
+	\title{Their Reply}
 
-Good, thanks!
+	Good, thanks!
 }
 `,
 
 		Inputs: Files{
-			"sub-path/how-im-doing.md": `\title{How I'm doing}
+			"sub-path/how-im-doing.lit": `\title{How I'm doing}
 
 Good, thanks! And you?
 
-\include-section{another-section.md}
+\include-section{another-section.lit}
 `,
 
-			"sub-path/another-section.md": `\title{My Response}
+			"sub-path/another-section.lit": `\title{My Response}
 
 Not bad, not bad.
 
 \section{
-\title{Including in an Inline Section}
+	\title{Including in an Inline Section}
 
-That's great.
+	That's great.
 
-\include-section{yet-another-section.md}
+	\include-section{yet-another-section.lit}
 }
 `,
 
-			"sub-path/yet-another-section.md": `\title{Their Response to My Response}
+			"sub-path/yet-another-section.lit": `\title{Their Response to My Response}
 
 Sick.
 `,
@@ -213,19 +213,19 @@ Sick.
 How are you?
 
 \section{
-\title{How I'm doing}
+	\title{How I'm doing}
+
+	\section{
+		\title{After Much Deliberation}
+
+		I have decided that I'm doing well. How about you?
+	}
+}
 
 \section{
-\title{After Much Deliberation}
+	\title{Their Reply}
 
-I have decided that I'm doing well. How about you?
-}
-}
-
-\section{
-\title{Their Reply}
-
-Good, thanks!
+	Good, thanks!
 }
 `,
 
@@ -257,9 +257,9 @@ How are you?
 \split-sections
 
 \section{
-\title{How I'm Doing}
+	\title{How I'm Doing}
 
-Good, thanks!
+	Good, thanks!
 }
 `,
 
@@ -285,47 +285,46 @@ Good, thanks!
 How are you? See \reference{deep-inlined}.
 
 \single-page
-
 \split-sections
 
 \section{
-\title{Section A}
+	\title{Section A}
 
-\split-sections
+	\split-sections
 
-Blah blah in section A.
+	Blah blah in section A.
 
-\section{
-\title{Nested Section}
+	\section{
+		\title{Nested Section}
 
-Good, thanks!
-}
-}
-
-\section{
-\title{Section B}
-
-Blah blah in section B.
-
-\section{
-\title{Nested Section 2}
-
-Foo bar.
+		Good, thanks!
+	}
 }
 
 \section{
-\title{Nested Section 3}
+	\title{Section B}
 
-\split-sections
+	Blah blah in section B.
 
-Fizz buzz.
+	\section{
+		\title{Nested Section 2}
 
-\section{
-\title{Super Duple Wrapped}{deep-inlined}
+		Foo bar.
+	}
 
-Whoooooa.
-}
-}
+	\section{
+		\title{Nested Section 3}
+
+		\split-sections
+
+		Fizz buzz.
+
+		\section{
+			\title{Super Duple Wrapped}{deep-inlined}
+
+			Whoooooa.
+		}
+	}
 }
 `,
 
@@ -369,17 +368,17 @@ Whoooooa.
 How are you?
 
 \section{
-\title{How I'm Doing}
+	\title{How I'm Doing}
 
-\split-sections
+	\split-sections
 
-Good, thanks!
+	Good, thanks!
 
-\section{
-\title{Nested Section}
+	\section{
+		\title{Nested Section}
 
-Sup.
-}
+		Sup.
+	}
 }
 `,
 
@@ -413,41 +412,41 @@ How are you?
 This is some more content.
 
 \section{
-\title{Top Section A}
+	\title{Top Section A}
 
-Foo bar.
+	Foo bar.
 
-\section{
-\title{Nested Section}
+	\section{
+		\title{Nested Section}
 
-Fizz buzz.
+		Fizz buzz.
+	}
+
+	\section{
+		\title{Another Nested Section}
+
+		Fiddlesticks.
+	}
+
+	\section{
+		\title{Section with Omitted Children}
+
+		I omit my children.
+
+		\omit-children-from-table-of-contents
+
+		\section{
+			\title{Invisible Child}
+
+			Boo!
+		}
+	}
 }
 
 \section{
-\title{Another Nested Section}
+	\title{Top Section B}
 
-Fiddlesticks.
-}
-
-\section{
-\title{Section with Omitted Children}
-
-I omit my children.
-
-\omit-children-from-table-of-contents
-
-\section{
-\title{Invisible Child}
-
-Boo!
-}
-}
-}
-
-\section{
-\title{Top Section B}
-
-Fiddlesticks is as far as I go.
+	Fiddlesticks is as far as I go.
 }
 `,
 
@@ -509,23 +508,23 @@ Fiddlesticks is as far as I go.
 How are you?
 
 \section{
-\title{How I'm doing}
+	\title{How I'm doing}
 
-\styled{sub-template}
+	\styled{sub-template}
 
-Good, thanks! And you?
+	Good, thanks! And you?
+
+	\section{
+		\title{After Much Deliberation}
+
+		I have decided that I'm doing well. How about you?
+	}
+}
 
 \section{
-\title{After Much Deliberation}
+	\title{Their Reply}
 
-I have decided that I'm doing well. How about you?
-}
-}
-
-\section{
-\title{Their Reply}
-
-Good, thanks!
+	Good, thanks!
 }
 `,
 

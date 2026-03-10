@@ -12,7 +12,7 @@ var _ = DescribeTable("Partials", (Example).Run,
 I want to be some body.
 
 \set-partial{FooBar}{
-I'm a partial!
+	I'm a partial!
 }
 
 Some more body.
@@ -44,11 +44,11 @@ Some more body.
 I want to be some body.
 
 \set-partial{FooBar}{
-\target{some-target}{Hello.}
+	\target{some-target}{Hello.}
 
-I'm a partial!
+	I'm a partial!
 
-\reference{set-partial-read-template}
+	\reference{set-partial-read-template}
 }
 
 Some more body. \reference{some-target}
