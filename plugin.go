@@ -9,9 +9,7 @@ import "github.com/sirupsen/logrus"
 // by function calling syntax in Booklit documents.
 //
 // See https://booklit.page/plugins.html for more information.
-type Plugin interface {
-	// methods are dynamically invoked
-}
+type Plugin any
 
 // PluginFactory constructs a Plugin for a given Section.
 type PluginFactory func(*Section) Plugin

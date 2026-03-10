@@ -1,19 +1,21 @@
 package booklit
 
+import "strings"
+
 // Preformatted is block content representing preformatted text, e.g. a code
 // block.
 type Preformatted []Content
 
 // String summarizes the content for debugging purposes.
 func (con Preformatted) String() string {
-	str := ""
+	var str strings.Builder
 
 	for _, seq := range con {
-		str += seq.String()
-		str += "\n"
+		str.WriteString(seq.String())
+		str.WriteString("\n")
 	}
 
-	return str
+	return str.String()
 }
 
 // IsFlow returns false.

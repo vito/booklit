@@ -1,12 +1,12 @@
 package tests
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega" //nolint:staticcheck // dot import is idiomatic for gomega
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
@@ -19,8 +19,9 @@ type Example struct {
 	Inputs      Files
 	Outputs     Files
 	SearchIndex string
-	LoadErr     interface{}
-	RenderErr   interface{}
+	LoadErr     any
+	RenderErr   any
+	Ext         string // file extension, defaults to ".md"
 }
 
 type Files map[string]string
@@ -32,21 +33,26 @@ func (example Example) Run() {
 		baselit.NewPlugin,
 	}
 
-	dir, err := ioutil.TempDir("", "booklit-tests")
+	dir, err := os.MkdirTemp("", "booklit-tests")
 	Expect(err).ToNot(HaveOccurred())
 
-	defer os.RemoveAll(dir)
+	defer os.RemoveAll(dir) //nolint:errcheck
 
-	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+".lit")
+	ext := example.Ext
+	if ext == "" {
+		ext = ".md"
+	}
 
-	err = ioutil.WriteFile(sectionPath, []byte(example.Input), 0644)
+	sectionPath := filepath.Join(dir, ginkgo.CurrentSpecReport().LeafNodeText+ext)
+
+	err = os.WriteFile(sectionPath, []byte(example.Input), 0644)
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Inputs {
 		err := os.MkdirAll(filepath.Join(dir, filepath.Dir(file)), 0755)
 		Expect(err).ToNot(HaveOccurred())
 
-		err = ioutil.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
+		err = os.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
 		Expect(err).ToNot(HaveOccurred())
 	}
 
@@ -77,7 +83,7 @@ func (example Example) Run() {
 	Expect(err).ToNot(HaveOccurred())
 
 	for file, contents := range example.Outputs {
-		fileContents, err := ioutil.ReadFile(filepath.Join(dir, file))
+		fileContents, err := os.ReadFile(filepath.Join(dir, file))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchXML(contents))
 	}
@@ -86,7 +92,7 @@ func (example Example) Run() {
 		err := writer.WriteSearchIndex(section, "search_index.json")
 		Expect(err).ToNot(HaveOccurred())
 
-		fileContents, err := ioutil.ReadFile(filepath.Join(dir, "search_index.json"))
+		fileContents, err := os.ReadFile(filepath.Join(dir, "search_index.json"))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(string(fileContents)).To(MatchJSON(example.SearchIndex))
 	}
@@ -97,11 +103,12 @@ func (example Example) Run() {
 // NB: this is really just to cut down on "missing" non-critical test
 // coverage. this should recursively stringify all the content.
 func stringifyEverything(section *booklit.Section) string {
-	str := section.String() + " " + section.Body.String()
+	var str strings.Builder
+	str.WriteString(section.String() + " " + section.Body.String())
 
 	for _, sub := range section.Children {
-		str += stringifyEverything(sub)
+		str.WriteString(stringifyEverything(sub))
 	}
 
-	return str
+	return str.String()
 }

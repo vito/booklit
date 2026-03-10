@@ -1,5 +1,7 @@
 package booklit
 
+import "strings"
+
 // Table is block content containing tabular data, i.e. rows and columns.
 type Table struct {
 	Rows [][]Content
@@ -12,19 +14,20 @@ func (con Table) IsFlow() bool {
 
 // String summarizes the content for debugging purposes.
 func (con Table) String() string {
-	var text string
+	var text strings.Builder
 	for _, cols := range con.Rows {
-		row := "|"
+		var row strings.Builder
+		row.WriteString("|")
 		for _, col := range cols {
-			row += " " + col.String() + " |"
+			row.WriteString(" " + col.String() + " |")
 		}
 
-		text += row + "\n"
+		text.WriteString(row.String() + "\n")
 	}
 
-	text += "\n"
+	text.WriteString("\n")
 
-	return text
+	return text.String()
 }
 
 // Visit calls VisitTable.

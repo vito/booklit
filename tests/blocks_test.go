@@ -157,4 +157,30 @@ var _ = DescribeTable("Blocks", (Example).Run,
 </section>`,
 		},
 	}),
+
+	Entry("markdown tables", Example{
+		Input: `\title{Hello, world!}
+
+| a | 1 |
+| --- | --- |
+| b | 2 |
+`,
+
+		Outputs: Files{
+			"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+<table>
+	<tr>
+		<td>a</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>b</td>
+		<td>2</td>
+	</tr>
+</table>
+</section>`,
+		},
+	}),
 )

@@ -1,5 +1,7 @@
 package booklit
 
+import "strings"
+
 import "fmt"
 
 // Definitions is a list of definitions, e.g. a glossary.
@@ -18,14 +20,14 @@ func (con Definitions) IsFlow() bool {
 
 // String summarizes the content for debugging purposes.
 func (con Definitions) String() string {
-	var text string
+	var text strings.Builder
 	for _, def := range con {
-		text += fmt.Sprintf("%s: %s\n", def.Subject, def.Definition)
+		fmt.Fprintf(&text, "%s: %s\n", def.Subject, def.Definition)
 	}
 
-	text += "\n"
+	text.WriteString("\n")
 
-	return text
+	return text.String()
 }
 
 // Visit calls VisitDefinitions.

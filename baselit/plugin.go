@@ -4,9 +4,14 @@
 package baselit
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 )
@@ -119,6 +124,63 @@ func (plugin Plugin) Code(content booklit.Content) booklit.Content {
 		Content: content,
 		Style:   booklit.StyleVerbatim,
 	}
+}
+
+func (plugin Plugin) CodeBlock(language string, code booklit.Content, styleName ...string) (booklit.Content, error) {
+	return plugin.Syntax(language, code, styleName...)
+}
+
+func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...string) (booklit.Content, error) {
+	chromaStyle := styles.Fallback
+	if len(styleName) > 0 {
+		chromaStyle = styles.Get(styleName[0])
+	}
+
+	return plugin.syntaxHighlight(language, code, chromaStyle)
+}
+
+func (plugin Plugin) syntaxHighlight(language string, code booklit.Content, chromaStyle *chroma.Style) (booklit.Content, error) {
+	lexer := lexers.Get(language)
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+
+	iterator, err := lexer.Tokenise(nil, code.String())
+	if err != nil {
+		return nil, err
+	}
+
+	var formatter *html.Formatter
+	if code.IsFlow() {
+		formatter = html.New(html.InlineCode(true))
+	} else {
+		formatter = html.New()
+	}
+
+	buf := new(bytes.Buffer)
+	err = formatter.Format(buf, chromaStyle, iterator)
+	if err != nil {
+		return nil, err
+	}
+
+	var style booklit.Style
+	if code.IsFlow() {
+		style = booklit.StyleCodeFlow
+	} else {
+		style = booklit.StyleCodeBlock
+	}
+
+	return booklit.Styled{
+		Style: style,
+		Block: !code.IsFlow(),
+		Content: booklit.Styled{
+			Style:   "raw-html",
+			Content: booklit.String(buf.String()),
+		},
+		Partials: booklit.Partials{
+			"Language": booklit.String(language),
+		},
+	}, nil
 }
 
 func (plugin Plugin) Italic(content booklit.Content) booklit.Content {

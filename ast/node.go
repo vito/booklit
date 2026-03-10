@@ -55,11 +55,11 @@ func (node Invoke) Visit(visitor Visitor) error {
 // Method returns a method name by splitting Function on '-' and title-casing
 // each word.
 func (node Invoke) Method() string {
-	camel := ""
+	var camel strings.Builder
 	for _, word := range strings.Split(node.Function, "-") {
-		camel += cases.Title(language.AmericanEnglish).String(word)
+		camel.WriteString(cases.Title(language.AmericanEnglish).String(word))
 	}
-	return camel
+	return camel.String()
 }
 
 // Sequence represents adjacent nodes typically within a single

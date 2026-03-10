@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 )
 
-var _ = DescribeTable("Blocks", (Example).Run,
+var _ = DescribeTable("Comments", (Example).Run,
 	Entry("inline comments", Example{
 		Input: `\title{Hello, world!}
 

@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/segmentio/textio"
@@ -51,15 +50,18 @@ func init() {
 		},
 	})
 
-	for _, asset := range errhtml.AssetNames() {
-		info, err := errhtml.AssetInfo(asset)
+	entries, err := errhtml.Assets.ReadDir(".")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, entry := range entries {
+		content, err := errhtml.Assets.ReadFile(entry.Name())
 		if err != nil {
 			panic(err)
 		}
 
-		content := strings.TrimRight(string(errhtml.MustAsset(asset)), "\n")
-
-		_, err = errorTmpl.New(filepath.Base(info.Name())).Parse(content)
+		_, err = errorTmpl.New(entry.Name()).Parse(strings.TrimRight(string(content), "\n"))
 		if err != nil {
 			panic(err)
 		}
@@ -73,7 +75,7 @@ func init() {
 func ErrorResponse(w http.ResponseWriter, err error) {
 	renderErr := errorTmpl.Lookup("page.tmpl").Execute(w, err)
 	if renderErr != nil {
-		fmt.Fprintf(w, "failed to render error page: %s", renderErr)
+		fmt.Fprintf(w, "failed to render error page: %s", renderErr) //nolint:errcheck
 	}
 }
 
@@ -105,8 +107,8 @@ func (err ParseError) Error() string {
 // PrettyPrint prints the error message followed by a snippet of the source
 // location where the error occurred.
 func (err ParseError) PrettyPrint(out io.Writer) {
-	fmt.Fprintln(out, err.Annotate("%s", err))
-	fmt.Fprintln(out)
+	fmt.Fprintln(out, err.Annotate("%s", err))  //nolint:errcheck
+	fmt.Fprintln(out)                            //nolint:errcheck
 	err.AnnotateLocation(out)
 }
 
@@ -133,20 +135,20 @@ func (err UnknownTagError) Error() string {
 // PrettyPrint prints the error message, a snippet of the source code where the
 // error occurred, and suggests similar tags.
 func (err UnknownTagError) PrettyPrint(out io.Writer) {
-	fmt.Fprintln(out, err.Annotate("%s", err))
-	fmt.Fprintln(out)
+	fmt.Fprintln(out, err.Annotate("%s", err)) //nolint:errcheck
+	fmt.Fprintln(out)                           //nolint:errcheck
 	err.AnnotateLocation(out)
 
 	if len(err.SimilarTags) == 0 {
-		fmt.Fprintf(out, "I couldn't find any similar tags. :(\n")
+		fmt.Fprintf(out, "I couldn't find any similar tags. :(\n") //nolint:errcheck
 	} else {
-		fmt.Fprintf(out, "These tags seem similar:\n\n")
+		fmt.Fprintf(out, "These tags seem similar:\n\n") //nolint:errcheck
 
 		for _, tag := range err.SimilarTags {
-			fmt.Fprintf(out, "- %s\n", tag.Name)
+			fmt.Fprintf(out, "- %s\n", tag.Name) //nolint:errcheck
 		}
 
-		fmt.Fprintf(out, "\nDid you mean one of these?\n")
+		fmt.Fprintf(out, "\nDid you mean one of these?\n") //nolint:errcheck
 	}
 }
 
@@ -177,18 +179,18 @@ func (err AmbiguousReferenceError) Error() string {
 // error occurred, and snippets for the definition location of each tag that
 // was found.
 func (err AmbiguousReferenceError) PrettyPrint(out io.Writer) {
-	fmt.Fprintln(out, err.Annotate("%s", err))
-	fmt.Fprintln(out)
+	fmt.Fprintln(out, err.Annotate("%s", err)) //nolint:errcheck
+	fmt.Fprintln(out)                           //nolint:errcheck
 	err.AnnotateLocation(out)
 
-	fmt.Fprintf(out, "The same tag was defined in the following locations:\n\n")
+	fmt.Fprintf(out, "The same tag was defined in the following locations:\n\n") //nolint:errcheck
 
 	for _, loc := range err.DefinedLocations {
-		fmt.Fprintf(out, "- %s:\n", loc.FilePath)
+		fmt.Fprintf(out, "- %s:\n", loc.FilePath) //nolint:errcheck
 		loc.AnnotateLocation(textio.NewPrefixWriter(out, "  "))
 	}
 
-	fmt.Fprintf(out, "Tags must be unique so I know where to link to!\n")
+	fmt.Fprintf(out, "Tags must be unique so I know where to link to!\n") //nolint:errcheck
 }
 
 // PrettyHTML renders a HTML template containing the error message, a snippet
@@ -217,8 +219,8 @@ func (err UndefinedFunctionError) Error() string {
 // PrettyPrint prints the error message and a snippet of the source code where
 // the error occurred.
 func (err UndefinedFunctionError) PrettyPrint(out io.Writer) {
-	fmt.Fprintln(out, err.Annotate("%s", err))
-	fmt.Fprintln(out)
+	fmt.Fprintln(out, err.Annotate("%s", err)) //nolint:errcheck
+	fmt.Fprintln(out)                           //nolint:errcheck
 	err.AnnotateLocation(out)
 }
 
@@ -255,14 +257,14 @@ func (err FailedFunctionError) Error() string {
 //
 // Otherwise, the error is printed normally.
 func (err FailedFunctionError) PrettyPrint(out io.Writer) {
-	fmt.Fprintln(out, err.Annotate("function \\%s returned an error", err.Function))
-	fmt.Fprintln(out)
+	fmt.Fprintln(out, err.Annotate("function \\%s returned an error", err.Function)) //nolint:errcheck
+	fmt.Fprintln(out) //nolint:errcheck
 	err.AnnotateLocation(out)
 
 	if prettyErr, ok := err.Err.(PrettyError); ok {
 		prettyErr.PrettyPrint(textio.NewPrefixWriter(out, "  "))
 	} else {
-		fmt.Fprintf(out, "\x1b[33m%s\x1b[0m\n", err.Err)
+		fmt.Fprintf(out, "\x1b[33m%s\x1b[0m\n", err.Err) //nolint:errcheck
 	}
 }
 
@@ -295,14 +297,14 @@ func (err TitleTwiceError) Error() string {
 //
 // Otherwise, the error is printed normally.
 func (err TitleTwiceError) PrettyPrint(out io.Writer) {
-	fmt.Fprintln(out, err.Annotate("%s", err))
-	fmt.Fprintln(out)
+	fmt.Fprintln(out, err.Annotate("%s", err)) //nolint:errcheck
+	fmt.Fprintln(out) //nolint:errcheck
 	err.AnnotateLocation(out)
 
-	fmt.Fprintf(out, "The section's title was first set here:\n\n")
+	fmt.Fprintf(out, "The section's title was first set here:\n\n") //nolint:errcheck
 	err.TitleLocation.AnnotateLocation(out)
 
-	fmt.Fprintln(out, "Maybe the second \\title should be in a \\section{...}?")
+	fmt.Fprintln(out, "Maybe the second \\title should be in a \\section{...}?") //nolint:errcheck
 }
 
 // PrettyHTML renders an HTML template containing the error message followed by
@@ -323,7 +325,7 @@ type ErrorLocation struct {
 }
 
 // Annotate prepends the source location to the given message.
-func (loc ErrorLocation) Annotate(msg string, args ...interface{}) string {
+func (loc ErrorLocation) Annotate(msg string, args ...any) string {
 	if loc.NodeLocation.Line == 0 {
 		return fmt.Sprintf("%s: %s", loc.FilePath, fmt.Sprintf(msg, args...))
 	}
@@ -341,16 +343,16 @@ func (loc ErrorLocation) AnnotateLocation(out io.Writer) {
 
 	line, err := loc.lineInQuestion()
 	if err != nil {
-		fmt.Fprintln(out, err)
+		fmt.Fprintln(out, err) //nolint:errcheck
 		return
 	}
 
 	prefix := fmt.Sprintf("% 4d| ", loc.NodeLocation.Line)
 
-	fmt.Fprintf(out, "%s%s\n", prefix, line)
+	fmt.Fprintf(out, "%s%s\n", prefix, line) //nolint:errcheck
 
 	pad := strings.Repeat(" ", len(prefix)+loc.NodeLocation.Col-1)
-	fmt.Fprintf(out, "%s\x1b[31m%s\x1b[0m\n", pad, strings.Repeat("^", loc.Length))
+	fmt.Fprintf(out, "%s\x1b[31m%s\x1b[0m\n", pad, strings.Repeat("^", loc.Length)) //nolint:errcheck
 }
 
 type annotationData struct {
@@ -398,7 +400,7 @@ func (loc ErrorLocation) lineInQuestion() (string, error) {
 		return "", err
 	}
 
-	defer file.Close()
+	defer file.Close() //nolint:errcheck
 
 	buf := bufio.NewReader(file)
 

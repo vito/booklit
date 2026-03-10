@@ -24,7 +24,7 @@ func Main() {
 		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
 			os.Exit(0)
 		} else {
-			fmt.Fprintln(os.Stdout, err)
+			fmt.Fprintln(os.Stdout, err) //nolint:errcheck
 			os.Exit(1)
 		}
 	}

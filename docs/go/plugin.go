@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/alecthomas/chroma"
-	"github.com/alecthomas/chroma/styles"
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/baselit"
@@ -95,7 +95,7 @@ func (plugin Plugin) Columns(title booklit.Content, rest ...booklit.Content) boo
 
 func linkTransformer(sec *booklit.Section) chromap.Transformer {
 	return chromap.Transformer{
-		Pattern: regexp.MustCompile(`\\([a-z-]+)`),
+		Pattern: regexp.MustCompile(`\\([a-z][a-z0-9-]*)`),
 		Transform: func(invoke string) booklit.Content {
 			function := strings.TrimPrefix(invoke, `\`)
 
@@ -204,19 +204,20 @@ func (plugin Plugin) Define(node ast.Node, content booklit.Content) (booklit.Con
 }
 
 func (plugin Plugin) renderInvoke(invoke ast.Invoke) booklit.Content {
-	str := fmt.Sprintf(`\%s`, invoke.Function)
+	var str strings.Builder
+	fmt.Fprintf(&str, `\%s`, invoke.Function)
 
 	for _, arg := range invoke.Arguments {
-		str += "{"
+		str.WriteString("{")
 
 		for _, n := range arg.(ast.Sequence) {
-			str += fmt.Sprintf("%s", n)
+			fmt.Fprintf(&str, "%s", n)
 		}
 
-		str += "}"
+		str.WriteString("}")
 	}
 
-	return booklit.String(str)
+	return booklit.String(str.String())
 }
 
 func (plugin Plugin) DescribeFruit(

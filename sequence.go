@@ -1,5 +1,7 @@
 package booklit
 
+import "strings"
+
 // Sequence is a generic slice of content which will be concatenated together
 // upon rendering.
 type Sequence []Content
@@ -17,12 +19,12 @@ func (con Sequence) IsFlow() bool {
 
 // String summarizes the content for debugging purposes.
 func (con Sequence) String() string {
-	str := ""
+	var str strings.Builder
 	for _, content := range con {
-		str += content.String()
+		str.WriteString(content.String())
 	}
 
-	return str
+	return str.String()
 }
 
 // Contents returns the content as a slice.
