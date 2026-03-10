@@ -1,0 +1,58 @@
+"""
+CI/CD functions for the booklit project
+"""
+type Booklit {
+  let source: Directory! @defaultPath(path: "/") @ignorePatterns(patterns: [
+    ".dagger",
+    ".git",
+  ])
+
+  let base: Container! {
+    container
+      .from("golang:1.25-alpine")
+      .withMountedCache("/go/pkg/mod", cacheVolume("go-mod"))
+      .withMountedCache("/root/.cache/go-build", cacheVolume("go-build"))
+      .withDirectory("/app", source)
+      .withWorkdir("/app")
+  }
+
+  """
+  Build the booklit binary, with an optional version.
+  Returns the directory containing the built binary.
+  """
+  pub build(version: String! = "dev"): Directory! {
+    base
+      .withExec([
+        "go", "build",
+        "-ldflags", "-X github.com/vito/booklit.Version=" + version,
+        "-o", "booklit",
+        "./cmd/booklit",
+      ])
+      .directory("/app")
+  }
+
+  """
+  Run all Go tests in the project.
+  """
+  pub test: Void @check {
+    base
+      .withExec(["go", "test", "-v", "./..."])
+      .sync
+
+    null
+  }
+
+  """
+  Run golangci-lint against all Go code.
+  """
+  pub lint: Void @check {
+    container
+      .from("golangci/golangci-lint:latest")
+      .withDirectory("/app", source)
+      .withWorkdir("/app")
+      .withExec(["golangci-lint", "run", "./..."])
+      .sync
+
+    null
+  }
+}

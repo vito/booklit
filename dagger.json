@@ -1,8 +1,8 @@
 {
   "name": "booklit",
-  "engineVersion": "v0.18.9",
+  "engineVersion": "v0.20.1",
   "sdk": {
-    "source": "go"
+    "source": "github.com/vito/dang/dagger-sdk@e6229c6813215cf5651582578d51a6ecb497f5f5"
   },
   "source": ".dagger"
 }
