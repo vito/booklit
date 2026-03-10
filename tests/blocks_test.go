@@ -10,9 +10,11 @@ var _ = DescribeTable("Blocks", (Example).Run,
 		Input: `\title{Hello, world!}
 
 \list{a}{
-b
+	b
 }{
-\code{c}
+	\code{{
+	c
+	}}
 }
 `,
 
@@ -20,7 +22,7 @@ b
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<ul><li>a</li><li><p>b</p></li><li><p><code>c</code></p></li></ul>
+<ul><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ul>
 </section>`,
 		},
 	}),
@@ -29,9 +31,9 @@ b
 		Input: `\title{Hello, world!}
 
 \table{
-\table-row{a}{1}
+	\table-row{a}{1}
 }{
-\table-row{b}{2}
+	\table-row{b}{2}
 }
 `,
 
@@ -57,9 +59,9 @@ b
 		Input: `\title{Hello, world!}
 
 \definitions{
-\definition{a}{1}
+	\definition{a}{1}
 }{
-\definition{b}{2}
+	\definition{b}{2}
 }
 `,
 
@@ -82,7 +84,7 @@ b
 		Input: `\title{Hello, world!}
 
 \inset{
-Hello.
+	Hello.
 }
 `,
 
@@ -101,7 +103,7 @@ Hello.
 		Input: `\title{Hello, world!}
 
 \aside{
-Hello.
+	Hello.
 }
 `,
 
@@ -120,9 +122,11 @@ Hello.
 		Input: `\title{Hello, world!}
 
 \ordered-list{a}{
-b
+	b
 }{
-\code{c}
+	\code{{
+	c
+	}}
 }
 `,
 
@@ -130,7 +134,7 @@ b
 			"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<ol><li>a</li><li><p>b</p></li><li><p><code>c</code></p></li></ol>
+<ol><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ol>
 </section>`,
 		},
 	}),
@@ -141,7 +145,7 @@ b
 \use-plugin{arbitrary-style}
 
 \arbitrary-style{
-Sup!
+	Sup!
 }
 `,
 
