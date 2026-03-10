@@ -46,6 +46,7 @@ func (m *Booklit) Build(
 }
 
 // Test runs all Go tests in the project.
+// +check
 func (m *Booklit) Test(ctx context.Context) (string, error) {
 	return dag.Container().
 		From("golang:1.22-alpine").
@@ -56,6 +57,7 @@ func (m *Booklit) Test(ctx context.Context) (string, error) {
 }
 
 // Lint runs golangci-lint against all Go code.
+// +check
 func (m *Booklit) Lint(ctx context.Context) (string, error) {
 	return dag.Container().
 		From("golangci/golangci-lint:latest").
