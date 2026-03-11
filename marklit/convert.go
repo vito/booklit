@@ -559,6 +559,21 @@ func (c *converter) convertCodeSpan(n gast.Node) ast.Node {
 }
 
 func (c *converter) convertLink(l *gast.Link) ast.Node {
+	dest := string(l.Destination)
+
+	// [text](#tag) → \reference{tag}{text}
+	if len(dest) > 1 && dest[0] == '#' {
+		tag := dest[1:]
+		inner := c.collectInlines(l)
+		return ast.Invoke{
+			Function: "reference",
+			Arguments: []ast.Node{
+				ast.String(tag),
+				ast.Sequence(inner),
+			},
+		}
+	}
+
 	inner := c.collectInlines(l)
 	return ast.Invoke{
 		Function: "link",

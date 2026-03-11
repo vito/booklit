@@ -140,6 +140,7 @@ func newParser() parser.Parser {
 			append(
 				parser.DefaultInlineParsers(),
 				util.Prioritized(NewInvokeInlineParser(), 100),
+				util.Prioritized(NewReferenceInlineParser(), 99),
 			)...,
 		),
 		parser.WithParagraphTransformers(
@@ -163,6 +164,7 @@ func (e *Extension) Extend(md goldmark.Markdown) {
 	md.Parser().AddOptions(
 		parser.WithInlineParsers(
 			util.Prioritized(NewInvokeInlineParser(), 100),
+			util.Prioritized(NewReferenceInlineParser(), 99),
 		),
 	)
 }

@@ -77,6 +77,63 @@ func TestLink(t *testing.T) {
 	})
 }
 
+func TestReferenceShorthand(t *testing.T) {
+	node := marklit.Parse([]byte("[#foo]"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.Invoke{
+				Function:  "reference",
+				Arguments: []ast.Node{ast.Sequence{ast.String("foo")}},
+			},
+		},
+	})
+}
+
+func TestReferenceShorthandWithTitle(t *testing.T) {
+	node := marklit.Parse([]byte("[Some title](#foo)"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.Invoke{
+				Function: "reference",
+				Arguments: []ast.Node{
+					ast.String("foo"),
+					ast.Sequence{ast.String("Some title")},
+				},
+			},
+		},
+	})
+}
+
+func TestReferenceShorthandInline(t *testing.T) {
+	node := marklit.Parse([]byte("See [#my-section] for details."))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.String("See "),
+			ast.Invoke{
+				Function:  "reference",
+				Arguments: []ast.Node{ast.Sequence{ast.String("my-section")}},
+			},
+			ast.String(" for details."),
+		},
+	})
+}
+
+func TestLinkNotReference(t *testing.T) {
+	// Regular links (non-# destinations) should still produce \link
+	node := marklit.Parse([]byte("[click here](https://example.com)"))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.Invoke{
+				Function: "link",
+				Arguments: []ast.Node{
+					ast.Sequence{ast.String("click here")},
+					ast.String("https://example.com"),
+				},
+			},
+		},
+	})
+}
+
 func TestImage(t *testing.T) {
 	node := marklit.Parse([]byte("![alt text](image.png)"))
 	assertNode(t, node, ast.Paragraph{
