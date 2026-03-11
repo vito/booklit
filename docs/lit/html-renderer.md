@@ -81,7 +81,7 @@ Booklit executes templates with the following functions available:
   }
 }{
   \definition{`{{content | stripAux}}`}{
-    strip \reference{aux} elements from the content
+    strip [#aux] elements from the content
   }
 }{
   \definition{`{{string | rawHTML}}`}{
@@ -114,8 +114,8 @@ Booklit executes templates with the following functions available:
 Styled content, i.e. \godoc{booklit.Styled}, instructs the HTML renderer to
 use the `*.tmpl` template named after the style.
 
-For example, \reference{bold} is implemented in the
-\reference{baselit}{`baselit`} plugin by returning:
+For example, [#bold] is implemented in the
+[`baselit`](#baselit) plugin by returning:
 
 \syntax{go}{{{
 booklit.Styled{
@@ -165,7 +165,7 @@ tags, and `content` rendered below.
 
 ## Styled Sections
 
-Using \reference{styled} instructs the HTML renderer to use
+Using [#styled] instructs the HTML renderer to use
 `(name).tmpl` instead of `section.tmpl`, or `(name)-page.tmpl`
 instead of `page.tmpl` (if it exists).
 

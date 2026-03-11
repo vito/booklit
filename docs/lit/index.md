@@ -88,12 +88,12 @@ modification needed, so I think it's good enough to share.
   Booklit separates presentation into a final rendering phase which determines
   the output format.
 
-  The \reference{html-renderer} is powered by Go's standard
+  The [#html-renderer] is powered by Go's standard
   [`html/template` package](https://golang.org/pkg/html/template/).
   More renderers may be implemented in the future.
 
-  All \reference{base-templates}{base templates} can be overridden, sections
-  can be individually \reference{styled}, and plugins can return
+  All [base templates](#base-templates) can be overridden, sections
+  can be individually [#styled], and plugins can return
   \godoc{booklit.Styled} content, giving the author full control over what
   comes out.
 }{
@@ -166,7 +166,7 @@ modification needed, so I think it's good enough to share.
 
 This website is [written with
 Booklit](https://github.com/vito/booklit/tree/master/docs/lit). Want to write
-your own? Let's \reference{getting-started}{get started}!
+your own? Let's [get started](#getting-started)!
 
 \split-sections
 

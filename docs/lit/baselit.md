@@ -57,7 +57,7 @@ Booklit documents, plus many common functions useful for writing prose.
   Introduce a sub-section, inheriting plugins of the outer section.
 
   Each sub-section should conventionally begin with a call to
-  \reference{title} to set its title.
+  [#title] to set its title.
 
   For example, here's a full section containing a sub-section:
 
@@ -77,7 +77,7 @@ Booklit documents, plus many common functions useful for writing prose.
   a maximum depth of two on a single page.
 
   Sections can be rendered on separate pages by invoking
-  \reference{split-sections}.
+  [#split-sections].
 }
 
 \define{\include-section{path}}{
@@ -85,7 +85,7 @@ Booklit documents, plus many common functions useful for writing prose.
   section's file) and set it as a child section.
 
   The included section **does not** inherit the plugins of the parent
-  section. Instead, it should explicitly call \reference{use-plugin} on its
+  section. Instead, it should explicitly call [#use-plugin] on its
   own, so that it's self-contained.
 }
 
@@ -95,7 +95,7 @@ Booklit documents, plus many common functions useful for writing prose.
 }
 
 \define{\single-page}{
-  When declared in a section, it overrules any \reference{split-sections} in
+  When declared in a section, it overrules any [#split-sections] in
   the section and any child sections (recursively) in order to force them all
   on to one page. Each section's header sizing is preserved, however.
 
@@ -107,7 +107,7 @@ Booklit documents, plus many common functions useful for writing prose.
 \define{\table-of-contents}{
   Generate a block element that displays the table of contents from this
   section downward upon rendering. Often used in combination with
-  \reference{split-sections}.
+  [#split-sections].
 }
 
 \define{\omit-children-from-table-of-contents}{
@@ -122,20 +122,20 @@ Booklit documents, plus many common functions useful for writing prose.
 \define{\use-plugin{name}}{
   Register the plugin identified by *name* in the section. The plugin
   must be specified by `--plugin` on the command-line. See
-  \reference{plugins} for more information.
+  [#plugins] for more information.
 }
 
 \define{\styled{name}}{
   Set the template's style to *name*. The renderer may then use this
-  to present the section in a different way. See \reference{styled-sections}.
+  to present the section in a different way. See [#styled-sections].
 }
 
 \define{\set-partial{name}{content}}{
   Define the partial *name* in the section with *content* as
   its content.
 
-  This is useful for communicating content to either \reference{plugins} or
-  custom templates given to the \reference{html-renderer}{HTML renderer}.
+  This is useful for communicating content to either [#plugins] or
+  custom templates given to the [HTML renderer](#html-renderer).
 }
 
 ## Links & References
@@ -147,7 +147,7 @@ Booklit documents, plus many common functions useful for writing prose.
   For example, \syntax{lit}{\\link{Example}{https://example.com}} becomes
   [Example](https://example.com).
 
-  Note that the argument order is the reverse of \reference{reference};
+  Note that the argument order is the reverse of [#reference];
   writing tends to flow more naturally this way without a big URL
   interrupting the sentence.
 
@@ -160,11 +160,11 @@ Booklit documents, plus many common functions useful for writing prose.
   content. Otherwise, the tag's configured display will be rendered.
 
   For example, \syntax{lit}{\\reference{links-and-references}} becomes
-  \reference{links-and-references}.
+  [#links-and-references].
 }
 
 \define{\target{tag}{display?}}{
-  Generate a target element that can be \reference{reference}d as
+  Generate a target element that can be [#reference]d as
   *tag*. If *display* is specified, references will default to
   showing it as their link. Otherwise, *tag* itself will be the
   default.
@@ -176,7 +176,7 @@ Booklit documents, plus many common functions useful for writing prose.
 
   Then, we'll reference it with \syntax{lit}{\\reference{some-tag}}:
 
-  \reference{some-tag}
+  [#some-tag]
 
   Clicking the above link should take you to the paragraph.
 }
@@ -191,11 +191,11 @@ string of words or inline elements.
 
   If *text* is a single line, it is presented as inline code. If it is
   in paragraph form, it is presented as its own block. See
-  \reference{function-syntax} for more information.
+  [#function-syntax] for more information.
 
   This is often used with `{{two}}` braces to preserve whitespace,
   or `{{{three}}}` to produce verbatim content (in addition to preserving
-  whitespace). See \reference{function-syntax} for more information.
+  whitespace). See [#function-syntax] for more information.
 
   You can also use Markdown backticks for inline code: `` `code bits` ``.
 
@@ -292,7 +292,7 @@ block of text or any element that is standalone.
   above this line.
 
   This is largely up to how you style them, though. You may want them to just
-  look something like \reference{inset} if you don't have a "margin" in your
+  look something like [#inset] if you don't have a "margin" in your
   design.
 }
 
@@ -316,7 +316,7 @@ block of text or any element that is standalone.
   Render a table with *rows* as its content.
 
   \target{table-row}{`\\`**table-row**} The value for each row should
-  be produced by using \reference{table-row} like so:
+  be produced by using [#table-row] like so:
 
   \lit-syntax{{{
   \table{
@@ -339,7 +339,7 @@ block of text or any element that is standalone.
   Render a definition list with *entries* as its entries.
 
   \target{definition}{`\\`**definition**} The value for each entry
-  should be produced by using \reference{definition} like so:
+  should be produced by using [#definition] like so:
 
   \lit-syntax{{{
   \definitions{

@@ -7,14 +7,14 @@ Plugins provide the functionality behind function calls like
 \syntax{lit}{\\foo{bar}}.
 
 Out of the box, Booklit comes with a plugin called
-\reference{baselit}{`baselit`} which provides basic functions like
-\reference{title}, \reference{section}, \reference{italic}, and
-\reference{bold}.
+[`baselit`](#baselit) which provides basic functions like
+[#title], [#section], [#italic], and
+[#bold].
 
 More functions can be added by writing plugins and using them in your
 documents.
 
-If you've skipped ahead, you may want to check out \reference{getting-started}
+If you've skipped ahead, you may want to check out [#getting-started]
 to see how to set up your Go module.
 
 \table-of-contents
@@ -48,7 +48,7 @@ Booklit imports all specified plugins at build time, automatically adding
 them to `go.mod`. When imported, plugins register themselves under a
 certain name - typically guessable from the import path.
 
-To use the plugin in your documents, call \reference{use-plugin} with its
+To use the plugin in your documents, call [#use-plugin] with its
 registered name:
 
 \lit-syntax{{{
@@ -64,10 +64,10 @@ registered name:
 }}}
 
 The `--plugin` flag can be specified multiple times, and
-\reference{use-plugin} can be invoked multiple times.
+[#use-plugin] can be invoked multiple times.
 
-Note: \reference{section}{inline sections} inherit plugins from their parent
-sections, but \reference{include-section}{included sections} do not.
+Note: [inline sections](#section) inherit plugins from their parent
+sections, but [included sections](#include-section) do not.
 
 ## Writing Plugins {#using-plugins}
 
@@ -154,7 +154,7 @@ Functions can be invoked with any number of arguments, like so:
 \hello-world{arg1}{arg2}
 }}}
 
-See \reference{function-syntax} for more information.
+See [#function-syntax] for more information.
 
 Each argument to the function corresponds to an argument for the plugin's
 method, which may be variadic.
@@ -171,13 +171,13 @@ The plugin's arguments must each be one of the following types:
   \definition{`string`}{
     The evaluated content, converted into a string. This is useful when the
     content is expected to be something simple, like a word or line of
-    text. The \reference{title} function, for example, uses this type for
+    text. The [#title] function, for example, uses this type for
     its variadic *tags* argument.
   }
 }{
   \definition{\godoc{booklit/ast.Node}}{
     The unevaluated syntax tree for the content. This is useful when doing
-    meta-level things like \reference{section} which need to control the
+    meta-level things like [#section] which need to control the
     evaluation context of the content.
   }
 }
@@ -278,4 +278,4 @@ This function would be called like so:
 }
 
 ...which can be referenced as \syntax{lit}{\\reference{banana-opinion}}, which
-results in a link like this: \reference{banana-opinion}.
+results in a link like this: [#banana-opinion].

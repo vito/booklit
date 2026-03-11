@@ -22,8 +22,8 @@ export PATH=$(go env GOPATH)/bin:$PATH
 
 It's also possible to download the `booklit` executable from the latest
 [GitHub release](https://github.com/vito/booklit/releases/latest), but
-tracking it as a dependency will make it easier to \reference{plugins}{write a
-plugin} later on.
+tracking it as a dependency will make it easier to [write a
+plugin](#plugins) later on.
 
 \table-of-contents
 
@@ -97,7 +97,7 @@ let's leave it there.
 ## Splitting Sections
 
 To render each sub-section on its own page, simply call
-\reference{split-sections} somewhere in the section.
+[#split-sections] somewhere in the section.
 
 \lit-syntax{{{
 \title{Hello, world!}{hello}
@@ -115,7 +115,7 @@ I'm a Booklit document!
 
 So far we've just made the section disappear, which isn't very helpful. Let's
 at least make it so we can browse to it! This can be done with
-\reference{table-of-contents}:
+[#table-of-contents]:
 
 \lit-syntax{{{
 \title{Hello, world!}{hello}
@@ -138,9 +138,9 @@ rather than the `<h2>` it was before, since it stands on its own page.
 
 ## References & Tagging
 
-Having a \reference{table-of-contents} is great and all, but more often
+Having a [#table-of-contents] is great and all, but more often
 you'll want to reference sections from each other directly and in context.
-This can be done with \reference{reference}:
+This can be done with [#reference]:
 
 \lit-syntax{{{
 \title{Hello, world!}{hello}
@@ -156,11 +156,11 @@ I'm a Booklit document! To read further, see \reference{hi-there}.
 }
 }}}
 
-The first argument to \reference{reference} is the name of a tag to link. At
+The first argument to [#reference] is the name of a tag to link. At
 build time, references will *resolve* to their tag and generate a link
 to it. By default, the name of the link is determined by the tag, so for a
 section it'll be the section's title. This can be overridden by passing a
-second argument to \reference{reference}:
+second argument to [#reference]:
 
 \lit-syntax{{{
 \title{Hello, world!}{hello}
@@ -184,11 +184,11 @@ to know a lot more.
 
 \list{
   To change how your generated content looks, check out the
-  \reference{html-renderer}{HTML renderer}.
+  [HTML renderer](#html-renderer).
 }{
   To learn the functions that come with Booklit, check out
-  \reference{baselit}.
+  [#baselit].
 }{
   To extend your documents with your own functions, check out
-  \reference{plugins}.
+  [#plugins].
 }

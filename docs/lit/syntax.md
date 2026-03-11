@@ -3,7 +3,7 @@
 # Syntax {#syntax}
 
 Booklit documents are Markdown files extended with a special syntax for
-\reference{function-syntax}{function calls}. Standard Markdown formatting
+[function calls](#function-syntax). Standard Markdown formatting
 (emphasis, bold, links, code, lists, etc.) is supported natively, and
 everything else is either text or an `\invoke` call.
 
@@ -31,10 +31,10 @@ Booklit builds on top of standard Markdown, so the prose rules are familiar:
   *Images* are written as `![alt text](path)`.
 }{
   *Headings* can be written with `#` prefix, which maps to
-  \reference{title}.
+  [#title].
 }{
-  In addition to Markdown formatting, \reference{function-syntax}{function
-  calls} can be used inline or at the block level.
+  In addition to Markdown formatting, [function
+  calls](#function-syntax) can be used inline or at the block level.
 }
 
 ## Comment Syntax {#comment-syntax}
