@@ -1,23 +1,31 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
-	"github.com/onsi/gomega"
+	"testing"
+
 	_ "github.com/vito/booklit/tests/fixtures/erroring-plugin"
 )
 
-var _ = DescribeTable("Booklit", (Example).Run,
-	Entry("unknown function", Example{
-		Input: `\title{Hello, world!}
+func TestErrors(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "unknown function",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \banana{attack}
 `,
 
-		LoadErr: gomega.ContainSubstring("undefined function \\banana"),
-	}),
-
-	Entry("erroring single-return function", Example{
-		Input: `\title{Hello, world!}
+				LoadErr: `undefined function \banana`,
+			},
+		},
+		{
+			name: "erroring single-return function",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \use-plugin{errer}
 
@@ -26,22 +34,26 @@ var _ = DescribeTable("Booklit", (Example).Run,
 \multi-return-fail{some arg}
 `,
 
-		LoadErr: gomega.ContainSubstring("function \\single-fail returned an error: oh no"),
-	}),
-
-	Entry("erroring multi-return function", Example{
-		Input: `\title{Hello, world!}
+				LoadErr: `function \single-fail returned an error: oh no`,
+			},
+		},
+		{
+			name: "erroring multi-return function",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \use-plugin{errer}
 
 \multi-fail{some arg}
 `,
 
-		LoadErr: gomega.ContainSubstring("function \\multi-fail returned an error: oh no"),
-	}),
-
-	Entry("ambiguous references", Example{
-		Input: `\title{Hello, world!}
+				LoadErr: `function \multi-fail returned an error: oh no`,
+			},
+		},
+		{
+			name: "ambiguous references",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 See also \reference{dupe-tag}{this tag}.
 
@@ -58,24 +70,32 @@ See also \reference{dupe-tag}{this tag}.
 }
 `,
 
-		RenderErr: gomega.MatchRegexp(`ambiguous target for tag 'dupe-tag'`),
-	}),
-
-	Entry("missing references", Example{
-		Input: `\title{Hello, world!}
+				RenderErr: `ambiguous target for tag 'dupe-tag'`,
+			},
+		},
+		{
+			name: "missing references",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 See also \reference{missing-tag}{this tag}.
 `,
 
-		RenderErr: gomega.MatchRegexp(`unknown tag 'missing-tag'`),
-	}),
-
-	Entry("setting title twice", Example{
-		Input: `\title{Hello, world!}
+				RenderErr: `unknown tag 'missing-tag'`,
+			},
+		},
+		{
+			name: "setting title twice",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \title{BAM}
 `,
 
-		LoadErr: gomega.ContainSubstring("cannot set title twice"),
-	}),
-)
+				LoadErr: "cannot set title twice",
+			},
+		},
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}

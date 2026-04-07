@@ -1,13 +1,20 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
+	"testing"
+
 	_ "github.com/vito/booklit/tests/fixtures/set-partials-plugin"
 )
 
-var _ = DescribeTable("Partials", (Example).Run,
-	Entry("set in section and rendered via template", Example{
-		Input: `\title{Set Partial Read Template}
+func TestPartials(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "set in section and rendered via template",
+			example: Example{
+				Input: `\title{Set Partial Read Template}
 
 I want to be some body.
 
@@ -18,8 +25,8 @@ I want to be some body.
 Some more body.
 `,
 
-		Outputs: Files{
-			"set-partial-read-template.html": `<div>
+				Outputs: Files{
+					"set-partial-read-template.html": `<div>
 	Here's a partial:
 
 	<p>I'm a partial!</p>
@@ -35,11 +42,13 @@ Some more body.
 
 <p>Some more body.</p>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("targets and references are collected and resolved", Example{
-		Input: `\title{Set Partial Read Template}
+		{
+			name: "targets and references are collected and resolved",
+			example: Example{
+				Input: `\title{Set Partial Read Template}
 
 I want to be some body.
 
@@ -54,8 +63,8 @@ I want to be some body.
 Some more body. \reference{some-target}
 `,
 
-		Outputs: Files{
-			"set-partial-read-template.html": `<div>
+				Outputs: Files{
+					"set-partial-read-template.html": `<div>
 	Here's a partial:
 
 	<p><a id="some-target"></a></p>
@@ -79,11 +88,13 @@ Some more body. \reference{some-target}
 
 <p>Some more body. <a href="set-partial-read-template.html#some-target">Hello.</a></p>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("set in plugin and rendered in template", Example{
-		Input: `\title{Set Partial Read Template}
+		{
+			name: "set in plugin and rendered in template",
+			example: Example{
+				Input: `\title{Set Partial Read Template}
 
 \use-plugin{set-partials}
 
@@ -94,8 +105,8 @@ I want to be some body.
 Some more body.
 `,
 
-		Outputs: Files{
-			"set-partial-read-template.html": `<div>
+				Outputs: Files{
+					"set-partial-read-template.html": `<div>
 	Here's a partial:
 
 	<p>I'm a partial!</p>
@@ -111,6 +122,10 @@ Some more body.
 
 <p>Some more body.</p>
 `,
+				},
+			},
 		},
-	}),
-)
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}

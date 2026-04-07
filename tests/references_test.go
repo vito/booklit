@@ -1,12 +1,18 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
+	"testing"
 )
 
-var _ = DescribeTable("Booklit", (Example).Run,
-	Entry("references to other sections on the same page", Example{
-		Input: `\title{Hello, world!}
+func TestReferences(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "references to other sections on the same page",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 See also \reference{section-c}{the last section}.
 
@@ -29,8 +35,8 @@ See also \reference{section-c}{the last section}.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
@@ -48,11 +54,13 @@ See also \reference{section-c}{the last section}.
 	<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("references to other sections on split pages", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "references to other sections on split pages",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 See also \reference{section-c}{the last section}.
 
@@ -77,36 +85,38 @@ See also \reference{section-c}{the last section}.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>See also <a href="section-c.html">the last section</a>.</p>
 </section>
 `,
-			"section-a.html": `<section>
+					"section-a.html": `<section>
 	<h1>1 Section A</h1>
 
 	<p>See also <a href="section-b.html">Section B</a>.</p>
 </section>
 `,
-			"section-b.html": `<section>
+					"section-b.html": `<section>
 	<h1>2 Section B</h1>
 
 	<p>See also <a href="section-a.html">Section A</a>.</p>
 </section>
 `,
-			"section-c.html": `<section>
+					"section-c.html": `<section>
 	<h1>3 Section C</h1>
 
 	<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("explicit target elements", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "explicit target elements",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \reference{target-a}
 
@@ -127,8 +137,8 @@ See also \reference{section-c}{the last section}.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p><a href="hello-world.html#target-a">Target A</a></p>
@@ -143,11 +153,13 @@ See also \reference{section-c}{the last section}.
 	<p><a id="target-without-display"></a> Here's another target.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("aux", Example{
-		Input: `\title{Hello, world!\aux{: Foo Bar}}
+		{
+			name: "aux",
+			example: Example{
+				Input: `\title{Hello, world!\aux{: Foo Bar}}
 
 See also \reference{section-c}{the last section}.
 
@@ -172,8 +184,8 @@ See also \reference{section-c}{the last section}.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!: Foo Bar</h1>
 
 	<p>See also <a href="hello-world.html#section-c">the last section</a>.</p>
@@ -197,6 +209,10 @@ See also \reference{section-c}{the last section}.
 	<p><a id="some-anchor"></a>See also <a href="hello-world.html">Hello, world!</a>.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-)
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}

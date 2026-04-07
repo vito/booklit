@@ -1,12 +1,18 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
+	"testing"
 )
 
-var _ = DescribeTable("Booklit", (Example).Run,
-	Entry("sub-sections", Example{
-		Input: `\title{Hello, world!}
+func TestSections(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "sub-sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -23,8 +29,8 @@ How are you?
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -38,11 +44,13 @@ How are you?
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("sub-sections via headings", Example{
-		Input: `# Hello, world!
+		{
+			name: "sub-sections via headings",
+			example: Example{
+				Input: `# Hello, world!
 
 How are you?
 
@@ -55,8 +63,8 @@ Good, thanks! And you?
 Good, thanks!
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -70,11 +78,13 @@ Good, thanks!
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("sub-sections via headings with tags", Example{
-		Input: `# Hello, world! {#hello}
+		{
+			name: "sub-sections via headings with tags",
+			example: Example{
+				Input: `# Hello, world! {#hello}
 
 How are you?
 
@@ -83,8 +93,8 @@ How are you?
 Good, thanks!
 `,
 
-		Outputs: Files{
-			"hello.html": `<section>
+				Outputs: Files{
+					"hello.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -94,11 +104,13 @@ Good, thanks!
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("sub-sections from files", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "sub-sections from files",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -111,15 +123,15 @@ How are you?
 }
 `,
 
-		Inputs: Files{
-			"how-im-doing.lit": `\title{How I'm doing}
+				Inputs: Files{
+					"how-im-doing.lit": `\title{How I'm doing}
 
 Good, thanks! And you?
 `,
-		},
+				},
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -133,11 +145,13 @@ Good, thanks! And you?
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("including sections relative to the section's path", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "including sections relative to the section's path",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -150,15 +164,15 @@ How are you?
 }
 `,
 
-		Inputs: Files{
-			"sub-path/how-im-doing.lit": `\title{How I'm doing}
+				Inputs: Files{
+					"sub-path/how-im-doing.lit": `\title{How I'm doing}
 
 Good, thanks! And you?
 
 \include-section{another-section.lit}
 `,
 
-			"sub-path/another-section.lit": `\title{My Response}
+					"sub-path/another-section.lit": `\title{My Response}
 
 Not bad, not bad.
 
@@ -171,14 +185,14 @@ Not bad, not bad.
 }
 `,
 
-			"sub-path/yet-another-section.lit": `\title{Their Response to My Response}
+					"sub-path/yet-another-section.lit": `\title{Their Response to My Response}
 
 Sick.
 `,
-		},
+				},
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -204,11 +218,13 @@ Sick.
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("nested sub-sections", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "nested sub-sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -229,8 +245,8 @@ How are you?
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -246,11 +262,13 @@ How are you?
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("split sub-sections", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "split sub-sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -263,24 +281,26 @@ How are you?
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
 </section>
 `,
-			"how-im-doing.html": `<section>
+					"how-im-doing.html": `<section>
 	<h1>1 How I'm Doing</h1>
 
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("forcing sections onto one page", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "forcing sections onto one page",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you? See \reference{deep-inlined}.
 
@@ -328,8 +348,8 @@ How are you? See \reference{deep-inlined}.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you? See <a href="hello-world.html#deep-inlined">Super Duple Wrapped</a>.</p>
@@ -359,11 +379,13 @@ How are you? See \reference{deep-inlined}.
 	<p>Whoooooa.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("split sub-sub-sections", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "split sub-sub-sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -382,8 +404,8 @@ How are you?
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -393,17 +415,19 @@ How are you?
 	<p>Good, thanks!</p>
 </section>
 `,
-			"nested-section.html": `<section>
+					"nested-section.html": `<section>
 	<h1>1.1 Nested Section</h1>
 
 	<p>Sup.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("tables of contents", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "tables of contents",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -450,8 +474,8 @@ This is some more content.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 	<p>How are you?</p>
@@ -497,11 +521,13 @@ This is some more content.
 	<p>Fiddlesticks is as far as I go.</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-
-	Entry("styled sections", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "styled sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \styled{top-template}
 
@@ -528,8 +554,8 @@ How are you?
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section class="custom-top-page">
+				Outputs: Files{
+					"hello-world.html": `<section class="custom-top-page">
 	<h1>Hello, world!</h1>
 
 	<p>I'm a toplevel template! Here's my body:</p>
@@ -555,6 +581,10 @@ How are you?
 	<p>Good, thanks!</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-)
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}

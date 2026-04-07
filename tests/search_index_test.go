@@ -1,12 +1,18 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
+	"testing"
 )
 
-var _ = DescribeTable("Search Index", (Example).Run,
-	Entry("sections", Example{
-		Input: `\title{Hello, world!}
+func TestSearchIndex(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -25,7 +31,7 @@ Here's another paragraph.
 }
 `,
 
-		SearchIndex: `{
+				SearchIndex: `{
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
@@ -48,10 +54,12 @@ Here's another paragraph.
 				"section_tag": "their-reply"
 			}
 		}`,
-	}),
-
-	Entry("targets", Example{
-		Input: `\title{Hello, world!}
+			},
+		},
+		{
+			name: "targets",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -68,7 +76,7 @@ Here's another paragraph.
 }
 `,
 
-		SearchIndex: `{
+				SearchIndex: `{
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
@@ -91,10 +99,12 @@ Here's another paragraph.
 				"section_tag": "sub-section"
 			}
 		}`,
-	}),
-
-	Entry("interesting content", Example{
-		Input: `\title{Hello, world!}
+			},
+		},
+		{
+			name: "interesting content",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 How are you?
 
@@ -141,7 +151,7 @@ and a \reference{sub-section}.
 }
 `,
 
-		SearchIndex: `{
+				SearchIndex: `{
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
@@ -157,5 +167,9 @@ and a \reference{sub-section}.
 				"section_tag": "sub-section"
 			}
 		}`,
-	}),
-)
+			},
+		},
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}

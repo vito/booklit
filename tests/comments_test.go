@@ -1,12 +1,18 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
+	"testing"
 )
 
-var _ = DescribeTable("Comments", (Example).Run,
-	Entry("inline comments", Example{
-		Input: `\title{Hello, world!}
+func TestComments(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "inline comments",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 {- Goodbye, -}cruel world!
 
@@ -15,49 +21,55 @@ Goodbye, {- cruel -}world!
 Goodbye, cruel{- world! -}
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 <p>cruel world!</p>
 <p>Goodbye, world!</p>
 <p>Goodbye, cruel</p>
 </section>`,
+				},
+			},
 		},
-	}),
-
-	Entry("comments with delimitery things", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "comments with delimitery things",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 Goodbye, {- {cru-el} -}world!
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 <p>Goodbye, world!</p>
 </section>`,
+				},
+			},
 		},
-	}),
-
-	Entry("nested comments", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "nested comments",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 Goodbye, {- {cru-{- whoa -}el} -}world!
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 <p>Goodbye, world!</p>
 </section>`,
+				},
+			},
 		},
-	}),
-
-	Entry("block comments", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "block comments",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 Goodbye, world!
 
@@ -80,8 +92,8 @@ I'm another paragraph.
 }
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
 <p>Goodbye, world!</p>
@@ -94,6 +106,10 @@ I'm another paragraph.
 
 <p>Not much.</p>
 </section>`,
+				},
+			},
 		},
-	}),
-)
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}

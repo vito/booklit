@@ -1,47 +1,60 @@
 package tests
 
 import (
-	. "github.com/onsi/ginkgo/v2"
+	"testing"
+
 	_ "github.com/vito/booklit/tests/fixtures/partials-style-plugin"
 )
 
-var _ = DescribeTable("Booklit", (Example).Run,
-	Entry("styled sections", Example{
-		Input: `\title{Hello, world!}
+func TestStyles(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		example Example
+	}{
+		{
+			name: "styled sections",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \styled{styled}
 
 Sup?
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1 class="styled">Hello, world!</h1>
 
 	<p>Sup?</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-	Entry("styled pages", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "styled pages",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \styled{full-styled}
 
 Sup?
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section class="full-styled-page">
+				Outputs: Files{
+					"hello-world.html": `<section class="full-styled-page">
 	<h1 class="full-styled">Hello, world!</h1>
 
 	<p>Sup?</p>
 </section>
 `,
+				},
+			},
 		},
-	}),
-	Entry("styling with partials", Example{
-		Input: `\title{Hello, world!}
+		{
+			name: "styling with partials",
+			example: Example{
+				Input: `\title{Hello, world!}
 
 \use-plugin{partial-style}
 
@@ -58,8 +71,8 @@ This is an \inline-style{Title C}{inline style}!
 \block-style{Title D}{This is a line forced into block style!}
 `,
 
-		Outputs: Files{
-			"hello-world.html": `<section>
+				Outputs: Files{
+					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
   <div class="custom-style">
@@ -83,6 +96,10 @@ This is an \inline-style{Title C}{inline style}!
 	</div>
 </section>
 `,
+				},
+			},
 		},
-	}),
-)
+	} {
+		t.Run(tt.name, tt.example.Run)
+	}
+}
