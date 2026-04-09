@@ -14,6 +14,7 @@ type Booklit {
       .withMountedCache("/root/.cache/go-build", cacheVolume("go-build"))
       .withDirectory("/app", source)
       .withWorkdir("/app")
+      .withExec(["go", "install", "github.com/dagger/otel-go/cmd/otelgotest"])
   }
 
   """
@@ -36,7 +37,7 @@ type Booklit {
   """
   pub test: Void @check {
     base
-      .withExec(["go", "test", "-v", "./..."])
+      .withExec(["otelgotest", "./..."])
       .sync
 
     null
