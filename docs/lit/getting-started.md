@@ -162,15 +162,7 @@ I'm a Booklit document! Consult [this section](#hi-there) for more.
 What we've gone over should carry you pretty far. But you'll likely want
 to know a lot more.
 
-<List>
-<Item>
-To change how your generated content looks, check out the
-[HTML renderer](#html-renderer).
-</Item>
-<Item>
-To learn the components that come with Booklit, check out [#baselit].
-</Item>
-<Item>
-To extend your documents with your own components, check out [#plugins].
-</Item>
-</List>
+- To change how your generated content looks, check out the
+  [HTML renderer](#html-renderer).
+- To learn the components that come with Booklit, check out [#baselit].
+- To extend your documents with your own components, check out [#plugins].

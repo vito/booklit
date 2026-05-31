@@ -11,38 +11,22 @@ a `<Component>` call.
 
 Booklit builds on top of standard Markdown, so the prose rules are familiar:
 
-<List>
-<Item>
-The top-level of a document is a series of *paragraphs*, separated
-by one or more blank lines.
-</Item>
-<Item>
-A *paragraph* is a series of *lines*, separated by linebreaks.
-Adjacent lines within a paragraph are joined (soft line breaks become
-spaces).
-</Item>
-<Item>
-*Emphasis* is written with `*asterisks*` and **bold** with
-`**double asterisks**`.
-</Item>
-<Item>
-*Inline code* is written with `` `backticks` ``.
-</Item>
-<Item>
-*Links* are written as `[display text](url)`.
-</Item>
-<Item>
-*Images* are written as `![alt text](path)`.
-</Item>
-<Item>
-*Headings* can be written with the `#` prefix, which maps to [#title].
-A `{#tag}` after a heading sets an explicit anchor tag.
-</Item>
-<Item>
-In addition to Markdown formatting, JSX-style [component
-calls](#component-syntax) can be used inline or at the block level.
-</Item>
-</List>
+- The top-level of a document is a series of *paragraphs*, separated
+  by one or more blank lines.
+- A *paragraph* is a series of *lines*, separated by linebreaks.
+  Adjacent lines within a paragraph are joined (soft line breaks become
+  spaces).
+- *Emphasis* is written with `*asterisks*` and **bold** with
+  `**double asterisks**`.
+- *Inline code* is written with `` `backticks` ``.
+- *Links* are written as `[display text](url)`.
+- *Images* are written as `![alt text](path)`.
+- *Headings* can be written with the `#` prefix, which maps to [#title].
+  A `{#tag}` after a heading sets an explicit anchor tag.
+- Standard Markdown lists (`- item`, `1. item`) and tables
+  (`| a | b |`) work as expected.
+- In addition to Markdown formatting, JSX-style [component
+  calls](#component-syntax) can be used inline or at the block level.
 
 ## Comment Syntax {#comment-syntax}
 
@@ -89,7 +73,7 @@ at build time):
 
 <Image path="diagram.png"/>
 
-<List items={primitiveTypes}/>
+<Card title={greeting}/>
 ```
 
 For props that map to keyword-style arguments, the convention is

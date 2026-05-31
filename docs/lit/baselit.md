@@ -200,47 +200,28 @@ Here I am!
 </Aside>
 </Define>
 
-<Define tag="list" sig='<List><Item>...</Item></List>'>
-Render an unordered list of items.
+### Lists and Tables
 
-<List>
-<Item>one</Item>
-<Item>two</Item>
-<Item>three!</Item>
-</List>
-
-You can also use Markdown syntax: `- item`.
-</Define>
-
-<Define tag="ordered-list" sig='<OrderedList><Item>...</Item></OrderedList>'>
-Render an ordered list of items.
-
-<OrderedList>
-<Item>one</Item>
-<Item>two</Item>
-<Item>three!</Item>
-</OrderedList>
-
-You can also use Markdown syntax: `1. item`.
-</Define>
-
-<Define tag="table" sig='<Table><Row><Item>...</Item></Row></Table>'>
-Render a table with *rows* as its content. Each row's cells are
-`<Item>` children.
-
-<Table>
-<Row><Item>a</Item><Item>b</Item><Item>c</Item></Row>
-<Row><Item>1</Item><Item>2</Item><Item>3</Item></Row>
-</Table>
-
-Markdown table syntax also works:
+Plain unordered and ordered lists, and tables, use standard Markdown
+syntax — there's no JSX wrapper for them, because the Markdown forms
+already cover the cases:
 
 ```
+- one
+- two
+- three!
+
+1. one
+2. two
+3. three!
+
 | a | b | c |
 | --- | --- | --- |
 | 1 | 2 | 3 |
 ```
-</Define>
+
+For *definition* lists, which Markdown doesn't have, see [#definitions]
+below.
 
 <Define tag="definitions" sig='<Definitions><Definition term="...">body</Definition></Definitions>'>
 Render a definition list. Each entry is a `<Definition>` with a

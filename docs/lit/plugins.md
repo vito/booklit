@@ -4,12 +4,10 @@ In the new Booklit model there is no separate "plugin" system: components
 are resolved by a tiered dispatcher. When the evaluator hits a JSX
 invocation like `<Foo bar="x">body</Foo>`, it looks for:
 
-<OrderedList>
-<Item>A *built-in* with name `Foo` registered in Go.</Item>
-<Item>An HTML *template* named `Foo.tmpl` in the templates directory.</Item>
-<Item>(later) A *Dang* function in scope.</Item>
-<Item>(later) A *Dagger* function configured in `booklit.toml`.</Item>
-</OrderedList>
+1. A *built-in* with name `Foo` registered in Go.
+2. An HTML *template* named `Foo.tmpl` in the templates directory.
+3. (later) A *Dang* function in scope.
+4. (later) A *Dagger* function configured in `booklit.toml`.
 
 The simplest "plugin" is a template — no Go code required. This page
 walks through both approaches.
