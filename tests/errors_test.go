@@ -2,8 +2,6 @@ package tests
 
 import (
 	"testing"
-
-	_ "github.com/vito/booklit/tests/fixtures/erroring-plugin"
 )
 
 func TestErrors(t *testing.T) {
@@ -20,34 +18,6 @@ func TestErrors(t *testing.T) {
 `,
 
 				LoadErr: `undefined function \banana`,
-			},
-		},
-		{
-			name: "erroring single-return function",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-\use-plugin{errer}
-
-\single-fail{some arg}
-
-\multi-return-fail{some arg}
-`,
-
-				LoadErr: `function \single-fail returned an error: oh no`,
-			},
-		},
-		{
-			name: "erroring multi-return function",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-\use-plugin{errer}
-
-\multi-fail{some arg}
-`,
-
-				LoadErr: `function \multi-fail returned an error: oh no`,
 			},
 		},
 		{

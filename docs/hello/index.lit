@@ -1,7 +1,0 @@
-\title{Hello}{index}
-
-Hello, world! I'm a Booklit document.
-
-Check out my favorite \reference{quotes}!
-
-\include-section{quotes.lit}

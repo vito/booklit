@@ -2,8 +2,6 @@ package tests
 
 import (
 	"testing"
-
-	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
 )
 
 func TestProse(t *testing.T) {
@@ -535,63 +533,6 @@ This is an \italic{  } even more spaced italic.
 </pre>
 	<pre>
 </pre>
-</section>
-`,
-				},
-			},
-		},
-		{
-			name: "preformatted string arguments",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-\use-plugin{stringer}
-
-Here's a code block:
-
-\string{{{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}}}
-
-And here I'm just using it to \string{{{escape {{wacky}} curlies}}}.
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>Here's a code block:</p>
-
-	<p>I'm a code block.
-
-	I'm indented more.
-
-		I'm indented even more.
-
-I'm indented less.
-
-\reference{hello-world}
-
-\\some-method\{Some argument.\}
-
-
-One more line, with meaning.
-</p>
-
-<p>And here I'm just using it to escape {{wacky}} curlies.</p>
 </section>
 `,
 				},

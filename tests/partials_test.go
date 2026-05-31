@@ -2,8 +2,6 @@ package tests
 
 import (
 	"testing"
-
-	_ "github.com/vito/booklit/tests/fixtures/set-partials-plugin"
 )
 
 func TestPartials(t *testing.T) {
@@ -87,40 +85,6 @@ Some more body. \reference{some-target}
 <p>I want to be some body.</p>
 
 <p>Some more body. <a href="set-partial-read-template.html#some-target">Hello.</a></p>
-`,
-				},
-			},
-		},
-		{
-			name: "set in plugin and rendered in template",
-			example: Example{
-				Input: `\title{Set Partial Read Template}
-
-\use-plugin{set-partials}
-
-I want to be some body.
-
-\set-the-partial
-
-Some more body.
-`,
-
-				Outputs: Files{
-					"set-partial-read-template.html": `<div>
-	Here's a partial:
-
-	<p>I'm a partial!</p>
-</div>
-
-<div>
-	Here's the partial again:
-
-	<p>I'm a partial!</p>
-</div>
-
-<p>I want to be some body.</p>
-
-<p>Some more body.</p>
 `,
 				},
 			},

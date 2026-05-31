@@ -6,10 +6,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"runtime/pprof"
-	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -31,8 +28,6 @@ type Command struct {
 	SaveSearchIndex bool `long:"save-search-index" description:"Save a search index JSON file in the destination."`
 
 	ServerPort int `long:"serve" short:"s" description:"Start an HTTP server on the given port."`
-
-	Plugins []string `long:"plugin" short:"p" description:"Package to import, providing a plugin."`
 
 	Debug bool `long:"debug" short:"d" description:"Log at debug level."`
 
@@ -58,20 +53,6 @@ func (cmd *Command) Execute(args []string) error {
 	}
 
 	booklit.AllowBrokenReferences = cmd.AllowBrokenReferences
-
-	isReexec := os.Getenv("BOOKLIT_REEXEC") != ""
-	if !isReexec && len(cmd.Plugins) > 0 {
-		logrus.Debug("plugins configured; reexecing")
-
-		exitCode, err := cmd.reexec()
-		if err != nil {
-			return err
-		}
-
-		os.Exit(exitCode)
-
-		return nil
-	}
 
 	if cmd.HTTPProfilePort != 0 {
 		logrus.Debugf("serving pprof on :%d", cmd.HTTPProfilePort)
@@ -203,61 +184,3 @@ func (cmd *Command) Build() error {
 	return nil
 }
 
-func (cmd *Command) reexec() (int, error) {
-	tmpdir, err := os.MkdirTemp("", "booklit-reexec")
-	if err != nil {
-		return 0, err
-	}
-
-	defer func() {
-		_ = os.RemoveAll(tmpdir)
-	}()
-
-	src := filepath.Join(tmpdir, "main.go")
-	bin := filepath.Join(tmpdir, "main")
-
-	var goSrc strings.Builder
-	goSrc.WriteString("package main\n")
-	goSrc.WriteString("import \"github.com/vito/booklit/booklitcmd\"\n")
-	for _, p := range cmd.Plugins {
-		goSrc.WriteString("import _ \"" + p + "\"\n")
-	}
-	goSrc.WriteString("func main() {\n")
-	goSrc.WriteString("	booklitcmd.Main()\n")
-	goSrc.WriteString("}\n")
-
-	err = os.WriteFile(src, []byte(goSrc.String()), 0644)
-	if err != nil {
-		return 0, err
-	}
-
-	build := exec.Command("go", "install", src)
-	build.Env = append(os.Environ(), "GOBIN="+tmpdir)
-	build.Stdout = os.Stdout
-	build.Stderr = os.Stderr
-
-	logrus.Debug("building reexec binary")
-
-	err = build.Run()
-	if err != nil {
-		return 0, fmt.Errorf("build failed: %w", err)
-	}
-
-	run := exec.Command(bin, os.Args[1:]...)
-	run.Env = append(os.Environ(), "BOOKLIT_REEXEC=1")
-	run.Stdout = os.Stdout
-	run.Stderr = os.Stderr
-
-	logrus.Debug("reexecing")
-
-	err = run.Run()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			return exitErr.ExitCode(), nil
-		}
-
-		return 0, fmt.Errorf("reexec failed: %w", err)
-	}
-
-	return 0, nil
-}

@@ -2,8 +2,6 @@ package tests
 
 import (
 	"testing"
-
-	_ "github.com/vito/booklit/tests/fixtures/arbitrary-style-plugin"
 )
 
 func TestBlocks(t *testing.T) {
@@ -152,27 +150,6 @@ func TestBlocks(t *testing.T) {
 	<h1>Hello, world!</h1>
 
 <ol><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ol>
-</section>`,
-				},
-			},
-		},
-		{
-			name: "arbitrary styles",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-\use-plugin{arbitrary-style}
-
-\arbitrary-style{
-	Sup!
-}
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-<blink><p>Sup!</p></blink>
 </section>`,
 				},
 			},

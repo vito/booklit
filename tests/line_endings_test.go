@@ -3,8 +3,6 @@ package tests
 import (
 	"strings"
 	"testing"
-
-	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
 )
 
 func TestLineEndings(t *testing.T) {

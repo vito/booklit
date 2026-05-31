@@ -16,10 +16,6 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
-func init() {
-	booklit.RegisterPlugin("baselit", NewPlugin)
-}
-
 func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
 		section: section,
@@ -28,17 +24,6 @@ func NewPlugin(section *booklit.Section) booklit.Plugin {
 
 type Plugin struct {
 	section *booklit.Section
-}
-
-func (plugin Plugin) UsePlugin(name string) error {
-	pluginFactory, found := booklit.LookupPlugin(name)
-	if !found {
-		return fmt.Errorf("unknown plugin '%s'", name)
-	}
-
-	plugin.section.UsePlugin(pluginFactory)
-
-	return nil
 }
 
 func (plugin Plugin) Styled(name string) {
