@@ -17,14 +17,14 @@ import (
 )
 
 func init() {
-	builtins.Register("OutputFrame", outputFrameFunc)
-	builtins.Register("SyntaxHl", syntaxHlFunc)
-	builtins.Register("ColumnHeader", columnHeaderFunc)
+	// OutputFrame, SyntaxHl, TemplateLink, ColumnHeader, and Column are
+	// not registered: OutputFrame / SyntaxHl / TemplateLink are
+	// expressed as templates (template fallback emits the right
+	// Styled), and Columns reaches into its children by AST name so
+	// ColumnHeader / Column never need to dispatch on their own.
 	builtins.Register("Columns", columnsFunc)
-	builtins.Register("Column", columnFunc)
 	builtins.Register("LitSyntax", litSyntaxFunc)
 	builtins.Register("Godoc", godocFunc)
-	builtins.Register("TemplateLink", templateLinkFunc)
 	builtins.Register("Define", defineFunc)
 
 	styles.Fallback = chroma.MustNewStyle("booklitdoc", chroma.StyleEntries{
@@ -50,57 +50,11 @@ func init() {
 	})
 }
 
-// outputFrameFunc — `<OutputFrame url="..."/>`. Renders an iframe with
-// the given URL as both link and src (via the output-frame template).
-func outputFrameFunc(ctx *builtins.Context, props map[string]ast.Node, _ []ast.Node) (booklit.Content, error) {
-	url, err := requireStringProp(ctx, props, "url", "OutputFrame")
-	if err != nil {
-		return nil, err
-	}
-	return booklit.Styled{
-		Style: "output-frame",
-		Content: booklit.Link{
-			Content: booklit.String(url),
-			Target:  url,
-		},
-		Partials: booklit.Partials{
-			"URL": booklit.String(url),
-		},
-	}, nil
-}
-
-// syntaxHlFunc — `<SyntaxHl>content</SyntaxHl>`. Wraps inline content in
-// a syntax-highlighting marker; the syntax-hl template provides styling.
-func syntaxHlFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
-	content, err := evalChildren(ctx, children)
-	if err != nil {
-		return nil, err
-	}
-	return booklit.Styled{
-		Style:   "syntax-hl",
-		Content: content,
-	}, nil
-}
-
-// columnHeaderFunc — `<ColumnHeader>content</ColumnHeader>`.
-func columnHeaderFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
-	content, err := evalChildren(ctx, children)
-	if err != nil {
-		return nil, err
-	}
-	return booklit.Styled{
-		Style:   "column-header",
-		Block:   true,
-		Content: content,
-	}, nil
-}
-
 // columnsFunc — `<Columns><ColumnHeader>title</ColumnHeader>
 // <Column>a</Column><Column>b</Column></Columns>`. Title goes to
 // Content; columns become a Partial sequence consumed by columns.tmpl.
-// Children are recognized by their AST element name before evaluation
-// so the rendered form of ColumnHeader/Column doesn't need to carry a
-// wrapper type around.
+// Children are recognized by their AST element name before evaluation,
+// so neither ColumnHeader nor Column needs its own dispatcher.
 func columnsFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	var title booklit.Content
 	var cols booklit.Sequence
@@ -134,16 +88,6 @@ func columnsFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.No
 			"Columns": cols,
 		},
 	}, nil
-}
-
-// columnFunc — `<Column>content</Column>`. Outside of <Columns> this
-// renders as a plain block; inside, the parent picks it out by name.
-func columnFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
-	content, err := evalChildren(ctx, children)
-	if err != nil {
-		return nil, err
-	}
-	return content, nil
 }
 
 // linkTransformer rewrites `\function-name` occurrences inside
@@ -276,19 +220,6 @@ func godocFunc(ctx *builtins.Context, props map[string]ast.Node, _ []ast.Node) (
 			},
 		},
 		Target: "https://pkg.go.dev/github.com/vito/" + pkg + "#" + spl[1],
-	}, nil
-}
-
-// templateLinkFunc — `<TemplateLink tmpl="italic.tmpl"/>`. Renders a
-// link to a bundled HTML template's source on GitHub.
-func templateLinkFunc(ctx *builtins.Context, props map[string]ast.Node, _ []ast.Node) (booklit.Content, error) {
-	tmpl, err := requireStringProp(ctx, props, "tmpl", "TemplateLink")
-	if err != nil {
-		return nil, err
-	}
-	return booklit.Link{
-		Content: booklit.Styled{Style: booklit.StyleVerbatim, Content: booklit.String(tmpl)},
-		Target:  "https://github.com/vito/booklit/blob/master/render/html/" + tmpl,
 	}, nil
 }
 

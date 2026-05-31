@@ -144,12 +144,14 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 	// into Partials keyed by their JSX (camelCase) names; the renderer
 	// looks up `<Name>.tmpl` and templates can read partials via the
 	// `.Partial "name"` accessor.
-	var body booklit.Content
+	var body booklit.Content = booklit.Empty
 	if len(node.Children) > 0 {
-		var err error
-		body, err = eval.evalArg(ast.Sequence(node.Children))
+		evaluated, err := eval.evalArg(ast.Sequence(node.Children))
 		if err != nil {
 			return err
+		}
+		if evaluated != nil {
+			body = evaluated
 		}
 	}
 
