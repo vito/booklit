@@ -216,9 +216,9 @@ func parseAttribute(s *jsxScanner) (JSXProp, bool) {
 		return JSXProp{}, false
 	}
 	switch b {
-	case '"':
+	case '"', '\'':
 		s.next()
-		value, ok := readQuoted(s, '"')
+		value, ok := readQuoted(s, b)
 		if !ok {
 			return JSXProp{}, false
 		}
@@ -318,6 +318,13 @@ func readBraceExpr(s *jsxScanner) ([]byte, bool) {
 // parseChildren reads element body until a matching </parentName> close tag.
 // Children are partitioned into text chunks, nested JSX elements, and
 // {expression} captures.
+//
+// Markdown backtick code spans suppress JSX trigger characters. Inside a
+// span, `<UpperCase` and `{expr}` are treated as literal text — this lets
+// documentation show literal JSX/expression syntax in `code` form without
+// having it interpreted. Tracking is intentionally simple: any backtick
+// toggles a single-character code-span flag. Multi-backtick fenced spans
+// in inline children are rare and not handled.
 func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 	var textBuf []byte
 	flushText := func() {
@@ -326,6 +333,7 @@ func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 			textBuf = nil
 		}
 	}
+	inCodeSpan := false
 	for {
 		line, _ := s.block.PeekLine()
 		if line == nil {
@@ -337,6 +345,27 @@ func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 			continue
 		}
 		c := line[0]
+		if c == '`' {
+			inCodeSpan = !inCodeSpan
+			textBuf = append(textBuf, '`')
+			s.next()
+			continue
+		}
+		if inCodeSpan {
+			// Consume run of plain text up to next backtick or EOL.
+			i := 0
+			for i < len(line) && line[i] != '`' {
+				i++
+			}
+			textBuf = append(textBuf, line[:i]...)
+			if i < len(line) {
+				s.block.Advance(i)
+			} else {
+				s.block.AdvanceLine()
+				s.crossedLine = true
+			}
+			continue
+		}
 		if c == '<' {
 			if len(line) >= 2 && line[1] == '/' {
 				tagLen, name, ok := scanCloseTag(line)
@@ -374,9 +403,11 @@ func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 			*out = append(*out, JSXChild{Kind: JSXChildExpression, Text: expr})
 			continue
 		}
-		// Run of plain text until the next '<' or '{' or end of line.
+		// Run of plain text until the next '<', '{', backtick, or end of
+		// line. Backticks stop the run so the outer loop can toggle the
+		// in-code-span flag on the next iteration.
 		i := 0
-		for i < len(line) && line[i] != '<' && line[i] != '{' {
+		for i < len(line) && line[i] != '<' && line[i] != '{' && line[i] != '`' {
 			i++
 		}
 		textBuf = append(textBuf, line[:i]...)
