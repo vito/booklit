@@ -98,29 +98,68 @@ merges the forms into the held type + value envs. Booklit's docs use
 this for `docs/lit/helpers.dang` (godoc URL composition, the
 componentName kebab→Pascal converter).
 
-The bridge (`dangeval/bridge.go`) maps Dang values to `booklit.Content`:
-`StringValue` → `String`; `IntValue`/`FloatValue`/`BoolValue` →
-stringified `String`; `ListValue` → `Sequence`; `NullValue` → empty;
-`ContentValue` → its carried `Content` verbatim; anything richer is an
-error. The Evaluator is one per build session, single-threaded.
+The bridge (`dangeval/bridge.go`) maps Dang values to `booklit.Content`.
+`ToContent` handles the primitives: `StringValue` → `String`;
+`IntValue`/`FloatValue`/`BoolValue` → stringified `String`; `ListValue`
+→ `Sequence`; `NullValue` → empty; `ContentValue` → its carried
+`Content` verbatim. `Evaluator.ContentFromValue` is the richer,
+section-aware path used for JSX/`{expr}` results: on top of the above it
+decodes content returned by a Dagger module (see "Content from a Dagger
+module") and rehydrates `Reference`/`Target` nodes against the current
+section. The Evaluator is one per build session, single-threaded.
 
-A Dagger session is implicit: any project with a `dagger.json` gets
-the module's functions in scope. Booklit doesn't need its own
-"Dagger dispatch tier" — Dang already handles that, and a tag-level
-JSX `from="..."` syntax (in the original Phase 4 sketch) would have
-just duplicated the existing import machinery.
+A Dagger session is implicit: `dangeval.New` finds the `dagger.json`
+walking up from the input file, introspects the module's schema for type
+checking, and **serves** it into the session (with its dependencies) so
+its functions are callable at runtime — the serve is the piece that
+turns a type-checking-only import into a runnable one. There is no
+separate Booklit "Dagger dispatch tier"; calls go through `{expr}` like
+any other Dang code. Note that what an introspected *module* exposes on
+the session `Query` is its **dependencies + core API**, not the
+module's own functions — so docs reach the highlighter as
+`booklitdoc.litSyntax(...)` (the dependency), not as a root-module
+function.
+
+## Content from a Dagger module
+
+A Dagger module can return Booklit content. The wire format is
+`contentjson` — a tagged-union JSON encoding of the serializable subset
+of `booklit.Content`, with the dependency-free node schema + builder
+constructors split into `contentjson/wire` so a producer needn't import
+all of `booklit`. A module builds the tree with `wire`'s constructors
+and returns it as Dagger's `JSON` scalar; Booklit recognizes the
+`JSON`-typed return in `ContentFromValue` and decodes it back into
+native content. `JSONValue!` returns work too (the bridge forces
+`.contents`), letting a module compose results lazily before Booklit
+materializes them.
+
+In-process-only content — `Section`, `TableOfContents`, `Lazy` — can't
+serialize and errors from `Marshal`. Stateful-but-nameable content
+(`Reference`, `Target`) crosses carrying only a tag name and is re-bound
+to the live section on decode, so cross-references survive the round
+trip.
+
+The first real use is `<LitSyntax>`: the `docs/html/LitSyntax.md`
+template calls `{booklitdoc.litSyntax(code: code)}`, which runs the
+`dagger/booklitdoc` Go-SDK module (chroma highlighting + `\function`
+linkification) and returns `contentjson`. The module depends on the
+local `booklit` module via a `go.mod` replace + `dagger.json` includes
+(the standard Dagger monorepo pattern) and is installed as a dependency
+of the docs module so it lands on the introspected `Query`.
 
 ## Doc helpers (`docs/booklitdoc/`) collapsed
 
-What used to be `~376 lines` is now `~165`. `<Define>` and `<Godoc>`
-moved to `docs/html/Define.md` and `docs/html/Godoc.md`; `<Columns>`,
-`<Column>`, and `<ColumnHeader>` are now plain `<div>`-wrapper mdx
-templates (`docs/html/Columns.md`, `Column.md`, `ColumnHeader.md`) with
-the layout driven by CSS (`.columns > .column:first-child` is the narrow
-description column); `<OutputFrame>`, `<TemplateLink>`, `<SyntaxHl>`
-either moved to templates or were dead code. What's still Go:
-`<LitSyntax>` (chroma + regex) and the chroma `styles.Fallback` palette
-override.
+What used to be `~376 lines` is now `~44` — just the chroma
+`styles.Fallback` palette override, still applied in-process because
+`baselit` highlights fenced code blocks site-wide. Everything else
+became a template or moved out of process: `<Define>` / `<Godoc>` →
+`docs/html/Define.md` / `Godoc.md`; `<Columns>` / `<Column>` /
+`<ColumnHeader>` → plain `<div>`-wrapper mdx templates with the layout
+driven by CSS (`.columns > .column:first-child` is the narrow
+description column); `<OutputFrame>` / `<TemplateLink>` / `<SyntaxHl>` →
+templates or dead code; and `<LitSyntax>` → the Dagger module above. The
+binary `cmd/booklit-docs` now exists only to install that palette and
+bundle the docs' Dagger dependency.
 
 ## File map (new code)
 
@@ -133,8 +172,13 @@ override.
   the tier-3 component-call plumbing
 - `templates/` — tier-3-and-a-half template registry + the custom
   template parser
-- `cmd/booklit-docs/` — separate binary that imports the docs-site
-  built-ins on top of `cmd/booklit`
+- `contentjson/` — JSON wire format for `booklit.Content`, plus the
+  dependency-free `wire` subpackage producers build with
+- `dagger/booklitdoc/` — Go-SDK Dagger module: highlights Booklit
+  source and returns it as `contentjson`
+- `cmd/booklit-docs/` — separate binary that installs the docs palette
+  (`docs/booklitdoc`) on top of `cmd/booklit`; the docs' highlighter is
+  a Dagger dependency, not compiled in
 
 ## Design notes
 
@@ -155,10 +199,17 @@ override.
 
 ## What's not implemented
 
-- Per-document remote-Dagger-module imports. Locally-bound Dagger
-  functions work via `{expr}` from any project with a `dagger.json`;
-  pulling in an out-of-tree module for one document would mean
-  reaching for `dang.toml`'s import config, not a Booklit-side syntax.
+- Per-document remote-Dagger-module imports. Local Dagger module
+  functions (including content-returning ones — see "Content from a
+  Dagger module") work via `{expr}`; pulling in an out-of-tree module
+  for one document would mean reaching for `dang.toml`'s import config,
+  not a Booklit-side syntax.
+- `<LitSyntax>`'s `JSONValue!` (lazy) variant. The bridge supports it,
+  but the module returns the `JSON` scalar because its pinned Go SDK
+  predates the engine's `JSONValue` constructor; needs an SDK bump.
+- Passing raw source *text* (not rendered content) as template/JSX
+  children, so `<LitSyntax>` takes `code` as an attribute rather than a
+  fenced body. Multi-line snippets are awkward until then.
 - JSX literals inside Dang expressions (`{items.map(t => <Foo>…
   </Foo>)}`). Iteration and conditionals are covered by `<For>` and
   `<If>` / `<Unless>` built-ins instead.
@@ -173,4 +224,9 @@ override.
 - `phase-3b.md` — mdx-as-template phase plan and its progress log.
 - `decisions.md` — fork-in-the-road notes from the late autonomous
   session (e.g. why JSX-in-Dang and Phase 4 were left for a co-design
-  pass).
+  pass). Note: its assumption that a root-module function like
+  `{build(...)}` is callable from docs is wrong — introspection exposes
+  dependencies + core, not the module's own functions.
+- `dagger-content.md` — current state of the Dagger-content work
+  (`contentjson`, the bridge, the served module, `<LitSyntax>`) and the
+  open follow-ups; the place to pick up next.
