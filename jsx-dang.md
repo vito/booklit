@@ -742,3 +742,147 @@ rendering, dynamic data via `{primitiveTypes.map(...)}`) opens up once
 Dang is wired in. Expect to discover ergonomic gaps in Dang's public
 embedding API; the REPL in `cmd/dang/repl_tuist.go` is the closest
 existing analogue.
+
+### 2026-05-30 — Phase 1 polish (post-migration)
+
+Two small commits landed after the Phase 1 entry above, both in the
+Markdown-over-JSX direction.
+
+- `d8b13af` (`refactor(builtins): drop List/Table built-ins in favor of
+  Markdown`): removed `<List>` / `<Item>` / `<Table>` / `<Row>` and
+  their wrapper content types. Markdown's `- item`, `1. item`, and
+  `| a | b |` already cover these and read better. `<Definitions>` /
+  `<Definition>` stay because CommonMark has no definition-list form.
+  `docs/lit/baselit.md` drops the JSX entries and points at the
+  Markdown forms; `getting-started.md`, `syntax.md`, `plugins.md` use
+  Markdown lists directly.
+
+- `6333475` (`fix: pass raw HTML through to the renderer instead of
+  escaping`): `marklit/convert.go` was emitting `ast.String(text)` for
+  inline raw HTML and HTML blocks, so any `<dl>` / `<em>` etc. in a
+  Markdown doc came out as `&lt;dl&gt;`. Now those routes emit
+  `\raw-html` / `\raw-html-block` invokes that wrap as
+  `booklit.Styled{Style: "raw-html"}` (with `Block=true` for blocks);
+  the existing `raw-html.tmpl` (`{{. | rawHTML}}`) does the pass-
+  through. Method names are `RawHtml` / `RawHtmlBlock`, not
+  `RawHTML` — invokes resolve via dash-to-CamelCase
+  (`raw-html` → `RawHtml`), which doesn't align with Go's initialism
+  convention. Markdown formatting inside a raw HTML block still isn't
+  re-parsed, matching standard CommonMark behavior. Two regression
+  tests in `tests/jsx_test.go`.
+
+### 2026-05-30 — Phase 3 MVP: Dang expressions in JSX
+
+Embedded the Dang interpreter so `{expr}` interpolations inside JSX
+evaluate end-to-end. Booklit now imports `github.com/vito/dang` as a
+Go dependency.
+
+**Done.**
+
+- New package `dangeval/`:
+  - `dangeval.Evaluator` holds a long-lived type env (`hm.Env`) +
+    value env (`dang.EvalEnv`) + service registry. One Evaluator per
+    build session.
+  - `New(ctx, projectDir)` discovers `dang.toml` via
+    `dang.FindProjectConfig` (walks upward), resolves imports via
+    `dang.ResolveImportConfigs`, auto-detects `dagger.json` via
+    `dang.ResolveDaggerImport`, then bootstraps via
+    `dang.BuildEnvFromImports`. Without any config the result is a
+    Prelude-only env, which still handles primitive expressions.
+  - `Eval(raw)` mirrors the REPL's `startEval` loop
+    (`cmd/dang/repl_tuist.go`): `ParseWithRecovery` → take
+    `*ModuleBlock.Forms` → `InferFormsWithPhases` against the held
+    type env → `EvalNode` per form against the held eval env.
+  - `Close()` calls `services.StopAll()` for any subprocesses started
+    by dang.toml imports (e.g. `dagger session`).
+
+- `dangeval/bridge.go` maps Dang values to `booklit.Content`:
+  `StringValue` → `booklit.String`, scalars stringified, `ListValue`
+  → `booklit.Sequence` of bridged elements, `NullValue` → empty.
+  Records / functions / modules are an error for v1.
+
+- `stages.Evaluate` grew a `Dang *dangeval.Evaluator` field.
+  `VisitJSXExpression` now calls `Dang.Eval(node.Raw)` and appends
+  the bridged content. `evalArg` propagates the field to sub-
+  evaluators so JSX prop expressions and child expressions go through
+  the same path.
+
+- `load.Processor` grew a matching `Dang` field;
+  `evaluateSection` plumbs it into the `stages.Evaluate`.
+
+- `booklitcmd.Command.Build` constructs an Evaluator rooted at the
+  input file's directory and defers `Close()`. `Serve` is unchanged
+  for now — server-mode lifecycle is its own design call.
+
+- `tests.Example.Run` constructs an Evaluator per-test rooted at the
+  temp dir, so every test exercises the Dang path. Seven new cases in
+  `tests/dang_test.go` cover int, string, arithmetic, boolean, list,
+  expression-in-prop (via the existing `Card.tmpl` fallback), and a
+  parse-error case. Full `go test ./...` green; the docs site
+  (`go run ./cmd/booklit-docs -i docs/lit/index.md -o ... --html-templates docs/html`)
+  builds clean.
+
+**Decisions worth knowing.**
+
+- *Discovery: dang.toml + dagger.json only, no `dang/` directory*.
+  The original plan mentioned a `dang/` source-file directory at the
+  project root. dang.toml is for GraphQL imports (Dagger sessions,
+  SDL files, endpoints), not `.dang` source files. A directory-of-
+  `.dang`-files convention is its own design call — defer.
+
+- *Per-section scope: none yet*. Every snippet evaluates against the
+  same global env. The `Section` type has no `Vars`/`Locals` field to
+  hang per-section bindings off, and adding that interacts with
+  built-ins' control flow (e.g. `<Section>` recursing via
+  `Processor.EvaluateNode`). The simpler global model works for
+  primitive expressions and for any data exposed by the project's
+  Dagger module; richer scoping comes when we have a real use case.
+
+- *Bridging is one-way*. Booklit consumes Dang values; Dang has no
+  way to construct Booklit content (`<Foo/>` inside `{...}` doesn't
+  work). The full `{items.map(i => <Item>{i.name}</Item>)}` story
+  needs a `BooklitContent` opaque type in Dang. Deferred.
+
+- *Threading is fine because Booklit is single-threaded*. Dang's
+  `Env`/`EvalEnv` aren't safe for concurrent use (no mutexes on the
+  module's `Values`/`Pending` maps). Booklit's evaluator processes
+  sections sequentially, so a single shared Evaluator is correct.
+  If parallelism is added later, we'll need per-goroutine envs.
+
+- *Error surfacing is plain wrapping for now*. Errors include the
+  raw expression text (`evaluating {1 +}: ...`) but don't map to
+  source line/col within the document. Dang carries its own
+  `SourceError` shape; integrating that into Booklit's
+  `ErrorWithFile` framework is a follow-up.
+
+- *Local replace directive*. `go.mod` has
+  `replace github.com/vito/dang => /home/vito/src/dang` so dev-time
+  changes flow through without a tag. When upstreaming, swap for a
+  pinned version.
+
+**Known limitations / follow-ups.**
+
+- `{expr}` only works *inside* a JSX element (e.g. `<Foo>{1+2}</Foo>`
+  or `<Foo bar={1+2}/>`). A bare `{1+2}` in a paragraph is literal
+  text — the JSX inline parser triggers on `<`, not `{`. Adding a
+  second trigger character means more brace-vs-literal-text disambig
+  work; defer until the docs actually want it.
+
+- No file/line context in expression errors yet (see decision above).
+
+- `Serve` mode doesn't construct an Evaluator. Live-reload + a
+  long-lived Dang env interact in non-obvious ways (re-loading
+  dang.toml? Restarting Dagger session?); skipped for now.
+
+- The `RawHtml` / `RawHtmlBlock` method-naming wart from the
+  preceding polish entry still stands; orthogonal to Phase 3.
+
+**Reasonable next steps.** (a) Decide on `dang/` source-file directory
+support — when does a project want global `.dang` modules vs. just
+pulling functions from a Dagger module via dang.toml? (b) Per-section
+scope — what's the first use case that needs in-scope props/locals
+inside `{...}`? (c) Source-mapping for Dang errors into Booklit's
+file:line error framework. (d) JSX-inside-Dang
+(`{items.map(i => <Item>{i.name}</Item>)}`) — needs design work on
+the Dang side (`BooklitContent` opaque type) before Booklit can wire
+it.
