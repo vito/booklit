@@ -66,9 +66,8 @@ func TestJSX(t *testing.T) {
 		{
 			name: "mixed text and JSX",
 			in:   `<Foo>hello <Bar/> world</Foo>`,
-			// Text chunks between JSX get re-parsed as inline markdown,
-			// which produces separate ast.String nodes for words and the
-			// trailing/leading whitespace that ParseInlineArg restores.
+			// Single-line JSX → inline children: text chunks split at
+			// element boundaries become separate ast.String nodes.
 			want: jsx("Foo", nil, []ast.Node{
 				ast.String("hello"),
 				ast.String(" "),
@@ -89,6 +88,16 @@ func TestJSX(t *testing.T) {
 			}),
 		},
 		{
+			name: "block content with paragraph",
+			// Multi-line JSX uses block parsing for text children, so
+			// blank lines yield paragraphs naturally.
+			in: "<Foo>\n\nfirst para\n\nsecond para\n\n</Foo>",
+			want: jsx("Foo", nil, []ast.Node{
+				ast.Paragraph{ast.Sequence{ast.String("first para")}},
+				ast.Paragraph{ast.Sequence{ast.String("second para")}},
+			}),
+		},
+		{
 			name: "JSX inline within sentence",
 			in:   `Hello <Foo/> world`,
 			want: ast.Paragraph{ast.Sequence{
@@ -100,8 +109,9 @@ func TestJSX(t *testing.T) {
 		{
 			name: "multi-line element body",
 			in:   "<Foo>\n  body\n</Foo>",
-			// Soft-line-break text is collapsed by ParseInlineArg.
-			want: jsx("Foo", nil, []ast.Node{ast.String("body")}),
+			want: jsx("Foo", nil, []ast.Node{
+				ast.Paragraph{ast.Sequence{ast.String("body")}},
+			}),
 		},
 		{
 			name: "multi-line attrs",

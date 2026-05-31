@@ -43,9 +43,14 @@ func (p *jsxInlineParser) Parse(parent gast.Node, block text.Reader, pc parser.C
 }
 
 // jsxScanner is a byte-at-a-time view over a goldmark text.Reader. Each
-// next/peek operation crosses line boundaries automatically.
+// next/peek operation crosses line boundaries automatically. crossedLine
+// flips to true the first time the scanner advances past a line break,
+// so callers can distinguish single-line JSX (children should be parsed
+// inline, like `\title{x}`) from multi-line JSX (children are block
+// content, like `\section{ ... }`).
 type jsxScanner struct {
-	block text.Reader
+	block        text.Reader
+	crossedLine  bool
 }
 
 func (s *jsxScanner) peek() (byte, bool) {
@@ -56,6 +61,7 @@ func (s *jsxScanner) peek() (byte, bool) {
 		}
 		if len(line) == 0 {
 			s.block.AdvanceLine()
+			s.crossedLine = true
 			continue
 		}
 		return line[0], true
@@ -70,11 +76,13 @@ func (s *jsxScanner) next() (byte, bool) {
 		}
 		if len(line) == 0 {
 			s.block.AdvanceLine()
+			s.crossedLine = true
 			continue
 		}
 		b := line[0]
 		if len(line) == 1 {
 			s.block.AdvanceLine()
+			s.crossedLine = true
 		} else {
 			s.block.Advance(1)
 		}
@@ -99,7 +107,17 @@ func (s *jsxScanner) skipWS() {
 // parseJSXElement parses a single <Name...> element starting at the current
 // reader position. On success the reader is left just past the closing '>'.
 // On failure the reader position is undefined; the outer Parse restores it.
+//
+// MultiLine on the returned node reflects only whether this particular
+// element (not its outer context) spanned multiple lines. Outer parses see
+// their own crossings via the deferred restore of s.crossedLine.
 func parseJSXElement(s *jsxScanner) (*JSXElementNode, bool) {
+	outerCrossed := s.crossedLine
+	s.crossedLine = false
+	defer func() {
+		s.crossedLine = outerCrossed || s.crossedLine
+	}()
+
 	b, ok := s.next()
 	if !ok || b != '<' {
 		return nil, false
@@ -139,6 +157,7 @@ func parseJSXElement(s *jsxScanner) (*JSXElementNode, bool) {
 			return nil, false
 		}
 		node.SelfClosing = true
+		node.MultiLine = s.crossedLine
 		return node, true
 	}
 	if b != '>' {
@@ -148,6 +167,7 @@ func parseJSXElement(s *jsxScanner) (*JSXElementNode, bool) {
 	if !parseChildren(s, name, &node.Children) {
 		return nil, false
 	}
+	node.MultiLine = s.crossedLine
 	return node, true
 }
 
@@ -313,6 +333,7 @@ func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 		}
 		if len(line) == 0 {
 			s.block.AdvanceLine()
+			s.crossedLine = true
 			continue
 		}
 		c := line[0]
@@ -363,6 +384,7 @@ func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 			s.block.Advance(i)
 		} else {
 			s.block.AdvanceLine()
+			s.crossedLine = true
 		}
 	}
 }

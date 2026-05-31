@@ -268,11 +268,11 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 
 	case KindJSXElement:
 		j := n.(*JSXElementNode)
-		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col)
+		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
 
 	case KindJSXBlockElement:
 		j := n.(*JSXBlockElementNode)
-		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col)
+		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
 
 	default:
 		if n.Kind() == east.KindTable {
@@ -781,13 +781,15 @@ func (c *converter) convertInvokeBlock(n *InvokeBlockNode) ast.Node {
 
 // buildJSXElement turns parsed JSX node data into ast.JSXElement. Shared
 // between inline (JSXElementNode) and block (JSXBlockElementNode) goldmark
-// nodes — both carry the same fields.
+// nodes — both carry the same fields. The block flag controls how text
+// chunks between children are parsed: block context uses the full block
+// parser (so blank lines yield paragraphs), inline context uses the inline
+// parser (newlines collapse to spaces).
 //
 // String-attribute values become ast.String (no markdown parsing — attributes
 // are data, not content). Expression-attribute values become ast.JSXExpression.
-// Text-child chunks are re-parsed as inline markdown so emphasis, links, refs
-// inside JSX bodies keep working.
-func (c *converter) buildJSXElement(name string, props []JSXProp, children []JSXChild, line, col int) ast.Node {
+// Nested elements inherit the parent's block context.
+func (c *converter) buildJSXElement(name string, props []JSXProp, children []JSXChild, line, col int, block bool) ast.Node {
 	elem := ast.JSXElement{
 		Name:  name,
 		Props: make(map[string]ast.Node, len(props)),
@@ -810,12 +812,28 @@ func (c *converter) buildJSXElement(name string, props []JSXProp, children []JSX
 		switch child.Kind {
 		case JSXChildElement:
 			j := child.Elem
-			elem.Children = append(elem.Children, c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col))
+			// Nested elements use their own multi-line status, not the
+			// parent's: <Section> can hold an inline <Title> whose
+			// children should still be inline-parsed.
+			elem.Children = append(elem.Children, c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine))
 		case JSXChildExpression:
 			elem.Children = append(elem.Children, ast.JSXExpression{Raw: string(child.Text)})
 		default:
-			node := ParseInlineArg(child.Text)
+			var node ast.Node
+			if block {
+				node = ParseArg(child.Text)
+			} else {
+				node = ParseInlineArg(child.Text)
+			}
+			// Skip empty results (whitespace-only chunks between block
+			// children would otherwise add stray empty sequences).
+			if s, ok := node.(ast.String); ok && len(s) == 0 {
+				continue
+			}
 			if seq, ok := node.(ast.Sequence); ok {
+				if len(seq) == 0 {
+					continue
+				}
 				elem.Children = append(elem.Children, seq...)
 			} else {
 				elem.Children = append(elem.Children, node)

@@ -61,6 +61,7 @@ type JSXElementNode struct {
 	Name        string
 	Props       []JSXProp
 	SelfClosing bool // true for <Foo/>; false for <Foo>...</Foo>, even when Children is empty
+	MultiLine   bool // true if the element spans multiple source lines (controls block vs inline child parsing)
 	Children    []JSXChild
 
 	Line int
@@ -98,6 +99,7 @@ type JSXBlockElementNode struct {
 	Name        string
 	Props       []JSXProp
 	SelfClosing bool
+	MultiLine   bool
 	Children    []JSXChild
 
 	Line int

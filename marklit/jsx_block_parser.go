@@ -49,6 +49,7 @@ func (p *jsxBlockParser) Open(parent gast.Node, reader text.Reader, pc parser.Co
 	block := NewJSXBlockElementNode(inline.Name)
 	block.Props = inline.Props
 	block.SelfClosing = inline.SelfClosing
+	block.MultiLine = inline.MultiLine
 	block.Children = inline.Children
 	block.Line = inline.Line
 	block.Col = inline.Col

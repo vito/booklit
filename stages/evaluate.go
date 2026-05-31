@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/builtins"
 )
 
 // Evaluate is an ast.Visitor that builds up the booklit.Content for a given
@@ -92,16 +93,68 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
-// VisitJSXElement is a stub — JSX dispatch lands in a later phase. For now,
-// reaching it means the JSX parser produced an element that nothing knows how
-// to evaluate yet.
+// VisitJSXElement dispatches a JSX element via the two tiers currently
+// available: (1) a built-in registered in the builtins package, (2)
+// template-default — booklit.Styled with the component name as the style
+// and props passed through as Partials. Dang dispatch and Dagger dispatch
+// come in later phases.
 func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
-	return fmt.Errorf("JSX evaluation not yet implemented: <%s>", node.Name)
+	eval.Section.InvokeLocation = node.Location
+
+	ctx := &builtins.Context{
+		Section:  eval.Section,
+		Evaluate: eval.evalArg,
+	}
+
+	if fn, ok := builtins.Lookup(node.Name); ok {
+		content, err := fn(ctx, node.Props, node.Children)
+		if err != nil {
+			return err
+		}
+		if content != nil {
+			eval.Result = booklit.Append(eval.Result, content)
+		}
+		return nil
+	}
+
+	// Template fallback. Evaluate children into a Content body and props
+	// into Partials keyed by their JSX (camelCase) names; the renderer
+	// looks up `<Name>.tmpl` and templates can read partials via the
+	// `.Partial "name"` accessor.
+	var body booklit.Content
+	if len(node.Children) > 0 {
+		var err error
+		body, err = eval.evalArg(ast.Sequence(node.Children))
+		if err != nil {
+			return err
+		}
+	}
+
+	var partials booklit.Partials
+	if len(node.Props) > 0 {
+		partials = booklit.Partials{}
+		for name, propNode := range node.Props {
+			val, err := eval.evalArg(propNode)
+			if err != nil {
+				return err
+			}
+			partials[name] = val
+		}
+	}
+
+	eval.Result = booklit.Append(eval.Result, booklit.Styled{
+		Style:    booklit.Style(node.Name),
+		Content:  body,
+		Partials: partials,
+	})
+	return nil
 }
 
-// VisitJSXExpression is a stub — Dang evaluation lands in Phase 3.
+// VisitJSXExpression is a stub — Dang evaluation lands in Phase 3. A
+// JSXExpression in the AST means an unparsed `{...}` was retained from
+// parsing; nothing can evaluate it until Dang is embedded.
 func (eval *Evaluate) VisitJSXExpression(node ast.JSXExpression) error {
-	return fmt.Errorf("JSX expression evaluation not yet implemented: {%s}", node.Raw)
+	return fmt.Errorf("JSX expression evaluation not yet implemented (Phase 3): {%s}", node.Raw)
 }
 
 // VisitPreformatted behaves similarly to VisitParagraph, but with no
