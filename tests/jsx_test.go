@@ -92,6 +92,46 @@ See <Reference tag="middle">it again</Reference>.
 			},
 		},
 		{
+			name: "inline raw HTML passes through",
+			example: Example{
+				Input: `<Title>Hello, world!</Title>
+
+This has <em>literal em</em> in it.
+`,
+				Outputs: Files{
+					"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>This has <em>literal em</em> in it.</p>
+</section>
+`,
+				},
+			},
+		},
+		{
+			name: "block raw HTML passes through",
+			example: Example{
+				Input: `<Title>Hello, world!</Title>
+
+<dl>
+<dt><em>term</em></dt>
+<dd>body</dd>
+</dl>
+`,
+				Outputs: Files{
+					"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<dl>
+		<dt><em>term</em></dt>
+		<dd>body</dd>
+	</dl>
+</section>
+`,
+				},
+			},
+		},
+		{
 			name: "template fallback for unknown component",
 			example: Example{
 				Input: `<Title>Hello, world!</Title>

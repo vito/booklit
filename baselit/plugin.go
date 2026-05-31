@@ -231,6 +231,29 @@ func (plugin Plugin) Aside(content booklit.Content) booklit.Content {
 	}
 }
 
+// RawHtml passes content through to the renderer as literal HTML (no
+// escaping). Used by the markdown converter for inline raw HTML like
+// `<em>...</em>` so it round-trips into the rendered output. The method
+// name uses Title-cased "Html" because the invoke `\raw-html` is
+// resolved by dash-to-CamelCase, not Go's initialism convention.
+func (plugin Plugin) RawHtml(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "raw-html",
+		Content: content,
+	}
+}
+
+// RawHtmlBlock is like RawHtml but flagged as block content. Used for
+// block-level raw HTML like `<dl>...</dl>` so it doesn't get folded
+// into a surrounding paragraph.
+func (plugin Plugin) RawHtmlBlock(content booklit.Content) booklit.Content {
+	return booklit.Styled{
+		Style:   "raw-html",
+		Block:   true,
+		Content: content,
+	}
+}
+
 func (plugin Plugin) Link(content booklit.Content, target string) booklit.Content {
 	return booklit.Link{
 		Content: content,

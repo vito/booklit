@@ -717,7 +717,10 @@ func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	if n.HasClosure() {
 		text = append(text, n.ClosureLine.Value(c.source)...)
 	}
-	return ast.String(text)
+	return ast.Invoke{
+		Function:  "raw-html-block",
+		Arguments: []ast.Node{ast.String(text)},
+	}
 }
 
 func (c *converter) convertRawHTML(n *gast.RawHTML) ast.Node {
@@ -726,7 +729,10 @@ func (c *converter) convertRawHTML(n *gast.RawHTML) ast.Node {
 		seg := n.Segments.At(i)
 		text = append(text, seg.Value(c.source)...)
 	}
-	return ast.String(text)
+	return ast.Invoke{
+		Function:  "raw-html",
+		Arguments: []ast.Node{ast.String(text)},
+	}
 }
 
 func (c *converter) convertInvoke(n *InvokeNode) ast.Node {
