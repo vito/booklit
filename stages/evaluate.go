@@ -92,6 +92,18 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
+// VisitJSXElement is a stub — JSX dispatch lands in a later phase. For now,
+// reaching it means the JSX parser produced an element that nothing knows how
+// to evaluate yet.
+func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
+	return fmt.Errorf("JSX evaluation not yet implemented: <%s>", node.Name)
+}
+
+// VisitJSXExpression is a stub — Dang evaluation lands in Phase 3.
+func (eval *Evaluate) VisitJSXExpression(node ast.JSXExpression) error {
+	return fmt.Errorf("JSX expression evaluation not yet implemented: {%s}", node.Raw)
+}
+
 // VisitPreformatted behaves similarly to VisitParagraph, but with no
 // special-case for block content, and it appends a booklit.Preformatted
 // instead.

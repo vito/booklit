@@ -266,6 +266,14 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 	case KindInvokeBlock:
 		return c.convertInvokeBlock(n.(*InvokeBlockNode))
 
+	case KindJSXElement:
+		j := n.(*JSXElementNode)
+		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col)
+
+	case KindJSXBlockElement:
+		j := n.(*JSXBlockElementNode)
+		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col)
+
 	default:
 		if n.Kind() == east.KindTable {
 			return c.convertTable(n.(*east.Table))
@@ -303,7 +311,7 @@ func (c *converter) splitInvokeOnlyParagraph(n gast.Node) ast.Node {
 	invokeCount := 0
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
 		switch child.Kind() {
-		case KindInvoke, KindInvokeBlock:
+		case KindInvoke, KindInvokeBlock, KindJSXElement:
 			invokeCount++
 		case gast.KindText:
 			t := child.(*gast.Text)
@@ -326,7 +334,7 @@ func (c *converter) splitInvokeOnlyParagraph(n gast.Node) ast.Node {
 	var nodes []ast.Node
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
 		switch child.Kind() {
-		case KindInvoke, KindInvokeBlock:
+		case KindInvoke, KindInvokeBlock, KindJSXElement:
 			converted := c.convertNode(child)
 			if converted != nil {
 				nodes = append(nodes, ast.Paragraph{ast.Sequence{converted}})
@@ -769,4 +777,51 @@ func (c *converter) convertInvokeBlock(n *InvokeBlockNode) ast.Node {
 	}
 
 	return invoke
+}
+
+// buildJSXElement turns parsed JSX node data into ast.JSXElement. Shared
+// between inline (JSXElementNode) and block (JSXBlockElementNode) goldmark
+// nodes — both carry the same fields.
+//
+// String-attribute values become ast.String (no markdown parsing — attributes
+// are data, not content). Expression-attribute values become ast.JSXExpression.
+// Text-child chunks are re-parsed as inline markdown so emphasis, links, refs
+// inside JSX bodies keep working.
+func (c *converter) buildJSXElement(name string, props []JSXProp, children []JSXChild, line, col int) ast.Node {
+	elem := ast.JSXElement{
+		Name:  name,
+		Props: make(map[string]ast.Node, len(props)),
+		Location: ast.Location{
+			Line: line,
+			Col:  col,
+		},
+	}
+
+	for _, p := range props {
+		switch p.Kind {
+		case JSXPropExpression:
+			elem.Props[p.Name] = ast.JSXExpression{Raw: string(p.Value)}
+		default:
+			elem.Props[p.Name] = ast.String(p.Value)
+		}
+	}
+
+	for _, child := range children {
+		switch child.Kind {
+		case JSXChildElement:
+			j := child.Elem
+			elem.Children = append(elem.Children, c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col))
+		case JSXChildExpression:
+			elem.Children = append(elem.Children, ast.JSXExpression{Raw: string(child.Text)})
+		default:
+			node := ParseInlineArg(child.Text)
+			if seq, ok := node.(ast.Sequence); ok {
+				elem.Children = append(elem.Children, seq...)
+			} else {
+				elem.Children = append(elem.Children, node)
+			}
+		}
+	}
+
+	return elem
 }

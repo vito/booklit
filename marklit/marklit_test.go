@@ -1,6 +1,7 @@
 package marklit_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/vito/booklit/ast"
@@ -802,5 +803,34 @@ func (v *stringVisitor) VisitPreformatted(p ast.Preformatted) error {
 		v.result += sub.result
 	}
 	v.result += ")"
+	return nil
+}
+
+func (v *stringVisitor) VisitJSXElement(j ast.JSXElement) error {
+	v.result += "J(" + j.Name
+	// Sort prop names for stable output across map-iteration order.
+	names := make([]string, 0, len(j.Props))
+	for k := range j.Props {
+		names = append(names, k)
+	}
+	sort.Strings(names)
+	for _, k := range names {
+		v.result += " " + k + "="
+		sub := &stringVisitor{}
+		_ = j.Props[k].Visit(sub)
+		v.result += sub.result
+	}
+	for _, child := range j.Children {
+		v.result += ","
+		sub := &stringVisitor{}
+		_ = child.Visit(sub)
+		v.result += sub.result
+	}
+	v.result += ")"
+	return nil
+}
+
+func (v *stringVisitor) VisitJSXExpression(e ast.JSXExpression) error {
+	v.result += "E(" + e.Raw + ")"
 	return nil
 }

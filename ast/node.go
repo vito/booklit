@@ -21,6 +21,8 @@ type Visitor interface {
 	VisitSequence(Sequence) error
 	VisitParagraph(Paragraph) error
 	VisitPreformatted(Preformatted) error
+	VisitJSXElement(JSXElement) error
+	VisitJSXExpression(JSXExpression) error
 }
 
 // String is literal text, not including linebreaks.
@@ -85,4 +87,43 @@ type Preformatted []Sequence
 // Visit calls VisitPreformatted.
 func (node Preformatted) Visit(visitor Visitor) error {
 	return visitor.VisitPreformatted(node)
+}
+
+// JSXElement is a JSX-style invocation, e.g. <Foo bar="x">body</Foo>.
+//
+// Name is the component name as authored (PascalCase by convention; lowercase
+// tags are passed through as literal HTML by the parser and do not become
+// JSXElement nodes).
+//
+// Props maps camelCase prop names to their values. A value is either an
+// ast.String (literal "..." attribute) or an ast.JSXExpression (attribute
+// of the form name={expr}).
+//
+// Children is the flat list of nodes between the opening and closing tags,
+// in source order. Empty for self-closing elements.
+type JSXElement struct {
+	Name     string
+	Props    map[string]Node
+	Children []Node
+
+	Location Location
+}
+
+// Visit calls VisitJSXElement.
+func (node JSXElement) Visit(visitor Visitor) error {
+	return visitor.VisitJSXElement(node)
+}
+
+// JSXExpression is an unparsed {expr} occurrence inside JSX. The Raw field
+// holds the source text between the braces; it will eventually be parsed and
+// evaluated by Dang (Phase 3). For now consumers treat it as opaque.
+type JSXExpression struct {
+	Raw string
+
+	Location Location
+}
+
+// Visit calls VisitJSXExpression.
+func (node JSXExpression) Visit(visitor Visitor) error {
+	return visitor.VisitJSXExpression(node)
 }

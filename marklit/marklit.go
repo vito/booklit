@@ -135,12 +135,18 @@ func parseArg(source []byte, doStripIndent bool) ast.Node {
 // and GFM table support registered.
 func newParser() parser.Parser {
 	return parser.NewParser(
-		parser.WithBlockParsers(parser.DefaultBlockParsers()...),
+		parser.WithBlockParsers(
+			append(
+				parser.DefaultBlockParsers(),
+				util.Prioritized(NewJSXBlockParser(), 100),
+			)...,
+		),
 		parser.WithInlineParsers(
 			append(
 				parser.DefaultInlineParsers(),
 				util.Prioritized(NewInvokeInlineParser(), 100),
 				util.Prioritized(NewReferenceInlineParser(), 99),
+				util.Prioritized(NewJSXInlineParser(), 98),
 			)...,
 		),
 		parser.WithParagraphTransformers(
@@ -162,9 +168,13 @@ type Extension struct{}
 // Extend implements goldmark.Extender.
 func (e *Extension) Extend(md goldmark.Markdown) {
 	md.Parser().AddOptions(
+		parser.WithBlockParsers(
+			util.Prioritized(NewJSXBlockParser(), 100),
+		),
 		parser.WithInlineParsers(
 			util.Prioritized(NewInvokeInlineParser(), 100),
 			util.Prioritized(NewReferenceInlineParser(), 99),
+			util.Prioritized(NewJSXInlineParser(), 98),
 		),
 	)
 }
