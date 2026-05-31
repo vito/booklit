@@ -16,6 +16,8 @@ package dangeval
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+	"sort"
 
 	"github.com/vito/dang/pkg/dang"
 	"github.com/vito/dang/pkg/hm"
@@ -61,12 +63,55 @@ func New(ctx context.Context, projectDir string) (*Evaluator, error) {
 
 	typeEnv, evalEnv := dang.BuildEnvFromImports("booklit", configs)
 
+	if err := loadDangFiles(ctx, projectDir, typeEnv, evalEnv); err != nil {
+		return nil, err
+	}
+
 	return &Evaluator{
 		ctx:      ctx,
 		typeEnv:  typeEnv,
 		evalEnv:  evalEnv,
 		services: services,
 	}, nil
+}
+
+// loadDangFiles parses every .dang file in projectDir (non-recursive,
+// alphabetical) and merges each file's forms into the shared type and
+// value envs. Files are treated as one module — no per-file import
+// scoping. If there are no .dang files, this is a no-op.
+func loadDangFiles(ctx context.Context, projectDir string, typeEnv hm.Env, evalEnv dang.EvalEnv) error {
+	matches, err := filepath.Glob(filepath.Join(projectDir, "*.dang"))
+	if err != nil {
+		return fmt.Errorf("globbing .dang files: %w", err)
+	}
+	if len(matches) == 0 {
+		return nil
+	}
+	sort.Strings(matches)
+
+	var allForms []dang.Node
+	for _, path := range matches {
+		parsed, err := dang.ParseFileWithRecovery(path, dang.GlobalStore("filePath", path))
+		if err != nil {
+			return fmt.Errorf("parsing %s: %w", path, err)
+		}
+		block, ok := parsed.(*dang.ModuleBlock)
+		if !ok {
+			return fmt.Errorf("parsing %s: got %T, expected *ModuleBlock", path, parsed)
+		}
+		allForms = append(allForms, block.Forms...)
+	}
+
+	allForms = dang.InjectAutoImports(ctx, allForms)
+
+	fresh := hm.NewSimpleFresher()
+	if _, err := dang.InferFormsWithPhases(ctx, allForms, typeEnv, fresh); err != nil {
+		return dang.ConvertInferError(err)
+	}
+	if _, err := dang.EvaluateFormsWithPhases(ctx, allForms, evalEnv); err != nil {
+		return fmt.Errorf("evaluating .dang files: %w", err)
+	}
+	return nil
 }
 
 // Close shuts down any subprocesses started by dang.toml imports (e.g.

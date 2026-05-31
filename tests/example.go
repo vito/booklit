@@ -38,14 +38,6 @@ func (example Example) Run(t *testing.T) {
 
 	dir := t.TempDir()
 
-	dang, err := dangeval.New(context.Background(), dir)
-	require.NoError(t, err)
-	t.Cleanup(dang.Close)
-
-	processor := &load.Processor{
-		Dang: dang,
-	}
-
 	pluginFactories := []booklit.PluginFactory{
 		baselit.NewPlugin,
 	}
@@ -63,7 +55,7 @@ func (example Example) Run(t *testing.T) {
 	}
 	sectionPath := filepath.Join(dir, name+ext)
 
-	err = os.WriteFile(sectionPath, []byte(example.Input), 0644)
+	err := os.WriteFile(sectionPath, []byte(example.Input), 0644)
 	require.NoError(t, err)
 
 	for file, contents := range example.Inputs {
@@ -72,6 +64,16 @@ func (example Example) Run(t *testing.T) {
 
 		err = os.WriteFile(filepath.Join(dir, file), []byte(contents), 0644)
 		require.NoError(t, err)
+	}
+
+	// Construct after inputs so dangeval can pick up any .dang files
+	// the test fixture placed alongside the input.
+	dang, err := dangeval.New(context.Background(), dir)
+	require.NoError(t, err)
+	t.Cleanup(dang.Close)
+
+	processor := &load.Processor{
+		Dang: dang,
 	}
 
 	section, err := processor.LoadFile(sectionPath, pluginFactories)

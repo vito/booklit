@@ -12,6 +12,7 @@ import (
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/builtins"
 	"github.com/vito/booklit/dangeval"
+	"github.com/vito/dang/pkg/dang"
 )
 
 // Evaluate is an ast.Visitor that builds up the booklit.Content for a given
@@ -98,11 +99,18 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
-// VisitJSXElement dispatches a JSX element via the two tiers currently
-// available: (1) a built-in registered in the builtins package, (2)
-// template-default — booklit.Styled with the component name as the style
-// and props passed through as Partials. Dang dispatch and Dagger dispatch
-// come in later phases.
+// VisitJSXElement dispatches a JSX element across three tiers, in order:
+//
+//  1. **Built-in**: a Go function registered in the builtins package.
+//  2. **Dang scope**: a `pub PascalCase` function in scope, dispatched
+//     with props bridged as named args and children compiled as a
+//     `&body` block whose invocation pushes the named args into Dang
+//     scope and re-evaluates the children.
+//  3. **Template default**: wrap in booklit.Styled with the component
+//     name as the style and props as Partials; the renderer looks up
+//     a matching .tmpl. This is the "unknown component" path.
+//
+// Dagger dispatch is the eventual fourth tier (see jsx-dang.md).
 func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 	eval.Section.InvokeLocation = node.Location
 
@@ -120,6 +128,16 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 			eval.Result = booklit.Append(eval.Result, content)
 		}
 		return nil
+	}
+
+	if eval.Dang != nil {
+		callable, found, err := eval.Dang.LookupCallable(node.Name)
+		if err != nil {
+			return fmt.Errorf("looking up <%s> in Dang scope: %w", node.Name, err)
+		}
+		if found {
+			return eval.dispatchDang(node, callable)
+		}
 	}
 
 	// Template fallback. Evaluate children into a Content body and props
@@ -153,6 +171,80 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 		Partials: partials,
 	})
 	return nil
+}
+
+// dispatchDang invokes a Dang function representing a JSX component.
+// Props are bridged to Dang values; the children are wrapped in a body
+// closure that, each time the Dang function calls it, pushes the named
+// args into Dang scope and re-evaluates the children, appending their
+// content to a per-invocation accumulator. The accumulated content is
+// appended to Result once the Dang function returns.
+func (eval *Evaluate) dispatchDang(node ast.JSXElement, callable dang.Callable) error {
+	props, err := eval.propsToDang(node.Props)
+	if err != nil {
+		return err
+	}
+
+	var accumulator booklit.Content
+	body := func(args map[string]dang.Value) error {
+		return eval.Dang.WithBindings(args, func() error {
+			content, err := eval.evalArg(ast.Sequence(node.Children))
+			if err != nil {
+				return err
+			}
+			if content != nil {
+				accumulator = booklit.Append(accumulator, content)
+			}
+			return nil
+		})
+	}
+
+	ret, err := eval.Dang.CallComponent(callable, props, body)
+	if err != nil {
+		return fmt.Errorf("dispatching <%s>: %w", node.Name, err)
+	}
+
+	// Body-ful components emit content via the accumulator and ignore
+	// their return value. Body-less components return a value directly.
+	if accumulator != nil {
+		eval.Result = booklit.Append(eval.Result, accumulator)
+		return nil
+	}
+	content, err := dangeval.ToContent(ret)
+	if err != nil {
+		return fmt.Errorf("bridging <%s> return value: %w", node.Name, err)
+	}
+	if content != nil {
+		eval.Result = booklit.Append(eval.Result, content)
+	}
+	return nil
+}
+
+// propsToDang bridges JSX prop values to Dang values for a component
+// call. Literal string attrs map to StringValue verbatim; {expr} attrs
+// evaluate against the held Dang env and pass the raw value through;
+// anything else evaluates to content and stringifies.
+func (eval *Evaluate) propsToDang(props map[string]ast.Node) (map[string]dang.Value, error) {
+	out := make(map[string]dang.Value, len(props))
+	for name, propNode := range props {
+		switch n := propNode.(type) {
+		case ast.String:
+			out[name] = dang.StringValue{Val: string(n)}
+		case ast.JSXExpression:
+			val, err := eval.Dang.Eval(n.Raw)
+			if err != nil {
+				return nil, fmt.Errorf("prop %q: %w", name, err)
+			}
+			out[name] = val
+		default:
+			content, err := eval.evalArg(propNode)
+			if err != nil {
+				return nil, err
+			}
+			out[name] = dangeval.PropToDang(content)
+		}
+	}
+	return out, nil
 }
 
 // VisitJSXExpression parses node.Raw as a Dang snippet, evaluates it
