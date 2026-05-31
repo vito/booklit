@@ -88,10 +88,17 @@ func (cmd *Command) Execute(args []string) error {
 }
 
 func (cmd *Command) Serve() error {
+	dang, err := dangeval.New(context.Background(), filepath.Dir(cmd.In))
+	if err != nil {
+		return fmt.Errorf("bootstrap dang: %w", err)
+	}
+	defer dang.Close()
+
 	http.Handle("/", &Server{
 		In: cmd.In,
 		Processor: &load.Processor{
 			SlowInvokeThreshold: cmd.SlowInvokeThreshold,
+			Dang:                dang,
 		},
 
 		Templates:  cmd.HTMLEngine.Templates,
