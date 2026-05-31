@@ -658,3 +658,87 @@ migration. (b) Phase 3 — embed Dang as the expression language, so
 `{primitiveTypes.map(...)}` becomes evaluable. (a) is mostly
 mechanical; (b) is the bigger unknown and likely surfaces gaps in
 Dang's public API.
+
+### 2026-05-30 — Phase 1 docs migration complete
+
+Landed in commits `77be16e`, `b1e7bf9`, `3a575eb`, `5c15f53`.
+
+**Done.** Booklit's own docs site builds end-to-end on the new JSX
+pipeline. Concretely:
+
+- `feat(builtins): add long-tail baselit built-ins` (`77be16e`):
+  ~30 new components (Aux, Code, Link, Image, ThematicBreak, Styled,
+  SetPartial, IncludeSection, SinglePage, SplitSections,
+  OmitChildrenFromTableOfContents, TableOfContents, CodeBlock, Syntax,
+  List, OrderedList, Item, Definition, Definitions, Table, Row,
+  TableRow). Containers use child-element-based shape (`<List>` takes
+  `<Item>`, `<Table>` takes `<Row>` of `<Item>`s, etc.).
+
+- `fix(marklit): support single-quoted attrs and backtick code spans`
+  (`b1e7bf9`): two parser corner-cases discovered during migration —
+  single-quoted attribute values (so a `sig` prop can carry a JSX
+  signature with `"` inside), and a backtick-code-span flag in
+  `parseChildren` so literal `` `attr={expr}` `` in docs doesn't get
+  interpreted as a Dang expression.
+
+- `feat(docs): restore booklitdoc helpers as docs-specific built-ins`
+  (`3a575eb`): the booklitdoc helpers (<Define>, <Columns>,
+  <OutputFrame>, <Godoc>, <LitSyntax>, <TemplateLink>, <SyntaxHl>,
+  <ColumnHeader>, <Column>) live in `docs/booklitdoc/`, registered via
+  `builtins.Register`. A new `cmd/booklit-docs` binary imports them on
+  top of the standard `booklitcmd`, keeping docs-specific styling out
+  of the main `booklit` binary. The chroma `styles.Fallback` override
+  for the booklitdoc palette also moved here.
+
+- `docs: migrate docs/lit to JSX` (`5c15f53`): all eight doc files
+  rewritten — `\use-plugin{...}` removed, `\foo{...}` rewritten as
+  `<Foo>...</Foo>`, prose defaults to Markdown where it can (headings,
+  lists, fenced code blocks, `[#tag]` references). `<Define>` API
+  changed from "consume the raw `\foo{...}` AST" to "take a string
+  `sig` prop"; the documented signatures are now JSX. Makefile target
+  switched to `go run ./cmd/booklit-docs`.
+
+The full docs site (`docs/lit/index.md` → `docs/outputs/`) now builds
+with zero errors, zero Go plugins, zero `--plugin` flags. Full
+`go test ./...` still green.
+
+**Decisions worth knowing.**
+
+- *Container shape*. `<List>`/`<Table>`/`<Definitions>` use explicit
+  sub-components (`<Item>`, `<Row>`, `<Definition>`) rather than
+  positional children. Whitespace text between entries is ignored.
+  Markdown native lists and tables still work and remain the
+  recommended form.
+
+- *Prop key case*. Camel-case end to end. Templates that need a prop
+  reach for it by name: `{{.Partial "title"}}`.
+
+- *Single-line vs multi-line children*. Carried over from Phase 2:
+  `<Title>x</Title>` on one line parses children as inline (matching
+  `\title{x}`); a multi-line `<Section>` parses children as block.
+  Nested elements use their own line-span, so an inline `<Title>`
+  inside a multi-line `<Section>` keeps inline semantics.
+
+- *Backtick code spans*. Inside backticks, `<` and `{` are literal.
+  Multi-character fenced spans (`` ``...`` ``) aren't tracked; only
+  single-backtick spans. Sufficient for the docs.
+
+**Known follow-ups.**
+
+- A multi-paragraph block JSX whose children mix nested elements with
+  text wraps each text chunk in its own paragraph. The cleaner fix is
+  to re-serialize children with placeholders for nested elements and
+  block-parse the whole body. Deferred — the docs don't trip on this.
+
+- Templates still use PascalCase partial keys in a few places
+  (`{{.Partial "Title"}}`, `{{.Partial "URL"}}`) because the docs
+  templates predate the camelCase decision. Those are content for
+  cleanup but harmless: they're string lookups, not interface-level
+  bindings.
+
+**Next.** Phase 3 — embed Dang as the expression language. Lots of the
+deferred-questions list (full `{expr}` evaluation, conditional/loop
+rendering, dynamic data via `{primitiveTypes.map(...)}`) opens up once
+Dang is wired in. Expect to discover ergonomic gaps in Dang's public
+embedding API; the REPL in `cmd/dang/repl_tuist.go` is the closest
+existing analogue.
