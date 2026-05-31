@@ -562,3 +562,35 @@ fixtures — pure cleanup commit, no behavior change for the JSX path.
 docs migration: rewrite `booklit/docs/lit/*.md` from `\foo{}` to JSX as
 a forcing function — this probably waits for Phase 2 since otherwise
 the migrated docs would parse but not render.
+
+### 2026-05-30 — Phase 0 cleanup complete
+
+Landed in commit `cbb4d68` (`refactor: remove the Go plugin loader and
+\use-plugin`).
+
+**Done.** Removed the `--plugin` CLI flag, the `BOOKLIT_REEXEC` /
+`reexec()` apparatus that wrote a generated `main.go` and re-execed
+under `go install`, the `booklit.RegisterPlugin` / `LookupPlugin`
+registry, the `\use-plugin` function on baselit, and every example Go
+plugin: `chroma/`, `docs/hello/`, `docs/go/` (booklitdoc), and the test
+fixture plugins under `tests/fixtures/*-plugin/`. Integration test
+cases that depended on those fixtures went with them.
+
+**What stays.** `booklit.Plugin` and `booklit.PluginFactory` types
+remain because `Section.PluginFactories` is still the evaluator's
+dispatch mechanism for `\foo{}` until the 4-tier resolver lands.
+baselit stays as a hardcoded base in `booklitcmd.basePluginFactories`,
+and its chroma-driven `\code-block` / `\syntax` functions are
+untouched, so basic syntax highlighting still works for the existing
+`\foo{}` path.
+
+**Known breakage.** Booklit's own `docs/lit/*.md` files reference
+`\use-plugin{booklitdoc}` and `\use-plugin{chroma}` at the top of every
+file. Those will fail with `undefined function \use-plugin` until the
+docs are rewritten to JSX in the Phase 1 docs migration. The test
+suite does not exercise those docs and stays green.
+
+**Next.** Phase 2 (template-default dispatch) is the obvious next
+substantive step — it's what makes JSX render. Once `<Foo>` can look
+up `html/Foo.html` and fall back to built-ins, we have a usable system
+end-to-end and can attempt the docs migration.
