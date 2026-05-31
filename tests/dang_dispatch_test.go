@@ -119,3 +119,39 @@ Joined: <Italic><Each items={["a", "b", "c"]}>{item}</Each></Italic>.
 		t.Run(tt.name, tt.example.Run)
 	}
 }
+
+
+
+// TestDangComponentRecordIteration covers the headline iteration
+// pattern: a Dang function iterates a list-of-records and the JSX
+// body uses record-field access on `item` to project each field into
+// a child component or expression.
+func TestDangComponentRecordIteration(t *testing.T) {
+	example := Example{
+		Inputs: Files{
+			"helpers.dang": `pub Each(items: [a!]!, &body(item: a!): Boolean!): Boolean! {
+  items.each { item => body(item: item) }
+  true
+}
+
+pub primitiveTypes = [
+  {{ name: "Int!", docs: "integer" }},
+  {{ name: "String!", docs: "text" }},
+]
+`,
+		},
+		Input: `<Title>Types</Title>
+
+Listing: <Each items={primitiveTypes}><Italic>{item.name}</Italic>=<Bold>{item.docs}</Bold> </Each>.
+`,
+		Outputs: Files{
+			"types.html": `<section>
+	<h1>Types</h1>
+
+	<p>Listing: <em>Int!</em>=<strong>integer</strong> <em>String!</em>=<strong>text</strong> .</p>
+</section>
+`,
+		},
+	}
+	t.Run("records iterate", example.Run)
+}
