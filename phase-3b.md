@@ -435,4 +435,152 @@ progress should add a new dated `###` entry at the bottom — do not
 edit earlier entries or earlier sections of this plan, even when
 later decisions contradict them.
 
-(empty)
+### 2026-05-31 — Phase 3b-1 through 3b-3 landed
+
+Tier-4 mdx-template dispatch is live, `<Define>` and `<Godoc>` are
+ported, and the docs site builds with two fewer Go helpers.
+
+**Done.**
+
+- New `templates/` package: `Registry` loads `<dir>/<Name>.md` lazily,
+  caches the parsed AST by mtime, and trims a single trailing newline
+  from the file so multiple invocations don't pile up blank lines.
+  `Parse` is a hand-written tokenizer (not goldmark) that recognizes
+  three things and nothing else: `<Pascal ...>` JSX elements, `{expr}`
+  expressions, and raw HTML text. No Markdown processing — templates
+  are HTML scaffolding around prop holes.
+
+- Raw-HTML text chunks emit `ast.JSXElement{Name: "RawHTML"}` whose
+  body is the literal text. A new `builtins/raw_html.go` registers
+  `<RawHTML>` which wraps in `Styled{Style: "raw-html"}`. Templates
+  emit this via a private `templates.rawHTML` ast.Node whose `Visit`
+  forwards to the JSXElement dispatch. The public `<RawHTML>` builtin
+  doubles as a content-author escape hatch.
+
+- `<Children/>` built-in (`builtins/children.go`) looks up `children`
+  in the active Dang scope and emits its content. Equivalent to
+  `{children}` as an expression but works in JSX child position where
+  an expression sometimes reads awkwardly. Plumbed via a new `Dang`
+  field on `builtins.Context`.
+
+- `dangeval.ContentValue` is a Dang `Value` that carries booklit.Content
+  verbatim. The bridge unwraps it without going through string-form
+  flattening. `{children}` resolves to a `ContentValue` so nested
+  styling like `<Italic>{children}</Italic>` survives.
+
+- `stages.Evaluate.dispatchTemplate` is the new tier-4: render children
+  eagerly into a `ContentValue`, bridge props by name, push everything
+  via `WithBindings`, and visit the template's AST with a sub-evaluator.
+  Dispatch order is built-in → Dang → mdx template → legacy Styled
+  fallback. Templates win over the Styled fallback (Q9 = (a)-ish:
+  Styled stays during this phase as a safety net, but templates take
+  precedence). Dang functions still beat templates (Q1 = (a)).
+
+- `tests/template_test.go` (9 cases): prop interpolation, `{children}`,
+  `<Children/>`, empty children, nested JSX, multi-line + raw HTML,
+  template-beats-fallback, Dang-beats-template, expression props.
+
+- `docs/html/Define.md` (5 lines of mdx) replaces the 40-line `defineFunc`.
+  Uses `<Target tag={tag}/><Syntax language="html">{sig}</Syntax>` inside
+  the existing `definition` styled wrapper. The rendered definition
+  blocks are byte-identical to the Go version.
+
+- `docs/html/Godoc.md` (one line) replaces `godocFunc`. String-split
+  logic moved into `docs/lit/helpers.dang` as `godocPkg`,
+  `godocPkgDisplay`, `godocSymbol`, `godocURL` Dang functions. They
+  compose `String.split` / `List.takeFirst` / `List.dropFirst` /
+  `List.join` / `String.trimLeft` to do what `strings.SplitN` +
+  `strings.TrimLeft` did. The rendered Godoc links are byte-identical.
+
+`cmd/booklit-docs` now registers only `<Columns>` and `<LitSyntax>`
+plus the chroma palette init() — matching the "definition of done"
+inventory in this plan.
+
+**Decisions worth knowing.**
+
+- *Custom template parser, not goldmark.* Goldmark's HTML block parser
+  swallows `<div class="card">...</div>` as opaque raw HTML — `{title}`
+  and `{children}` inside would never be processed. Writing a small
+  byte-tokenizer specific to templates was cleaner than extending
+  goldmark to recognize `{expr}` inside HTML blocks. The trade-off is
+  no Markdown features in templates (no `# heading`, no `- list`, no
+  fenced code blocks); templates are HTML scaffolding, not prose.
+
+- *Eager children render, not side-effect closure.* The plan's Q5
+  proposes a side-effect closure that captures the template's evaluator
+  and appends content at the `{children}` site. The simpler approach —
+  evaluate children once into a `ContentValue` and bind it — fits the
+  current Dang shape better: a custom auto-callable Callable would need
+  a real `FunctionType` in the type env, and the side-effect model
+  raises subtle questions about what `{children + "x"}` should mean.
+  `ContentValue` declares its type as `String!` so the inferrer accepts
+  it; the bridge takes the `Content` field directly. Pure-emission
+  cases (`{children}`, `<Children/>`) work; expressions that try to
+  treat children as a real string will fail at runtime, which is fine
+  for v1.
+
+- *RawHTML as a public builtin.* The template parser needs to emit raw
+  HTML chunks. The cleanest representation is a JSX element with a
+  registered built-in. Making `<RawHTML>` public means content authors
+  can use it as a Markdown escape hatch — that's a feature, not a
+  leak. Templates emit it via a private `templates.rawHTML` node whose
+  Visit forwards to the same JSX dispatch, so the synthesis is opaque
+  to anyone reading a template.
+
+- *Trailing newline trim in the loader.* Templates conventionally end
+  with `\n`. Without trimming, every `<Define>` invocation produced a
+  trailing blank line, drifting the rendered HTML from the original
+  Go version. The loader strips one trailing `\n` (interior whitespace
+  is preserved verbatim because templates are HTML-significant).
+
+- *Define dropped the "highlighted title for references" feature.* The
+  old `defineFunc` set `Target.Title` to a syntax-highlighted
+  `<TagName>` so `<Reference tag="title"/>` displayed as
+  `<a href="..."><code>&lt;Title&gt;</code></a>`. The mdx
+  `<Target tag={tag}/>` falls back to `Title = String(tag)`, so
+  references now show plain text (`<a href="...">title</a>`). Visually
+  the definitions themselves are byte-identical; only references
+  to-definitions look different. The fix would be a small docs-side
+  built-in that constructs a Target with a chroma-highlighted title,
+  but that contradicts the "Define runs with zero Go" outcome.
+  Trade-off accepted; the docs still work, links still link.
+
+- *Helpers.dang lives at `docs/lit/helpers.dang`.* That's where
+  `dangeval.New` scans for *.dang files (non-recursive, alphabetical;
+  matches what Phase 3a established). No new convention introduced.
+
+- *Dang comments use `#`, not `//`.* Discovered on first run of
+  `helpers.dang`. Not Dang-specific knowledge to keep, just a note for
+  the next person.
+
+**Known limitations / follow-ups.**
+
+- *Card.tmpl and TemplateLink.tmpl in `tests/fixtures/` and
+  `docs/html/` still use the legacy Styled fallback.* Templates win
+  over the fallback when both exist, but the fallback is still in place
+  as a safety net. Phase 3b's "Goes away" column for `booklit.Styled`
+  as auto-wrap is therefore aspirational — flipping the hard cutover
+  (`Q9 = (a)`) means porting every `.tmpl` to `.md` first or accepting
+  test breakage. Defer until there's a reason to push.
+
+- *Plan Q1 (built-in → Dang → mdx) is implemented; the legacy Styled
+  fallback sits as tier-5.* The plan envisioned tier-5 = error. Same
+  reasoning as the bullet above — flip when the fallback is unused.
+
+- *Reference-display regression for Define.* See decisions above.
+
+- *No source-mapped errors yet.* If `Define.md:3:5` has a Dang typo,
+  the error wraps as `evaluating template <Define>: evaluating {bad}:
+  ...`. Useful enough; mapping to template-file line/col is a future
+  polish.
+
+- *Renderer-internal templates (`render/html/*.tmpl`, plus
+  `docs/html/page.tmpl` etc.) remain Go templates.* Phase 3b-4
+  recommended deferring; no reason found to convert.
+
+**Reasonable next steps.** (a) Decide whether to push for the hard
+cutover on the Styled fallback — would need a sweep of remaining
+`.tmpl` files and a deletion of the tier-5 path in `stages/evaluate.go`.
+(b) Source-mapped errors for template/Dang failures (deferred from
+Phase 3). (c) Restore the highlighted-title-for-references feature if
+it turns out to matter (small docs-side built-in, ~20 lines).
