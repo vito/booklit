@@ -584,3 +584,104 @@ cutover on the Styled fallback — would need a sweep of remaining
 (b) Source-mapped errors for template/Dang failures (deferred from
 Phase 3). (c) Restore the highlighted-title-for-references feature if
 it turns out to matter (small docs-side built-in, ~20 lines).
+
+### 2026-05-31 — late session: cutover + control flow + Target rework
+
+Three commits landed picking up where Phase 3b-3 left off:
+
+- `0ce7b03` (`refactor(builtins): make Target children the rich title`):
+  `<Target>` now uses its children as the rich Title content (matching
+  baselit's legacy `\target{tag}{title}{content}` shape). The `title`
+  prop becomes a string-shorthand that loses to children when both are
+  given. Define.md uses
+  `<Target tag={tag}><Syntax language="html"><{componentName(tag: tag)}>
+  </Syntax></Target>` to restore the syntax-highlighted `<TagName>`
+  title that the original Go `defineFunc` set, eliminating the
+  reference-display regression flagged in the previous entry. The
+  kebab→PascalCase conversion lives in a new `componentName` Dang
+  helper (composed from `String.split` / `List.map` / a small
+  `capitalize` that leans on `split(separator: "", limit: 2)` since
+  Dang has no first-character method).
+
+- `97de1f4` (`refactor: hard-cutover the JSX dispatch — no more Styled
+  fallback`): implements plan Q9 (a). The dispatch order is now
+  built-in → Dang → mdx template → error. Unknown JSX components are
+  a Load-time error, not a Render-time "missing .tmpl" panic. To
+  unblock, the three remaining JSX-fallback templates ported to
+  mdx: `tests/fixtures/Card.tmpl` → `Card.md`,
+  `docs/html/OutputFrame.tmpl` → `OutputFrame.md`,
+  `docs/html/TemplateLink.tmpl` → `TemplateLink.md`.
+  `templates.Registry` now takes a list of search directories so the
+  test harness can layer the per-test tempdir over `tests/fixtures/`.
+  `docs/lit/plugins.md` was rewritten to teach the `.md` form;
+  `tests/dang_dispatch_test.go` cases that asserted on the render-time
+  fallback failure now assert on the Load-time error. Renderer-internal
+  templates (page, section, sidebar, splash, big-code, code-*,
+  lit-*, columns) stay as Go templates — they're framework
+  infrastructure rendered by built-ins that explicitly emit
+  `Styled{Style: …}`. `2fb1896` follows up by removing `definition.tmpl`
+  since `Define.md` now emits the HTML scaffolding directly.
+
+- `0ab313e` (`feat(builtins): add <For>, <If>, <Unless>`): packages the
+  tier-3 body-block + `WithBindings` pattern as built-ins so authors
+  don't need a per-project `pub Each(items, &body)` helper. Five test
+  cases cover string iteration, record iteration with a custom `as`
+  binding name, conditional truthiness for `<If>` / `<Unless>`, and
+  empty-list behavior. `eb5aaaf` was the proof-point test that this
+  pattern handles record iteration end-to-end via tier-3 before the
+  built-in landed.
+
+**Decisions worth knowing.**
+
+- *Target children are Title, not Content.* The prior shape (children
+  → Content) was a JSX-migration accident; baselit's legacy variadic
+  put title first. Existing tests only assert on Target's rendered
+  anchor (`<a id="middle"></a>`), so the migration was safe — but it
+  does mean Target no longer carries a Content field for search-index
+  previews. If/when that matters, add a `content` prop.
+
+- *Hard cutover was uneventful.* Two test cases needed updating from
+  RenderErr to LoadErr; nothing else broke. Confirms the Styled
+  fallback was load-bearing for fewer cases than the safety-net
+  rhetoric suggested. The Q9 = (a) choice is right.
+
+- *Built-in control-flow over per-project Dang helpers.* `<For>` and
+  `<If>` could be left to author-provided Dang helpers (the test
+  fixtures showed `pub Each(items: [a!]!, &body(item: a!): Boolean!)`
+  works). Making them built-in avoids the body-return-type quirk
+  ("null is not allowed for Boolean!") that the explicit-return Dang
+  idiom papers over, gives a stable name across projects, and removes
+  one piece of mandatory per-project boilerplate. Trade-off: two more
+  reserved JSX names. Acceptable.
+
+- *`<For>` binding name is `item` by default, overridable with
+  `as="…"`.* Mirrors JSX/MDX conventions (`for…in`, `useState`); the
+  default keeps simple cases terse and the override avoids shadowing
+  when nested.
+
+**Known limitations / follow-ups.**
+
+- *Phase 4 (Dagger dispatch) intentionally deferred from this
+  autonomous session.* See `decisions.md` 2026-05-31 entry: the
+  `<Foo from="github.com/.../mod"/>` syntax requires runtime
+  construction of `dang.ImportConfig` with a Dagger graphql client +
+  schema. Existing dangeval `dagger.json` auto-import already covers
+  the in-tree case; the missing piece is JSX-tag syntax for
+  out-of-tree modules. Deferred to a co-design pass with the user.
+
+- *JSX-in-Dang (the `{items.map(t => <Foo>{t.x}</Foo>)}` headline
+  from the very top of `jsx-dang.md`) is no longer load-bearing.* The
+  iteration use case is now covered by `<For each={items} as="t">…
+  </For>` without Dang grammar changes. Conditionals by `<If
+  cond={…}>`. Ad-hoc JSX construction in arbitrary Dang expressions
+  remains unsupported; left for if-and-when it matters.
+
+- *PascalCase Partial keys remain in `docs/html/columns.tmpl`*
+  (`.Partial "Columns"`). That template is still alive because
+  `<Columns>` is a Go built-in that emits `Styled{Style: "columns",
+  Partials: {"Columns": ...}}`. Harmless; cleanup paired with any
+  future columns refactor.
+
+- *Reference-display regression flagged in the previous entry is
+  resolved.* Rendered docs are byte-identical to the pre-port
+  baseline.

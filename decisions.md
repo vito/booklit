@@ -122,3 +122,33 @@ Styled fallback** + adding a generic `<Each>` builtin/helper.
   tail. The user asked for "toughest fight" — but a fight that opens
   cans of worms without a clean exit is the wrong tough fight to pick
   autonomously. Defer to when the user can co-author the Dang side.
+
+## 2026-05-31 — Phase 4 (Dagger dispatch) deferred from this session
+
+Spent ~15 min surveying. Phase 4's `<Foo from="github.com/.../mod"/>`
+anonymous-import syntax requires constructing a Dang `ImportConfig`
+at runtime, which carries a `graphql.Client` + `introspection.Schema`
+populated from a Dagger session connected to the remote module. That
+machinery exists inside Dang (the `dang.ResolveImportConfigs` /
+`dang.resolveImportSource` paths), but reusing it from Booklit for a
+single-tag remote import is a few hours of focused work: bridging
+booklit's existing Dagger session reuse (already implicit through
+dangeval's `dagger.json` auto-import) with on-demand module loading.
+
+**Fork:** Push for a partial Phase 4 (e.g. just the syntax, error if
+the module isn't already in dangeval's env) vs land contained
+quality-of-life work and stop.
+
+**Picked:** Quality-of-life. Added `<For>` / `<If>` / `<Unless>`
+built-ins (commit `0ab313e`), removed dead `definition.tmpl` (commit
+`2fb1896`), and stopped. Phase 4's `<Foo from="..."/>` deserves a
+co-design session with the user — it's a user-facing syntax decision
+(how do args map to function args? what's the error UX for a missing
+function?) that shouldn't get baked autonomously.
+
+**What still works without Phase 4 syntax:** Dagger functions are
+already callable from `{expr}` interpolations via dangeval's
+auto-import (any project with `dagger.json` gets its module's
+functions in scope; e.g. `{build(version: "1.0").entries.length}` from
+a JSX `{expr}` works if `build` is in the local Dagger module's
+schema). The missing piece is the JSX-tag syntax sugar.
