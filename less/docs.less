@@ -233,7 +233,9 @@
   }
 }
 
-.column.title {
+// The first column is the narrow description/header column; the
+// remaining columns (code, output) flex to fill the rest.
+.columns > .column:first-child {
   flex-shrink: 0;
   flex-grow: 0;
 

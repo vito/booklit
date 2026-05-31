@@ -25,6 +25,7 @@ modification needed, so I think it's good enough to share.
 
 
 <Columns>
+<Column>
 <ColumnHeader>content in `*.md`</ColumnHeader>
 
 Booklit documents are Markdown with embedded `<Component>` invocations that
@@ -33,6 +34,7 @@ generate content, ultimately resulting in a tree of sections.
 Sections are easy to move around, allowing you to continuously refactor and
 restructure your content without having to tweak header sizes and update
 internal links.
+</Column>
 
 <Column>
 
@@ -58,12 +60,14 @@ Check out my favorite [#quotes]!
 </Columns>
 
 <Columns>
+<Column>
 <ColumnHeader>logic in `*.go` (or templates)</ColumnHeader>
 
 Components dispatch via a tiered resolver: built-in &rarr; HTML template
 &rarr; and eventually Dang or Dagger. Most "plugins" are just an HTML
 template; you only write Go for primitives that need to manipulate the
 section tree.
+</Column>
 
 <Column>
 
@@ -81,6 +85,7 @@ section tree.
 </Columns>
 
 <Columns>
+<Column>
 <ColumnHeader>presentation in `*.tmpl`</ColumnHeader>
 
 Booklit separates presentation into a final rendering phase which determines
@@ -94,6 +99,7 @@ All [base templates](#base-templates) can be overridden, sections
 can be individually [#styled], and components can return
 <Godoc ref="booklit.Styled"/> content, giving the author full control over what
 comes out.
+</Column>
 
 <Column>
 
@@ -113,6 +119,7 @@ comes out.
 </Columns>
 
 <Columns>
+<Column>
 <ColumnHeader>build with `booklit`</ColumnHeader>
 
 The `booklit` CLI is a single command which loads Booklit documents
@@ -120,6 +127,7 @@ and renders them.
 
 When an error occurs, Booklit will show the location of the error and try to
 suggest a fix.
+</Column>
 
 <Column>
 
@@ -145,10 +153,12 @@ Did you mean one of these?
 </Columns>
 
 <Columns>
+<Column>
 <ColumnHeader>serve with `booklit -s $PORT`</ColumnHeader>
 
 In server mode, Booklit renders content on each request.
 The feedback loop is *wicked fast*.
+</Column>
 
 <Column>
 

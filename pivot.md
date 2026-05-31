@@ -26,9 +26,17 @@ headings still auto-create sections.
 
 `marklit/jsx_parser.go` + `jsx_block_parser.go` are the goldmark
 extensions; `ast.JSXElement` and `ast.JSXExpression` are the new AST
-nodes. The legacy `ast.Invoke` and its `\foo{}` parser are gone for
-user content but still exist to support the auto-emitted
-`<RawHTML>` / `<RawHTMLBlock>` invocations.
+nodes, layered *alongside* the existing pipeline rather than replacing
+it. `ast.Invoke` and the `\foo{}` parser are NOT gone: Markdown prose
+still lowers to `ast.Invoke` for every built-in feature (`#` headings →
+`\section` / `\title`, links, images, code, code blocks, tables, lists,
+insets, references, and raw HTML → `raw-html` / `raw-html-block`), and
+`marklit` still registers the `\foo{}` inline parser, so backslash
+invokes keep working in `.md`. `.lit` files still go through the
+original PEG parser (`ast.ParseReader`). These `ast.Invoke` nodes are
+evaluated by `VisitInvoke`, which dispatches by reflection against the
+section's plugins — i.e. `baselit` — exactly as before the pivot. The
+JSX layer (`VisitJSXElement`) is the new, parallel path.
 
 ## Plugin system: gone
 
@@ -37,6 +45,11 @@ Deleted: `--plugin` CLI flag, the `BOOKLIT_REEXEC` re-exec dance,
 Go plugin (`chroma/`, `docs/hello/`, `docs/go/`,
 `tests/fixtures/*-plugin/`). New components are added by dropping a
 file, not by recompiling Booklit.
+
+What's gone is the *user-facing, load-a-compiled-plugin* mechanism. The
+internal `booklit.Plugin` / `PluginFactory` types and the reflection
+dispatch in `VisitInvoke` remain — that's how `baselit` is still wired
+in to evaluate Markdown-emitted `ast.Invoke` nodes (see below).
 
 ## Three-tier JSX dispatch
 
@@ -47,9 +60,13 @@ tiers; an unknown name is an error (hard cutover, no Styled fallback):
    Handles the language primitives (`<Title>`, `<Section>`,
    `<Reference>`, `<Target>`, `<TableOfContents>`, `<Code>`,
    `<CodeBlock>`, `<Syntax>`, …) and a few quality-of-life additions
-   (`<For>`, `<If>`, `<Unless>`, `<Children/>`, `<RawHTML>`). All ~30
-   live in `builtins/`. The old `baselit` package stays as a Go API
-   the built-ins delegate into; it is no longer a "plugin".
+   (`<For>`, `<If>`, `<Unless>`, `<Children/>`, `<RawHTML>`). ~34 live
+   in `builtins/`, most reimplementing the behaviour natively (a few,
+   e.g. `<Reference>` / `<Code>`, still call into `baselit`). `baselit`
+   itself has not been retired: it is still registered as the base
+   `PluginFactory` and remains the reflection target for the
+   Markdown-emitted `ast.Invoke` nodes described above (some of which,
+   like tables and lists, have no JSX counterpart at all).
 2. **Dang function** — a `pub PascalCase(...)` callable in scope.
    `dangeval.LookupCallable` + `CallComponent` bridge props as named
    args and wrap the JSX children as a `&body` block; each `body(...)`
@@ -95,20 +112,23 @@ just duplicated the existing import machinery.
 
 ## Doc helpers (`docs/booklitdoc/`) collapsed
 
-What used to be `~376 lines` is now `~150`. `<Define>` and `<Godoc>`
-moved to `docs/html/Define.md` and `docs/html/Godoc.md` (mdx
-templates); `<OutputFrame>`, `<TemplateLink>`, `<SyntaxHl>`,
-`<ColumnHeader>`, `<Column>` either moved to templates or were dead
-code. What's still Go: `<Columns>` (AST child introspection),
-`<LitSyntax>` (chroma + regex), and the chroma `styles.Fallback`
-palette override.
+What used to be `~376 lines` is now `~165`. `<Define>` and `<Godoc>`
+moved to `docs/html/Define.md` and `docs/html/Godoc.md`; `<Columns>`,
+`<Column>`, and `<ColumnHeader>` are now plain `<div>`-wrapper mdx
+templates (`docs/html/Columns.md`, `Column.md`, `ColumnHeader.md`) with
+the layout driven by CSS (`.columns > .column:first-child` is the narrow
+description column); `<OutputFrame>`, `<TemplateLink>`, `<SyntaxHl>`
+either moved to templates or were dead code. What's still Go:
+`<LitSyntax>` (chroma + regex) and the chroma `styles.Fallback` palette
+override.
 
 ## File map (new code)
 
 - `marklit/jsx_*.go` — the JSX parser; produces `ast.JSXElement` /
   `ast.JSXExpression`
-- `builtins/` — the first dispatch tier (everything that was a baselit
-  method is now a JSX-shaped Func with a Context arg)
+- `builtins/` — the first JSX dispatch tier (many former baselit
+  methods now have a JSX-shaped Func counterpart taking a Context arg;
+  `baselit` still exists and still handles Markdown-emitted invokes)
 - `dangeval/` — Dang interpreter wrapper + the Content↔Value bridge +
   the tier-3 component-call plumbing
 - `templates/` — tier-3-and-a-half template registry + the custom

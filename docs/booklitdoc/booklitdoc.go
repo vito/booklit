@@ -16,15 +16,12 @@ import (
 )
 
 func init() {
-	// OutputFrame, SyntaxHl, TemplateLink, ColumnHeader, Column,
-	// Define, and Godoc are not registered. OutputFrame / SyntaxHl /
-	// TemplateLink are expressed as legacy Go templates (template
-	// fallback emits the right Styled); Columns reaches into its
-	// children by AST name so ColumnHeader / Column never need to
-	// dispatch on their own; Define and Godoc are mdx templates
-	// (docs/html/Define.md, docs/html/Godoc.md) dispatched via tier-4
-	// — Godoc's string-split logic lives in docs/lit/helpers.dang.
-	builtins.Register("Columns", columnsFunc)
+	// LitSyntax is the only JSX built-in still implemented in Go here:
+	// it needs chroma highlighting plus the regex-based `\function`
+	// linkifier below. Everything else the docs add is expressed as an
+	// mdx template in docs/html/ and dispatched via the template tier:
+	// Columns / Column / ColumnHeader (plain <div> wrappers around their
+	// children), Define / Godoc, OutputFrame, and TemplateLink.
 	builtins.Register("LitSyntax", litSyntaxFunc)
 
 	styles.Fallback = chroma.MustNewStyle("booklitdoc", chroma.StyleEntries{
@@ -48,46 +45,6 @@ func init() {
 		chroma.GenericPrompt:         "bold",
 		chroma.Error:                 "border:#FF0000",
 	})
-}
-
-// columnsFunc — `<Columns><ColumnHeader>title</ColumnHeader>
-// <Column>a</Column><Column>b</Column></Columns>`. Title goes to
-// Content; columns become a Partial sequence consumed by columns.tmpl.
-// Children are recognized by their AST element name before evaluation,
-// so neither ColumnHeader nor Column needs its own dispatcher.
-func columnsFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
-	var title booklit.Content
-	var cols booklit.Sequence
-	for _, child := range children {
-		jsx, ok := child.(ast.JSXElement)
-		if !ok {
-			continue
-		}
-		val, err := ctx.Evaluate(ast.Sequence(jsx.Children))
-		if err != nil {
-			return nil, err
-		}
-		if val == nil {
-			val = booklit.Empty
-		}
-		switch jsx.Name {
-		case "ColumnHeader":
-			title = val
-		case "Column":
-			cols = append(cols, val)
-		}
-	}
-	if title == nil {
-		title = booklit.Empty
-	}
-	return booklit.Styled{
-		Style:   "columns",
-		Block:   true,
-		Content: title,
-		Partials: booklit.Partials{
-			"Columns": cols,
-		},
-	}, nil
 }
 
 // linkTransformer rewrites `\function-name` occurrences inside

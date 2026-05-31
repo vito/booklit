@@ -657,12 +657,12 @@ strong {
   margin: 46.66666667px 50px;
   transform: scale(1.33333333);
 }
-.column.title {
+.columns > .column:first-child {
   flex-shrink: 0;
   flex-grow: 0;
 }
 @media (min-width: 860px) {
-  .column.title {
+  .columns > .column:first-child {
     width: 380px;
     padding-right: 20px;
   }
