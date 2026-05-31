@@ -37,8 +37,13 @@ func referenceFunc(ctx *Context, props map[string]ast.Node, children []ast.Node)
 	return ref, nil
 }
 
-// targetFunc is `<Target tag="foo" title="optional">content</Target>`.
-// Mirrors baselit.Target. Title prop and children content are both optional.
+// targetFunc is `<Target tag="foo" title="optional">rich title</Target>`.
+// Mirrors baselit's `\target{tag}{title}{content}` semantics: children
+// become the Title content (the display text references fall back to
+// when they don't provide their own), allowing structured titles like
+// `<Target tag={tag}><Syntax language="html">&lt;{tag}&gt;</Syntax></Target>`.
+// The `title` prop is a shorthand for a plain-string title and loses
+// to children when both are given.
 func targetFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	tag, err := requireStringProp(ctx, props, "tag", "Target")
 	if err != nil {
@@ -50,7 +55,13 @@ func targetFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (b
 		Location: ctx.Section.InvokeLocation,
 	}
 
-	if t, ok := props["title"]; ok {
+	if len(children) > 0 {
+		title, err := EvaluateChildren(ctx, children)
+		if err != nil {
+			return nil, err
+		}
+		ref.Title = title
+	} else if t, ok := props["title"]; ok {
 		title, err := ctx.Evaluate(t)
 		if err != nil {
 			return nil, err
@@ -58,14 +69,6 @@ func targetFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (b
 		ref.Title = title
 	} else {
 		ref.Title = booklit.String(tag)
-	}
-
-	if len(children) > 0 {
-		content, err := EvaluateChildren(ctx, children)
-		if err != nil {
-			return nil, err
-		}
-		ref.Content = content
 	}
 
 	return ref, nil

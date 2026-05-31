@@ -24,3 +24,18 @@ pub godocSymbol(ref: String!): String! {
 pub godocURL(ref: String!): String! {
   "https://pkg.go.dev/github.com/vito/" + godocPkg(ref: ref) + "#" + godocSymbol(ref: ref)
 }
+
+# capitalize returns s with its first character uppercased and the
+# remainder verbatim. `s.split(separator: "", limit: 2)` yields
+# [first-char, rest]; toUpper on a single character behaves like the
+# missing strings.Title for the first letter.
+pub capitalize(s: String!): String! {
+  s.split(separator: "", limit: 2).takeFirst.join(separator: "").toUpper + s.split(separator: "", limit: 2).dropFirst.join(separator: "")
+}
+
+# componentName converts the kebab-case tag conventionally used for
+# Booklit invocations (e.g. "table-of-contents") into the PascalCase
+# JSX component name ("TableOfContents") used in rendered signatures.
+pub componentName(tag: String!): String! {
+  tag.split(separator: "-").map { part => capitalize(s: part) }.join(separator: "")
+}
