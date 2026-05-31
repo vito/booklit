@@ -2,6 +2,7 @@ package tests
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"io"
 	"os"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
+	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
 )
@@ -34,13 +36,19 @@ type Files map[string]string
 func (example Example) Run(t *testing.T) {
 	t.Helper()
 
-	processor := &load.Processor{}
+	dir := t.TempDir()
+
+	dang, err := dangeval.New(context.Background(), dir)
+	require.NoError(t, err)
+	t.Cleanup(dang.Close)
+
+	processor := &load.Processor{
+		Dang: dang,
+	}
 
 	pluginFactories := []booklit.PluginFactory{
 		baselit.NewPlugin,
 	}
-
-	dir := t.TempDir()
 
 	ext := example.Ext
 	if ext == "" {
@@ -55,7 +63,7 @@ func (example Example) Run(t *testing.T) {
 	}
 	sectionPath := filepath.Join(dir, name+ext)
 
-	err := os.WriteFile(sectionPath, []byte(example.Input), 0644)
+	err = os.WriteFile(sectionPath, []byte(example.Input), 0644)
 	require.NoError(t, err)
 
 	for file, contents := range example.Inputs {

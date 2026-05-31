@@ -14,6 +14,7 @@ import (
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/marklit"
 	"github.com/vito/booklit/stages"
 )
@@ -25,6 +26,11 @@ import (
 // parsing of sub-sections when section content changes.
 type Processor struct {
 	SlowInvokeThreshold time.Duration
+
+	// Dang interpreter for {expr} interpolations in JSX. May be nil; the
+	// evaluator surfaces a friendly error when a snippet is encountered
+	// without one.
+	Dang *dangeval.Evaluator
 
 	parsed  map[string]parsedNode
 	parsedL sync.Mutex
@@ -190,6 +196,7 @@ func (processor *Processor) evaluateSection(section *booklit.Section, node ast.N
 	evaluator := &stages.Evaluate{
 		Section:             section,
 		SlowInvokeThreshold: processor.SlowInvokeThreshold,
+		Dang:                processor.Dang,
 	}
 
 	err := node.Visit(evaluator)

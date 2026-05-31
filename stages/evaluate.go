@@ -11,6 +11,7 @@ import (
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/builtins"
+	"github.com/vito/booklit/dangeval"
 )
 
 // Evaluate is an ast.Visitor that builds up the booklit.Content for a given
@@ -22,6 +23,10 @@ type Evaluate struct {
 
 	// Duration after which to log a warning for a slow \invoke.
 	SlowInvokeThreshold time.Duration
+
+	// Dang interpreter used to evaluate JSX {expr} interpolations. Nil
+	// means no Dang env was bootstrapped; expressions will error.
+	Dang *dangeval.Evaluator
 
 	// The evaluated content after calling (ast.Node).Visit.
 	Result booklit.Content
@@ -150,11 +155,26 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 	return nil
 }
 
-// VisitJSXExpression is a stub — Dang evaluation lands in Phase 3. A
-// JSXExpression in the AST means an unparsed `{...}` was retained from
-// parsing; nothing can evaluate it until Dang is embedded.
+// VisitJSXExpression parses node.Raw as a Dang snippet, evaluates it
+// against the held Dang env, and appends the bridged value to Result.
+// Without a Dang evaluator (i.e. embedding contexts that haven't
+// bootstrapped one) the expression is an error.
 func (eval *Evaluate) VisitJSXExpression(node ast.JSXExpression) error {
-	return fmt.Errorf("JSX expression evaluation not yet implemented (Phase 3): {%s}", node.Raw)
+	if eval.Dang == nil {
+		return fmt.Errorf("no Dang evaluator configured: cannot evaluate {%s}", node.Raw)
+	}
+	val, err := eval.Dang.Eval(node.Raw)
+	if err != nil {
+		return fmt.Errorf("evaluating {%s}: %w", node.Raw, err)
+	}
+	content, err := dangeval.ToContent(val)
+	if err != nil {
+		return fmt.Errorf("bridging {%s}: %w", node.Raw, err)
+	}
+	if content != nil {
+		eval.Result = booklit.Append(eval.Result, content)
+	}
+	return nil
 }
 
 // VisitPreformatted behaves similarly to VisitParagraph, but with no
@@ -385,6 +405,7 @@ func (eval Evaluate) evalArg(node ast.Node) (booklit.Content, error) {
 	subEval := &Evaluate{
 		Section:             eval.Section,
 		SlowInvokeThreshold: eval.SlowInvokeThreshold,
+		Dang:                eval.Dang,
 	}
 
 	err := node.Visit(subEval)

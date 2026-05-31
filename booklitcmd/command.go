@@ -1,17 +1,20 @@
 package booklitcmd
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"path/filepath"
 	"runtime/pprof"
 	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/baselit"
+	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
 )
@@ -106,8 +109,15 @@ var basePluginFactories = []booklit.PluginFactory{
 }
 
 func (cmd *Command) Build() error {
+	dang, err := dangeval.New(context.Background(), filepath.Dir(cmd.In))
+	if err != nil {
+		return fmt.Errorf("bootstrap dang: %w", err)
+	}
+	defer dang.Close()
+
 	processor := &load.Processor{
 		SlowInvokeThreshold: cmd.SlowInvokeThreshold,
+		Dang:                dang,
 	}
 
 	var engine render.Engine
