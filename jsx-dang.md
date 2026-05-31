@@ -594,3 +594,67 @@ suite does not exercise those docs and stays green.
 substantive step — it's what makes JSX render. Once `<Foo>` can look
 up `html/Foo.html` and fall back to built-ins, we have a usable system
 end-to-end and can attempt the docs migration.
+
+### 2026-05-30 — Phase 2: dispatch + initial built-ins
+
+Landed in commit `373a6b9` (`feat: dispatch JSX via builtins registry
+and template fallback`).
+
+**Done.** JSX elements render end-to-end. The evaluator
+(`stages/evaluate.go::VisitJSXElement`) consults a new `builtins/`
+package first, then falls back to wrapping the element in a
+`booklit.Styled` so dropping `html/<Name>.tmpl` is enough to introduce
+a new component. Built-ins receive raw `ast.Node` props and children
+plus a `Context.Evaluate` helper, so they can choose whether to
+evaluate eagerly or pass raw AST through (used by `<Section>`, which
+recurses via `Processor.EvaluateNode`).
+
+The initial built-in set: `<Title>`, `<Section>`, `<Reference>`,
+`<Target>`, and the styled-content family (`<Italic>`, `<Bold>`,
+`<Larger>`, `<Smaller>`, `<Strike>`, `<Superscript>`, `<Subscript>`,
+`<Inset>`, `<Aside>`). Five integration tests in `tests/jsx_test.go`
+exercise the dispatcher across builtins, recursion, refs/targets, and
+template fallback. Full `go test ./...` green.
+
+**Important refinement.** The parser now distinguishes single-line
+from multi-line JSX. `<Title>x</Title>` on a single line parses its
+children as inline (matching `\title{x}`); a JSX element whose tags
+straddle multiple lines parses children as block content (matching
+`\section{...}` with multi-line braces). Multi-line state is tracked
+per element via a `crossedLine` flag in the scanner that's saved and
+restored around each `parseJSXElement` call, so an inline `<Title>`
+nested inside a multi-line `<Section>` keeps inline semantics. This
+mirrors the existing single-line/multi-line invoke distinction baked
+into the marklit preprocessor.
+
+**Template fallback details.** The fallback wraps an unknown component
+in `booklit.Styled{Style: Name, Content: <evaluated children>,
+Partials: <evaluated props>}`. Prop keys are kept as authored
+(camelCase), so a template uses `{{.Partial "title"}}`. The renderer
+looks up `<Name>.tmpl` exactly as written — case-sensitive, no
+slug-style conversion. This is a pragmatic reuse of the existing
+template machinery; if camelCase-pure templates ever become awkward
+the boundary can be revisited without changing user-visible JSX.
+
+**Notable trade-off.** Single-line block JSX with text chunks split
+across child elements (`<Foo>Use <Bar/>.</Foo>` if multi-line) wraps
+each text chunk in its own paragraph, because chunks are
+independently `ParseArg`'d. Acceptable for MVP; the cleaner fix is to
+re-serialize children with placeholders for nested elements, then
+block-parse the whole body. Deferred.
+
+**Long tail still missing.** Many `\foo{}` invocations don't have JSX
+built-in equivalents yet: `<Code>` / `<CodeBlock>` (chroma syntax
+highlighting), `<List>` / `<OrderedList>` / `<Definition>` /
+`<Definitions>`, `<Image>`, `<Link>`, `<Table>` / `<TableRow>`,
+`<TableOfContents>`, `<IncludeSection>`, `<SinglePage>`,
+`<SplitSections>`, `<SetPartial>`, `<Aux>`, `<ThematicBreak>`. Each is
+a small forwarding wrapper around existing baselit code; adding them
+is a mechanical follow-up.
+
+**Next.** Two reasonable directions. (a) Fill in the long tail of
+built-ins so JSX matches `\foo{}` coverage; this unblocks the docs
+migration. (b) Phase 3 — embed Dang as the expression language, so
+`{primitiveTypes.map(...)}` becomes evaluable. (a) is mostly
+mechanical; (b) is the bigger unknown and likely surfaces gaps in
+Dang's public API.
