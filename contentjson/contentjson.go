@@ -3,8 +3,9 @@
 // importantly, be produced by a Dagger module and decoded back into native
 // booklit.Content by Booklit itself.
 //
-// Both ends import this package, so there is a single source of truth for the
-// schema: a Dagger module Marshals, Booklit Unmarshals.
+// The on-the-wire schema lives in the dependency-free subpackage wire, so a
+// producer (e.g. a Dagger module) can build content without importing booklit.
+// This package converts between wire.Node and native booklit.Content.
 //
 // Only "pure data" content is representable. Content that is bound to live
 // in-process state — Section, TableOfContents, Lazy — cannot be serialized and
@@ -15,38 +16,11 @@
 package contentjson
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/vito/booklit"
+	"github.com/vito/booklit/contentjson/wire"
 )
-
-// node is the on-the-wire shape of a single content node. It is a flat union:
-// "k" discriminates, and only the fields relevant to that kind are populated.
-type node struct {
-	Kind string `json:"k"`
-
-	S        string            `json:"s,omitempty"`        // string
-	Items    []*node           `json:"items,omitempty"`    // seq, para, pre, list
-	Content  *node             `json:"content,omitempty"`  // styled, link, aux, ref, target
-	Style    string            `json:"style,omitempty"`    // styled
-	Block    bool              `json:"block,omitempty"`    // styled
-	Partials map[string]*node  `json:"partials,omitempty"` // styled
-	Target   string            `json:"target,omitempty"`   // link
-	Path     string            `json:"path,omitempty"`     // image
-	Desc     string            `json:"desc,omitempty"`     // image
-	Ordered  bool              `json:"ordered,omitempty"`  // list
-	Rows     [][]*node         `json:"rows,omitempty"`     // table
-	Defs     []defNode         `json:"defs,omitempty"`     // definitions
-	Tag      string            `json:"tag,omitempty"`      // ref, target
-	Title    *node             `json:"title,omitempty"`    // target
-	Optional bool              `json:"optional,omitempty"` // ref
-}
-
-type defNode struct {
-	Subject *node `json:"subject"`
-	Def     *node `json:"def"`
-}
 
 // Marshal serializes content into the wire format. It returns an error if the
 // tree contains content that is bound to in-process state (Section,
@@ -56,70 +30,72 @@ func Marshal(content booklit.Content) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return json.Marshal(n)
+	return wire.Marshal(n)
 }
 
 // Unmarshal decodes the wire format back into native booklit.Content. sec is
 // the section that Reference/Target nodes resolve against; it may be nil only
 // if the tree contains no such nodes.
 func Unmarshal(data []byte, sec *booklit.Section) (booklit.Content, error) {
-	var n *node
-	if err := json.Unmarshal(data, &n); err != nil {
+	n, err := wire.Unmarshal(data)
+	if err != nil {
 		return nil, err
 	}
 	return decode(n, sec)
 }
 
-func encode(content booklit.Content) (*node, error) {
+func encode(content booklit.Content) (*wire.Node, error) {
 	switch v := content.(type) {
 	case nil:
 		return nil, nil
 	case booklit.String:
-		return &node{Kind: "string", S: string(v)}, nil
+		return wire.String(string(v)), nil
 	case booklit.Sequence:
 		items, err := encodeAll(v)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "seq", Items: items}, nil
+		return wire.Seq(items...), nil
 	case booklit.Paragraph:
 		items, err := encodeAll(v)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "para", Items: items}, nil
+		return wire.Para(items...), nil
 	case booklit.Preformatted:
 		items, err := encodeAll(v)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "pre", Items: items}, nil
+		return wire.Pre(items...), nil
 	case booklit.Styled:
 		inner, err := encode(v.Content)
 		if err != nil {
 			return nil, err
 		}
-		partials, err := encodePartials(v.Partials)
+		n := wire.Styled(string(v.Style), inner)
+		n.Block = v.Block
+		n.Partials, err = encodePartials(v.Partials)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "styled", Style: string(v.Style), Block: v.Block, Content: inner, Partials: partials}, nil
+		return n, nil
 	case booklit.Link:
 		inner, err := encode(v.Content)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "link", Target: v.Target, Content: inner}, nil
+		return wire.Link(v.Target, inner), nil
 	case booklit.Image:
-		return &node{Kind: "image", Path: v.Path, Desc: v.Description}, nil
+		return wire.Image(v.Path, v.Description), nil
 	case booklit.List:
 		items, err := encodeAll(v.Items)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "list", Ordered: v.Ordered, Items: items}, nil
+		return wire.List(v.Ordered, items...), nil
 	case booklit.Table:
-		rows := make([][]*node, len(v.Rows))
+		rows := make([][]*wire.Node, len(v.Rows))
 		for i, row := range v.Rows {
 			cols, err := encodeAll(row)
 			if err != nil {
@@ -127,9 +103,9 @@ func encode(content booklit.Content) (*node, error) {
 			}
 			rows[i] = cols
 		}
-		return &node{Kind: "table", Rows: rows}, nil
+		return wire.Table(rows...), nil
 	case booklit.Definitions:
-		defs := make([]defNode, len(v))
+		defs := make([]wire.Def, len(v))
 		for i, def := range v {
 			subject, err := encode(def.Subject)
 			if err != nil {
@@ -139,21 +115,23 @@ func encode(content booklit.Content) (*node, error) {
 			if err != nil {
 				return nil, err
 			}
-			defs[i] = defNode{Subject: subject, Def: body}
+			defs[i] = wire.Def{Subject: subject, Def: body}
 		}
-		return &node{Kind: "defs", Defs: defs}, nil
+		return wire.Definitions(defs...), nil
 	case booklit.Aux:
 		inner, err := encode(v.Content)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "aux", Content: inner}, nil
+		return wire.Aux(inner), nil
 	case *booklit.Reference:
 		inner, err := encode(v.Content)
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "ref", Tag: v.TagName, Optional: v.Optional, Content: inner}, nil
+		n := wire.Ref(v.TagName, inner)
+		n.Optional = v.Optional
+		return n, nil
 	case booklit.Target:
 		title, err := encode(v.Title)
 		if err != nil {
@@ -163,17 +141,17 @@ func encode(content booklit.Content) (*node, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &node{Kind: "target", Tag: v.TagName, Title: title, Content: inner}, nil
+		return wire.Target(v.TagName, title, inner), nil
 	default:
 		return nil, fmt.Errorf("contentjson: cannot serialize %T: it is bound to in-process state", content)
 	}
 }
 
-func encodeAll(cs []booklit.Content) ([]*node, error) {
+func encodeAll(cs []booklit.Content) ([]*wire.Node, error) {
 	if len(cs) == 0 {
 		return nil, nil
 	}
-	out := make([]*node, len(cs))
+	out := make([]*wire.Node, len(cs))
 	for i, c := range cs {
 		n, err := encode(c)
 		if err != nil {
@@ -184,11 +162,11 @@ func encodeAll(cs []booklit.Content) ([]*node, error) {
 	return out, nil
 }
 
-func encodePartials(partials booklit.Partials) (map[string]*node, error) {
+func encodePartials(partials booklit.Partials) (map[string]*wire.Node, error) {
 	if len(partials) == 0 {
 		return nil, nil
 	}
-	out := make(map[string]*node, len(partials))
+	out := make(map[string]*wire.Node, len(partials))
 	for k, v := range partials {
 		n, err := encode(v)
 		if err != nil {
@@ -199,7 +177,7 @@ func encodePartials(partials booklit.Partials) (map[string]*node, error) {
 	return out, nil
 }
 
-func decode(n *node, sec *booklit.Section) (booklit.Content, error) {
+func decode(n *wire.Node, sec *booklit.Section) (booklit.Content, error) {
 	if n == nil {
 		return booklit.Empty, nil
 	}
@@ -299,7 +277,7 @@ func decode(n *node, sec *booklit.Section) (booklit.Content, error) {
 	}
 }
 
-func decodeAll(ns []*node, sec *booklit.Section) ([]booklit.Content, error) {
+func decodeAll(ns []*wire.Node, sec *booklit.Section) ([]booklit.Content, error) {
 	if len(ns) == 0 {
 		return nil, nil
 	}
@@ -314,7 +292,7 @@ func decodeAll(ns []*node, sec *booklit.Section) ([]booklit.Content, error) {
 	return out, nil
 }
 
-func decodePartials(ns map[string]*node, sec *booklit.Section) (booklit.Partials, error) {
+func decodePartials(ns map[string]*wire.Node, sec *booklit.Section) (booklit.Partials, error) {
 	if len(ns) == 0 {
 		return nil, nil
 	}
