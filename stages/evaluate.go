@@ -201,7 +201,7 @@ func (eval *Evaluate) dispatchDang(node ast.JSXElement, callable dang.Callable) 
 		eval.Result = booklit.Append(eval.Result, accumulator)
 		return nil
 	}
-	content, err := dangeval.ToContent(ret)
+	content, err := eval.Dang.ContentFromValue(ret, eval.Section)
 	if err != nil {
 		return fmt.Errorf("bridging <%s> return value: %w", node.Name, err)
 	}
@@ -299,7 +299,7 @@ func (eval *Evaluate) VisitJSXExpression(node ast.JSXExpression) error {
 	if err != nil {
 		return fmt.Errorf("evaluating {%s}: %w", node.Raw, err)
 	}
-	content, err := dangeval.ToContent(val)
+	content, err := eval.Dang.ContentFromValue(val, eval.Section)
 	if err != nil {
 		return fmt.Errorf("bridging {%s}: %w", node.Raw, err)
 	}
