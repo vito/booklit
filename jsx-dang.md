@@ -501,3 +501,64 @@ Dang code to read for Phase 3 (lives at `~/src/dang`, module
 5. Once the parser is solid, swap `\foo{}` to JSX in
    `booklit/docs/lit/index.md` as a forcing function.
 6. Then start ripping out the plugin system.
+
+## Progress log
+
+This section is append-only. Each session that makes meaningful progress
+should add a new dated `###` entry at the bottom — do not edit earlier
+entries or earlier sections of this plan, even when later decisions
+contradict them. A reader scanning top-to-bottom learns the original
+intent first, then sees how the work actually unfolded.
+
+### 2026-05-30 — Phase 0 + start of Phase 1
+
+Landed in commit `b748c94` (`feat(marklit): add JSX parsing alongside
+\invoke`).
+
+**Done.** `ast.JSXElement` and `ast.JSXExpression` now live alongside
+`ast.Invoke` as parallel node kinds. The goldmark layer has a
+hand-written JSX inline parser (priority 98) and block parser
+(priority 100, ahead of goldmark's HTML block parser at 900, which
+would otherwise claim `<UpperCase` lines as CommonMark type-7 HTML and
+block inline JSX parsing). The parser handles `<Foo/>`, `<Foo>body</Foo>`,
+`<Foo bar="x"/>`, `<Foo bar={expr}/>`, `<Foo>{expr}</Foo>`, nested
+elements, multi-line attrs and bodies, escapes, and string-aware brace
+balancing inside expressions. camelCase prop names are preserved
+verbatim; lowercase tags fall through to goldmark's raw-HTML support.
+Markdown inside JSX bodies still works (`<Foo>*emph*</Foo>`) — text
+chunks are re-parsed via `ParseInlineArg`. 17 positive table-driven
+cases plus 3 negative tests in `marklit/jsx_test.go`; full
+`go test ./...` green.
+
+**Decisions made.** Walked through the eight open Phase 1 questions
+explicitly: camelCase attrs, lowercase = HTML pass-through, full Dang
+in `{...}` (parsed opaquely for now — captured as raw bytes with
+string-aware brace balancing, real parsing comes in Phase 3), headings
+continue to auto-create `<Section>` invocations, and no backcompat for
+`\foo{}`. Q2 (children-to-template format), Q4 (conditional/loop
+semantics), and Q7 (split-sections data model) deferred until their
+phase actually hits.
+
+**Plugin system status.** Still in place. The `\foo{}` syntax, the Go
+plugin loader, `--plugin`, `BOOKLIT_REEXEC`, and the example plugins
+under `docs/hello/` and `tests/fixtures/*-plugin/` all still build and
+work. Both syntaxes coexist deliberately so file-by-file migration is
+possible. Deletion was deferred until "JSX parses real fixtures," which
+it now does — so the next session can remove the plugin apparatus in
+a single commit if appropriate.
+
+**JSX evaluation is not wired up.** `stages.Evaluate.VisitJSXElement`
+and `VisitJSXExpression` return a "not yet implemented" error.
+Dispatching a JSX element to a template, built-in, Dang function, or
+Dagger module is Phase 2/3/4 territory. A real `.md` file using JSX
+will parse but not render until those land.
+
+**Reasonable next steps.** (a) Delete the plugin loader / `--plugin` /
+`BOOKLIT_REEXEC` / example Go plugins now that JSX parses real
+fixtures — pure cleanup commit, no behavior change for the JSX path.
+(b) Phase 2 (template-default dispatch): make a 4-tier resolver in
+`stages/evaluate.go` so `<Foo>` first checks built-ins, then a
+`html/Foo.html` template, before falling through to errors. (c) Phase 1's
+docs migration: rewrite `booklit/docs/lit/*.md` from `\foo{}` to JSX as
+a forcing function — this probably waits for Phase 2 since otherwise
+the migrated docs would parse but not render.
