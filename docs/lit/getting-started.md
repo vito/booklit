@@ -1,60 +1,49 @@
-\use-plugin{chroma}
-\use-plugin{booklitdoc}
-
 # Getting Started
 
-Getting started with Booklit assumes basic knowledge of the [Go
-programming language](https://golang.org). Be sure to have it installed!
+The best way to get started with Booklit is to install the CLI:
 
-The best way to get started with Booklit is to create a
-[Go](https://golang.org) module with Booklit as a dependency:
-
-\syntax{sh}{{{
-# create go.mod and go.sum
-go mod init example
-
-# add booklit to go.mod and install CLI
-go get github.com/vito/booklit/cmd/booklit
+```sh
+# add booklit to your toolchain
+go install github.com/vito/booklit/cmd/booklit@latest
 
 # add GOPATH/bin to your $PATH
 export PATH=$(go env GOPATH)/bin:$PATH
-}}}
+```
 
 It's also possible to download the `booklit` executable from the latest
 [GitHub release](https://github.com/vito/booklit/releases/latest), but
-tracking it as a dependency will make it easier to [write a
-plugin](#plugins) later on.
+tracking it via `go install` makes it easier to follow updates.
 
-\table-of-contents
+<TableOfContents/>
 
 ## Hello, world!
 
-First, create a file called `hello.lit` with the following content:
+First, create a file called `hello.md` with the following content:
 
-\lit-syntax{{{
-\title{Hello, world!}{hello}
+```markdown
+# Hello, world! {#hello}
 
 I'm a Booklit document!
-}}}
+```
 
 This file can exist anywhere, but one common convention is to place
-`.lit` documents under `lit/`, HTML templates under `html/`,
-and plugin code under `go/`.
+`.md` documents under `lit/`, HTML templates under `html/`,
+and any custom Go code under `go/`.
 
 Run the following to build and render the file to `./docs/hello.html`:
 
-\syntax{bash}{{{
-$ booklit -i hello.lit -o docs
-}}}
+```bash
+$ booklit -i hello.md -o docs
+```
 
 Each of the changes in the following sections will require re-building, which
 can be done by running the above command again. Alternatively, you can run
 `booklit` with the `-s` flag to start a HTTP server:
 
-\code{{
-$ booklit -i hello.lit -s 8000
-\syntax-hl{INFO}[0000] listening              port=8000
-}}
+```
+$ booklit -i hello.md -s 8000
+INFO[0000] listening              port=8000
+```
 
 Once Booklit says 'listening', browse to
 [http://localhost:8000/hello.html](http://localhost:8000/hello.html).
@@ -63,75 +52,81 @@ re-rendered.
 
 ## Organizing with Sections
 
-Next, let's try adding a section within our document:
+Next, let's try adding a section within our document. Headings (`#`, `##`,
+`###`) become sections automatically — top-level becomes the page title,
+each deeper level nests a sub-section:
 
-\lit-syntax{{{
-\title{Hello, world!}{hello}
+```markdown
+# Hello, world! {#hello}
 
 I'm a Booklit document!
 
-\section{
-  \title{Hi there!}
+## Hi there!
 
-  I'm so organized!
-}
-}}}
+I'm so organized!
+```
 
 After building, you should see something like this:
 
-\inset{
-  \larger{\larger{\larger{Hello, world!}}}
+<Inset>
+<Larger><Larger><Larger>Hello, world!</Larger></Larger></Larger>
 
-  I'm a Booklit document!
+I'm a Booklit document!
 
-  \larger{\larger{1 Hi there!}}
+<Larger><Larger>1 Hi there!</Larger></Larger>
 
-  I'm so organized!
-}
+I'm so organized!
+</Inset>
 
 That number "1" might look a bit weird at the moment, but it's the section
 number, and it'll be something like "3.2" for a nested section. You can always
 remove it by specifying your own template (more on that later), but for now
 let's leave it there.
 
+For non-heading sections, or sections constructed by a component, use
+`<Section>` explicitly:
+
+```markdown
+<Section>
+  ## Custom Sub-section
+  Body.
+</Section>
+```
+
 ## Splitting Sections
 
 To render each sub-section on its own page, simply call
 [#split-sections] somewhere in the section.
 
-\lit-syntax{{{
-\title{Hello, world!}{hello}
+```markdown
+# Hello, world! {#hello}
 
-\split-sections
+<SplitSections/>
 
 I'm a Booklit document!
 
-\section{
-  \title{Hi there!}
+## Hi there!
 
-  I'm so organized!
-}
-}}}
+I'm so organized!
+```
 
 So far we've just made the section disappear, which isn't very helpful. Let's
 at least make it so we can browse to it! This can be done with
 [#table-of-contents]:
 
-\lit-syntax{{{
-\title{Hello, world!}{hello}
+```markdown
+# Hello, world! {#hello}
 
-\split-sections
+<SplitSections/>
 
 I'm a Booklit document!
 
-\table-of-contents
+<TableOfContents/>
 
-\section{
-  \title{Hi there!}
+## Hi there!
 
-  I'm so organized!
-}
-}}}
+I'm so organized!
+```
 
 Note that when viewing the sub-section, its header is now a `<h1>`
 rather than the `<h2>` it was before, since it stands on its own page.
@@ -140,55 +135,42 @@ rather than the `<h2>` it was before, since it stands on its own page.
 
 Having a [#table-of-contents] is great and all, but more often
 you'll want to reference sections from each other directly and in context.
-This can be done with [#reference]:
+Use the `[#tag]` shorthand:
 
-\lit-syntax{{{
-\title{Hello, world!}{hello}
+```markdown
+# Hello, world! {#hello}
 
-\split-sections
+<SplitSections/>
 
-I'm a Booklit document! To read further, see \reference{hi-there}.
+I'm a Booklit document! To read further, see [#hi-there].
 
-\section{
-  \title{Hi there!}
+## Hi there!
 
-  I'm so organized!
-}
-}}}
+I'm so organized!
+```
 
-The first argument to [#reference] is the name of a tag to link. At
-build time, references will *resolve* to their tag and generate a link
-to it. By default, the name of the link is determined by the tag, so for a
-section it'll be the section's title. This can be overridden by passing a
-second argument to [#reference]:
+The default tag is a slugified form of the heading; you can also give an
+explicit tag via `{#tag}` after the heading text. To override the link's
+display name, write `[Display Name](#tag)`:
 
-\lit-syntax{{{
-\title{Hello, world!}{hello}
-
-\split-sections
-
-I'm a Booklit document! Consult \reference{hi-there}{this section} for
-more.
-
-\section{
-  \title{Hi there!}
-
-  I'm so organized!
-}
-}}}
+```markdown
+I'm a Booklit document! Consult [this section](#hi-there) for more.
+```
 
 ## Next Steps
 
 What we've gone over should carry you pretty far. But you'll likely want
 to know a lot more.
 
-\list{
-  To change how your generated content looks, check out the
-  [HTML renderer](#html-renderer).
-}{
-  To learn the functions that come with Booklit, check out
-  [#baselit].
-}{
-  To extend your documents with your own functions, check out
-  [#plugins].
-}
+<List>
+<Item>
+To change how your generated content looks, check out the
+[HTML renderer](#html-renderer).
+</Item>
+<Item>
+To learn the components that come with Booklit, check out [#baselit].
+</Item>
+<Item>
+To extend your documents with your own components, check out [#plugins].
+</Item>
+</List>

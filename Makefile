@@ -14,8 +14,8 @@ docs/css/booklit.css: less/docs.less less/*.less
 less/logo-url.less: docs/css/images/booklit.svg
 	yarn run build-logo-url-less
 
-docs/outputs/index.html: docs/hello/*.lit docs/hello/html/*.tmpl docs/hello/go/*
-	cd docs/hello && booklit --plugin github.com/vito/booklit/docs/hello/go --html-templates html -i index.lit -o ../outputs
+docs/outputs/index.html: docs/lit/*.md docs/html/*.tmpl docs/booklitdoc/*.go cmd/booklit-docs/*.go
+	go run ./cmd/booklit-docs -i docs/lit/index.md -o docs/outputs --html-templates docs/html
 
 clean:
 	rm -f $(targets)

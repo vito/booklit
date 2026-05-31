@@ -1,41 +1,48 @@
-\use-plugin{booklitdoc}
-
 # Syntax {#syntax}
 
-Booklit documents are Markdown files extended with a special syntax for
-[function calls](#function-syntax). Standard Markdown formatting
-(emphasis, bold, links, code, lists, etc.) is supported natively, and
-everything else is either text or an `\invoke` call.
+Booklit documents are Markdown files with embedded JSX-style component
+invocations. Standard Markdown formatting (emphasis, bold, links, code,
+lists, etc.) is supported natively, and everything else is either text or
+a `<Component>` call.
 
-\table-of-contents
+<TableOfContents/>
 
 ## Prose Syntax {#prose-syntax}
 
 Booklit builds on top of standard Markdown, so the prose rules are familiar:
 
-\list{
-  The top-level of a document is a series of *paragraphs*, separated
-  by one or more blank lines.
-}{
-  A *paragraph* is a series of *lines*, separated by linebreaks.
-  Adjacent lines within a paragraph are joined (soft line breaks become
-  spaces).
-}{
-  *Emphasis* is written with `*asterisks*` and **bold** with
-  `**double asterisks**`.
-}{
-  *Inline code* is written with `` `backticks` ``.
-}{
-  *Links* are written as `[display text](url)`.
-}{
-  *Images* are written as `![alt text](path)`.
-}{
-  *Headings* can be written with `#` prefix, which maps to
-  [#title].
-}{
-  In addition to Markdown formatting, [function
-  calls](#function-syntax) can be used inline or at the block level.
-}
+<List>
+<Item>
+The top-level of a document is a series of *paragraphs*, separated
+by one or more blank lines.
+</Item>
+<Item>
+A *paragraph* is a series of *lines*, separated by linebreaks.
+Adjacent lines within a paragraph are joined (soft line breaks become
+spaces).
+</Item>
+<Item>
+*Emphasis* is written with `*asterisks*` and **bold** with
+`**double asterisks**`.
+</Item>
+<Item>
+*Inline code* is written with `` `backticks` ``.
+</Item>
+<Item>
+*Links* are written as `[display text](url)`.
+</Item>
+<Item>
+*Images* are written as `![alt text](path)`.
+</Item>
+<Item>
+*Headings* can be written with the `#` prefix, which maps to [#title].
+A `{#tag}` after a heading sets an explicit anchor tag.
+</Item>
+<Item>
+In addition to Markdown formatting, JSX-style [component
+calls](#component-syntax) can be used inline or at the block level.
+</Item>
+</List>
 
 ## Comment Syntax {#comment-syntax}
 
@@ -43,7 +50,7 @@ Comments are delimited by `{-` and `-}`. They can be multi-line,
 appear in between words, and they can also be nested. This makes commenting
 out large blocks of content easy:
 
-\lit-syntax{{{
+```
 Hi, I'm{- a comment -} in the middle of a sentence!
 
 {-
@@ -53,72 +60,70 @@ Hi, I'm{- a comment -} in the middle of a sentence!
 
   with multiple lines.
 -}
-}}}
+```
 
-## Function Syntax {#function-syntax}
+## Component Syntax {#component-syntax}
 
-Function calls are denoted by `\` followed by a series of alphanumeric
-characters and hyphens (`foo-bar`), forming the function *name*.
+Components are written in JSX style. A component invocation begins with
+`<` followed by an *uppercase* letter (lowercase tags are passed through
+as raw HTML, matching React's convention).
 
-To produce a literal `\` character, use `\\` (standard Markdown backslash
-escape).
+A component can be self-closing or paired:
 
-Following the name, there may be any number of *arguments*, which can
-come in a few different forms:
+```jsx
+<TableOfContents/>
 
-\definitions{
-  \definition{`{line}`}{
-    With no linebreak after the `{`, the argument forms a single
-    line. Markdown formatting is applied within the argument.
-  }
-}{
-  \definition{`{word wrapped line}`}{
-    As above, but soft line breaks are converted into a single
-    space, as if it were written as `{word wrapped line}`.
-  }
-}{
-  \definition{\lit-syntax{{{
-{
-  paragraph 1
+<Section>
+  Hello, sub-section!
+</Section>
+```
 
-  paragraph 2
-}
-  }}}}{
-    With a linebreak after the `{`, the argument forms a block of
-    paragraphs with full Markdown and function call support.
-  }
-}{
-  \definition{\lit-syntax{{{
-{{
-  paragraph 1
+### Props
 
-    indented paragraph 2
+Components accept named *props* as attributes. String values use double
+quotes; expression values use curly braces (Dang expressions, evaluated
+at build time):
 
-  \with{syntax}
-}}
-  }}}}{
-    With doubled-up curly braces, whitespace is preserved in the content,
-    rather than being parsed into paragraphs. Function calls (`\invoke`)
-    are still recognized within preformatted blocks.
+```jsx
+<Reference tag="getting-started"/>
 
-    Note that the first line of the content determines an indentation level
-    that is then stripped for all lines. It is the only whitespace that is
-    ignored.
-  }
-}{
-  \definition{\lit-syntax{{
-{{{
-  paragraph 1
+<Image path="diagram.png"/>
 
-    indented {paragraph} 2
+<List items={primitiveTypes}/>
+```
 
-  \\not-parsed{no-syntax}
-}}}
-  }}}{
-    Tripled-up curly braces form a verbatim argument. Similar to
-    preformatted, whitespace is preserved. In addition, there is no
-    interpreting or parsing of function calls or Markdown within.
-    This is useful for large code blocks where the content may contain
-    special characters like `\`, `{`, or `}`.
-  }
-}
+For props that map to keyword-style arguments, the convention is
+camelCase: `<Link target="x">y</Link>`, not `<Link Target="x">`.
+
+### Children
+
+Content between the opening and closing tag becomes the component's
+*children*. Single-line invocations parse children as inline Markdown;
+multi-line invocations parse children as block Markdown (blank lines
+yield paragraphs):
+
+```jsx
+<Title>Hello, *world*!</Title>
+
+<Section>
+  <Title>Sub-section</Title>
+
+  Body paragraph with **bold** and *italic*.
+
+  Another paragraph.
+</Section>
+```
+
+### Lowercase tags
+
+Lowercase tag names are treated as literal HTML and pass through to the
+output unchanged:
+
+```jsx
+This is <br/> a line break.
+```
+
+If a component name collides with an HTML element name (rare, given the
+PascalCase convention), the JSX parser still wins on `<UpperCase` —
+because lowercase falls through to HTML, this only really comes up if
+you try to name a component `<Div>` etc.

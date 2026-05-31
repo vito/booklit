@@ -1,13 +1,10 @@
-\use-plugin{booklitdoc}
-\use-plugin{chroma}
-
 # Booklit {#index}
 
-\styled{splash}
+<Styled name="splash"/>
 
-\larger{
-  Booklit is a tool for building static websites from semantic documents.
-}
+<Larger>
+Booklit is a tool for building static websites from semantic documents.
+</Larger>
 
 Booklit enforces a tidy separation between **content**, **logic**, and
 **presentation** that makes it easy to write and refactor websites for
@@ -27,152 +24,153 @@ Booklit has been serving me well across multiple projects for years with little
 modification needed, so I think it's good enough to share.
 
 
-\columns{
-  \column-header{content in `*.lit`}
+<Columns>
+<ColumnHeader>content in `*.md`</ColumnHeader>
 
-  Booklit documents are text files which evaluate \syntax{lit}{\\functions} to
-  generate content, ultimately resulting in a tree of sections.
+Booklit documents are Markdown with embedded `<Component>` invocations that
+generate content, ultimately resulting in a tree of sections.
 
-  Sections are easy to move around, allowing you to continuously refactor and
-  restructure your content without having to tweak header sizes and update
-  internal links.
-}{
-  \lit-syntax{{{
-  \title{Hello}{index}
+Sections are easy to move around, allowing you to continuously refactor and
+restructure your content without having to tweak header sizes and update
+internal links.
 
-  Hello, world! I'm a Booklit document.
+<Column>
 
-  Check out my favorite \reference{quotes}!
+```markdown
+# Hello {#index}
 
-  \include-section{quotes.lit}
-  }}}
+Hello, world! I'm a Booklit document.
 
-  \lit-syntax{{{
-  \title{Quotes}
-  \use-plugin{example}
+Check out my favorite [#quotes]!
 
-  \quote{
-    It's lit!
-  }{Travis Scott}
-  }}}
-}
+<IncludeSection path="quotes.md"/>
+```
 
-\columns{
-  \column-header{logic in `*.go`}
+```markdown
+# Quotes
 
-  Sections use plugins to invoke \syntax{lit}{\\functions} written in
-  [Go](https://golang.org). Go is a simple and fast language with
-  [plenty of packages](https://pkg.go.dev/) around if you need them.
+<Quote source="Travis Scott">
+  It's lit!
+</Quote>
+```
 
-  Plugins allow your content to be semantic - saying what it means, decoupled
-  from how it should be computed or displayed.
-}{
-  \syntax{go}{{{
-  func (Example) Quote(
-    quote, source booklit.Content,
-  ) booklit.Content {
-    return booklit.Styled{
-      Style: "quote",
-      Content: quote,
-      Partials: booklit.Partials{
-        "Source": source,
-      },
-    }
-  }
-  }}}
-}
+</Column>
+</Columns>
 
-\columns{
-  \column-header{presentation in `*.tmpl`}
+<Columns>
+<ColumnHeader>logic in `*.go` (or templates)</ColumnHeader>
 
-  Booklit separates presentation into a final rendering phase which determines
-  the output format.
+Components dispatch via a tiered resolver: built-in &rarr; HTML template
+&rarr; and eventually Dang or Dagger. Most "plugins" are just an HTML
+template; you only write Go for primitives that need to manipulate the
+section tree.
 
-  The [#html-renderer] is powered by Go's standard
-  [`html/template` package](https://golang.org/pkg/html/template/).
-  More renderers may be implemented in the future.
+<Column>
 
-  All [base templates](#base-templates) can be overridden, sections
-  can be individually [#styled], and plugins can return
-  \godoc{booklit.Styled} content, giving the author full control over what
-  comes out.
-}{
-  \syntax{go-html-template}{{{
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <title>{{.Title.String}}</title>
-    </head>
-    <body>
-      {{. | render}}
-    </body>
-  </html>
-  }}}
+```go-html-template
+<blockquote class="quote">
+  {{.Content | render}}
 
-  \syntax{go-html-template}{{{
-  <blockquote class="quote">
-    {{.Content | render}}
+  <footer>
+    {{.Partial "source" | render}}
+  </footer>
+</blockquote>
+```
 
-    <footer>
-      {{.Partial "Source" | render}}
-    </footer>
-  </blockquote>
-  }}}
-}
+</Column>
+</Columns>
 
-\columns{
-  \column-header{build with `booklit`}
+<Columns>
+<ColumnHeader>presentation in `*.tmpl`</ColumnHeader>
 
-  The `booklit` CLI is a single command which loads Booklit documents
-  and renders them.
+Booklit separates presentation into a final rendering phase which determines
+the output format.
 
-  When an error occurs, Booklit will show the location of the error and try to
-  suggest a fix.
-}{
-  \code{{
-  $ booklit -i ./index.lit -o ./public/
-  \syntax-hl{INFO}[0000] rendering
-  }}
+The [#html-renderer] is powered by Go's standard
+[`html/template` package](https://golang.org/pkg/html/template/).
+More renderers may be implemented in the future.
 
-  \code{{
-  $ booklit -i ./to-err-is-human.lit
-  to-err-is-human.lit:5: unknown tag 'helo'
+All [base templates](#base-templates) can be overridden, sections
+can be individually [#styled], and components can return
+<Godoc ref="booklit.Styled"/> content, giving the author full control over what
+comes out.
 
-     5| Say \\reference{helo}!
-            \syntax-hl{^^^^^^^^^^}
-  These tags seem similar:
+<Column>
 
-  - hello
+```go-html-template
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{.Title.String}}</title>
+  </head>
+  <body>
+    {{. | render}}
+  </body>
+</html>
+```
 
-  Did you mean one of these?
-  }}
-}
+</Column>
+</Columns>
 
-\columns{
-  \column-header{serve with `booklit -s $PORT`}
+<Columns>
+<ColumnHeader>build with `booklit`</ColumnHeader>
 
-  In server mode, Booklit renders content on each request with only plugin
-  changes requiring a server restart.
+The `booklit` CLI is a single command which loads Booklit documents
+and renders them.
 
-  The feedback loop is *wicked fast*.
-}{
-  \code{{
-  $ booklit -i ./index.lit -s 3000
-  \syntax-hl{INFO}[0000] listening
-  }}
+When an error occurs, Booklit will show the location of the error and try to
+suggest a fix.
 
-  \output-frame{outputs/index.html}
-}
+<Column>
+
+```
+$ booklit -i ./index.md -o ./public/
+INFO[0000] rendering
+```
+
+```
+$ booklit -i ./to-err-is-human.md
+to-err-is-human.md:5: unknown tag 'helo'
+
+   5| Say [#helo]!
+          ^^^^^^^
+These tags seem similar:
+
+- hello
+
+Did you mean one of these?
+```
+
+</Column>
+</Columns>
+
+<Columns>
+<ColumnHeader>serve with `booklit -s $PORT`</ColumnHeader>
+
+In server mode, Booklit renders content on each request.
+The feedback loop is *wicked fast*.
+
+<Column>
+
+```
+$ booklit -i ./index.md -s 3000
+INFO[0000] listening
+```
+
+<OutputFrame url="outputs/index.html"/>
+
+</Column>
+</Columns>
 
 This website is [written with
 Booklit](https://github.com/vito/booklit/tree/master/docs/lit). Want to write
 your own? Let's [get started](#getting-started)!
 
-\split-sections
+<SplitSections/>
 
-\include-section{getting-started.md}
-\include-section{baselit.md}
-\include-section{html-renderer.md}
-\include-section{plugins.md}
-\include-section{syntax.md}
-\include-section{thanks.md}
+<IncludeSection path="getting-started.md"/>
+<IncludeSection path="baselit.md"/>
+<IncludeSection path="html-renderer.md"/>
+<IncludeSection path="plugins.md"/>
+<IncludeSection path="syntax.md"/>
+<IncludeSection path="thanks.md"/>

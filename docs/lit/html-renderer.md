@@ -1,7 +1,4 @@
-\use-plugin{booklitdoc}
-\use-plugin{chroma}
-
-# \aux{The }HTML Renderer {#html-renderer}
+# <Aux>The </Aux>HTML Renderer {#html-renderer}
 
 The presentation of your content is controlled by a *renderer*. At
 present, there is only one, and it's probably the one you'll want to use: HTML,
@@ -18,54 +15,38 @@ to Booklit with the `--html-templates` flag.
 The `--html-templates` flag must be passed every time you build your docs,
 so you may want to put it in a script:
 
-\syntax{bash}{{{
+```bash
 #!/bin/bash
 
-booklit -i lit/index.lit -o public \
+booklit -i lit/index.md -o public \
   --html-templates ./html \
   "$@" # forward args from script to booklit
-}}}
+```
 
-\table-of-contents
+<TableOfContents/>
 
 ## Base Templates
 
 The following template files will be executed if present in the HTML
 templates directory, with the corresponding data type as `.`:
 
-\table{
-  \table-row{template}{type for `.`}
-}{
-  \table-row{\template-link{page.tmpl}}{\godoc{*booklit.Section}}
-}{
-  \table-row{\template-link{section.tmpl}}{\godoc{*booklit.Section}}
-}{
-  \table-row{\template-link{link.tmpl}}{\godoc{booklit.Link}}
-}{
-  \table-row{\template-link{list.tmpl}}{\godoc{booklit.List}}
-}{
-  \table-row{\template-link{paragraph.tmpl}}{\godoc{booklit.Paragraph}}
-}{
-  \table-row{\template-link{preformatted.tmpl}}{\godoc{booklit.Preformatted}}
-}{
-  \table-row{\template-link{reference.tmpl}}{\godoc{*booklit.Reference}}
-}{
-  \table-row{\template-link{sequence.tmpl}}{\godoc{booklit.Sequence}}
-}{
-  \table-row{\template-link{string.tmpl}}{\godoc{booklit.String}}
-}{
-  \table-row{\template-link{target.tmpl}}{\godoc{booklit.Target}}
-}{
-  \table-row{\template-link{toc.tmpl}}{\godoc{*booklit.Section}}
-}{
-  \table-row{\template-link{aside.tmpl}}{\godoc{booklit.Aside}}
-}{
-  \table-row{\template-link{definitions.tmpl}}{\godoc{booklit.Definitions}}
-}{
-  \table-row{\template-link{table.tmpl}}{\godoc{booklit.Table}}
-}{
-  \table-row{\template-link{image.tmpl}}{\godoc{booklit.Image}}
-}
+| template | type for `.` |
+| --- | --- |
+| <TemplateLink tmpl="page.tmpl"/> | <Godoc ref="booklit.Section"/> |
+| <TemplateLink tmpl="section.tmpl"/> | <Godoc ref="booklit.Section"/> |
+| <TemplateLink tmpl="link.tmpl"/> | <Godoc ref="booklit.Link"/> |
+| <TemplateLink tmpl="list.tmpl"/> | <Godoc ref="booklit.List"/> |
+| <TemplateLink tmpl="paragraph.tmpl"/> | <Godoc ref="booklit.Paragraph"/> |
+| <TemplateLink tmpl="preformatted.tmpl"/> | <Godoc ref="booklit.Preformatted"/> |
+| <TemplateLink tmpl="reference.tmpl"/> | <Godoc ref="booklit.Reference"/> |
+| <TemplateLink tmpl="sequence.tmpl"/> | <Godoc ref="booklit.Sequence"/> |
+| <TemplateLink tmpl="string.tmpl"/> | <Godoc ref="booklit.String"/> |
+| <TemplateLink tmpl="target.tmpl"/> | <Godoc ref="booklit.Target"/> |
+| <TemplateLink tmpl="toc.tmpl"/> | <Godoc ref="booklit.Section"/> |
+| <TemplateLink tmpl="aside.tmpl"/> | <Godoc ref="booklit.Aside"/> |
+| <TemplateLink tmpl="definitions.tmpl"/> | <Godoc ref="booklit.Definitions"/> |
+| <TemplateLink tmpl="table.tmpl"/> | <Godoc ref="booklit.Table"/> |
+| <TemplateLink tmpl="image.tmpl"/> | <Godoc ref="booklit.Image"/> |
 
 The most impactful of these is `page.tmpl`, which is used for the
 top-level section for each "page" rendered. This is where you would place
@@ -75,61 +56,53 @@ assets in `<head>`, for example.
 
 Booklit executes templates with the following functions available:
 
-\definitions{
-  \definition{`{{tag | url}}`}{
-    generate a URL for the tag
-  }
-}{
-  \definition{`{{content | stripAux}}`}{
-    strip [#aux] elements from the content
-  }
-}{
-  \definition{`{{string | rawHTML}}`}{
-    render the string as raw HTML, unescaped
-  }
-}{
-  \definition{`{{string | rawURL}}`}{
-    permit the rendered value to be placed in a `url=""` attribute
-  }
-}{
-  \definition{`{{content | render}}`}{
-    render the content
-  }
-}{
-  \definition{`{{walkContext currentSection subSection}}`}{
-    generate a convenience struct with fields `.Current` and
-    `.Section`, useful for traversing a tree of sections while retaining
-    the "current" section, e.g. so it can be marked as "active" in a
-    navigation tree
-  }
-}{
-  \definition{`{{section | headerDepth}}`}{
-    return the number that should be used for the section's header, i.e.
-    `<hN>`
-  }
-}
+<Definitions>
+<Definition term='{{tag | url}}'>
+generate a URL for the tag
+</Definition>
+<Definition term='{{content | stripAux}}'>
+strip [#aux] elements from the content
+</Definition>
+<Definition term='{{string | rawHTML}}'>
+render the string as raw HTML, unescaped
+</Definition>
+<Definition term='{{string | rawURL}}'>
+permit the rendered value to be placed in a `url=""` attribute
+</Definition>
+<Definition term='{{content | render}}'>
+render the content
+</Definition>
+<Definition term='{{walkContext currentSection subSection}}'>
+generate a convenience struct with fields `.Current` and `.Section`,
+useful for traversing a tree of sections while retaining the "current"
+section, e.g. so it can be marked as "active" in a navigation tree
+</Definition>
+<Definition term='{{section | headerDepth}}'>
+return the number that should be used for the section's header, i.e. `<hN>`
+</Definition>
+</Definitions>
 
 ## Styled Content
 
-Styled content, i.e. \godoc{booklit.Styled}, instructs the HTML renderer to
-use the `*.tmpl` template named after the style.
+Styled content, i.e. <Godoc ref="booklit.Styled"/>, instructs the HTML
+renderer to use the `*.tmpl` template named after the style.
 
 For example, [#bold] is implemented in the
 [`baselit`](#baselit) plugin by returning:
 
-\syntax{go}{{{
+```go
 booklit.Styled{
   Style:   booklit.StyleBold, // "bold"
   Content: content,
 }
-}}}
+```
 
 Booklit includes a `bold.tmpl` template which is evaluated with `.`
 as the `booklit.Styled` value:
 
-\syntax{go-html-template}{{{
+```go-html-template
 <strong>{{.Content | render}}</strong>
-}}}
+```
 
 Thus, when content is styled with `"bold"`, it will render in
 **strong tags**.
@@ -139,7 +112,7 @@ Thus, when content is styled with `"bold"`, it will render in
 Additional content can be propagated to the template by setting it
 `Partials`:
 
-\syntax{go}{{{
+```go
 booklit.Styled{
   Style:   "my-wackadoo-style",
   Content: content,
@@ -148,20 +121,26 @@ booklit.Styled{
     "Title": title,
   },
 }
-}}}
+```
 
 Then, with `my-wackadoo-style.tmpl` as the following:
 
-\syntax{go-html-template}{{{
+```go-html-template
 <div class="wack">
   <h1>{{.Partial "Title" | render}}</h1>
 
   {{.Content | render}}
 </div>
-}}}
+```
 
 This would result with `title` rendered in between the `<h1>`
 tags, and `content` rendered below.
+
+JSX components that don't have a built-in dispatch will be wrapped in
+a `booklit.Styled` automatically, so dropping `html/MyComponent.tmpl`
+into the templates directory is enough to introduce a new component —
+no Go code required. Props are passed through as Partials keyed by the
+JSX attribute name (camelCase).
 
 ## Styled Sections
 
@@ -171,24 +150,22 @@ instead of `page.tmpl` (if it exists).
 
 So, given the following example:
 
-\lit-syntax{{{
-\title{Fancy Section}
+```markdown
+# Fancy Section
 
-\styled{fancy}
+<Styled name="fancy"/>
 
 I'm a fancy section!
 
-\section{
-  \title{Sub-section}
+## Sub-section
 
-  I'm a normal sub-section!
-}
-}}}
+I'm a normal sub-section!
+```
 
 ...and the following as `fancy.tmpl` under the given templates path
 (`--html-templates`):
 
-\syntax{go-html-template}{{{
+```go-html-template
 <div class="fancy">
   <em><strong>{{.Title | render}}</strong></em>
 
@@ -200,11 +177,11 @@ I'm a fancy section!
     {{end}}
   {{end}}
 </div>
-}}}
+```
 
 ...the following will be the rendered HTML for the section:
 
-\syntax{html}{{{
+```html
 <div class="fancy">
   <em><strong>Fancy Section</strong></em>
 
@@ -214,7 +191,7 @@ I'm a fancy section!
 
   <p>I'm a normal sub-section!</p>
 </div>
-}}}
+```
 
 Note that the styling only applies to the section that declares it; it does
 not propagate to its children.

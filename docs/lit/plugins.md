@@ -1,281 +1,181 @@
-\use-plugin{booklitdoc}
-\use-plugin{chroma}
-
 # Plugins {#plugins}
 
-Plugins provide the functionality behind function calls like
-\syntax{lit}{\\foo{bar}}.
+In the new Booklit model there is no separate "plugin" system: components
+are resolved by a tiered dispatcher. When the evaluator hits a JSX
+invocation like `<Foo bar="x">body</Foo>`, it looks for:
 
-Out of the box, Booklit comes with a plugin called
-[`baselit`](#baselit) which provides basic functions like
-[#title], [#section], [#italic], and
-[#bold].
+<OrderedList>
+<Item>A *built-in* with name `Foo` registered in Go.</Item>
+<Item>An HTML *template* named `Foo.tmpl` in the templates directory.</Item>
+<Item>(later) A *Dang* function in scope.</Item>
+<Item>(later) A *Dagger* function configured in `booklit.toml`.</Item>
+</OrderedList>
 
-More functions can be added by writing plugins and using them in your
-documents.
+The simplest "plugin" is a template — no Go code required. This page
+walks through both approaches.
 
-If you've skipped ahead, you may want to check out [#getting-started]
-to see how to set up your Go module.
+<TableOfContents/>
 
-\table-of-contents
+## Template-only Components {#template-components}
 
-## Using Plugins {#using-plugins}
+If a JSX invocation has no matching built-in, Booklit wraps it as a
+<Godoc ref="booklit.Styled"/> with `Style` equal to the component name
+and props passed through as Partials. The HTML renderer then looks up
+`<Name>.tmpl` in the templates directory.
 
-To use a plugin, pass its Go package's import path as `--plugin` to the
-`booklit` command when building your docs.
+Say you want a `<Card>` component. Drop the following into `html/Card.tmpl`:
 
-For example, Booklit comes with a `chroma` plugin for syntax
-highlighting. To use it, run:
-
-\syntax{bash}{{{
-booklit -i index.lit -o out \
-  --plugin github.com/vito/booklit/chroma/plugin
-}}}
-
-The `--plugin` flag must be passed every time you build your docs,
-so you may want to put it in a script:
-
-```bash
-#!/bin/bash
-
-booklit -i lit/index.lit -o public \
-  --plugin github.com/vito/booklit/chroma/plugin \
-  "$@" # forward args from script to booklit
+```go-html-template
+<div class="card">
+  <h3>{{.Partial "title" | render}}</h3>
+  <div class="body">{{.Content | render}}</div>
+</div>
 ```
 
+Then use it in any document:
 
-Booklit imports all specified plugins at build time, automatically adding
-them to `go.mod`. When imported, plugins register themselves under a
-certain name - typically guessable from the import path.
+```markdown
+<Card title="Greetings">
+Welcome to the test.
+</Card>
+```
 
-To use the plugin in your documents, call [#use-plugin] with its
-registered name:
+Build with `booklit --html-templates html ...` and the component renders.
+No Go, no recompile. Props are passed through with their authored
+(camelCase) names — `<Card title="..."/>` → `{{.Partial "title"}}`.
 
-\lit-syntax{{{
-\title{My Section}
+## Go Built-ins {#go-builtins}
 
-\use-plugin{chroma}
+When a component needs to do something a template can't express (touch
+the section tree, evaluate AST sub-trees, error out), write it as a Go
+built-in.
 
-\syntax{ruby}{{{
-  def fib(n)
-    fib(n - 2) + fib(n - 1)
-  end
-}}}
-}}}
-
-The `--plugin` flag can be specified multiple times, and
-[#use-plugin] can be invoked multiple times.
-
-Note: [inline sections](#section) inherit plugins from their parent
-sections, but [included sections](#include-section) do not.
-
-## Writing Plugins {#using-plugins}
-
-Plugins are just Go packages that register a *plugin factory* with
-Booklit when they're imported with the `--plugin` flag.
-
-It's possible to use Booklit without writing any plugins of your own, but
-being able to write a plugin help you get the most out of Booklit.
-
-To create a new plugin, create a directory within your Go module (where
-`go.mod` lives) - let's call it `example` for this example:
-
-\syntax{bash}{{{
-mkdir example
-}}}
-
-Then, we'll create the initial skeleton for our plugin at
-`example/plugin.go`:
+Built-ins are registered via the <Godoc ref="builtins.Register"/>
+function. To add one to your own docs site, create a Go module that
+imports `github.com/vito/booklit/builtins` and registers in `init()`:
 
 ```go
-package example
+package mycomps
 
 import (
   "github.com/vito/booklit"
+  "github.com/vito/booklit/ast"
+  "github.com/vito/booklit/builtins"
 )
 
 func init() {
-  booklit.RegisterPlugin("example", NewPlugin)
+  builtins.Register("HelloWorld", helloWorld)
 }
 
-func NewPlugin(sec *booklit.Section) booklit.Plugin {
-  return Plugin{
-    section: sec,
-  }
-}
-
-type Plugin struct {
-  section *booklit.Section
+func helloWorld(ctx *builtins.Context, _ map[string]ast.Node, _ []ast.Node) (booklit.Content, error) {
+  return booklit.String("Hello, world!"), nil
 }
 ```
 
-This registers a plugin that does nothing. Let's define some document
-functions!
-
-Functions work by simply defining methods on the plugin struct. Let's define
-a basic one with no arguments:
+Then create a binary that imports both your package and `booklitcmd`:
 
 ```go
-func (plugin Plugin) HelloWorld() booklit.Content {
-  return booklit.String("Hello, world!")
+package main
+
+import (
+  "github.com/vito/booklit/booklitcmd"
+  _ "example.com/yourmodule/mycomps"
+)
+
+func main() {
+  booklitcmd.Main()
 }
 ```
 
-Now let's create a Booklit document that uses it as `hello-plugins.lit`:
+Use that binary instead of the stock `booklit` CLI to build your docs.
+This is exactly how the documentation site you're reading is built —
+see `cmd/booklit-docs` and `docs/booklitdoc/` in the Booklit repo.
 
-\lit-syntax{{{
-\title{Hello Plugins}
+### Built-in Signature
 
-\use-plugin{example}
+A built-in is a function with this shape:
 
-Zero args: \hello-world
-}}}
-
-To build this document, pass the package import path (including your module
-name) as the `--plugin` flag. For example, if your `go.mod` says
-`module foo`, the flag would be:
-
-```bash
-booklit -i hello-plugins.lit -o out \
-    --plugin foo/example
+```go
+type Func func(
+  ctx *builtins.Context,
+  props map[string]ast.Node,
+  children []ast.Node,
+) (booklit.Content, error)
 ```
 
-This should result in a page showing:
-
-\inset{
-  Zero args: Hello, world!
-}
-
-### Argument Types
-
-Functions can be invoked with any number of arguments, like so:
-
-\lit-syntax{{{
-\hello-world{arg1}{arg2}
-}}}
-
-See [#function-syntax] for more information.
-
-Each argument to the function corresponds to an argument for the plugin's
-method, which may be variadic.
-
-The plugin's arguments must each be one of the following types:
-
-\definitions{
-  \definition{\godoc{booklit.Content}}{
-    The evaluated content. This can be just about anything from a word to a
-    sentence to a series of paragraphs, depending on how the function is
-    invoked. It is typically used unmodified.
-  }
-}{
-  \definition{`string`}{
-    The evaluated content, converted into a string. This is useful when the
-    content is expected to be something simple, like a word or line of
-    text. The [#title] function, for example, uses this type for
-    its variadic *tags* argument.
-  }
-}{
-  \definition{\godoc{booklit/ast.Node}}{
-    The unevaluated syntax tree for the content. This is useful when doing
-    meta-level things like [#section] which need to control the
-    evaluation context of the content.
-  }
-}
+<Definitions>
+<Definition term="ctx.Section">
+The current section. Built-ins that mutate the section tree (like
+[#section] and [#title]) use this directly.
+</Definition>
+<Definition term="ctx.Evaluate(node)">
+Evaluates an AST node and returns its booklit.Content result. Use this
+to evaluate individual props or children on demand.
+</Definition>
+<Definition term="props">
+The component's props as raw AST. Each value is either an
+<Godoc ref="ast.String"/> (string-literal `attr="x"`) or an
+<Godoc ref="ast.JSXExpression"/> (`attr={expr}`). Call
+`ctx.Evaluate` on a prop to evaluate it.
+</Definition>
+<Definition term="children">
+The component's children as raw AST nodes. For single-line invocations
+these are inline content; for multi-line invocations they are block
+content (paragraphs).
+</Definition>
+</Definitions>
 
 ### Return Values
 
-Plugin methods can then return one of the following:
-
-\list{
-  nothing
-}{
-  `error`
-}{
-  \godoc{booklit.Content}
-}{
-  `(`\godoc{booklit.Content}`, error)`
-}
-
-If a method returns a non-nil `error` value, it will bubble up and
-the building will fail.
+A built-in returns a `(booklit.Content, error)` pair. Returning `(nil,
+nil)` is fine — useful for pure-side-effect components like
+[#split-sections] which just configure the section.
 
 ### A Full Example
 
-Putting the pieces together, let's extend our `pluglit` plugin from
-earlier write a real function that does something useful:
+Putting the pieces together, here's a real built-in that registers
+multiple tags as targets and renders a bold name followed by a
+description:
 
 ```go
-func (plugin Plugin) DescribeFruit(
-  name string,
-  definition booklit.Content,
-  tags ...string,
-) (booklit.Content, error) {
-  if name == "" {
-    return nil, errors.New("name cannot be blank")
+func describeFruit(ctx *builtins.Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
+  name, err := requireStringProp(ctx, props, "name")
+  if err != nil {
+    return nil, err
   }
 
-  content := booklit.Sequence{}
-  if len(tags) == 0 {
-    tags = []string{name}
+  body, err := ctx.Evaluate(ast.Sequence(children))
+  if err != nil {
+    return nil, err
   }
 
-  for _, tag := range tags {
+  var content booklit.Sequence
+  for _, tag := range strings.Fields(name) {
     content = append(content, booklit.Target{
-      TagName: tag,
-      Display: booklit.String(name),
+      TagName:  tag,
+      Location: ctx.Section.InvokeLocation,
+      Title:    booklit.String(name),
+      Content:  body,
     })
   }
 
-  content = append(content, booklit.Paragraph{
-    booklit.Styled{
-      Style: booklit.StyleBold,
-      Content: booklit.String(name),
-    },
-  })
-
-  content = append(content, definition)
-
+  content = append(content,
+    booklit.Paragraph{booklit.Styled{Style: booklit.StyleBold, Content: booklit.String(name)}},
+    body,
+  )
   return content, nil
 }
 ```
 
-There are many things to note here:
+Called as:
 
-\list{
-  there are two required arguments; *name* is a `string` and
-  *value* is a \godoc{booklit.Content}
-}{
-  there's a variadic argument, *tags*, which is of type
-  `[]string`
-}{
-  this function generates content, and can raise an error when building
-}{
-  the \godoc{booklit.Target} elements will result in tags being registered
-  in the section the function is called from
-}{
-  the function name, `describe-fruit`, corresponds to the method name
-  `DescribeFruit`
-}
+```markdown
+<DescribeFruit name="banana">
+A banana is a yellow fruit that only really tastes
+good in its original form. Banana flavored
+anything is a pit of despair.
+</DescribeFruit>
+```
 
-This function would be called like so:
-
-\lit-syntax{{{
-\describe-fruit{banana}{
-  A banana is a yellow fruit that only really tastes
-  good in its original form. Banana flavored
-  anything is a pit of dispair.
-}{banana-opinion}
-}}}
-
-...and will result in something like the following:
-
-\inset{
-  \describe-fruit{banana}{
-    A banana is a yellow fruit that only really tastes
-    good in its original form. Banana flavored
-    anything is a pit of dispair.
-  }{banana-opinion}
-}
-
-...which can be referenced as \syntax{lit}{\\reference{banana-opinion}}, which
-results in a link like this: [#banana-opinion].
+The `<Target>` elements register `banana` as a reference target, so
+[`<Reference tag="banana"/>`] anywhere in the section will link to it.
