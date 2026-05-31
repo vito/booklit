@@ -7,12 +7,22 @@ moved.
 
 ## Invocation syntax: `\foo{}` → JSX
 
-`\title{Hi}` became `<Title>Hi</Title>`. `\foo{a}{b}{c}` with positional
-args became `<Foo prop="a">{b}{c}</Foo>` with camelCase named props.
-Lowercase tags pass through as raw HTML (React rule), so a template
-like `<div class="card">{title}</div>` mixes literal HTML with prop
-interpolation. Markdown features (`#` headings, `- lists`, `| tables |`,
-fenced code) still work; headings still auto-create sections.
+`\title{Hi}` became `<Title>Hi</Title>`. Multi-arg invokes mapped
+positional args to named props, with one "content" arg (typically the
+display text or body) becoming JSX children:
+
+- `\link{display text}{url}` → `<Link target="url">display text</Link>`
+- `\image{path}{description}` → `<Image path="path" description="..."/>`
+- `\target{tag}{title}` → `<Target tag="tag">rich title</Target>` (children
+  become Title; the third Content slot from baselit is dropped, and a
+  `title="..."` prop is available as a plain-string shorthand)
+- `\reference{tag}{display}` → `<Reference tag="tag">display</Reference>`
+
+Prop names are camelCase. Lowercase tags pass through as raw HTML
+(React rule), so a template like `<div class="card">{title}</div>`
+mixes literal HTML with `{expr}` prop interpolation. Markdown features
+(`#` headings, `- lists`, `| tables |`, fenced code) still work;
+headings still auto-create sections.
 
 `marklit/jsx_parser.go` + `jsx_block_parser.go` are the goldmark
 extensions; `ast.JSXElement` and `ast.JSXExpression` are the new AST
@@ -78,9 +88,10 @@ stringified `String`; `ListValue` → `Sequence`; `NullValue` → empty;
 error. The Evaluator is one per build session, single-threaded.
 
 A Dagger session is implicit: any project with a `dagger.json` gets
-the module's functions in scope. The `<Foo from="..."/>` anonymous-import
-syntax from the original Phase 4 plan is **not** implemented — only the
-local-module path works today.
+the module's functions in scope. Booklit doesn't need its own
+"Dagger dispatch tier" — Dang already handles that, and a tag-level
+JSX `from="..."` syntax (in the original Phase 4 sketch) would have
+just duplicated the existing import machinery.
 
 ## Doc helpers (`docs/booklitdoc/`) collapsed
 
@@ -124,9 +135,10 @@ palette override.
 
 ## What's not implemented
 
-- Dagger anonymous-import syntax (`<Foo from="github.com/.../mod"/>`).
-  Locally-bound Dagger functions work via `{expr}`; out-of-tree module
-  references are not yet a thing.
+- Per-document remote-Dagger-module imports. Locally-bound Dagger
+  functions work via `{expr}` from any project with a `dagger.json`;
+  pulling in an out-of-tree module for one document would mean
+  reaching for `dang.toml`'s import config, not a Booklit-side syntax.
 - JSX literals inside Dang expressions (`{items.map(t => <Foo>…
   </Foo>)}`). Iteration and conditionals are covered by `<For>` and
   `<If>` / `<Unless>` built-ins instead.
