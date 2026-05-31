@@ -1013,3 +1013,66 @@ then shrink `cmd/booklit-docs` to just the helpers that still need Go.
 `<Children/>` built-in to be added. Eliminates the Go html/template
 dialect for user-facing templates. (c) Source-mapped errors (already
 deferred). (d) JSX-inside-Dang (still deferred).
+
+### 2026-05-31 — Port easy booklitdoc helpers to templates
+
+`docs/booklitdoc/` shrinks from 376 → 307 lines as the helpers with
+no Go logic move to pure templates that the tier-2 fallback handles.
+
+**Done.**
+
+- `<OutputFrame url="…"/>`: removed Go; renamed
+  `output-frame.tmpl` → `OutputFrame.tmpl` and updated
+  `{{.Partial "URL"}}` → `{{.Partial "url"}}` (camelCase as per the
+  established convention). The original Go also constructed an
+  unused `booklit.Link` for the Content; the template never read it,
+  so it was dropped.
+
+- `<TemplateLink tmpl="…"/>`: removed Go; new `TemplateLink.tmpl`
+  interpolates the partial into the github.com URL and renders the
+  filename as `<code>`. Uses `rawHTML` for the href interpolation
+  (filenames are simple ASCII so no escaping wrinkle).
+
+- `<SyntaxHl>…</SyntaxHl>`: removed Go AND template. Both were dead
+  code — no caller in the docs or templates.
+
+- `<ColumnHeader>` / `<Column>`: removed Go AND `column-header.tmpl`
+  (also dead). `<Columns>` reaches into its raw `ast.JSXElement`
+  children by name to extract title vs columns, so neither dispatcher
+  is ever reached. The doc comment on `columnsFunc` now mentions
+  this explicitly.
+
+- `stages/evaluate.go` template fallback now defaults `body` to
+  `booklit.Empty` when the JSX element has no children. Without
+  this, a self-closing component (e.g. `<OutputFrame url="…"/>`)
+  produced `Styled{Content: nil}` which panicked in
+  `Styled.IsFlow` → `Content.IsFlow` during the collect stage.
+
+The full docs site builds clean (`go run ./cmd/booklit-docs -i
+docs/lit/index.md -o ... --html-templates docs/html`); spot-checked
+rendered OutputFrame and TemplateLink output. `go test ./...` green.
+
+**What's still in `cmd/booklit-docs` / `booklitdoc.go`.** Four
+helpers and one init() side-effect, all blocked on either Dagger or
+an API reshape:
+
+- `<Define tag=… sig=…>desc</Define>` — uses chroma to syntax-
+  highlight the signature and constructs a `<Target>` for the tag.
+- `<LitSyntax>code</LitSyntax>` — chroma highlighting + regex sweep
+  over the highlighted output to linkify `\fn` references.
+- `<Godoc ref=pkg.Symbol/>` — `strings.SplitN` + Link construction.
+  Could become a template if we add a string-split helper to
+  `HTMLFuncs`, but punted for now.
+- `<Columns>` — AST child introspection (matches `<ColumnHeader>` /
+  `<Column>` by name). Stays a built-in until either the API
+  reshapes or AST inspection becomes a first-class capability.
+- chroma `styles.Fallback` override — init()-time global state for
+  the booklitdoc palette.
+
+**Reasonable next steps.** (a) Phase 3b: mdx-as-template — would
+make the easy-helper templates themselves expressible in the same
+syntax authors use for content. Larger, but unifies the dialects.
+(b) Shrink the remaining Go further by porting Godoc to a template
+once a string-split helper exists, or by making it a Dang function
+that returns raw HTML. (c) Plan the Dagger story for LitSyntax /
+Define so the binary can eventually disappear.
