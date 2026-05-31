@@ -886,3 +886,130 @@ file:line error framework. (d) JSX-inside-Dang
 (`{items.map(i => <Item>{i.name}</Item>)}`) — needs design work on
 the Dang side (`BooklitContent` opaque type) before Booklit can wire
 it.
+
+### 2026-05-31 — Phase 3a: tier-3 dispatch + .dang auto-discovery
+
+Adds a third dispatch tier for JSX: when `<Foo>` isn't a built-in and
+there's no `Foo.tmpl`, look up `Foo` in Dang scope and call it as a
+component. Two patterns are supported:
+
+- **Body-less** (`pub Foo(prop: T!): U! { … }`) — return value is
+  coerced to content via the existing bridge. Useful for helpers that
+  compute a string from props.
+- **Body-ful** (`pub Foo(prop: T!, &body(name: U!): R!): R! { body(name: …) }`)
+  — the JSX children compile into a Go-backed block; each `body(…)`
+  call from inside the Dang function pushes the named args into Dang
+  scope and re-evaluates the children, accumulating their content.
+  The function's return value is ignored; content flows out as a side
+  effect of body invocations.
+
+**Done.**
+
+- Dang: added `dang.ContextWithBlock(ctx, val)` (small upstream patch
+  in `pkg/dang/eval.go`). Lets embedders set the block-arg context key
+  programmatically — the surface syntax `Foo(...) { ... }` already
+  sets the same key during parsing, but the key itself was unexported.
+
+- `dangeval.LookupCallable(name)` returns a `dang.Callable` from the
+  held eval env if one exists with that name.
+
+- `dangeval.CallComponent(callable, props, body)` invokes a Dang
+  function as a JSX component. The body closure is wrapped in a
+  `componentBlock` (a custom `dang.Value` / `dang.Callable`
+  implementation) and attached to the context via `ContextWithBlock`
+  before calling. Returns the function's value (used for body-less
+  components; ignored for body-ful).
+
+- `dangeval.WithBindings(args, fn)` pushes the named bindings into
+  both the eval env (via `Derive(true) + Bind`) and the type env
+  (via `Clone + Add` with each value's `Type()`). The type-env
+  extension is non-obvious but essential — without it,
+  `InferFormsWithPhases` on a `{name}` snippet fails with "name not
+  found" because Dang inference runs against the type env.
+
+- `dangeval.New` now also auto-discovers `*.dang` files in the
+  project directory (non-recursive, alphabetical), parses them, and
+  merges all forms into the shared type and value envs via
+  `InferFormsWithPhases` + `EvaluateFormsWithPhases`. Treats the
+  directory as one module — no per-file import scoping for v1.
+
+- `stages.Evaluate.VisitJSXElement` consults Dang scope between the
+  built-in tier and the template fallback. A new `dispatchDang` helper
+  bridges props (literal strings → `StringValue`; `{expr}` props →
+  raw Dang values via `Eval`; anything else → stringified content) and
+  drives the call. Accumulator pattern: body-ful components populate
+  a per-element accumulator; body-less components contribute their
+  return value bridged to content.
+
+- `tests/dang_dispatch_test.go` covers five cases: body-less, body-ful
+  with named bindings, iteration via `items.each { body(…) }`,
+  missing function falls through to template fallback, and
+  non-callable Dang binding (e.g. `pub Pal = "world"`) also falls
+  through. `tests.Example.Run` was reordered to construct the
+  evaluator *after* writing test inputs so any test-provided `.dang`
+  files are picked up.
+
+**Decisions worth knowing.**
+
+- *Lookup rule: any callable Dang binding matching the JSX name is
+  dispatched as a component.* No PascalCase check; lowercase Dang
+  names just can't be triggered by JSX (which only matches uppercase
+  tags). Non-callable bindings (lists, records, strings) fall through
+  to the template fallback — they aren't an error.
+
+- *Dispatch order: built-in → Dang → template.* Built-ins take
+  precedence so language primitives (`<Section>`, `<Reference>`, …)
+  can't be shadowed. Dang takes precedence over templates so a user
+  who explicitly declares `pub Foo` always wins over an accidental
+  `Foo.tmpl` file.
+
+- *Block return type quirk.* The Go-backed block returns `NullValue`,
+  but if the user declares it as `&body(…): T!` (non-null) and the
+  function's body is just `body(…)`, Dang's runtime null-check fires
+  ("null is not allowed for T!"). Workaround: the user function
+  explicitly returns a truthy value at the end (`body(…); true`).
+  Long-term we could make the block declare its return as nullable,
+  or have `componentBlock.Call` return a value matching the declared
+  type. For v1, the explicit-return idiom is fine.
+
+- *Auto-discovery scope: project dir only, non-recursive.* Matches
+  what `dang.toml` and `dagger.json` already do (lookup walks up from
+  the input file's directory). No `dang/` subdirectory convention —
+  the `.dang` files sit alongside the input docs.
+
+- *Bridging props.* Literal `<Foo bar="x"/>` → `StringValue{"x"}`.
+  Expression `<Foo bar={expr}/>` → raw Dang value via `Eval`. Other
+  AST nodes → stringify (rare). This preserves type fidelity for the
+  two common cases.
+
+- *Single-threaded scope swap.* `WithBindings` mutates
+  `Evaluator.evalEnv` / `typeEnv` for the duration of the body call
+  and restores on return. Works because Booklit's evaluator is
+  sequential; a future parallel evaluator would need per-goroutine
+  scope frames.
+
+**Known limitations / follow-ups.**
+
+- *Helpers in `docs/booklitdoc/` not yet ported.* This phase only
+  adds the capability; the actual cleanup (move OutputFrame /
+  SyntaxHl / ColumnHeader / TemplateLink / Godoc to templates and/or
+  Dang functions, then shrink `cmd/booklit-docs`) is its own slice.
+  `<Define>` / `<LitSyntax>` / `<Columns>` and the chroma palette
+  override stay as Go for now — they need either Dagger (per the
+  agreed punts) or an API reshape.
+
+- *Block return type quirk* (see above) — should revisit once we have
+  a real use case that wants a non-trivial block return.
+
+- *Templates are still Go html/template format.* Switching them to
+  `.md` (MDX-style) is the next bigger piece (was Q7 → option (b):
+  tier-3 first, mdx templates as a follow-up). Tier-3 dispatch is now
+  in place; mdx-as-template is the next substantive phase.
+
+**Reasonable next steps.** (a) Port the easy half of booklitdoc to
+templates (the existing `.tmpl` files probably already cover most),
+then shrink `cmd/booklit-docs` to just the helpers that still need Go.
+(b) Phase 3b: mdx-as-template — uses tier-3 dispatch and the
+`<Children/>` built-in to be added. Eliminates the Go html/template
+dialect for user-facing templates. (c) Source-mapped errors (already
+deferred). (d) JSX-inside-Dang (still deferred).
