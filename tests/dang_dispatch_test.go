@@ -84,22 +84,21 @@ Joined: <Italic><Each items={["a", "b", "c"]}>{item}</Each></Italic>.
 			},
 		},
 		{
-			name: "missing function falls through to template fallback",
+			name: "missing function with no template errors at eval",
 			example: Example{
-				// No helpers.dang, no <Unknown> built-in → tier-3
-				// misses, tier-4 (template) takes over. The fallback
-				// emits a Styled{Style: "Unknown"} which the renderer
-				// will try to look up; without a template, the render
-				// fails. We assert on the render failure.
+				// No helpers.dang, no <Unknown> built-in, no Unknown.md
+				// → tier-1/2/3 all miss and the evaluator errors. With
+				// the hard cutover (no Styled fallback) this surfaces
+				// during Load, not Render.
 				Input: `<Title>Test</Title>
 
 <Unknown>body</Unknown>
 `,
-				RenderErr: "Unknown",
+				LoadErr: "unknown JSX component <Unknown>",
 			},
 		},
 		{
-			name: "non-callable Dang binding falls through",
+			name: "non-callable Dang binding errors at eval",
 			example: Example{
 				Inputs: Files{
 					// pub Pal is a plain string, not callable.
@@ -110,9 +109,7 @@ Joined: <Italic><Each items={["a", "b", "c"]}>{item}</Each></Italic>.
 
 <Pal>body</Pal>
 `,
-				// Falls through to template fallback; no Pal template
-				// exists, so render fails.
-				RenderErr: "Pal",
+				LoadErr: "unknown JSX component <Pal>",
 			},
 		},
 	} {

@@ -16,17 +16,17 @@ walks through both approaches.
 
 ## Template-only Components {#template-components}
 
-If a JSX invocation has no matching built-in, Booklit wraps it as a
-<Godoc ref="booklit.Styled"/> with `Style` equal to the component name
-and props passed through as Partials. The HTML renderer then looks up
-`<Name>.tmpl` in the templates directory.
+If a JSX invocation has no matching built-in and no `pub PascalCase`
+Dang function in scope, Booklit looks for an mdx template at
+`<templates-dir>/<Name>.md` and evaluates it with the props bound in
+Dang scope and `children` carrying the rendered JSX body.
 
-Say you want a `<Card>` component. Drop the following into `html/Card.tmpl`:
+Say you want a `<Card>` component. Drop the following into `html/Card.md`:
 
-```go-html-template
+```jsx
 <div class="card">
-  <h3>{{.Partial "title" | render}}</h3>
-  <div class="body">{{.Content | render}}</div>
+  <h3>{title}</h3>
+  <div class="body">{children}</div>
 </div>
 ```
 
@@ -39,8 +39,11 @@ Welcome to the test.
 ```
 
 Build with `booklit --html-templates html ...` and the component renders.
-No Go, no recompile. Props are passed through with their authored
-(camelCase) names — `<Card title="..."/>` → `{{.Partial "title"}}`.
+No Go, no recompile. Templates are HTML scaffolding with two interpolation
+forms: `{name}` for a Dang expression (props arrive as named bindings),
+and `<Children/>` if `{children}` doesn't fit in JSX child position.
+Lowercase tags pass through as raw HTML; uppercase tags recursively
+dispatch through built-ins, Dang functions, or other mdx templates.
 
 ## Go Built-ins {#go-builtins}
 

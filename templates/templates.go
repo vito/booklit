@@ -16,16 +16,18 @@ import (
 	"github.com/vito/booklit/ast"
 )
 
-// Registry loads and caches mdx template files from a directory.
+// Registry loads and caches mdx template files from a list of search
+// directories.
 //
 // Lookups are by component name (PascalCase, matching the JSX tag):
-// `<Foo/>` looks for `<dir>/Foo.md`. Parsed ASTs are cached by mtime so
-// edits in serve mode are picked up automatically.
+// `<Foo/>` looks for `<dir>/Foo.md` in each directory in order, taking
+// the first hit. Parsed ASTs are cached by mtime so edits in serve mode
+// are picked up automatically.
 //
 // A nil Registry is valid: it returns (nil, false, nil) for every lookup,
 // matching the "no templates configured" case.
 type Registry struct {
-	dir string
+	dirs []string
 
 	mu    sync.Mutex
 	cache map[string]cached
@@ -36,28 +38,45 @@ type cached struct {
 	modTime time.Time
 }
 
-// New returns a Registry rooted at dir. An empty dir disables the
-// registry entirely (Load always misses), which is what callers want
-// when no --html-templates flag was passed.
-func New(dir string) *Registry {
-	return &Registry{dir: dir, cache: map[string]cached{}}
+// New returns a Registry that searches dirs in order. Empty strings
+// are skipped (so `New("")` is a no-op registry, matching the "no
+// --html-templates flag" case). Caller-supplied earlier dirs shadow
+// later ones, which is how the test harness lets a per-test tempdir
+// override shared fixtures.
+func New(dirs ...string) *Registry {
+	filtered := make([]string, 0, len(dirs))
+	for _, d := range dirs {
+		if d != "" {
+			filtered = append(filtered, d)
+		}
+	}
+	return &Registry{dirs: filtered, cache: map[string]cached{}}
 }
 
-// Load returns the parsed template for name, or (nil, false, nil) if no
-// `<dir>/<name>.md` file exists. Any parse error from a present file is
-// surfaced as the third return.
+// Load returns the parsed template for name. Searches each configured
+// directory in order; the first `<dir>/<name>.md` that exists wins.
+// Returns (nil, false, nil) when no directory has a matching template.
 func (r *Registry) Load(name string) (ast.Node, bool, error) {
-	if r == nil || r.dir == "" {
+	if r == nil || len(r.dirs) == 0 {
 		return nil, false, nil
 	}
 
-	path := filepath.Join(r.dir, name+".md")
-	info, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, false, nil
+	var path string
+	var info os.FileInfo
+	for _, dir := range r.dirs {
+		candidate := filepath.Join(dir, name+".md")
+		st, err := os.Stat(candidate)
+		if err == nil {
+			path = candidate
+			info = st
+			break
 		}
-		return nil, false, fmt.Errorf("stat %s: %w", path, err)
+		if !os.IsNotExist(err) {
+			return nil, false, fmt.Errorf("stat %s: %w", candidate, err)
+		}
+	}
+	if path == "" {
+		return nil, false, nil
 	}
 
 	r.mu.Lock()

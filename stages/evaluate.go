@@ -107,16 +107,18 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
-// VisitJSXElement dispatches a JSX element across three tiers, in order:
+// VisitJSXElement dispatches a JSX element across three tiers. An
+// unknown name is an error rather than an implicit Styled wrap — the
+// hard-cutover posture from phase-3b.md Q9 (a).
 //
 //  1. **Built-in**: a Go function registered in the builtins package.
 //  2. **Dang scope**: a `pub PascalCase` function in scope, dispatched
 //     with props bridged as named args and children compiled as a
 //     `&body` block whose invocation pushes the named args into Dang
 //     scope and re-evaluates the children.
-//  3. **Template default**: wrap in booklit.Styled with the component
-//     name as the style and props as Partials; the renderer looks up
-//     a matching .tmpl. This is the "unknown component" path.
+//  3. **mdx template**: an `.md` file in the configured templates
+//     directory; evaluated with props bound in Dang scope and
+//     `children` carrying the JSX children's rendered content.
 //
 // Dagger dispatch is the eventual fourth tier (see jsx-dang.md).
 func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
@@ -159,39 +161,7 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 		}
 	}
 
-	// Template fallback. Evaluate children into a Content body and props
-	// into Partials keyed by their JSX (camelCase) names; the renderer
-	// looks up `<Name>.tmpl` and templates can read partials via the
-	// `.Partial "name"` accessor.
-	var body booklit.Content = booklit.Empty
-	if len(node.Children) > 0 {
-		evaluated, err := eval.evalArg(ast.Sequence(node.Children))
-		if err != nil {
-			return err
-		}
-		if evaluated != nil {
-			body = evaluated
-		}
-	}
-
-	var partials booklit.Partials
-	if len(node.Props) > 0 {
-		partials = booklit.Partials{}
-		for name, propNode := range node.Props {
-			val, err := eval.evalArg(propNode)
-			if err != nil {
-				return err
-			}
-			partials[name] = val
-		}
-	}
-
-	eval.Result = booklit.Append(eval.Result, booklit.Styled{
-		Style:    booklit.Style(node.Name),
-		Content:  body,
-		Partials: partials,
-	})
-	return nil
+	return fmt.Errorf("unknown JSX component <%s>: no built-in, no Dang function, no <%s>.md template", node.Name, node.Name)
 }
 
 // dispatchDang invokes a Dang function representing a JSX component.
