@@ -10,14 +10,22 @@ import (
 
 // ToContent coerces a Dang value into booklit.Content. Scalars render
 // as their string form; lists render as a Sequence of bridged elements;
-// null renders as empty content. Anything richer (records, functions,
-// modules) is an error for v1 — see jsx-dang.md Phase 3 open questions.
+// null renders as empty content. A ContentValue unwraps to its carried
+// Content unchanged — this is how templates pass `children` to a
+// `{children}` interpolation without going through string-level
+// flattening. Anything richer (records, functions, modules) is an error
+// for v1 — see jsx-dang.md Phase 3 open questions.
 func ToContent(val dang.Value) (booklit.Content, error) {
 	switch v := val.(type) {
 	case nil:
 		return booklit.Empty, nil
 	case dang.NullValue:
 		return booklit.Empty, nil
+	case ContentValue:
+		if v.Content == nil {
+			return booklit.Empty, nil
+		}
+		return v.Content, nil
 	case dang.StringValue:
 		return booklit.String(v.Val), nil
 	case dang.IntValue:

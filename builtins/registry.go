@@ -7,15 +7,19 @@ package builtins
 import (
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/dangeval"
 )
 
 // Context carries everything a built-in might need to do its work: the
-// current section (some built-ins mutate the section tree) and an Evaluate
+// current section (some built-ins mutate the section tree), an Evaluate
 // helper that turns an arbitrary ast.Node into Content (so built-ins can
-// recursively evaluate props and children when they choose to).
+// recursively evaluate props and children when they choose to), and the
+// Dang evaluator (so built-ins that touch Dang scope — `<Children/>` —
+// can look up bindings).
 type Context struct {
 	Section  *booklit.Section
 	Evaluate func(ast.Node) (booklit.Content, error)
+	Dang     *dangeval.Evaluator
 }
 
 // Func is the shape of a built-in. Props and children are passed as raw

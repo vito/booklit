@@ -12,6 +12,7 @@ import (
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/builtins"
 	"github.com/vito/booklit/dangeval"
+	"github.com/vito/booklit/templates"
 	"github.com/vito/dang/pkg/dang"
 )
 
@@ -28,6 +29,13 @@ type Evaluate struct {
 	// Dang interpreter used to evaluate JSX {expr} interpolations. Nil
 	// means no Dang env was bootstrapped; expressions will error.
 	Dang *dangeval.Evaluator
+
+	// Templates is the tier-4 mdx-template registry. When a JSX element
+	// isn't a built-in and isn't a Dang function, the evaluator looks
+	// for an `<dir>/<Name>.md` template and dispatches to it. Nil means
+	// no template directory was configured; tier-4 misses silently and
+	// the evaluator falls back to the legacy Styled wrap.
+	Templates *templates.Registry
 
 	// The evaluated content after calling (ast.Node).Visit.
 	Result booklit.Content
@@ -117,6 +125,7 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 	ctx := &builtins.Context{
 		Section:  eval.Section,
 		Evaluate: eval.evalArg,
+		Dang:     eval.Dang,
 	}
 
 	if fn, ok := builtins.Lookup(node.Name); ok {
@@ -137,6 +146,16 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 		}
 		if found {
 			return eval.dispatchDang(node, callable)
+		}
+	}
+
+	if eval.Templates != nil && eval.Dang != nil {
+		tmpl, found, err := eval.Templates.Load(node.Name)
+		if err != nil {
+			return fmt.Errorf("loading template for <%s>: %w", node.Name, err)
+		}
+		if found {
+			return eval.dispatchTemplate(node, tmpl)
 		}
 	}
 
@@ -218,6 +237,55 @@ func (eval *Evaluate) dispatchDang(node ast.JSXElement, callable dang.Callable) 
 	}
 	if content != nil {
 		eval.Result = booklit.Append(eval.Result, content)
+	}
+	return nil
+}
+
+// dispatchTemplate evaluates an mdx template (`<dir>/<Name>.md`) with
+// props bound in Dang scope by name and `children` bound to the JSX
+// children's evaluated content. The template AST is visited by a sub-
+// evaluator so its built-ins, Dang interpolations, and nested
+// dispatches run with the bindings in scope.
+//
+// Children are rendered eagerly (once) into a ContentValue bound as
+// `children` — `{children}` and `<Children/>` both read from this
+// binding. Templates that don't reference children skip the render
+// cost? No: they still pay it. Acceptable for v1; the side-effect
+// closure model from phase-3b.md Q5 is a future optimization.
+func (eval *Evaluate) dispatchTemplate(node ast.JSXElement, tmpl ast.Node) error {
+	props, err := eval.propsToDang(node.Props)
+	if err != nil {
+		return err
+	}
+
+	var childContent booklit.Content
+	if len(node.Children) > 0 {
+		childContent, err = eval.evalArg(ast.Sequence(node.Children))
+		if err != nil {
+			return err
+		}
+	}
+
+	bindings := make(map[string]dang.Value, len(props)+1)
+	for k, v := range props {
+		bindings[k] = v
+	}
+	bindings["children"] = dangeval.ContentValue{Content: childContent}
+
+	subEval := &Evaluate{
+		Section:             eval.Section,
+		SlowInvokeThreshold: eval.SlowInvokeThreshold,
+		Dang:                eval.Dang,
+		Templates:           eval.Templates,
+	}
+	err = eval.Dang.WithBindings(bindings, func() error {
+		return tmpl.Visit(subEval)
+	})
+	if err != nil {
+		return fmt.Errorf("evaluating template <%s>: %w", node.Name, err)
+	}
+	if subEval.Result != nil {
+		eval.Result = booklit.Append(eval.Result, subEval.Result)
 	}
 	return nil
 }
@@ -500,6 +568,7 @@ func (eval Evaluate) evalArg(node ast.Node) (booklit.Content, error) {
 		Section:             eval.Section,
 		SlowInvokeThreshold: eval.SlowInvokeThreshold,
 		Dang:                eval.Dang,
+		Templates:           eval.Templates,
 	}
 
 	err := node.Visit(subEval)

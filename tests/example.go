@@ -19,6 +19,7 @@ import (
 	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
+	"github.com/vito/booklit/templates"
 )
 
 type Example struct {
@@ -73,7 +74,8 @@ func (example Example) Run(t *testing.T) {
 	t.Cleanup(dang.Close)
 
 	processor := &load.Processor{
-		Dang: dang,
+		Dang:      dang,
+		Templates: templates.New(dir),
 	}
 
 	section, err := processor.LoadFile(sectionPath, pluginFactories)

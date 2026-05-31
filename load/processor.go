@@ -17,6 +17,7 @@ import (
 	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/marklit"
 	"github.com/vito/booklit/stages"
+	"github.com/vito/booklit/templates"
 )
 
 // Processor is a long-lived object for loading sections and evaluating
@@ -31,6 +32,10 @@ type Processor struct {
 	// evaluator surfaces a friendly error when a snippet is encountered
 	// without one.
 	Dang *dangeval.Evaluator
+
+	// Templates is the tier-4 mdx-template registry. May be nil; tier-4
+	// misses silently and the legacy Styled wrap takes over.
+	Templates *templates.Registry
 
 	parsed  map[string]parsedNode
 	parsedL sync.Mutex
@@ -197,6 +202,7 @@ func (processor *Processor) evaluateSection(section *booklit.Section, node ast.N
 		Section:             section,
 		SlowInvokeThreshold: processor.SlowInvokeThreshold,
 		Dang:                processor.Dang,
+		Templates:           processor.Templates,
 	}
 
 	err := node.Visit(evaluator)

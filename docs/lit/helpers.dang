@@ -1,0 +1,26 @@
+# Auto-loaded helpers for the Booklit docs site. dangeval picks this
+# file up via its non-recursive *.dang scan of the input file's
+# directory (docs/lit/).
+
+# godocPkg returns the package portion of a `pkg.Symbol` Godoc ref,
+# stripping a leading `*` (pointer-receiver methods). Used by
+# docs/html/Godoc.md.
+pub godocPkg(ref: String!): String! {
+  ref.split(separator: ".", limit: 2).takeFirst.join(separator: "").trimLeft(cutset: "*")
+}
+
+# godocPkgDisplay returns the package portion verbatim (no `*` stripped)
+# — what you see in the rendered Godoc reference.
+pub godocPkgDisplay(ref: String!): String! {
+  ref.split(separator: ".", limit: 2).takeFirst.join(separator: "")
+}
+
+# godocSymbol returns the symbol portion of a `pkg.Symbol` Godoc ref.
+pub godocSymbol(ref: String!): String! {
+  ref.split(separator: ".", limit: 2).dropFirst.join(separator: "")
+}
+
+# godocURL composes the pkg.go.dev URL for a Godoc ref.
+pub godocURL(ref: String!): String! {
+  "https://pkg.go.dev/github.com/vito/" + godocPkg(ref: ref) + "#" + godocSymbol(ref: ref)
+}

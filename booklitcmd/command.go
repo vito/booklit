@@ -17,6 +17,7 @@ import (
 	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
+	"github.com/vito/booklit/templates"
 )
 
 type Command struct {
@@ -99,6 +100,7 @@ func (cmd *Command) Serve() error {
 		Processor: &load.Processor{
 			SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 			Dang:                dang,
+			Templates:           templates.New(cmd.HTMLEngine.Templates),
 		},
 
 		Templates:  cmd.HTMLEngine.Templates,
@@ -125,6 +127,7 @@ func (cmd *Command) Build() error {
 	processor := &load.Processor{
 		SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 		Dang:                dang,
+		Templates:           templates.New(cmd.HTMLEngine.Templates),
 	}
 
 	var engine render.Engine

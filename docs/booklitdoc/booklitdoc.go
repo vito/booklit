@@ -4,7 +4,6 @@
 package booklitdoc
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -17,15 +16,16 @@ import (
 )
 
 func init() {
-	// OutputFrame, SyntaxHl, TemplateLink, ColumnHeader, and Column are
-	// not registered: OutputFrame / SyntaxHl / TemplateLink are
-	// expressed as templates (template fallback emits the right
-	// Styled), and Columns reaches into its children by AST name so
-	// ColumnHeader / Column never need to dispatch on their own.
+	// OutputFrame, SyntaxHl, TemplateLink, ColumnHeader, Column,
+	// Define, and Godoc are not registered. OutputFrame / SyntaxHl /
+	// TemplateLink are expressed as legacy Go templates (template
+	// fallback emits the right Styled); Columns reaches into its
+	// children by AST name so ColumnHeader / Column never need to
+	// dispatch on their own; Define and Godoc are mdx templates
+	// (docs/html/Define.md, docs/html/Godoc.md) dispatched via tier-4
+	// — Godoc's string-split logic lives in docs/lit/helpers.dang.
 	builtins.Register("Columns", columnsFunc)
 	builtins.Register("LitSyntax", litSyntaxFunc)
-	builtins.Register("Godoc", godocFunc)
-	builtins.Register("Define", defineFunc)
 
 	styles.Fallback = chroma.MustNewStyle("booklitdoc", chroma.StyleEntries{
 		chroma.Comment:               "#c29d7c italic",
@@ -199,109 +199,10 @@ func litSyntaxFunc(ctx *builtins.Context, _ map[string]ast.Node, children []ast.
 	return booklit.Styled{Style: style, Content: syntax}, nil
 }
 
-// godocFunc — `<Godoc ref="booklit.Section"/>`. Renders a pkg.go.dev
-// link styled as code.
-func godocFunc(ctx *builtins.Context, props map[string]ast.Node, _ []ast.Node) (booklit.Content, error) {
-	ref, err := requireStringProp(ctx, props, "ref", "Godoc")
-	if err != nil {
-		return nil, err
-	}
-	spl := strings.SplitN(ref, ".", 2)
-	if len(spl) != 2 {
-		return nil, fmt.Errorf("<Godoc> ref must be pkg.Symbol, got %q", ref)
-	}
-	pkg := strings.TrimLeft(spl[0], "*")
-	return booklit.Link{
-		Content: booklit.Styled{
-			Style: booklit.StyleVerbatim,
-			Content: booklit.Sequence{
-				booklit.String(spl[0] + "."),
-				booklit.Styled{Style: booklit.StyleBold, Content: booklit.String(spl[1])},
-			},
-		},
-		Target: "https://pkg.go.dev/github.com/vito/" + pkg + "#" + spl[1],
-	}, nil
-}
-
-// defineFunc — `<Define tag="title" sig="<Title>x</Title>">description
-// </Define>`. Renders a documentation entry for one component: registers
-// the tag as a reference target, displays the syntax-highlighted
-// signature, and shows the description.
-func defineFunc(ctx *builtins.Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
-	tag, err := requireStringProp(ctx, props, "tag", "Define")
-	if err != nil {
-		return nil, err
-	}
-	sig, err := requireStringProp(ctx, props, "sig", "Define")
-	if err != nil {
-		return nil, err
-	}
-	content, err := evalChildren(ctx, children)
-	if err != nil {
-		return nil, err
-	}
-
-	title, err := syntaxTransform(ctx.Section, "html", booklit.String("<"+componentName(tag)+">"))
-	if err != nil {
-		return nil, err
-	}
-
-	thumb, err := syntaxTransform(ctx.Section, "html", booklit.String(sig))
-	if err != nil {
-		return nil, err
-	}
-
-	return booklit.Styled{
-		Style:   "definition",
-		Content: content,
-		Partials: booklit.Partials{
-			"Thumb": booklit.Sequence{
-				booklit.Target{
-					TagName:  tag,
-					Location: ctx.Section.InvokeLocation,
-					Title:    title,
-					Content:  content,
-				},
-				thumb,
-			},
-		},
-	}, nil
-}
-
-// componentName turns a kebab-case tag (matching the legacy \invoke
-// naming, e.g. "table-of-contents") into the PascalCase JSX component
-// name ("TableOfContents") used in the rendered signature.
-func componentName(tag string) string {
-	parts := strings.Split(tag, "-")
-	var name strings.Builder
-	for _, p := range parts {
-		if p == "" {
-			continue
-		}
-		name.WriteString(strings.ToUpper(p[:1]))
-		name.WriteString(p[1:])
-	}
-	return name.String()
-}
-
 // evalChildren wraps the children list in a Sequence and evaluates it.
 func evalChildren(ctx *builtins.Context, children []ast.Node) (booklit.Content, error) {
 	if len(children) == 0 {
 		return booklit.Empty, nil
 	}
 	return ctx.Evaluate(ast.Sequence(children))
-}
-
-// requireStringProp is a local copy of builtins.requireStringProp;
-// the builtins package keeps it unexported.
-func requireStringProp(ctx *builtins.Context, props map[string]ast.Node, name, component string) (string, error) {
-	node, ok := props[name]
-	if !ok {
-		return "", fmt.Errorf("<%s> requires prop %q", component, name)
-	}
-	val, err := ctx.Evaluate(node)
-	if err != nil {
-		return "", err
-	}
-	return val.String(), nil
 }
