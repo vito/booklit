@@ -72,4 +72,4 @@ tool (
 	github.com/mna/pigeon
 )
 
-replace github.com/vito/dang => /home/vito/src/dang
+replace github.com/vito/dang => github.com/vito/dang v0.0.0-20260531052812-65b3d10b704c
