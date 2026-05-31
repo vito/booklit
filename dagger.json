@@ -1,8 +1,14 @@
 {
   "name": "booklit",
-  "engineVersion": "v0.20.4",
+  "engineVersion": "v0.21.0",
   "sdk": {
     "source": "dang"
   },
+  "dependencies": [
+    {
+      "name": "booklitdoc",
+      "source": "dagger/booklitdoc"
+    }
+  ],
   "source": ".dagger"
 }
