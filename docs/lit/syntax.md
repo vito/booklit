@@ -98,6 +98,32 @@ yield paragraphs):
 </Section>
 ```
 
+### Expressions
+
+Anywhere inside a component — as a prop value or as a child — you can
+write `{expr}` to evaluate a [Dang](https://github.com/vito/dang)
+expression at build time:
+
+```jsx
+The answer is <Italic>{2 + 2}</Italic>.
+
+<Card title={"Greetings, " + name}>...</Card>
+```
+
+The result is converted to content: strings render as text, numbers
+and booleans stringify, lists flatten into a sequence. Records and
+functions are not yet renderable.
+
+For instance, the answer to `<Italic>{2 + 2}</Italic>` is
+<Italic>{2 + 2}</Italic>, computed at build time.
+
+`{expr}` only triggers *inside* a JSX element. A bare `{1+2}` in a
+paragraph is just literal text — the parser starts on `<`, not `{`.
+
+Project-wide configuration (extra GraphQL imports, Dagger module
+auto-import) lives in `dang.toml` and `dagger.json` alongside the
+input file, following Dang's own discovery rules.
+
 ### Lowercase tags
 
 Lowercase tag names are treated as literal HTML and pass through to the
