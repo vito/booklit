@@ -68,18 +68,14 @@ func encode(content booklit.Content) (*wire.Node, error) {
 			return nil, err
 		}
 		return wire.Pre(items...), nil
-	case booklit.Styled:
+	case booklit.RawElement:
 		inner, err := encode(v.Content)
 		if err != nil {
 			return nil, err
 		}
-		n := wire.Styled(string(v.Style), inner)
-		n.Block = v.Block
-		n.Partials, err = encodePartials(v.Partials)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
+		return wire.Element(v.Tag, v.Attrs, inner), nil
+	case booklit.RawFragment:
+		return wire.Fragment(v.HTML), nil
 	case booklit.Link:
 		inner, err := encode(v.Content)
 		if err != nil {
@@ -162,21 +158,6 @@ func encodeAll(cs []booklit.Content) ([]*wire.Node, error) {
 	return out, nil
 }
 
-func encodePartials(partials booklit.Partials) (map[string]*wire.Node, error) {
-	if len(partials) == 0 {
-		return nil, nil
-	}
-	out := make(map[string]*wire.Node, len(partials))
-	for k, v := range partials {
-		n, err := encode(v)
-		if err != nil {
-			return nil, err
-		}
-		out[k] = n
-	}
-	return out, nil
-}
-
 func decode(n *wire.Node, sec *booklit.Section) (booklit.Content, error) {
 	if n == nil {
 		return booklit.Empty, nil
@@ -202,16 +183,14 @@ func decode(n *wire.Node, sec *booklit.Section) (booklit.Content, error) {
 			return nil, err
 		}
 		return booklit.Preformatted(items), nil
-	case "styled":
+	case "element":
 		inner, err := decode(n.Content, sec)
 		if err != nil {
 			return nil, err
 		}
-		partials, err := decodePartials(n.Partials, sec)
-		if err != nil {
-			return nil, err
-		}
-		return booklit.Styled{Style: booklit.Style(n.Style), Block: n.Block, Content: inner, Partials: partials}, nil
+		return booklit.RawElement{Tag: n.HTMLTag, Attrs: n.Attrs, Content: inner}, nil
+	case "fragment":
+		return booklit.RawFragment{HTML: n.S}, nil
 	case "link":
 		inner, err := decode(n.Content, sec)
 		if err != nil {
@@ -292,17 +271,3 @@ func decodeAll(ns []*wire.Node, sec *booklit.Section) ([]booklit.Content, error)
 	return out, nil
 }
 
-func decodePartials(ns map[string]*wire.Node, sec *booklit.Section) (booklit.Partials, error) {
-	if len(ns) == 0 {
-		return nil, nil
-	}
-	out := make(booklit.Partials, len(ns))
-	for k, n := range ns {
-		c, err := decode(n, sec)
-		if err != nil {
-			return nil, err
-		}
-		out[k] = c
-	}
-	return out, nil
-}

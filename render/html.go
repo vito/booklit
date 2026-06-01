@@ -248,12 +248,6 @@ func (engine *HTMLEngine) VisitTableOfContents(con booklit.TableOfContents) erro
 	return engine.setTmpl("toc")
 }
 
-// VisitStyled renders con using (Style).tmpl.
-func (engine *HTMLEngine) VisitStyled(con booklit.Styled) error {
-	engine.data = con
-	return engine.setTmpl(string(con.Style))
-}
-
 // VisitTarget renders con using target.tmpl.
 func (engine *HTMLEngine) VisitTarget(con booklit.Target) error {
 	engine.data = con

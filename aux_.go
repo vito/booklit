@@ -61,24 +61,6 @@ func (strip *stripAuxVisitor) VisitTableOfContents(con TableOfContents) error {
 	return nil
 }
 
-func (strip *stripAuxVisitor) VisitStyled(con Styled) error {
-	con.Content = StripAux(con.Content)
-
-	strippedPartials := Partials{}
-	for k, v := range con.Partials {
-		if v == nil {
-			continue
-		}
-
-		strippedPartials[k] = StripAux(v)
-	}
-
-	con.Partials = strippedPartials
-
-	strip.Result = con
-	return nil
-}
-
 func (strip *stripAuxVisitor) VisitTarget(con Target) error {
 	con.Title = StripAux(con.Title)
 	con.Content = StripAux(con.Content)

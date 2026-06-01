@@ -758,18 +758,29 @@ Concrete tasks, in dependency order. Each line links back to a
       (treat block-JSX bodies as one markdown stream with
       JSX inline) and lives outside the Styled-retirement
       sequence; recording here so it doesn't get lost.
-- [ ] **Delete `Styled`, `Partials`, contentjson updates**
-      (decision 11). `styled.go` (the type, `IsFlow` override,
-      remaining `StyleVerbatim` / `StyleCodeBlock` /
-      `StyleCodeFlow` constants, `Style` type alias) deleted.
-      `booklit.Partials` type deleted from `section.go` — fully
-      unused after the previous items.
-      `contentjson/contentjson.go` loses its `case Styled`
-      branches, gains `case RawElement` / `case RawFragment`.
-      `contentjson/wire/wire.go` loses the `Style` / `Block` /
-      `Partials` `Node` fields, gains `Tag` / `Attrs` / `HTML`. The
-      `encodePartials` / `decodePartials` helpers go with the
-      Partials type.
+- [x] **Delete `Styled`, `Partials`, contentjson updates**
+      (decision 11). `styled.go` is gone — `Styled`, the `Style`
+      type alias, the `IsFlow`/`String`/`Visit`/`Partial`
+      methods, and the `Partial` helper all go with it.
+      `booklit.Partials` is gone from `section.go`. The
+      `Visitor` interface no longer has `VisitStyled`; the four
+      implementations (Collect, stripAux, HTMLEngine,
+      TextEngine) drop the method.
+      `contentjson` swaps Styled for the new types:
+      `contentjson.go` gains `case booklit.RawElement` /
+      `case booklit.RawFragment` in encode and matching
+      `case "element"` / `case "fragment"` in decode; the
+      `encodePartials` / `decodePartials` helpers and the
+      `case "styled"` branch are gone. `contentjson/wire/
+      wire.go` swaps `Style` / `Block` / `Partials` Node fields
+      for `HTMLTag` (`htag` on the wire to avoid colliding with
+      Booklit's `tag` for references) / `Attrs`; the `S` field
+      doubles as the verbatim HTML for fragments. The
+      `Styled` / `StyledBlock` / `RawHTML` constructors are
+      replaced by `Element(tag, attrs, content)` and
+      `Fragment(html)`. Round-trip tests updated to exercise
+      RawElement and RawFragment.
+      Docs render byte-identical. The full test suite passes.
 
 ### Findings (2026-06-01)
 

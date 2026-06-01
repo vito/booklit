@@ -14,12 +14,8 @@ func TestRoundTrip(t *testing.T) {
 	// One tree exercising every serializable content type, nested.
 	content := booklit.Sequence{
 		booklit.String("hello "),
-		booklit.Styled{
-			Style:    booklit.Style("larger"),
-			Block:    true,
-			Content:  booklit.String("world"),
-			Partials: booklit.Partials{"Foo": booklit.String("bar")},
-		},
+		booklit.RawElement{Tag: "div", Attrs: ` class="x"`, Content: booklit.String("world")},
+		booklit.RawFragment{HTML: "<i>fragment</i>"},
 		booklit.Link{Target: "https://example.com", Content: booklit.String("link")},
 		booklit.Image{Path: "/a.png", Description: "alt text"},
 		booklit.List{Ordered: true, Items: []booklit.Content{

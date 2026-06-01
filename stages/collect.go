@@ -86,27 +86,6 @@ func (collect *Collect) VisitTableOfContents(booklit.TableOfContents) error {
 	return nil
 }
 
-// VisitStyled visits the content and partials.
-func (collect *Collect) VisitStyled(con booklit.Styled) error {
-	err := con.Content.Visit(collect)
-	if err != nil {
-		return err
-	}
-
-	for _, v := range con.Partials {
-		if v == nil {
-			continue
-		}
-
-		err := v.Visit(collect)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // VisitImage does nothing.
 func (collect *Collect) VisitImage(con booklit.Image) error {
 	return nil

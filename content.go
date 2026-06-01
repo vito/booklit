@@ -26,7 +26,6 @@ type Visitor interface {
 	VisitParagraph(Paragraph) error
 	VisitTableOfContents(TableOfContents) error
 	VisitPreformatted(Preformatted) error
-	VisitStyled(Styled) error
 	VisitTarget(Target) error
 	VisitImage(Image) error
 	VisitList(List) error

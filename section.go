@@ -76,10 +76,6 @@ type Section struct {
 	Processor SectionProcessor
 }
 
-// Partials is a map of named snippets of content. By convention, partial names
-// are camel-cased like FooBar.
-type Partials map[string]Content
-
 // SectionProcessor evaluates a file or an inline syntax node to produce a
 // child section.
 type SectionProcessor interface {
