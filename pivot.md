@@ -744,22 +744,23 @@ Concrete tasks, in dependency order. Each line links back to a
       itself paragraph-wrapped. Restores the pre-Styled
       behavior that Styled inherited block-ness from its
       content.
-      Findings: a related pre-existing marklit issue surfaced
-      while testing. When a block JSX element's body is
-      multi-line and contains an inline JSX child (e.g.
+      Findings: the marklit body-fragmentation issue surfaced
+      while testing this item also landed (see "marklit: merge
+      inline JSX children into surrounding paragraph"). It was a
+      pre-existing parse-time bug — text segments around an
+      inline JSX child in a block JSX body got ParseArg'd
+      independently and emitted as sibling Paragraph/JSX/
+      Paragraph nodes, so prose like
       `<Wrap>\nPresent *text* ~20% <Larger>larger</Larger>
-      upon rendering.\n</Wrap>`), marklit fragments the body's
-      text segments into separate paragraphs around the inline
-      JSX child, so the rendered shape is
-      `<p>Present <em>text</em> ~20%</p><span>larger</span><p>
-      upon rendering.</p>` instead of one paragraph with the
-      span in the middle. This isn't a regression — it
-      reproduces against HEAD — and the new segmentation
-      doesn't address it because the split happens at parse
-      time, not at evaluation. Fixing it is a marklit refactor
-      (treat block-JSX bodies as one markdown stream with
-      JSX inline) and lives outside the Styled-retirement
-      sequence; recording here so it doesn't get lost.
+      upon rendering.\n</Wrap>` rendered as three separate
+      blocks. `marklit/convert.go::buildBlockChildren` now
+      folds adjacent text-Paragraphs and inline JSX children
+      into a single Paragraph, splitting only at multi-line
+      JSX, JSX alone on its source line (the case
+      `<Definitions>\n<Definition/>\n…</Definitions>` requires
+      to keep each Definition as a separate child), and blank
+      lines in text chunks. The docs' Define examples for the
+      styling shims now render as one paragraph each.
 - [x] **Delete `Styled`, `Partials`, contentjson updates**
       (decision 11). `styled.go` is gone — `Styled`, the `Style`
       type alias, the `IsFlow`/`String`/`Visit`/`Partial`
