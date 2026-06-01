@@ -401,18 +401,6 @@ func (v *stringVisitor) VisitString(s ast.String) error {
 	return nil
 }
 
-func (v *stringVisitor) VisitInvoke(i ast.Invoke) error {
-	v.result += "I(" + i.Function
-	for _, arg := range i.Arguments {
-		v.result += ","
-		sub := &stringVisitor{}
-		_ = arg.Visit(sub)
-		v.result += sub.result
-	}
-	v.result += ")"
-	return nil
-}
-
 func (v *stringVisitor) VisitSequence(s ast.Sequence) error {
 	v.result += "["
 	for i, n := range s {

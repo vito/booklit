@@ -2,12 +2,7 @@ package stages
 
 import (
 	"fmt"
-	"os"
-	"reflect"
-	"sync"
-	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
 	"github.com/vito/booklit/builtins"
@@ -19,12 +14,8 @@ import (
 // Evaluate is an ast.Visitor that builds up the booklit.Content for a given
 // section.
 type Evaluate struct {
-	// The section which acts as the evaluation context. The section's plugins
-	// are used for evaluating Invoke nodes.
+	// The section which acts as the evaluation context.
 	Section *booklit.Section
-
-	// Duration after which to log a warning for a slow \invoke.
-	SlowInvokeThreshold time.Duration
 
 	// Dang interpreter used to evaluate JSX {expr} interpolations. Nil
 	// means no Dang env was bootstrapped; expressions will error.
@@ -376,10 +367,9 @@ func (eval *Evaluate) dispatchTemplate(node ast.JSXElement, tmpl ast.Node) error
 	bindings["children"] = dangeval.ContentValue{Content: childContent}
 
 	subEval := &Evaluate{
-		Section:             eval.Section,
-		SlowInvokeThreshold: eval.SlowInvokeThreshold,
-		Dang:                eval.Dang,
-		Templates:           eval.Templates,
+		Section:   eval.Section,
+		Dang:      eval.Dang,
+		Templates: eval.Templates,
 	}
 	err = eval.Dang.WithBindings(bindings, func() error {
 		return tmpl.Visit(subEval)
@@ -467,217 +457,11 @@ func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
 	return nil
 }
 
-var complainL = new(sync.Mutex)
-
-// VisitInvoke uses reflection to evaluate the corresponding method on the
-// section's plugins, trying them in order.
-//
-// If no method is found, booklit.UndefinedFunctionError is returned.
-//
-// If the method's arity does not match the Invoke's arguments, an error is
-// returned.
-//
-// The method must return either no value, a booklit.Content, an error, or
-// (booklit.Content, error). Other return types will result in an error.
-//
-// If a PrettyError is returned, it is returned without wrapping.
-//
-// If an error is returned, it is wrapped in a booklit.FailedFunctionError.
-//
-// If a booklit.Content is returned, it will be appended to Result.
-func (eval *Evaluate) VisitInvoke(invoke ast.Invoke) error {
-	eval.Section.InvokeLocation = invoke.Location
-
-	methodName := invoke.Method()
-
-	var method reflect.Value
-	for _, p := range eval.Section.Plugins {
-		value := reflect.ValueOf(p)
-		method = value.MethodByName(methodName)
-		if method.IsValid() {
-			break
-		}
-	}
-
-	loc := booklit.ErrorLocation{
-		FilePath:     eval.Section.FilePath(),
-		NodeLocation: invoke.Location,
-		Length:       len("\\" + invoke.Function),
-	}
-
-	if !method.IsValid() {
-		return booklit.UndefinedFunctionError{
-			Function:      invoke.Function,
-			ErrorLocation: loc,
-		}
-	}
-
-	if eval.SlowInvokeThreshold > 0 {
-		start := time.Now()
-		complain := time.AfterFunc(eval.SlowInvokeThreshold, func() {
-			complainL.Lock()
-			defer complainL.Unlock()
-			logrus.WithField("elapsed", time.Since(start)).
-				Warn(loc.Annotate("slow invoke: \\%s (still running)", invoke.Function))
-			loc.AnnotateLocation(os.Stderr)
-		})
-
-		defer func() {
-			complainL.Lock()
-			defer complainL.Unlock()
-			if complain.Stop() {
-				logrus.WithField("duration", time.Since(start)).
-					Debug(loc.Annotate("fast invoke: \\%s", invoke.Function))
-			} else {
-				logrus.WithField("duration", time.Since(start)).
-					Info(loc.Annotate("slow invoke: \\%s (finished)", invoke.Function))
-			}
-		}()
-	}
-
-	methodType := method.Type()
-
-	rawArgs := invoke.Arguments
-
-	argc := methodType.NumIn()
-	if methodType.IsVariadic() {
-		argc--
-
-		if len(rawArgs) < argc {
-			return fmt.Errorf("argument count mismatch for %s: given %d, need at least %d", invoke.Function, len(rawArgs), argc)
-		}
-	} else if len(rawArgs) != argc {
-		return fmt.Errorf("argument count mismatch for %s: given %d, need %d", invoke.Function, len(rawArgs), argc)
-	}
-
-	argv := make([]reflect.Value, argc)
-	for i := 0; i < argc; i++ {
-		t := methodType.In(i)
-		arg, err := eval.convert(t, rawArgs[i])
-		if err != nil {
-			return err
-		}
-
-		argv[i] = arg
-	}
-
-	if methodType.IsVariadic() {
-		variadic := rawArgs[argc:]
-		variadicType := methodType.In(argc)
-
-		subType := variadicType.Elem()
-		for _, varg := range variadic {
-			arg, err := eval.convert(subType, varg)
-			if err != nil {
-				return err
-			}
-
-			argv = append(argv, arg)
-		}
-	}
-
-	result := method.Call(argv)
-
-	switch methodType.NumOut() {
-	case 0:
-		return nil
-	case 1:
-		val := result[0].Interface()
-		valType := methodType.Out(0)
-
-		switch reflect.New(valType).Interface().(type) {
-		case *error:
-			if val != nil {
-				if pErr, ok := val.(booklit.PrettyError); ok {
-					return pErr
-				}
-
-				return booklit.FailedFunctionError{
-					Function:      invoke.Function,
-					Err:           val.(error),
-					ErrorLocation: loc,
-				}
-			}
-		case *booklit.Content:
-			eval.Result = booklit.Append(eval.Result, val.(booklit.Content))
-		default:
-			return fmt.Errorf("unknown return type: %s", valType)
-		}
-	case 2:
-		second := result[1].Interface()
-		secondType := methodType.Out(1)
-		switch reflect.New(secondType).Interface().(type) {
-		case *error:
-			if second != nil {
-				if pErr, ok := second.(booklit.PrettyError); ok {
-					return pErr
-				}
-
-				return booklit.FailedFunctionError{
-					Function:      invoke.Function,
-					Err:           second.(error),
-					ErrorLocation: loc,
-				}
-			}
-		default:
-			return fmt.Errorf("unknown second return type: %s", secondType)
-		}
-
-		first := result[0].Interface()
-		firstType := methodType.Out(0)
-		switch reflect.New(firstType).Interface().(type) {
-		case *booklit.Content:
-			eval.Result = booklit.Append(eval.Result, first.(booklit.Content))
-		default:
-			return fmt.Errorf("unknown first return type: %s", firstType)
-		}
-	default:
-		return fmt.Errorf("expected 0-2 return values from %s, got %d", invoke.Function, len(result))
-	}
-
-	return nil
-}
-
-func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, error) {
-	switch reflect.New(to).Interface().(type) {
-	case *string:
-		content, err := eval.evalArg(node)
-		if err != nil {
-			return reflect.ValueOf(nil), err
-		}
-		if content == nil {
-			return reflect.ValueOf(""), nil
-		}
-
-		return reflect.ValueOf(content.String()), nil
-	case *booklit.Content:
-		content, err := eval.evalArg(node)
-		if err != nil {
-			return reflect.ValueOf(nil), err
-		}
-		if content == nil {
-			content = booklit.Empty
-		}
-
-		return reflect.ValueOf(content), nil
-	case *ast.Node:
-		return reflect.ValueOf(node), nil
-	default:
-		name := to.Name()
-		if to.PkgPath() != "" {
-			name = to.PkgPath() + "." + name
-		}
-
-		return reflect.ValueOf(nil), fmt.Errorf("unsupported argument type: %s", name)
-	}
-}
-
 func (eval Evaluate) evalArg(node ast.Node) (booklit.Content, error) {
 	subEval := &Evaluate{
-		Section:             eval.Section,
-		SlowInvokeThreshold: eval.SlowInvokeThreshold,
-		Dang:                eval.Dang,
-		Templates:           eval.Templates,
+		Section:   eval.Section,
+		Dang:      eval.Dang,
+		Templates: eval.Templates,
 	}
 
 	err := node.Visit(subEval)

@@ -9,11 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/pprof"
-	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vito/booklit"
-	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
@@ -35,8 +33,7 @@ type Command struct {
 
 	Debug bool `long:"debug" short:"d" description:"Log at debug level."`
 
-	AllowBrokenReferences bool          `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
-	SlowInvokeThreshold   time.Duration `long:"slow-invoke-threshold" description:"Warn about slow invoke calls after this duration." default:"5s"`
+	AllowBrokenReferences bool `long:"allow-broken-references" description:"Replace broken references with a bogus tag."`
 
 	HTTPProfilePort int    `long:"http-profile" description:"Start the Go net/http/pprof server on this port."`
 	CPUProfilePath  string `long:"cpu-profile"  description:"Write a CPU profile to this path."`
@@ -95,9 +92,8 @@ func (cmd *Command) Serve() error {
 	http.Handle("/", &Server{
 		In: cmd.In,
 		Processor: &load.Processor{
-			SlowInvokeThreshold: cmd.SlowInvokeThreshold,
-			Dang:                dang,
-			Templates:           templates.New(findProjectSubdir(cmd.In, "components")),
+			Dang:      dang,
+			Templates: templates.New(findProjectSubdir(cmd.In, "components")),
 		},
 
 		Templates:  htmlDir,
@@ -108,10 +104,6 @@ func (cmd *Command) Serve() error {
 	logrus.WithField("port", cmd.ServerPort).Info("listening")
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", cmd.ServerPort), nil)
-}
-
-var basePluginFactories = []booklit.PluginFactory{
-	baselit.NewPlugin,
 }
 
 // findProjectSubdir walks up from filepath.Dir(in) looking for a sibling
@@ -145,9 +137,8 @@ func (cmd *Command) Build() error {
 	defer dang.Close()
 
 	processor := &load.Processor{
-		SlowInvokeThreshold: cmd.SlowInvokeThreshold,
-		Dang:                dang,
-		Templates:           templates.New(findProjectSubdir(cmd.In, "components")),
+		Dang:      dang,
+		Templates: templates.New(findProjectSubdir(cmd.In, "components")),
 	}
 
 	var engine render.Engine
@@ -175,7 +166,7 @@ func (cmd *Command) Build() error {
 		engine = htmlEngine
 	}
 
-	section, err := processor.LoadFile(cmd.In, basePluginFactories)
+	section, err := processor.LoadFile(cmd.In)
 	if err != nil {
 		return err
 	}
@@ -189,7 +180,7 @@ func (cmd *Command) Build() error {
 
 		sectionToRender = tags[0].Section
 	} else if cmd.SectionPath != "" {
-		sectionToRender, err = processor.LoadFileIn(section, cmd.SectionPath, basePluginFactories)
+		sectionToRender, err = processor.LoadFileIn(section, cmd.SectionPath)
 		if err != nil {
 			return err
 		}

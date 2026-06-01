@@ -25,8 +25,6 @@ import (
 // Document parsing is cached based on file modification time to avoid repeated
 // parsing of sub-sections when section content changes.
 type Processor struct {
-	SlowInvokeThreshold time.Duration
-
 	// Dang interpreter for {expr} interpolations in JSX. May be nil; the
 	// evaluator surfaces a friendly error when a snippet is encountered
 	// without one.
@@ -47,8 +45,8 @@ type parsedNode struct {
 
 // LoadFile parses the file at the given path and runs the three stages to
 // yield a Section.
-func (processor *Processor) LoadFile(path string, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
-	return processor.LoadFileIn(nil, path, pluginFactories)
+func (processor *Processor) LoadFile(path string) (*booklit.Section, error) {
+	return processor.LoadFileIn(nil, path)
 }
 
 // LoadFileIn parses the file at the given path and runs the evaluate, collect,
@@ -56,8 +54,8 @@ func (processor *Processor) LoadFile(path string, pluginFactories []booklit.Plug
 //
 // The given parent section is assigned as the parent of the new section so
 // that tags may resolve using the parent.
-func (processor *Processor) LoadFileIn(parent *booklit.Section, path string, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
-	section, err := processor.EvaluateFile(parent, path, pluginFactories)
+func (processor *Processor) LoadFileIn(parent *booklit.Section, path string) (*booklit.Section, error) {
+	section, err := processor.EvaluateFile(parent, path)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +67,7 @@ func (processor *Processor) LoadFileIn(parent *booklit.Section, path string, plu
 // new section with given parent as its Parent.
 //
 // The returned section will not have been collected or resolved.
-func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
+func (processor *Processor) EvaluateFile(parent *booklit.Section, path string) (*booklit.Section, error) {
 	info, err := os.Stat(path)
 	if err != nil {
 		return nil, err
@@ -125,7 +123,7 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 		Processor: processor,
 	}
 
-	err = processor.evaluateSection(section, node, pluginFactories)
+	err = processor.evaluateSection(section, node)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +142,7 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 // given parent as its Parent.
 //
 // The returned section will not have been collected or resolved.
-func (processor *Processor) EvaluateNode(parent *booklit.Section, node ast.Node, pluginFactories []booklit.PluginFactory) (*booklit.Section, error) {
+func (processor *Processor) EvaluateNode(parent *booklit.Section, node ast.Node) (*booklit.Section, error) {
 	section := &booklit.Section{
 		Parent: parent,
 
@@ -154,7 +152,7 @@ func (processor *Processor) EvaluateNode(parent *booklit.Section, node ast.Node,
 		Processor: processor,
 	}
 
-	err := processor.evaluateSection(section, node, pluginFactories)
+	err := processor.evaluateSection(section, node)
 	if err != nil {
 		return nil, err
 	}
@@ -162,16 +160,11 @@ func (processor *Processor) EvaluateNode(parent *booklit.Section, node ast.Node,
 	return section, nil
 }
 
-func (processor *Processor) evaluateSection(section *booklit.Section, node ast.Node, pluginFactories []booklit.PluginFactory) error {
-	for _, pf := range pluginFactories {
-		section.UsePlugin(pf)
-	}
-
+func (processor *Processor) evaluateSection(section *booklit.Section, node ast.Node) error {
 	evaluator := &stages.Evaluate{
-		Section:             section,
-		SlowInvokeThreshold: processor.SlowInvokeThreshold,
-		Dang:                processor.Dang,
-		Templates:           processor.Templates,
+		Section:   section,
+		Dang:      processor.Dang,
+		Templates: processor.Templates,
 	}
 
 	err := node.Visit(evaluator)

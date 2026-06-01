@@ -15,7 +15,7 @@ func init() {
 // appended to the parent's Children.
 func sectionFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	body := ast.Sequence(children)
-	section, err := ctx.Section.Processor.EvaluateNode(ctx.Section, body, ctx.Section.PluginFactories)
+	section, err := ctx.Section.Processor.EvaluateNode(ctx.Section, body)
 	if err != nil {
 		return nil, err
 	}

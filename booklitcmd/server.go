@@ -98,7 +98,7 @@ func (server *Server) loadRequestedSection(path string) (*booklit.Section, bool,
 		"section": server.In,
 	}).Info("loading root section")
 
-	rootSection, err := server.Processor.LoadFile(server.In, basePluginFactories)
+	rootSection, err := server.Processor.LoadFile(server.In)
 	if err != nil {
 		return nil, false, err
 	}

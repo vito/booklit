@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/vito/booklit"
-	"github.com/vito/booklit/baselit"
 	"github.com/vito/booklit/dangeval"
 	"github.com/vito/booklit/load"
 	"github.com/vito/booklit/render"
@@ -38,10 +37,6 @@ func (example Example) Run(t *testing.T) {
 	t.Helper()
 
 	dir := t.TempDir()
-
-	pluginFactories := []booklit.PluginFactory{
-		baselit.NewPlugin,
-	}
 
 	ext := example.Ext
 	if ext == "" {
@@ -81,7 +76,7 @@ func (example Example) Run(t *testing.T) {
 		Templates: templates.New(filepath.Join(dir, "components"), "components"),
 	}
 
-	section, err := processor.LoadFile(sectionPath, pluginFactories)
+	section, err := processor.LoadFile(sectionPath)
 	if example.LoadErr != "" {
 		require.Error(t, err)
 		assert.ErrorContains(t, err, example.LoadErr)

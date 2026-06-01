@@ -54,7 +54,7 @@ func includeSectionFunc(ctx *Context, props map[string]ast.Node, _ []ast.Node) (
 		return nil, err
 	}
 	sectionPath := filepath.Join(filepath.Dir(ctx.Section.FilePath()), path)
-	section, err := ctx.Section.Processor.EvaluateFile(ctx.Section, sectionPath, ctx.Section.PluginFactories)
+	section, err := ctx.Section.Processor.EvaluateFile(ctx.Section, sectionPath)
 	if err != nil {
 		return nil, err
 	}

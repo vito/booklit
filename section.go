@@ -67,10 +67,6 @@ type Section struct {
 	// Set with \omit-children-from-table-of-contents.
 	OmitChildrenFromTableOfContents bool
 
-	// Plugins used by the section.
-	PluginFactories []PluginFactory
-	Plugins         []Plugin
-
 	// Location is the source location where the section was defined, if it was
 	// defined as an inline section.
 	Location ast.Location
@@ -94,8 +90,8 @@ type Partials map[string]Content
 // SectionProcessor evaluates a file or an inline syntax node to produce a
 // child section.
 type SectionProcessor interface {
-	EvaluateFile(*Section, string, []PluginFactory) (*Section, error)
-	EvaluateNode(*Section, ast.Node, []PluginFactory) (*Section, error)
+	EvaluateFile(*Section, string) (*Section, error)
+	EvaluateNode(*Section, ast.Node) (*Section, error)
 }
 
 // Tag is something which can be referenced (by its name) from elsewhere in the
@@ -383,12 +379,6 @@ func (con *Section) SetPartial(name string, value Content) {
 // Partial returns the given partial, or nil if it does not exist.
 func (con *Section) Partial(name string) Content {
 	return con.Partials[name]
-}
-
-// UsePlugin registers the plugin within the section.
-func (con *Section) UsePlugin(pf PluginFactory) {
-	con.PluginFactories = append(con.PluginFactories, pf)
-	con.Plugins = append(con.Plugins, pf(con))
 }
 
 // Depth returns the absolute depth of the section.

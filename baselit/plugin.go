@@ -12,7 +12,7 @@ import (
 	"github.com/vito/booklit/treehighlight"
 )
 
-func NewPlugin(section *booklit.Section) booklit.Plugin {
+func NewPlugin(section *booklit.Section) Plugin {
 	return Plugin{
 		section: section,
 	}
@@ -53,7 +53,7 @@ func (plugin Plugin) Aux(content booklit.Content) booklit.Content {
 }
 
 func (plugin Plugin) Section(node ast.Node) error {
-	section, err := plugin.section.Processor.EvaluateNode(plugin.section, node, plugin.section.PluginFactories)
+	section, err := plugin.section.Processor.EvaluateNode(plugin.section, node)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (plugin Plugin) Section(node ast.Node) error {
 func (plugin Plugin) IncludeSection(path string) error {
 	sectionPath := filepath.Join(filepath.Dir(plugin.section.FilePath()), path)
 
-	section, err := plugin.section.Processor.EvaluateFile(plugin.section, sectionPath, []booklit.PluginFactory{NewPlugin})
+	section, err := plugin.section.Processor.EvaluateFile(plugin.section, sectionPath)
 	if err != nil {
 		return err
 	}

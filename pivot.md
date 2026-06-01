@@ -474,11 +474,21 @@ Concrete tasks, in dependency order. Each line links back to a
 
       This unblocks the next three items (retire Plugin machinery,
       collapse baselit/ into builtins/, template sweep).
-- [ ] **Retire the Plugin machinery** (decisions 3 + 6 follow-up):
-      delete `booklit.Plugin`, `booklit.PluginFactory`,
-      `Section.PluginFactories`, `Section.Plugins`,
-      `Section.UsePlugin`, and `VisitInvoke`. The `ast.Invoke` node
-      itself can also go once `convert.go` stops emitting it.
+- [x] **Retire the Plugin machinery** (decisions 3 + 6 follow-up).
+      `booklit.Plugin`, `booklit.PluginFactory`, `Section.PluginFactories`,
+      `Section.Plugins`, `Section.UsePlugin`, `VisitInvoke`, and the
+      `ast.Invoke` / `Invoke.Method()` types are all deleted. Threading
+      collapsed accordingly: `Processor.LoadFile` / `LoadFileIn` /
+      `EvaluateFile` / `EvaluateNode` (and the `SectionProcessor`
+      interface) lost their `[]PluginFactory` parameter; the `Evaluate`
+      stage lost its reflection helpers (`convert`, `complainL`), its
+      `SlowInvokeThreshold` field, and the `--slow-invoke-threshold`
+      CLI flag that fed it. `UndefinedFunctionError` /
+      `FailedFunctionError` and their `undefined-function.tmpl` /
+      `function-error.tmpl` templates are gone — they only existed to
+      report VisitInvoke failures. `golang.org/x/text` (which only
+      powered `Invoke.Method`'s kebab→PascalCase title casing) is now
+      indirect-only; `go mod tidy` reflects that.
 - [ ] **Collapse `baselit/` into `builtins/`** (decision 3): each
       remaining `baselit.Plugin` method becomes a `builtins.Register`
       entry. The `baselit/` package directory goes away.

@@ -199,13 +199,7 @@ func containsJSX(n ast.Node) bool {
 
 type jsxDetector struct{ found bool }
 
-func (v *jsxDetector) VisitString(ast.String) error           { return nil }
-func (v *jsxDetector) VisitInvoke(i ast.Invoke) error {
-	for _, a := range i.Arguments {
-		_ = a.Visit(v)
-	}
-	return nil
-}
+func (v *jsxDetector) VisitString(ast.String) error { return nil }
 func (v *jsxDetector) VisitSequence(s ast.Sequence) error {
 	for _, n := range s {
 		_ = n.Visit(v)

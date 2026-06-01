@@ -10,7 +10,7 @@ import (
 
 func TestSyntaxLinksBooklitComponentTags(t *testing.T) {
 	section := &booklit.Section{}
-	plugin := NewPlugin(section).(Plugin)
+	plugin := NewPlugin(section)
 
 	content, err := plugin.Syntax("markdown", booklit.Preformatted{booklit.String(`<IncludeSection path="quotes.md"/>`)})
 	if err != nil {

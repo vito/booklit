@@ -2,13 +2,6 @@
 // a Node.
 package ast
 
-import (
-	"strings"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
-)
-
 // Node is a Booklit syntax tree.
 type Node interface {
 	Visit(Visitor) error
@@ -17,7 +10,6 @@ type Node interface {
 // Visitor is implemented in order to traverse Node.
 type Visitor interface {
 	VisitString(String) error
-	VisitInvoke(Invoke) error
 	VisitSequence(Sequence) error
 	VisitParagraph(Paragraph) error
 	VisitPreformatted(Preformatted) error
@@ -39,29 +31,6 @@ type Location struct {
 	Line   int
 	Col    int
 	Offset int
-}
-
-// Invoke is a function call, e.g. \foo{bar}.
-type Invoke struct {
-	Function  string
-	Arguments []Node
-
-	Location Location
-}
-
-// Visit calls VisitInvoke.
-func (node Invoke) Visit(visitor Visitor) error {
-	return visitor.VisitInvoke(node)
-}
-
-// Method returns a method name by splitting Function on '-' and title-casing
-// each word.
-func (node Invoke) Method() string {
-	var camel strings.Builder
-	for _, word := range strings.Split(node.Function, "-") {
-		camel.WriteString(cases.Title(language.AmericanEnglish).String(word))
-	}
-	return camel.String()
 }
 
 // Sequence represents adjacent nodes typically within a single

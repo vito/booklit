@@ -28,7 +28,7 @@ func codeBlockFunc(ctx *Context, props map[string]ast.Node, children []ast.Node)
 		code = booklit.Empty
 	}
 
-	base := baselit.NewPlugin(ctx.Section).(baselit.Plugin)
+	base := baselit.NewPlugin(ctx.Section)
 
 	if s, ok := props["style"]; ok {
 		styleContent, err := ctx.Evaluate(s)
