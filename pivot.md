@@ -727,21 +727,23 @@ Concrete tasks, in dependency order. Each line links back to a
       block HTML embedded in a paragraph and replaces the invalid
       `<p>…<blockquote>…</p>` shape that the old
       `Block: node.MultiLine` flag was masking.
-      Item (b) from the previous revision (wrap block-claimed
-      flow JSX in a Paragraph so standalone `<Larger>x</Larger>`
-      becomes `<p><span>x</span></p>`) is DROPPED. It conflicts
-      with how the existing test suite treats other block-claimed
-      flow content: `<Target tag="..."/>` is flow (its render is
-      a bare anchor) and tests expect it to render bare, not
-      wrapped in `<p>`. The same applies to `<Aux>` and any
-      other "invisible side-effect" content that happens to be
-      flow. A clean rule needs more nuance than the pivot's
-      original phrasing — visibility, not just IsFlow — and
-      isn't worth the churn for a stylistic preference. Authors
-      who want a paragraph around a styling shim can write one
-      explicitly. Standalone Larger continues to render as a
-      bare `<span>` outside any paragraph; that's a stylistic
-      choice, not a bug.
+      Item (b) — wrap block-claimed flow JSX in a Paragraph so
+      standalone `<Larger>x</Larger>` becomes
+      `<p><span>x</span></p>` — landed too, with two refinements:
+      `marklit/convert.go` wraps `KindJSXBlockElement` in
+      `ast.Paragraph` so the segmentation handles it; the
+      segmentation's emit gains an escape hatch that emits flow
+      content with an empty `.String()` unwrapped, so
+      `<Target tag="..."/>` (Target.String() == "") still
+      renders as a bare `<a id></a>` rather than getting
+      paragraph-wrapped. And `RawElement.IsFlow` now also
+      returns false when its `Content` is non-flow, covering
+      the degenerate case of a flow-tagged element wrapping
+      block content (the docs' `<Larger>\nparagraph\n</Larger>`
+      — a `<span>` around a `<p>`) so the wrapping span isn't
+      itself paragraph-wrapped. Restores the pre-Styled
+      behavior that Styled inherited block-ness from its
+      content.
       Findings: a related pre-existing marklit issue surfaced
       while testing. When a block JSX element's body is
       multi-line and contains an inline JSX child (e.g.
