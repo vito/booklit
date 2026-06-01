@@ -439,14 +439,47 @@ Concrete tasks, in dependency order. Each line links back to a
       share one helper now. Makefile + `docs/lit/html-renderer.md` +
       `docs/lit/plugins.md` updated to reflect the convention-based
       lookup.
-- [ ] **Lower Markdown directly to JSX** (decision 3): rewrite
-      `marklit/convert.go` so it emits `ast.JSXElement` for headings,
-      links, images, code spans, code blocks, lists, tables, raw
-      HTML, etc., instead of `ast.Invoke`. Add the missing built-ins
-      (`<List>`, `<OrderedList>`, `<Item>`, `<Table>`, `<TableRow>`,
-      etc.) so JSX dispatch covers the surface that reflection
-      currently covers. Re-add raw-html via `<RawHTML>` (already
-      exists).
+- [ ] **Lower Markdown directly to JSX** (decision 3): rewrite each
+      `convertX` in `marklit/convert.go` so it emits `ast.JSXElement`
+      instead of `ast.Invoke`. With the unified parser (commit
+      `745925e`) lowercase JSX renders as plain HTML, so most lowerings
+      go straight to lowercase HTML — no new built-ins needed:
+
+      - `# heading` → `<Title>` (PascalCase — hooks into the section
+        tree via the existing builtin)
+      - `## sub` → `<Section><Title>…</Title>…</Section>` (PascalCase)
+      - `[text](#tag)` and `[#tag]` → `<Reference tag="…">…</Reference>`
+        (PascalCase — `reference_parser.go` flips too, retiring the
+        last `ast.Invoke` producer)
+      - ` ```lang ` fenced code → `<CodeBlock language="lang">` /
+        `<Syntax>` (PascalCase — treehighlight integration)
+      - `*italic*` → `<em>`; `**bold**` → `<strong>`
+      - `[text](url)` → `<a href="url">text</a>`
+      - `![alt](src)` → `<img src="src" alt="alt"/>`
+      - `- list` / `1. list` → `<ul>`/`<ol>` + `<li>`
+      - `| tables |` → `<table><tr><td>…`
+      - `> quote` → `<blockquote>` (drop `\inset`-via-baselit — the
+        existing `inset.tmpl` adds a `class="inset"` + inline-style
+        wrapper; either lower to `<Inset>` PascalCase to preserve, or
+        emit `<blockquote class="inset">` directly. Check whether any
+        CSS depends on the existing structure first)
+      - `` `code` `` inline → `<code>` (drop `Styled{Style: "code"}`
+        unless something depends on it)
+      - Raw HTML inline / block → already JSX'd by the parser
+
+      Once `convert.go` stops emitting `ast.Invoke` and
+      `reference_parser.go` switches to `ast.JSXElement`, **delete any
+      now-unused `render/html/*.tmpl`** — most of them
+      (`list.tmpl`, `table.tmpl`, `link.tmpl`, `image.tmpl`,
+      `italic.tmpl`, `bold.tmpl`, `larger.tmpl`, `smaller.tmpl`,
+      `strike.tmpl`, etc.) are thin shims that lowercase JSX
+      replaces. Audit `render/html/embed.go` for any that aren't
+      reachable anymore. Keep templates for things that still flow
+      through `Styled{…}` (e.g. code-block / syntax highlighting
+      output, the page / section / sidebar scaffolding).
+
+      This unblocks the next two items (retire Plugin machinery,
+      collapse baselit/ into builtins/).
 - [ ] **Retire the Plugin machinery** (decisions 3 + 6 follow-up):
       delete `booklit.Plugin`, `booklit.PluginFactory`,
       `Section.PluginFactories`, `Section.Plugins`,
