@@ -330,6 +330,20 @@ decisions taken. Each one becomes a checklist item below.
    Markdown-inside-`<Component>` for free (per the React/MDX
    lowercase-vs-PascalCase convention) and removes the second parser
    that the codebase has to maintain.
+10. **Partials — remove.** `\set-partial{name}{...}` /
+    `<SetPartial name="...">...</SetPartial>` plus the
+    `{{.Partial "Foo" | render}}` template hook were a workaround for
+    the missing component system: a way to thread a named blob of
+    content into a renderer template. Components (templates + Dang
+    functions, both with full prop binding and `<Children/>`) cover the
+    same use case more cleanly. Remove `Section.SetPartial`,
+    `Section.Partial`, `Section.Partials`, the `<SetPartial>` builtin
+    and `baselit.SetPartial` method, the partial-template fixtures
+    (`partial-template.tmpl` + the `set-partial-read-template` routing
+    in `page.tmpl`/`full-styled-page.tmpl`), and the orphaned
+    `custom-style.tmpl`/`inline-custom-style.tmpl` fixtures.
+    `Styled.Partials` stays — it carries renderer metadata (e.g.
+    `Language` on highlighted code blocks), not user-set content.
 
 ## Cleanup checklist
 
@@ -344,18 +358,22 @@ Concrete tasks, in dependency order. Each line links back to a
 - [x] **Delete planning docs** (decision 4): `jsx-dang.md`,
       `phase-3b.md`, `decisions.md`, `dagger-content.md`. `pivot.md`
       is now the only top-level pivot doc.
-- [ ] **Migrate test fixtures off `\foo{}`** (decision 2 prep +
-      decision 1 prep). This is the prerequisite that the earlier
-      revision missed: most `tests/*_test.go` fixtures still use
-      `\title{...}`, `\link{...}`, etc. in `.md` strings. Until they
-      use JSX (or are explicitly opted into `.lit` via `Ext`), the
-      `\foo{}` parser cannot be removed without test breakage. Plan:
-      for each test case, rewrite the `Input` to JSX (`\title{X}` →
-      `<Title>X</Title>`, etc.) and verify outputs still match.
-      Tests that exercise `\include-section{path.lit}` either move
-      to `<IncludeSection path="..."/>` with the included file
-      renamed to `.md`, or stay `.lit` with explicit `Ext: ".lit"`
-      until step 5.
+- [x] **Migrate test fixtures off `\foo{}`** (decision 2 prep +
+      decision 1 prep). Done in commit `da05f5f` (2026-06-01).
+      Approach: prefer Markdown wherever it can express the same
+      content (`# Title`, `## Sub`, `[text](url)`, `![alt](src)`,
+      `*italic*`, `**bold**`, fenced code blocks, `> inset`, GFM
+      tables and lists, `[#tag]` for tag-only references); fall back
+      to JSX only where Markdown has no equivalent (`<Larger>`,
+      `<Smaller>`, `<Strike>`, `<Superscript>`, `<Subscript>`,
+      `<Aside>`, `<Aux>`, `<Definitions>`/`<Definition>`,
+      `<Target tag="..."/>`, and the section ops
+      `<Styled>`/`<SplitSections/>`/`<SinglePage/>`/`<IncludeSection/>`/
+      `<TableOfContents/>`/`<OmitChildrenFromTableOfContents/>`).
+      Three `Ext: ".lit"` prose cases stay (mid-word invokes, the
+      three `\code{...}` flavors, indent tracking) — they exercise
+      `.lit`-specific parser quirks and go away in step 5.
+      `tests/partials_test.go` is deleted entirely; see decision 10.
 - [ ] **Remove user-facing `\foo{}` parsing in Markdown**
       (decision 2): drop the `NewInvokeInlineParser` registration
       from `marklit.go`'s `newParser` and `Extension.Extend`, and
@@ -401,19 +419,30 @@ Concrete tasks, in dependency order. Each line links back to a
 - [ ] **Collapse `baselit/` into `builtins/`** (decision 3): each
       remaining `baselit.Plugin` method becomes a `builtins.Register`
       entry. The `baselit/` package directory goes away.
+- [ ] **Retire the partials machinery** (decision 10). Tests are
+      already off it (`tests/partials_test.go` deleted in `da05f5f`);
+      remaining work is the `Section.SetPartial`/`.Partial`/`.Partials`
+      methods + field, the `<SetPartial>` builtin, the baselit
+      `SetPartial` method, and the partial-routing test fixtures
+      (`partial-template.tmpl`, the `set-partial-read-template`
+      branches in `page.tmpl`/`full-styled-page.tmpl`, and the
+      orphaned `custom-style.tmpl`/`inline-custom-style.tmpl`).
 
-### Finding from the first cleanup session (2026-06-01)
+### Findings (2026-06-01)
 
-The first two items are done. The third item (originally "remove
-the `\foo{}` parser") was attempted and reverted because it broke
-~80 test cases whose `.md` `Input` fixtures still contain `\foo{}`.
-That bulk migration deserves its own focused session; the parser
-removal is now ordered to come *after* it. Test files this touches
-include: `tests/prose_test.go`, `tests/sections_test.go`,
-`tests/blocks_test.go`, `tests/comments_test.go`,
-`tests/errors_test.go`, `tests/line_endings_test.go`,
-`tests/partials_test.go`, `tests/styles_test.go`,
-`tests/dang_*_test.go`, and a handful of templates tests.
+- First two items (sweep stale references, delete planning docs)
+  done in earlier commits.
+- Attempted "remove the `\foo{}` parser" first; reverted because it
+  broke ~80 cases whose `.md` `Input` fixtures still contain
+  `\foo{}`. Bulk migration ordered ahead of parser removal.
+- Test-fixture migration completed (commit `da05f5f`). Markdown
+  preferred; JSX only where it has to be. The parser removal (next
+  unticked item) is now unblocked.
+- New finding: partials are dead weight now that components exist.
+  `<SetPartial>` was solving "thread named content into a renderer
+  template" by stuffing entries into a per-section map keyed by
+  string; the same job is done more naturally by component children
+  and props. Recorded as decision 10 + checklist item above.
 
 ## Where to read more
 
