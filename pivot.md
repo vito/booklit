@@ -715,25 +715,49 @@ Concrete tasks, in dependency order. Each line links back to a
       → `<div class="..." style="...">`) and the
       corresponding `<div>` in the docs build. Both are attribute
       reorderings with no visible HTML change.
-- [ ] **Paragraph boundary handling for block/flow JSX**
-      (decision 11). Two complementary changes in
-      `stages/evaluate.go::VisitParagraph` (and the dispatch
-      that handles standalone JSX):
-      (a) When a `Sequence` line contains a block element
-      (`!Sequence.IsFlow()` with `len(para) > 1`), split the
-      paragraph at that point — emit preceding lines as
-      `Paragraph`, emit the block content unwrapped, continue
-      paragraph-building with trailing lines. CommonMark
-      behavior; replaces the invalid `<p>…<blockquote>…</p>`
-      passthrough that today's `Block: node.MultiLine` flag was
-      masking.
-      (b) When the block JSX parser claims a node and its
-      evaluated content is flow (`content.IsFlow() == true` and
-      not already a `Paragraph`), wrap in
-      `booklit.Paragraph{content}` so standalone
-      `<Larger>x</Larger>` renders as `<p><span>x</span></p>`.
-      Mirrors the `len(para) == 1 && !para[0].IsFlow()` unwrap
-      logic in the inverse direction.
+- [x] **Paragraph boundary handling for block/flow JSX**
+      (decision 11). `stages/evaluate.go::VisitParagraph` now
+      segments its evaluated lines into runs of flow content
+      (each wrapped in a `booklit.Paragraph`) interleaved with
+      block content (emitted unwrapped). A `Sequence` line whose
+      items are mixed flow + block (an inline JSX element
+      evaluating to block content mid-prose, e.g.
+      `Some <Aside>foo</Aside> text`) splits inside the line at
+      the block boundary. Mirrors CommonMark's behavior for
+      block HTML embedded in a paragraph and replaces the invalid
+      `<p>…<blockquote>…</p>` shape that the old
+      `Block: node.MultiLine` flag was masking.
+      Item (b) from the previous revision (wrap block-claimed
+      flow JSX in a Paragraph so standalone `<Larger>x</Larger>`
+      becomes `<p><span>x</span></p>`) is DROPPED. It conflicts
+      with how the existing test suite treats other block-claimed
+      flow content: `<Target tag="..."/>` is flow (its render is
+      a bare anchor) and tests expect it to render bare, not
+      wrapped in `<p>`. The same applies to `<Aux>` and any
+      other "invisible side-effect" content that happens to be
+      flow. A clean rule needs more nuance than the pivot's
+      original phrasing — visibility, not just IsFlow — and
+      isn't worth the churn for a stylistic preference. Authors
+      who want a paragraph around a styling shim can write one
+      explicitly. Standalone Larger continues to render as a
+      bare `<span>` outside any paragraph; that's a stylistic
+      choice, not a bug.
+      Findings: a related pre-existing marklit issue surfaced
+      while testing. When a block JSX element's body is
+      multi-line and contains an inline JSX child (e.g.
+      `<Wrap>\nPresent *text* ~20% <Larger>larger</Larger>
+      upon rendering.\n</Wrap>`), marklit fragments the body's
+      text segments into separate paragraphs around the inline
+      JSX child, so the rendered shape is
+      `<p>Present <em>text</em> ~20%</p><span>larger</span><p>
+      upon rendering.</p>` instead of one paragraph with the
+      span in the middle. This isn't a regression — it
+      reproduces against HEAD — and the new segmentation
+      doesn't address it because the split happens at parse
+      time, not at evaluation. Fixing it is a marklit refactor
+      (treat block-JSX bodies as one markdown stream with
+      JSX inline) and lives outside the Styled-retirement
+      sequence; recording here so it doesn't get lost.
 - [ ] **Delete `Styled`, `Partials`, contentjson updates**
       (decision 11). `styled.go` (the type, `IsFlow` override,
       remaining `StyleVerbatim` / `StyleCodeBlock` /

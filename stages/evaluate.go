@@ -51,22 +51,26 @@ func (eval *Evaluate) VisitSequence(seq ast.Sequence) error {
 	return nil
 }
 
-// VisitParagraph visits each line in the paragraph and builds up a
-// booklit.Paragraph containing each evaluated line.
+// VisitParagraph visits each line of the paragraph node, then segments
+// the evaluated lines into runs of flow content (each wrapped in a
+// booklit.Paragraph) interleaved with block content (emitted
+// unwrapped). Mirrors CommonMark's behavior for block HTML embedded in
+// a paragraph: preceding flow becomes its own `<p>`, the block element
+// breaks out, trailing flow forms a new `<p>`.
 //
-// Any lines which evaluate to a nil result are skipped, i.e. a Invoke which
-// performed side effects and returned nothing. If the paragraph is empty as a
-// result, the Result is unaffected.
+// A Sequence line whose items are mixed flow + block (typical when an
+// inline JSX element evaluates to block content mid-prose) splits
+// inside the line at the block boundary. A line that's entirely flow
+// stays one line of the surrounding Paragraph. A line that's entirely
+// block flushes the flow buffer and emits standalone.
 //
-// If the Result contains a single non-flow content, it is unwrapped and
-// appended to the Result.
-//
-// Otherwise, i.e. a normal paragraph of flow content, the paragraph is
-// appended to the Result.
+// Lines that evaluate to nil are skipped (an invoke that returned
+// nothing). If the paragraph as a whole emits nothing, Result is
+// unaffected.
 func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	previous := eval.Result
 
-	para := booklit.Paragraph{}
+	var lines []booklit.Content
 	for _, line := range node {
 		eval.Result = nil
 
@@ -76,25 +80,47 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 		}
 
 		if eval.Result != nil {
-			para = append(para, eval.Result)
+			lines = append(lines, eval.Result)
 		}
 	}
 
-	eval.Result = nil
+	eval.Result = previous
 
-	if len(para) == 0 {
-		// paragraph resulted in no content (e.g. an invoke with no return value)
-		eval.Result = previous
+	if len(lines) == 0 {
 		return nil
 	}
 
-	if len(para) == 1 && !para[0].IsFlow() {
-		// paragraph resulted in block content (e.g. a section)
-		eval.Result = booklit.Append(previous, para[0])
-		return nil
+	flow := booklit.Paragraph{}
+	flushFlow := func() {
+		if len(flow) == 0 {
+			return
+		}
+		eval.Result = booklit.Append(eval.Result, flow)
+		flow = booklit.Paragraph{}
+	}
+	emit := func(item booklit.Content) {
+		if item.IsFlow() {
+			flow = append(flow, item)
+			return
+		}
+		flushFlow()
+		eval.Result = booklit.Append(eval.Result, item)
 	}
 
-	eval.Result = booklit.Append(previous, para)
+	for _, line := range lines {
+		// A non-flow Sequence (mixed flow + block items from an inline
+		// JSX element evaluating to block content mid-prose) splits at
+		// the block boundary; the contiguous flow before and after stays
+		// inside the paragraph being built.
+		if seq, ok := line.(booklit.Sequence); ok && !seq.IsFlow() {
+			for _, item := range seq {
+				emit(item)
+			}
+			continue
+		}
+		emit(line)
+	}
+	flushFlow()
 
 	return nil
 }
