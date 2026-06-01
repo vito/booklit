@@ -134,7 +134,7 @@ You can also use Markdown backticks for inline code: `` `code bits` ``.
 For block-level code, use Markdown's triple-backtick fences with an
 optional language tag:
 
-````
+````markdown
 ```go
 fmt.Println("hello")
 ```

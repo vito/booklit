@@ -23,7 +23,7 @@ Dang scope and `children` carrying the rendered JSX body.
 
 Say you want a `<Card>` component. Drop the following into `html/Card.md`:
 
-```jsx
+```markdown
 <div class="card">
   <h3>{title}</h3>
   <div class="body">{children}</div>

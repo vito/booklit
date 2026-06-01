@@ -54,7 +54,7 @@ as raw HTML, matching React's convention).
 
 A component can be self-closing or paired:
 
-```jsx
+```markdown
 <TableOfContents/>
 
 <Section>
@@ -68,7 +68,7 @@ Components accept named *props* as attributes. String values use double
 quotes; expression values use curly braces (Dang expressions, evaluated
 at build time):
 
-```jsx
+```markdown
 <Reference tag="getting-started"/>
 
 <Image path="diagram.png"/>
@@ -86,7 +86,7 @@ Content between the opening and closing tag becomes the component's
 multi-line invocations parse children as block Markdown (blank lines
 yield paragraphs):
 
-```jsx
+```markdown
 <Title>Hello, *world*!</Title>
 
 <Section>
@@ -104,7 +104,7 @@ Anywhere inside a component — as a prop value or as a child — you can
 write `{expr}` to evaluate a [Dang](https://github.com/vito/dang)
 expression at build time:
 
-```jsx
+```markdown
 The answer is <Italic>{2 + 2}</Italic>.
 
 <Card title={"Greetings, " + name}>...</Card>
@@ -129,7 +129,7 @@ input file, following Dang's own discovery rules.
 Lowercase tag names are treated as literal HTML and pass through to the
 output unchanged:
 
-```jsx
+```markdown
 This is <br/> a line break.
 ```
 
