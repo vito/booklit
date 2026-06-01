@@ -54,8 +54,8 @@ func (collect *Collect) VisitReference(con *booklit.Reference) error {
 	return nil
 }
 
-// VisitSection visits the section's title, body, and partials, followed by
-// each child section which is visited with their own *Collect.
+// VisitSection visits the section's title and body, followed by each child
+// section which is visited with their own *Collect.
 func (collect *Collect) VisitSection(con *booklit.Section) error {
 	err := con.Title.Visit(collect)
 	if err != nil {
@@ -65,13 +65,6 @@ func (collect *Collect) VisitSection(con *booklit.Section) error {
 	err = con.Body.Visit(collect)
 	if err != nil {
 		return err
-	}
-
-	for _, p := range con.Partials {
-		err = p.Visit(collect)
-		if err != nil {
-			return err
-		}
 	}
 
 	for _, child := range con.Children {

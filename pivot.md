@@ -529,14 +529,21 @@ Concrete tasks, in dependency order. Each line links back to a
       (`<em>text</em>`, `<strong>text</strong>`, `<sup>text</sup>`,
       `<sub>text</sub>`) to dodge the hang. Filed as a follow-up; not
       part of the pivot.
-- [ ] **Retire the partials machinery** (decision 10). Tests are
-      already off it (`tests/partials_test.go` deleted in `da05f5f`);
-      remaining work is the `Section.SetPartial`/`.Partial`/`.Partials`
-      methods + field, the `<SetPartial>` builtin, the baselit
-      `SetPartial` method, and the partial-routing test fixtures
-      (`partial-template.tmpl`, the `set-partial-read-template`
-      branches in `page.tmpl`/`full-styled-page.tmpl`, and the
-      orphaned `custom-style.tmpl`/`inline-custom-style.tmpl`).
+- [x] **Retire the partials machinery** (decision 10).
+      `Section.SetPartial`, `Section.Partial`, and the `Section.Partials`
+      field are deleted; the `<SetPartial>` builtin and its `<Define
+      tag="set-partial">` doc entry go with them. `stages.Collect`'s
+      VisitSection no longer iterates `con.Partials`. The four
+      partial-routing fixtures (`partial-template.tmpl`,
+      `custom-style.tmpl`, `inline-custom-style.tmpl`, and the
+      `set-partial-read-template` branches in
+      `page.tmpl`/`full-styled-page.tmpl`) are deleted; the surviving
+      `page.tmpl`/`full-styled-page.tmpl` collapse to their non-routing
+      bodies. `Styled.Partials` (and the `booklit.Partials` type) stay —
+      they carry renderer metadata (e.g. `Language` on highlighted code
+      blocks), which is a separate concern from per-section partials.
+      The baselit `SetPartial` method called out in the checklist was
+      already dropped with baselit/.
 
 ### Findings (2026-06-01)
 

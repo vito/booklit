@@ -78,13 +78,6 @@ Set the section's template style to *name*. The renderer may then use
 this to present the section in a different way. See [#styled-sections].
 </Define>
 
-<Define tag="set-partial" sig='<SetPartial name="...">content</SetPartial>'>
-Define the partial *name* in the section with *content* as its content.
-
-Useful for communicating content to templates or to the [HTML
-renderer](#html-renderer).
-</Define>
-
 ## Links & References
 
 <Define tag="link" sig='<Link target="...">display</Link>'>

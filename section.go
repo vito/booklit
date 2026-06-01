@@ -36,13 +36,6 @@ type Section struct {
 	// Set with \style{foo}.
 	Style string
 
-	// Arbitrary named content.
-	//
-	// Partials are typically rendered in templates via {{.Partial "Foo" | render}}.
-	//
-	// Set with \set-partial{name}{content}.
-	Partials Partials
-
 	// Instructs the renderer to render child sections on their own pages.
 	//
 	// Set with \split-sections.
@@ -365,20 +358,6 @@ func (con *Section) SimilarTags(tagName string) []Tag {
 	return con.filterTags(true, nil, func(other string) bool {
 		return levenshtein.Match(tagName, other, nil) > 0.5
 	})
-}
-
-// SetPartial assigns a partial within the section.
-func (con *Section) SetPartial(name string, value Content) {
-	if con.Partials == nil {
-		con.Partials = Partials{}
-	}
-
-	con.Partials[name] = value
-}
-
-// Partial returns the given partial, or nil if it does not exist.
-func (con *Section) Partial(name string) Content {
-	return con.Partials[name]
 }
 
 // Depth returns the absolute depth of the section.

@@ -9,7 +9,6 @@ import (
 
 func init() {
 	Register("Styled", styledFunc)
-	Register("SetPartial", setPartialFunc)
 	Register("IncludeSection", includeSectionFunc)
 	Register("SinglePage", singlePageFunc)
 	Register("SplitSections", splitSectionsFunc)
@@ -25,24 +24,6 @@ func styledFunc(ctx *Context, props map[string]ast.Node, _ []ast.Node) (booklit.
 		return nil, err
 	}
 	ctx.Section.Style = name
-	return nil, nil
-}
-
-// setPartialFunc — `<SetPartial name="...">content</SetPartial>`. Mirrors
-// \set-partial{name}{content}.
-func setPartialFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
-	name, err := requireStringProp(ctx, props, "name", "SetPartial")
-	if err != nil {
-		return nil, err
-	}
-	content, err := EvaluateChildren(ctx, children)
-	if err != nil {
-		return nil, err
-	}
-	if content == nil {
-		content = booklit.Empty
-	}
-	ctx.Section.SetPartial(name, content)
 	return nil, nil
 }
 
