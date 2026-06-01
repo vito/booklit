@@ -333,27 +333,43 @@ decisions taken. Each one becomes a checklist item below.
 
 ## Cleanup checklist
 
-Concrete tasks, ordered from least to most disruptive. Each line
-links back to a "Decisions" item above.
+Concrete tasks, in dependency order. Each line links back to a
+"Decisions" item above.
 
-- [ ] **Sweep stale references** (decision 4 prep + decision 5
-      prep). Confirm nothing in the codebase still points at
-      `cmd/booklit-docs`, `docs/booklitdoc/`, `dagger/booklitdoc/`,
-      or `<LitSyntax>`.
-- [ ] **Delete planning docs** (decision 4): `jsx-dang.md`,
+- [x] **Sweep stale references** (decision 4 prep + decision 5
+      prep). All remaining references to `cmd/booklit-docs`,
+      `docs/booklitdoc/`, `dagger/booklitdoc/`, and `<LitSyntax>`
+      live in the planning-doc files (next item) or in pivot.md
+      itself. No code-side cleanup needed.
+- [x] **Delete planning docs** (decision 4): `jsx-dang.md`,
       `phase-3b.md`, `decisions.md`, `dagger-content.md`. `pivot.md`
-      becomes the only top-level pivot doc.
-- [ ] **Remove user-facing `\foo{}` parsing** (decision 2): drop
-      the `NewInvokeInlineParser` registration from `marklit.go`'s
-      `newParser` and `Extension.Extend`. Internal `\foo{}` lowering
-      in `convert.go` stays for the moment; the `\foo{}` parser file
-      goes away only after step 5.
-- [ ] **Rewrite `.lit` tests as `.md`** (decision 1 prep): the
-      three `Ext: ".lit"` cases in `tests/prose_test.go` and the
-      `.lit` fixture strings in `tests/sections_test.go` migrate to
-      `.md` (rewriting `\title{...}\foo{...}` as JSX where
-      necessary, or as Markdown headings + JSX for `<IncludeSection>`
-      cases).
+      is now the only top-level pivot doc.
+- [ ] **Migrate test fixtures off `\foo{}`** (decision 2 prep +
+      decision 1 prep). This is the prerequisite that the earlier
+      revision missed: most `tests/*_test.go` fixtures still use
+      `\title{...}`, `\link{...}`, etc. in `.md` strings. Until they
+      use JSX (or are explicitly opted into `.lit` via `Ext`), the
+      `\foo{}` parser cannot be removed without test breakage. Plan:
+      for each test case, rewrite the `Input` to JSX (`\title{X}` →
+      `<Title>X</Title>`, etc.) and verify outputs still match.
+      Tests that exercise `\include-section{path.lit}` either move
+      to `<IncludeSection path="..."/>` with the included file
+      renamed to `.md`, or stay `.lit` with explicit `Ext: ".lit"`
+      until step 5.
+- [ ] **Remove user-facing `\foo{}` parsing in Markdown**
+      (decision 2): drop the `NewInvokeInlineParser` registration
+      from `marklit.go`'s `newParser` and `Extension.Extend`, and
+      replace `preprocess`'s block-level `\foo{...}` extraction with
+      a no-op (keep only CRLF + comment stripping). Delete the
+      now-obsolete tests in `marklit/marklit_test.go` that exercised
+      `\foo{}` / verbatim / preformatted args (~25 cases). Dead
+      files (`invoke_parser.go`, `verbatim.go`, `InvokeBlockNode`,
+      `convertInvokeBlock`, `parseAllBracedArgs`) can be removed in
+      the same commit or a follow-up.
+- [ ] **Rewrite remaining `.lit` test fixtures as `.md`**
+      (decision 1 prep): the three `Ext: ".lit"` cases in
+      `tests/prose_test.go` and any `.lit` fixture strings in
+      `tests/sections_test.go` migrate to `.md` JSX.
 - [ ] **Delete the PEG parser** (decision 1): remove
       `ast/booklit.peg`, `ast/booklit.peg.go`, the pigeon Makefile
       rule, `ast.ParseReader`, and the `.lit` branch in
@@ -385,6 +401,19 @@ links back to a "Decisions" item above.
 - [ ] **Collapse `baselit/` into `builtins/`** (decision 3): each
       remaining `baselit.Plugin` method becomes a `builtins.Register`
       entry. The `baselit/` package directory goes away.
+
+### Finding from the first cleanup session (2026-06-01)
+
+The first two items are done. The third item (originally "remove
+the `\foo{}` parser") was attempted and reverted because it broke
+~80 test cases whose `.md` `Input` fixtures still contain `\foo{}`.
+That bulk migration deserves its own focused session; the parser
+removal is now ordered to come *after* it. Test files this touches
+include: `tests/prose_test.go`, `tests/sections_test.go`,
+`tests/blocks_test.go`, `tests/comments_test.go`,
+`tests/errors_test.go`, `tests/line_endings_test.go`,
+`tests/partials_test.go`, `tests/styles_test.go`,
+`tests/dang_*_test.go`, and a handful of templates tests.
 
 ## Where to read more
 
