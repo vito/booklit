@@ -166,7 +166,7 @@ How are <Strike>you</Strike>?
 			example: Example{
 				Input: `# Hello, world!
 
-How are <Superscript>you</Superscript>?
+How are <sup>you</sup>?
 `,
 
 				Outputs: Files{
@@ -183,7 +183,7 @@ How are <Superscript>you</Superscript>?
 			example: Example{
 				Input: `# Hello, world!
 
-How are <Subscript>you</Subscript>?
+How are <sub>you</sub>?
 `,
 
 				Outputs: Files{
@@ -284,11 +284,11 @@ varius molestie.
 			example: Example{
 				Input: `# Hello, world!
 
-This is an <Italic></Italic> empty italic.
+This is an <em></em> empty italic.
 
-This is a <Italic> </Italic> space italic.
+This is a <em> </em> space italic.
 
-This is an <Italic>  </Italic> even more spaced italic.
+This is an <em>  </em> even more spaced italic.
 `,
 
 				Outputs: Files{
@@ -324,7 +324,7 @@ This is an <Italic>  </Italic> even more spaced italic.
 			example: Example{
 				Input: `# Hello, world!
 
-This<Italic>is</Italic>a test.
+This<em>is</em>a test.
 `,
 
 				Outputs: Files{

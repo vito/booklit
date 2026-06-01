@@ -10,7 +10,6 @@ func init() {
 	Register("Code", codeFunc)
 	Register("Link", linkFunc)
 	Register("Image", imageFunc)
-	Register("ThematicBreak", thematicBreakFunc)
 }
 
 // auxFunc — `<Aux>content</Aux>`. Auxiliary content; mirrors \aux{}.
@@ -71,12 +70,3 @@ func imageFunc(ctx *Context, props map[string]ast.Node, _ []ast.Node) (booklit.C
 	return img, nil
 }
 
-// thematicBreakFunc — `<ThematicBreak/>`. Emitted by the markdown parser
-// for `---` horizontal rules; renders via a `thematic-break` template if
-// one exists.
-func thematicBreakFunc(_ *Context, _ map[string]ast.Node, _ []ast.Node) (booklit.Content, error) {
-	return booklit.Styled{
-		Style: "thematic-break",
-		Block: true,
-	}, nil
-}

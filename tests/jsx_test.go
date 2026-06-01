@@ -35,7 +35,7 @@ How are you?
 			example: Example{
 				Input: `<Title>Hello, world!</Title>
 
-This is <Italic>emphasized</Italic> and this is <Bold>strong</Bold>.
+This is *emphasized* and this is **strong**.
 `,
 				Outputs: Files{
 					"hello-world.html": `<section>

@@ -6,13 +6,16 @@ import (
 )
 
 func init() {
-	Register("Italic", styled(booklit.StyleItalic))
-	Register("Bold", styled(booklit.StyleBold))
+	// Italic / Bold / Subscript / Superscript were redundant aliases for
+	// the lowercase <em> / <strong> / <sub> / <sup> elements the markdown
+	// converter now emits directly. Larger / Smaller / Strike stay because
+	// their templates add inline styling (font-size, text-decoration)
+	// that lowercase HTML doesn't carry; Inset / Aside stay because their
+	// templates add the `class="inset"` / `class="aside"` wrappers that
+	// the docs CSS hooks onto.
 	Register("Larger", styled(booklit.StyleLarger))
 	Register("Smaller", styled(booklit.StyleSmaller))
 	Register("Strike", styled(booklit.StyleStrike))
-	Register("Superscript", styled(booklit.StyleSuperscript))
-	Register("Subscript", styled(booklit.StyleSubscript))
 	Register("Inset", styled(booklit.StyleInset))
 	Register("Aside", styled(booklit.StyleAside))
 }

@@ -141,11 +141,11 @@ fmt.Println("hello")
 ````
 </Define>
 
-<Define tag="italic" sig='<Italic>text</Italic>'>
+<Define tag="italic" sig='<em>text</em>'>
 Present *text* in *italics* upon rendering. Markdown: `*text*`.
 </Define>
 
-<Define tag="bold" sig='<Bold>text</Bold>'>
+<Define tag="bold" sig='<strong>text</strong>'>
 Present *text* in **bold** upon rendering. Markdown: `**text**`.
 </Define>
 
@@ -161,12 +161,12 @@ Present *text* ~20% <Smaller>smaller</Smaller> upon rendering.
 Present *text* with a <Strike>strike through it</Strike> upon rendering.
 </Define>
 
-<Define tag="superscript" sig='<Superscript>text</Superscript>'>
-Present *text* in <Superscript>superscript</Superscript> upon rendering.
+<Define tag="superscript" sig='<sup>text</sup>'>
+Present *text* in <sup>superscript</sup> upon rendering.
 </Define>
 
-<Define tag="subscript" sig='<Subscript>text</Subscript>'>
-Present *text* in <Subscript>subscript</Subscript> upon rendering.
+<Define tag="subscript" sig='<sub>text</sub>'>
+Present *text* in <sub>subscript</sub> upon rendering.
 </Define>
 
 <Define tag="image" sig='<Image path="..."/>'>

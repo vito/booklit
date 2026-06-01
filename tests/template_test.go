@@ -22,7 +22,7 @@ func TestMdxTemplateDispatch(t *testing.T) {
 				},
 				Input: `<Title>Hi</Title>
 
-Says: <Italic><Greet name="world"/></Italic>.
+Says: *<Greet name="world"/>*.
 `,
 				Outputs: Files{
 					"hi.html": `<section>
@@ -38,7 +38,7 @@ Says: <Italic><Greet name="world"/></Italic>.
 			name: "children interpolation via {children}",
 			example: Example{
 				Inputs: Files{
-					"components/Wrap.md": `<Italic>{children}</Italic>`,
+					"components/Wrap.md": `*{children}*`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -58,7 +58,7 @@ Wrapped: <Wrap>body text</Wrap>.
 			name: "children interpolation via <Children/>",
 			example: Example{
 				Inputs: Files{
-					"components/Wrap.md": `<Bold><Children/></Bold>`,
+					"components/Wrap.md": `**<Children/>**`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -78,7 +78,7 @@ Wrapped: <Wrap>body text</Wrap>.
 			name: "empty children renders nothing",
 			example: Example{
 				Inputs: Files{
-					"components/Mark.md": `<Italic>[{children}]</Italic>`,
+					"components/Mark.md": `*[{children}]*`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -98,7 +98,7 @@ Empty: <Mark/>.
 			name: "nested JSX inside template",
 			example: Example{
 				Inputs: Files{
-					"components/Pair.md": `<Italic>{first}</Italic> and <Bold>{second}</Bold>`,
+					"components/Pair.md": `*{first}* and **{second}**`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -175,7 +175,7 @@ Body text here.
 				// the renderer would error on a missing Foo.tmpl. With
 				// Foo.md, the template handles it.
 				Inputs: Files{
-					"components/Foo.md": `<Italic>via template: {children}</Italic>`,
+					"components/Foo.md": `*via template: {children}*`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -203,7 +203,7 @@ Picked: <Foo>x</Foo>.
 				},
 				Input: `<Title>Hi</Title>
 
-Picked: <Italic><Pick/></Italic>.
+Picked: *<Pick/>*.
 `,
 				Outputs: Files{
 					"hi.html": `<section>
@@ -219,7 +219,7 @@ Picked: <Italic><Pick/></Italic>.
 			name: "expression prop passed to template",
 			example: Example{
 				Inputs: Files{
-					"components/Echo.md": `<Italic>{val}</Italic>`,
+					"components/Echo.md": `*{val}*`,
 				},
 				Input: `<Title>Hi</Title>
 

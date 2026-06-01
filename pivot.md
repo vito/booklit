@@ -500,6 +500,35 @@ Concrete tasks, in dependency order. Each line links back to a
       Every other `baselit.Plugin` method (Title, Italic, Bold, List,
       Table, Reference, Target, RawHtml, …) was already dead code after
       the Plugin-machinery retirement and dropped with the package.
+- [x] **Delete unused render/html templates** (decision 3 follow-up).
+      With Markdown converting straight to lowercase `<em>` / `<strong>`
+      / `<sub>` / `<sup>`, the matching PascalCase styled builtins
+      (`Italic`, `Bold`, `Subscript`, `Superscript`) and their
+      `italic.tmpl` / `bold.tmpl` / `subscript.tmpl` /
+      `superscript.tmpl` shims became pure duplication and are deleted.
+      `<ThematicBreak/>` (which had no template at all — would error if
+      ever rendered) goes with them. `StyleItalic` /  `StyleBold` /
+      `StyleSubscript` / `StyleSuperscript` constants are dropped;
+      the two tests that used `StyleBold` as a generic round-trip sample
+      switch to `StyleLarger`. Templates that still carry inline
+      styling not expressible in lowercase HTML — `larger.tmpl`,
+      `smaller.tmpl`, `strike.tmpl`, `inset.tmpl`, `aside.tmpl` —
+      stay, as do `link.tmpl` / `image.tmpl` / `list.tmpl` /
+      `table.tmpl` which are still reached through the `Link`, `Image`,
+      `List` (Definition) and contentjson paths. Test inputs that
+      wrapped JSX expressions in `<Italic>` / `<Bold>` now use Markdown
+      `*…*` / `**…**` where the wrapped content is plain text and
+      lowercase `<em>` / `<strong>` where it's a JSX expression
+      (Markdown emphasis can't span across the parser's child
+      boundaries — `*{x}*` splits into three text chunks and the `*`s
+      become literal). Surprise from this work: tree-sitter-html hangs
+      on inputs without HTML tags. Discovered when an edited Define
+      `sig='*text*'` fed `<Syntax language="html">…</Syntax>` and
+      `treehighlight.Chunks` never returned; reproducible with a one-
+      line unit test. The docs' Define sigs are kept as HTML-tag form
+      (`<em>text</em>`, `<strong>text</strong>`, `<sup>text</sup>`,
+      `<sub>text</sub>`) to dodge the hang. Filed as a follow-up; not
+      part of the pivot.
 - [ ] **Retire the partials machinery** (decision 10). Tests are
       already off it (`tests/partials_test.go` deleted in `da05f5f`);
       remaining work is the `Section.SetPartial`/`.Partial`/`.Partials`

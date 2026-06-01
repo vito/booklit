@@ -16,7 +16,7 @@ func TestControlFlow(t *testing.T) {
 			example: Example{
 				Input: `<Title>List</Title>
 
-Joined: <Italic><For each={["a", "b", "c"]}>{item}</For></Italic>.
+Joined: *<For each={["a", "b", "c"]}>{item}</For>*.
 `,
 				Outputs: Files{
 					"list.html": `<section>
@@ -40,7 +40,7 @@ Joined: <Italic><For each={["a", "b", "c"]}>{item}</For></Italic>.
 				},
 				Input: `<Title>Types</Title>
 
-Listing: <For each={items} as="t"><Italic>{t.name}</Italic>=<Bold>{t.docs}</Bold> </For>.
+Listing: <For each={items} as="t"><em>{t.name}</em>=<strong>{t.docs}</strong> </For>.
 `,
 				Outputs: Files{
 					"types.html": `<section>
@@ -57,7 +57,7 @@ Listing: <For each={items} as="t"><Italic>{t.name}</Italic>=<Bold>{t.docs}</Bold
 			example: Example{
 				Input: `<Title>Cond</Title>
 
-Result: <Italic><If cond={true}>yes</If><If cond={false}>no</If></Italic>.
+Result: *<If cond={true}>yes</If><If cond={false}>no</If>*.
 `,
 				Outputs: Files{
 					"cond.html": `<section>
@@ -74,7 +74,7 @@ Result: <Italic><If cond={true}>yes</If><If cond={false}>no</If></Italic>.
 			example: Example{
 				Input: `<Title>Cond</Title>
 
-Result: <Italic><Unless cond={false}>yes</Unless><Unless cond={true}>no</Unless></Italic>.
+Result: *<Unless cond={false}>yes</Unless><Unless cond={true}>no</Unless>*.
 `,
 				Outputs: Files{
 					"cond.html": `<section>
@@ -91,7 +91,7 @@ Result: <Italic><Unless cond={false}>yes</Unless><Unless cond={true}>no</Unless>
 			example: Example{
 				Input: `<Title>Empty</Title>
 
-Result: <Italic>[<For each={[]}>x</For>]</Italic>.
+Result: *[<For each={[]}>x</For>]*.
 `,
 				Outputs: Files{
 					"empty.html": `<section>

@@ -23,7 +23,7 @@ func TestDangComponentDispatch(t *testing.T) {
 				},
 				Input: `<Title>Hi</Title>
 
-Says: <Italic><Greet name="world"/></Italic>.
+Says: *<Greet name="world"/>*.
 `,
 				Outputs: Files{
 					"hi.html": `<section>
@@ -47,7 +47,7 @@ Says: <Italic><Greet name="world"/></Italic>.
 				},
 				Input: `<Title>Hi</Title>
 
-Says: <Italic><Greet name="world">{greeting}</Greet></Italic>.
+Says: *<Greet name="world">{greeting}</Greet>*.
 `,
 				Outputs: Files{
 					"hi.html": `<section>
@@ -71,7 +71,7 @@ Says: <Italic><Greet name="world">{greeting}</Greet></Italic>.
 				},
 				Input: `<Title>List</Title>
 
-Joined: <Italic><Each items={["a", "b", "c"]}>{item}</Each></Italic>.
+Joined: *<Each items={["a", "b", "c"]}>{item}</Each>*.
 `,
 				Outputs: Files{
 					"list.html": `<section>
@@ -139,7 +139,7 @@ pub primitiveTypes = [
 		},
 		Input: `<Title>Types</Title>
 
-Listing: <Each items={primitiveTypes}><Italic>{item.name}</Italic>=<Bold>{item.docs}</Bold> </Each>.
+Listing: <Each items={primitiveTypes}><em>{item.name}</em>=<strong>{item.docs}</strong> </Each>.
 `,
 		Outputs: Files{
 			"types.html": `<section>

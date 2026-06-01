@@ -17,13 +17,13 @@ func jsonScalar(raw string) dang.ScalarValue {
 func TestContentFromValueJSONScalarDecodes(t *testing.T) {
 	e := &Evaluator{}
 	got, err := e.ContentFromValue(
-		jsonScalar(`{"k":"styled","style":"bold","content":{"k":"string","s":"hi"}}`),
+		jsonScalar(`{"k":"styled","style":"larger","content":{"k":"string","s":"hi"}}`),
 		&booklit.Section{},
 	)
 	if err != nil {
 		t.Fatalf("ContentFromValue: %v", err)
 	}
-	want := booklit.Styled{Style: booklit.StyleBold, Content: booklit.String("hi")}
+	want := booklit.Styled{Style: booklit.StyleLarger, Content: booklit.String("hi")}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %#v, want %#v", got, want)
 	}

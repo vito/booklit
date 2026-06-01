@@ -21,18 +21,14 @@ type Style string
 
 // Common styled templated names.
 const (
-	StyleVerbatim    Style = "verbatim"
-	StyleCodeBlock   Style = "code-block"
-	StyleCodeFlow    Style = "code-flow"
-	StyleItalic      Style = "italic"
-	StyleBold        Style = "bold"
-	StyleLarger      Style = "larger"
-	StyleSmaller     Style = "smaller"
-	StyleStrike      Style = "strike"
-	StyleSuperscript Style = "superscript"
-	StyleSubscript   Style = "subscript"
-	StyleInset       Style = "inset"
-	StyleAside       Style = "aside"
+	StyleVerbatim  Style = "verbatim"
+	StyleCodeBlock Style = "code-block"
+	StyleCodeFlow  Style = "code-flow"
+	StyleLarger    Style = "larger"
+	StyleSmaller   Style = "smaller"
+	StyleStrike    Style = "strike"
+	StyleInset     Style = "inset"
+	StyleAside     Style = "aside"
 )
 
 // String summarizes the content for debugging purposes.

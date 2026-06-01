@@ -105,7 +105,7 @@ write `{expr}` to evaluate a [Dang](https://github.com/vito/dang)
 expression at build time:
 
 ```markdown
-The answer is <Italic>{2 + 2}</Italic>.
+The answer is <em>{2 + 2}</em>.
 
 <Card title={"Greetings, " + name}>...</Card>
 ```
@@ -114,8 +114,8 @@ The result is converted to content: strings render as text, numbers
 and booleans stringify, lists flatten into a sequence. Records and
 functions are not yet renderable.
 
-For instance, the answer to `<Italic>{2 + 2}</Italic>` is
-<Italic>{2 + 2}</Italic>, computed at build time.
+For instance, the answer to `<em>{2 + 2}</em>` is
+<em>{2 + 2}</em>, computed at build time.
 
 `{expr}` only triggers *inside* a JSX element. A bare `{1+2}` in a
 paragraph is just literal text — the parser starts on `<`, not `{`.

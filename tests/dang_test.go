@@ -17,7 +17,7 @@ func TestDangExpressions(t *testing.T) {
 			example: Example{
 				Input: `<Title>Hello</Title>
 
-The answer is <Italic>{42}</Italic>.
+The answer is *{42}*.
 `,
 				Outputs: Files{
 					"hello.html": `<section>
@@ -34,7 +34,7 @@ The answer is <Italic>{42}</Italic>.
 			example: Example{
 				Input: `<Title>Hello</Title>
 
-Greeting: <Italic>{"hi"}</Italic>.
+Greeting: *{"hi"}*.
 `,
 				Outputs: Files{
 					"hello.html": `<section>
@@ -51,7 +51,7 @@ Greeting: <Italic>{"hi"}</Italic>.
 			example: Example{
 				Input: `<Title>Hello</Title>
 
-Result: <Italic>{1 + 2}</Italic>.
+Result: *{1 + 2}*.
 `,
 				Outputs: Files{
 					"hello.html": `<section>
@@ -68,7 +68,7 @@ Result: <Italic>{1 + 2}</Italic>.
 			example: Example{
 				Input: `<Title>Hello</Title>
 
-Flag: <Italic>{true}</Italic>.
+Flag: *{true}*.
 `,
 				Outputs: Files{
 					"hello.html": `<section>
@@ -107,7 +107,7 @@ Welcome.
 			example: Example{
 				Input: `<Title>Hello</Title>
 
-Joined: <Italic>{["a", "b", "c"]}</Italic>.
+Joined: *{["a", "b", "c"]}*.
 `,
 				Outputs: Files{
 					"hello.html": `<section>
@@ -124,7 +124,7 @@ Joined: <Italic>{["a", "b", "c"]}</Italic>.
 			example: Example{
 				Input: `<Title>Hello</Title>
 
-Bad: <Italic>{1 +}</Italic>.
+Bad: *{1 +}*.
 `,
 				LoadErr: "evaluating {1 +}",
 			},
