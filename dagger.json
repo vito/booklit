@@ -4,11 +4,5 @@
   "sdk": {
     "source": "dang"
   },
-  "dependencies": [
-    {
-      "name": "booklitdoc",
-      "source": "dagger/booklitdoc"
-    }
-  ],
   "source": ".dagger"
 }

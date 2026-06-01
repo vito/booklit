@@ -11,6 +11,7 @@ import (
 	"iter"
 	"sort"
 	"strings"
+	"unicode"
 	"unsafe"
 
 	tshighlight "go.gopad.dev/go-tree-sitter-highlight"
@@ -98,7 +99,7 @@ var languages = map[string]*languageSpec{
 		language:   booklitgrammar.Language,
 		highlights: booklitHighlightsQuery,
 		links:      booklitLinksQuery,
-		linkTag:    func(s string) string { return s },
+		linkTag:    booklitLinkTag,
 	},
 	"go": {
 		name:       "go",
@@ -420,6 +421,80 @@ func minUint(a, b uint) uint {
 	return b
 }
 
+// booklitLinkTag converts a tree-sitter capture (typically a JSX-style
+// component name) into the kebab-case tag that Booklit uses to name targets,
+// matching the convention applied elsewhere when a Go method like
+// IncludeSection is exposed as the `\include-section` invoke.
+//
+// Examples:
+//
+//	"title"           → "title"
+//	"include-section" → "include-section"
+//	"IncludeSection"  → "include-section"
+//	"OutputFrame"     → "output-frame"
+//	"TableOfContents" → "table-of-contents"
+//	"HTMLRenderer"    → "html-renderer"
+//
+// Underscores, spaces, and existing dashes all normalize to a single dash;
+// runs of separators collapse and leading/trailing dashes are trimmed.
+func booklitLinkTag(s string) string {
+	runes := []rune(s)
+	if len(runes) == 0 {
+		return ""
+	}
+
+	var out strings.Builder
+	out.Grow(len(s) + 4)
+
+	// lastWasDash starts true so a leading separator is suppressed, mirroring
+	// the trailing Trim below.
+	lastWasDash := true
+	writeDash := func() {
+		if !lastWasDash {
+			out.WriteByte('-')
+			lastWasDash = true
+		}
+	}
+	writeRune := func(r rune) {
+		out.WriteRune(r)
+		lastWasDash = false
+	}
+
+	for i, r := range runes {
+		switch {
+		case r == '_' || r == ' ' || r == '-':
+			writeDash()
+		case unicode.IsUpper(r):
+			if startsNewWord(runes, i) {
+				writeDash()
+			}
+			writeRune(unicode.ToLower(r))
+		default:
+			writeRune(unicode.ToLower(r))
+		}
+	}
+	return strings.Trim(out.String(), "-")
+}
+
+// startsNewWord reports whether the uppercase rune at index i should be
+// preceded by a word boundary. Two cases qualify:
+//
+//   - camelCase: the previous rune is lowercase or a digit (e.g. "fooBar"
+//     splits between 'o' and 'B').
+//   - End of an acronym: the previous rune is also uppercase but the next
+//     rune is lowercase (e.g. "HTMLRenderer" splits between 'L' and 'R'
+//     because 'e' follows).
+func startsNewWord(runes []rune, i int) bool {
+	if i == 0 {
+		return false
+	}
+	prev := runes[i-1]
+	if unicode.IsLower(prev) || unicode.IsDigit(prev) {
+		return true
+	}
+	return i+1 < len(runes) && unicode.IsLower(runes[i+1])
+}
+
 // PlainHTML returns source escaped into the renderer's code wrapper without
 // syntax spans. It is primarily useful for callers that need an explicit
 // fallback path.
@@ -451,6 +526,7 @@ const booklitHighlightsQuery = `
 
 const booklitLinksQuery = `
 (command name: (identifier) @reference)
+(tag name: (identifier) @reference)
 `
 
 const goHighlightsQuery = `

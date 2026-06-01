@@ -14,7 +14,7 @@ docs/css/booklit.css: less/docs.less less/*.less
 less/logo-url.less: docs/css/images/booklit.svg
 	yarn run build-logo-url-less
 
-docs/outputs/index.html: docs/lit/*.md docs/html/*.tmpl docs/html/*.md treehighlight/*.go treehighlight/internal/tree_sitter_booklit/*.go treehighlight/internal/tree_sitter_booklit/src/parser.c dagger/booklitdoc/main.go dagger/booklitdoc/cmd/lit-syntax/main.go
+docs/outputs/index.html: docs/lit/*.md docs/html/*.tmpl docs/html/*.md treehighlight/*.go treehighlight/internal/tree_sitter_booklit/*.go treehighlight/internal/tree_sitter_booklit/src/parser.c
 	go run ./cmd/booklit -i docs/lit/index.md -o docs/outputs --html-templates docs/html
 
 clean:

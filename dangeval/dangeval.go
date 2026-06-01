@@ -59,10 +59,10 @@ func New(ctx context.Context, projectDir string) (*Evaluator, error) {
 
 	// ResolveDaggerImport introspects the module's schema (so its functions
 	// and dependencies type-check), but the runtime client is a bare `dagger
-	// session` that hasn't served the module — so a dependency like
-	// `booklitdoc.litSyntax(...)` would type-check yet fail at execution with
-	// "Cannot query field". Serve the module (with its dependencies) into the
-	// session so those fields exist on the live Query root at runtime.
+	// session` that hasn't served the module — so dependency calls would
+	// type-check yet fail at execution with "Cannot query field". Serve the
+	// module into the session so those fields exist on the live Query root at
+	// runtime.
 	if moduleDir := dang.FindDaggerModule(projectDir); moduleDir != "" {
 		for _, ic := range configs {
 			if ic.Dagger && ic.Client != nil {

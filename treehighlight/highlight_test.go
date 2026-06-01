@@ -43,15 +43,43 @@ func TestChunksLinkBooklitCommands(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var found bool
-	for _, chunk := range chunks {
-		if chunk.LinkTag == "title" && chunk.LinkText == "title" {
-			found = true
+	assertLinkChunk(t, chunks, "title", "title")
+}
+
+func TestChunksLinkBooklitComponentTags(t *testing.T) {
+	chunks, err := Chunks("markdown", `<IncludeSection path="quotes.md"/>`, Options{LinkReferences: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assertLinkChunk(t, chunks, "include-section", "IncludeSection")
+}
+
+func TestBooklitLinkTag(t *testing.T) {
+	cases := map[string]string{
+		"IncludeSection":  "include-section",
+		"OutputFrame":     "output-frame",
+		"TableOfContents": "table-of-contents",
+		"HTMLRenderer":    "html-renderer",
+		"title":           "title",
+		"include-section": "include-section",
+	}
+
+	for in, want := range cases {
+		if got := booklitLinkTag(in); got != want {
+			t.Fatalf("booklitLinkTag(%q) = %q, want %q", in, got, want)
 		}
 	}
-	if !found {
-		t.Fatalf("expected a title link chunk, got %#v", chunks)
+}
+
+func assertLinkChunk(t *testing.T, chunks []Chunk, tag, text string) {
+	t.Helper()
+	for _, chunk := range chunks {
+		if chunk.LinkTag == tag && chunk.LinkText == text {
+			return
+		}
 	}
+	t.Fatalf("expected link chunk %q/%q, got %#v", tag, text, chunks)
 }
 
 func TestUnknownLanguageFallsBackToEscapedHTML(t *testing.T) {

@@ -117,7 +117,7 @@ func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...
 	// docs palette so highlighted output is deterministic across renderers.
 	_ = styleName
 
-	html, err := treehighlight.HTML(language, code.String(), code.IsFlow())
+	chunks, err := treehighlight.Chunks(language, code.String(), treehighlight.Options{LinkReferences: true})
 	if err != nil {
 		return nil, err
 	}
@@ -130,16 +130,61 @@ func (plugin Plugin) Syntax(language string, code booklit.Content, styleName ...
 	}
 
 	return booklit.Styled{
-		Style: style,
-		Block: !code.IsFlow(),
-		Content: booklit.Styled{
-			Style:   "raw-html",
-			Content: booklit.String(html),
-		},
+		Style:   style,
+		Block:   !code.IsFlow(),
+		Content: plugin.highlightedCodeContent(chunks, code.IsFlow()),
 		Partials: booklit.Partials{
 			"Language": booklit.String(language),
 		},
 	}, nil
+}
+
+// highlightedCodeContent assembles a treehighlight chunk stream into Booklit
+// content, wrapped in the same <pre><code> (or inline <code>) container that
+// treehighlight.HTML emits for the non-linking path. Raw HTML chunks pass
+// through untouched so the syntax highlighting <span> markup survives intact;
+// link chunks become \reference invocations so they auto-link to matching
+// tags defined elsewhere in the document.
+//
+// References are marked Optional so an unresolved tag falls back to rendering
+// the original source text — most identifiers in a code sample won't have a
+// matching target, and we don't want unresolved names to fail the build.
+//
+// NOTE: the open/close wrapper here mirrors treehighlight.HTML and
+// treehighlight.PlainHTML; keep all three in sync if the markup changes.
+func (plugin Plugin) highlightedCodeContent(chunks []treehighlight.Chunk, inline bool) booklit.Content {
+	open, close := codeWrapper(inline)
+	content := booklit.Sequence{rawHTML(open)}
+	for _, chunk := range chunks {
+		switch {
+		case chunk.HTML != "":
+			content = append(content, rawHTML(chunk.HTML))
+		case chunk.LinkTag != "":
+			content = append(content, plugin.autoLink(chunk))
+		}
+	}
+	return append(content, rawHTML(close))
+}
+
+func (plugin Plugin) autoLink(chunk treehighlight.Chunk) booklit.Content {
+	return &booklit.Reference{
+		Section:  plugin.section,
+		TagName:  chunk.LinkTag,
+		Content:  booklit.String(chunk.LinkText),
+		Optional: true,
+		Location: plugin.section.InvokeLocation,
+	}
+}
+
+func codeWrapper(inline bool) (open, close string) {
+	if inline {
+		return `<code style=";-webkit-text-size-adjust:none;">`, `</code>`
+	}
+	return `<pre style=";-webkit-text-size-adjust:none;"><code>`, `</code></pre>`
+}
+
+func rawHTML(s string) booklit.Content {
+	return booklit.Styled{Style: "raw-html", Content: booklit.String(s)}
 }
 
 func (plugin Plugin) Italic(content booklit.Content) booklit.Content {
