@@ -1,9 +1,6 @@
-targets=ast/booklit.peg.go docs/css/booklit.css errhtml/errors.css docs/outputs/index.html
+targets=docs/css/booklit.css errhtml/errors.css docs/outputs/index.html
 
 all: $(targets)
-
-ast/booklit.peg.go: ast/booklit.peg
-	pigeon ast/booklit.peg | goimports > ast/booklit.peg.go
 
 errhtml/errors.css: less/errors.less less/*.less
 	yarn run lessc $< $@

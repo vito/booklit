@@ -32,12 +32,12 @@ but `ast.Invoke` is NOT gone: Markdown prose still lowers to
 `ast.Invoke` for every built-in feature (`#` headings → `\section` /
 `\title`, links, images, code, code blocks, tables, lists, insets,
 references, and raw HTML → `raw-html` / `raw-html-block`). The
-`[#tag]` reference shorthand also produces an `ast.Invoke`. `.lit`
-files still go through the original PEG parser (`ast.ParseReader`).
-These `ast.Invoke` nodes are evaluated by `VisitInvoke`, which
-dispatches by reflection against the section's plugins — i.e.
-`baselit` — exactly as before the pivot. The JSX layer
-(`VisitJSXElement`) is the new, parallel path.
+`[#tag]` reference shorthand also produces an `ast.Invoke`. The PEG
+`.lit` parser is gone (decision 1); `marklit.Parse` is the only
+source-text parser. These `ast.Invoke` nodes are evaluated by
+`VisitInvoke`, which dispatches by reflection against the section's
+plugins — i.e. `baselit` — exactly as before the pivot. The JSX
+layer (`VisitJSXElement`) is the new, parallel path.
 
 ## Plugin system: gone
 
@@ -401,10 +401,17 @@ Concrete tasks, in dependency order. Each line links back to a
       and fenced code blocks are already covered in the same
       file. Deleted rather than ported. `tests/sections_test.go`
       has no `.lit` fixture strings.
-- [ ] **Delete the PEG parser** (decision 1): remove
-      `ast/booklit.peg`, `ast/booklit.peg.go`, the pigeon Makefile
-      rule, `ast.ParseReader`, and the `.lit` branch in
-      `load/processor.go`. Drop the `pigeon` build dependency.
+- [x] **Delete the PEG parser** (decision 1). `ast/booklit.peg`,
+      `ast/booklit.peg.go`, and `ast/errors.go` (PEG-only
+      `UnpackError` / `parserError` plumbing) all gone. The
+      Makefile `ast/booklit.peg.go: ast/booklit.peg` rule and the
+      `pigeon` tool entry + indirect require dropped from
+      `go.mod`; `go mod tidy` also removed the transitive
+      `golang.org/x/mod` and `golang.org/x/tools` indirects.
+      `load/processor.go` no longer branches on extension —
+      `marklit.Parse` handles everything via `io.ReadAll`.
+      `booklit.ParseError` is now unused but kept; no harm and
+      it's part of the public API.
 - [ ] **Split templates → components** (decisions 5 + 9). Move
       `docs/html/*.md` into `docs/components/`. Make `templates.New`
       default to looking next to `--in` for a `components/`
@@ -463,6 +470,13 @@ Concrete tasks, in dependency order. Each line links back to a
   pure `.lit` parser surface and got deleted — no MarkDangJSX
   equivalent and fenced-code coverage already exists. PEG parser
   removal is now unblocked.
+- PEG parser deleted (2026-06-01). ~2700 lines of generated code +
+  `ast/booklit.peg` source + `ast/errors.go` (PEG-only error
+  unpacking) all gone. `go mod tidy` also removed transitive
+  `golang.org/x/mod` and `golang.org/x/tools` indirects that pigeon
+  pulled in. `booklit.ParseError` is now unreferenced but kept —
+  public API, no cost. `marklit.Parse` is the only source-text
+  parser now.
 - New finding: partials are dead weight now that components exist.
   `<SetPartial>` was solving "thread named content into a renderer
   template" by stuffing entries into a per-section map keyed by

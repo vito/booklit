@@ -6,7 +6,6 @@ package load
 import (
 	"io"
 	"os"
-	"path/filepath"
 	"sync"
 	"time"
 
@@ -101,48 +100,18 @@ func (processor *Processor) EvaluateFile(parent *booklit.Section, path string, p
 			return nil, err
 		}
 
-		switch filepath.Ext(path) {
-		case ".md":
-			source, err := io.ReadAll(file)
-			if err != nil {
-				file.Close() //nolint:errcheck
-				return nil, err
-			}
-
-			err = file.Close()
-			if err != nil {
-				return nil, err
-			}
-
-			node = marklit.Parse(source)
-
-		default: // .lit and any other extension: PEG parser
-			result, err := ast.ParseReader(path, file)
-			if err != nil {
-				file.Close() //nolint:errcheck
-
-				astErr, ok := ast.UnpackError(err)
-				if !ok {
-					return nil, err
-				}
-
-				return nil, booklit.ParseError{
-					Err: astErr.Inner,
-					ErrorLocation: booklit.ErrorLocation{
-						FilePath:     path,
-						NodeLocation: astErr.Location,
-						Length:       1,
-					},
-				}
-			}
-
-			err = file.Close()
-			if err != nil {
-				return nil, err
-			}
-
-			node = result.(ast.Node)
+		source, err := io.ReadAll(file)
+		if err != nil {
+			file.Close() //nolint:errcheck
+			return nil, err
 		}
+
+		err = file.Close()
+		if err != nil {
+			return nil, err
+		}
+
+		node = marklit.Parse(source)
 	}
 
 	section := &booklit.Section{
