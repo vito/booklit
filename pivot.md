@@ -390,10 +390,17 @@ Concrete tasks, in dependency order. Each line links back to a
       narrowed to JSX-only and renamed `splitElementOnlyParagraph`.
       Obsolete `\foo{}` / `{{…}}` / `{{{…}}}` tests in
       `marklit/marklit_test.go` deleted (~25 cases).
-- [ ] **Rewrite remaining `.lit` test fixtures as `.md`**
-      (decision 1 prep): the three `Ext: ".lit"` cases in
-      `tests/prose_test.go` and any `.lit` fixture strings in
-      `tests/sections_test.go` migrate to `.md` JSX.
+- [x] **Rewrite remaining `.lit` test fixtures as `.md`**
+      (decision 1 prep). "invokes interspersed in words" ported to
+      `.md` as "inline JSX interspersed in words" (`This<Italic>is
+      </Italic>a test.`). The other two `Ext: ".lit"` cases —
+      "inline code and code blocks" and "code block indent
+      tracking" — exercised the three `\code{}`/`\code{{}}`/
+      `\code{{{}}}` variants and `\code{{` indent-tracking; both
+      were pure `.lit` parser quirks with no MarkDangJSX surface,
+      and fenced code blocks are already covered in the same
+      file. Deleted rather than ported. `tests/sections_test.go`
+      has no `.lit` fixture strings.
 - [ ] **Delete the PEG parser** (decision 1): remove
       `ast/booklit.peg`, `ast/booklit.peg.go`, the pigeon Makefile
       rule, `ast.ParseReader`, and the `.lit` branch in
@@ -450,6 +457,12 @@ Concrete tasks, in dependency order. Each line links back to a
   strings — goldmark used to split text segments at the `\` trigger
   character our (now-gone) invoke inline parser registered for.
   Output is identical; the change is internal AST shape only.
+- Last three `Ext: ".lit"` tests resolved (2026-06-01). Mid-word
+  inline parser case ported to MarkDangJSX (`<Italic>` survives
+  cleanly mid-word, no quirk). The two `\code{}`-variant cases were
+  pure `.lit` parser surface and got deleted — no MarkDangJSX
+  equivalent and fenced-code coverage already exists. PEG parser
+  removal is now unblocked.
 - New finding: partials are dead weight now that components exist.
   `<SetPartial>` was solving "thread named content into a renderer
   template" by stuffing entries into a per-section map keyed by

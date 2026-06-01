@@ -320,13 +320,11 @@ This is an <Italic>  </Italic> even more spaced italic.
 			},
 		},
 		{
-			name: "invokes interspersed in words",
+			name: "inline JSX interspersed in words",
 			example: Example{
-				Ext: ".lit",
+				Input: `# Hello, world!
 
-				Input: `\title{Hello, world!}
-
-This{\italic{is}}a test.
+This<Italic>is</Italic>a test.
 `,
 
 				Outputs: Files{
@@ -334,157 +332,6 @@ This{\italic{is}}a test.
 	<h1>Hello, world!</h1>
 
 	<p>This<em>is</em>a test.</p>
-</section>
-`,
-				},
-			},
-		},
-		{
-			name: "inline code and code blocks",
-			example: Example{
-				Ext: ".lit",
-
-				Input: `\title{Hello, world!}
-
-This is some \code{inline} code.
-
-Here's a code block:
-
-\code{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}
-
-\code{{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}}
-
-\code{{{
-	I'm a code block.
-
-		I'm indented more.
-
-			I'm indented even more.
-
-I'm indented less.
-
-	\reference{hello-world}
-
-	\\some-method\{Some argument.\}
-
-
-	One more line, with meaning.
-}}}
-
-And here's some more content.
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>This is some <code>inline</code> code.</p>
-
-	<p>Here's a code block:</p>
-
-	<pre><p>I'm a code block.</p><p>I'm indented more.</p><p>I'm indented even more.</p><p>I'm indented less.</p><p><a href="hello-world.html">Hello, world!</a></p><p>\some-method{Some argument.}</p><p>One more line, with meaning.</p></pre>
-
-	<pre>I'm a code block.
-
-	I'm indented more.
-
-		I'm indented even more.
-
-I'm indented less.
-
-<a href="hello-world.html">Hello, world!</a>
-
-\some-method{Some argument.}
-
-
-One more line, with meaning.</pre>
-
-	<pre>I'm a code block.
-
-	I'm indented more.
-
-		I'm indented even more.
-
-I'm indented less.
-
-\reference{hello-world}
-
-\\some-method\{Some argument.\}
-
-
-One more line, with meaning.</pre>
-
-	<p>And here's some more content.</p>
-</section>
-`,
-				},
-			},
-		},
-		{
-			name: "code block indent tracking",
-			example: Example{
-				Ext: ".lit",
-
-				Input: `\title{Hello, world!}
-
-\code{{
-I'm a code block.
-}}
-
-\section{
-  \title{Sub-section}
-
-	\code{{
-	I'm a code block in a sub-section.
-  }}
-
-  \code{{
-    {}   I'm a code block {- in a sub-section -}with a forced indent level.
-  }}
-}
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<pre>I'm a code block.</pre>
-
-	<h2>1 Sub-section</h2>
-
-	<pre>I'm a code block in a sub-section.</pre>
-
-	<pre>   I'm a code block with a forced indent level.</pre>
 </section>
 `,
 				},
