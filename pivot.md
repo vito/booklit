@@ -217,12 +217,7 @@ one of the open questions below.
   global env).
 - `booklit-init` scaffolding for new projects.
 
-## Standard project layout
-
-What a Booklit project actually looks like today, taken from the docs
-site. None of these paths are hard-coded — they're conventions, and the
-relevant ones can be moved with CLI flags. But this is the layout the
-code is written *around*:
+## Standard project layout (target, after the cleanup checklist)
 
 ```
 project/
@@ -230,230 +225,169 @@ project/
 │   ├── index.md              # `--in` target; entry point
 │   ├── other-page.md
 │   └── helpers.dang          # Auto-loaded by dangeval (non-recursive scan)
-├── html/                     # Templates dir, passed via --html-templates:
-│   ├── page.tmpl             #   • Go html/template overrides for renderer-
-│   ├── section.tmpl          #     internal templates (page, section,
-│   ├── sidebar.tmpl          #     sidebar, …) — framework infrastructure
-│   ├── Card.md               #   • mdx JSX-component templates (PascalCase)
+├── components/               # User JSX components: <Name/> → components/Name.md
+│   ├── Card.md               # Same MarkDangJSX format as content files
 │   └── Define.md
-├── css/                      # Static assets (CSS, fonts, images);
-├── favicon.ico               # the renderer copies these to the output dir
+├── html/                     # Renderer override templates (Go html/template);
+│   ├── page.tmpl             # only used to override framework infrastructure
+│   ├── section.tmpl          # like page/section/sidebar. Most projects do
+│   └── sidebar.tmpl          # not need this directory at all.
+├── css/                      # Static assets (CSS, fonts, images); copied to
+├── favicon.ico               # the output dir by the renderer.
 ├── dagger.json               # Dagger module metadata (sdk = "dang")
 ├── .dagger/                  # The project's own Dagger module (CI, build,
-│   └── main.dang             # test); its functions are NOT in {expr} scope —
+│   └── main.dang             # test). Its functions are NOT in {expr} scope —
 │                             # only its *dependencies* + core API are.
 └── dist/                     # `--out` target; generated HTML
 ```
 
-A few load-bearing details and rough edges:
+The format used by both content files and component files is
+**MarkDangJSX**: Markdown prose + JSX elements + `{Dang expressions}`.
+There is one parser (`marklit`), one set of semantics. The distinction
+between "content" and "component" is operational, not syntactic:
+
+- A **content file** lives in `lit/` and is loaded as a top-level
+  section (its headings build the section tree).
+- A **component file** lives in `components/` and is invoked from
+  *other* files as `<Name/>`. Props bind in Dang scope; the caller's
+  JSX children bind as `children`. The same `lit/` content file could
+  be used as a component, and vice versa — the difference is "did
+  someone call it as `<Name/>`?".
+
+Inside a component file, Markdown applies the same way it does in
+content (the React/MDX convention): text inside a *lowercase* element
+(`<div>`, `<pre>`) is raw HTML — no Markdown — and text inside a
+PascalCase JSX element is parsed as Markdown as usual. So
+`<Card>**emph**</Card>` produces emphasis inside the rendered
+component; `<div>**not-emph**</div>` does not.
+
+A few load-bearing details:
 
 - **The `--in` flag's directory anchors everything Dang-side.**
   `dangeval.New` walks up from `filepath.Dir(--in)` looking for
   `dang.toml` and `dagger.json`, and scans that same directory
   (non-recursive) for `*.dang` files. That's why `helpers.dang` lives
-  inside `lit/` next to the content, not at the project root. There is
-  no `dang/` source dir convention.
-- **`--html-templates` does double duty.** The same flag (and the same
-  directory) feeds both the Go html/template engine's override loader
-  (`render/html.go`'s `engine.LoadTemplates`) AND the mdx-template
-  registry (`templates.New(dir)`). The engine picks `.tmpl` files; the
-  registry picks `.md` files. They share the directory because the
-  flag predates the mdx work.
-- **`html/` is misnamed.** It contains JSX-component definitions
-  (`Define.md`, `Card.md`) — neither HTML nor Go templates. Renaming to
-  `components/` (or splitting `templates/` vs `components/`) would
-  match what's in there.
+  inside `lit/` next to the content, not at the project root.
+- **Dagger comes for free.** Any project with a `dagger.json` gets
+  the served module's dependencies + core API available as `{expr}`
+  calls. There is no `<Foo from="..."/>` syntax and there will not be
+  one: that role is filled by Dagger-the-language (Dang), not a
+  separate Booklit-level dispatch tier.
 - **Renderer-internal `.tmpl` files stay Go templates.** The 28 files
   in `render/html/` (page, section, styled, list, table, code-block,
   …) are embedded at compile time and form the rendering substrate
-  built-ins emit `Styled{Style: …}` against. Phase 3b-4 considered
-  converting them to mdx and recommended deferring; that recommendation
-  still holds.
+  built-ins emit `Styled{Style: …}` against. Projects that need to
+  override one drop a same-named `.tmpl` into `html/`.
 
-## Cleanup candidates
+## Decisions
 
-Things that look ready to remove now that the pivot has settled.
-Listed in order of "safest first":
+Recap of the questions raised in the previous revision and the
+decisions taken. Each one becomes a checklist item below.
 
-1. **The PEG `.lit` parser** (`ast/booklit.peg`, `ast/booklit.peg.go`,
-   the pigeon Makefile target, and the `.lit` branch in
-   `load/processor.go` lines 119–144). The repo contains zero `.lit`
-   files on disk. The PEG parser only fires for three test cases in
-   `tests/prose_test.go` (`Ext: ".lit"`) and a few `.lit` fixture
-   strings in `tests/sections_test.go` that exercise
-   `<IncludeSection>`. Rewrite those fixtures as `.md` and the whole
-   ~2700 lines of PEG can go, along with the `pigeon` tooling
-   dependency.
-2. **The user-facing `\foo{}` syntax in Markdown.** `marklit` still
-   registers `NewInvokeInlineParser` so an author can write `\italic{x}`
-   inside a `.md` file. After the docs migration, no in-tree content
-   uses that form — every `\foo{}` instance in `marklit/convert.go`
-   is *internal* lowering (heading → `\title`, fence → `\code-block`,
-   etc., emitted as `ast.Invoke` for the reflection-dispatch path).
-   Removing the inline-parser registration would shrink the public
-   surface to "JSX + Markdown only" without touching the internal
-   lowering.
-3. **`marklit/convert.go` lowering to `ast.Invoke` → lowering directly
-   to `ast.JSXElement`.** Once the user-facing `\foo{}` parser is gone,
-   `ast.Invoke` exists only as an internal intermediate. Lowering
-   Markdown straight to JSX nodes would let us delete `VisitInvoke`'s
-   reflection dispatch, `Section.PluginFactories` / `Section.Plugins` /
-   `UsePlugin`, the `booklit.Plugin` / `PluginFactory` types, and
-   reduce `baselit/` to a set of `builtins/`-style functions that
-   register the language primitives in the same registry as
-   `<Title>`/`<Section>`/etc. This is the biggest cleanup on the list
-   — and the most clarifying: "plugin" stops being a misleading term
-   for "internal language primitive."
-4. **Stale planning docs at the project root.** `jsx-dang.md` (50K),
-   `phase-3b.md` (30K), `decisions.md` (7K), and `dagger-content.md`
-   (1.6K) are all append-only historical logs from the pivot work.
-   Their load-bearing content is now in this file; their progress logs
-   are recoverable from `git log`. Recommendation: delete them, keep
-   `pivot.md` as the authoritative status doc, and trust git history
-   for the journey. (Leaving this for explicit confirmation — the
-   user-facing "Where to read more" in the previous revision linked to
-   them, so they may still be wanted as a paper trail.)
-5. **`docs/booklit-docs/` and `docs/booklitdoc/` references** in any
-   remaining tooling or scripts (the directories themselves are already
-   gone). The Makefile already builds via `go run ./cmd/booklit`, so
-   nothing should still point at the deleted binary, but it's worth a
-   sweep.
+1. **PEG `.lit` parser — remove.** Standardize on MarkDangJSX. The
+   ~2700 lines of generated PEG + the pigeon Makefile rule + the `.lit`
+   branch in `load/processor.go` all go. Tests using `Ext: ".lit"` get
+   rewritten as `.md`; `.lit` fixture strings (used by
+   `<IncludeSection>` tests) get renamed.
+2. **User-facing `\foo{}` in Markdown — remove.** The
+   `NewInvokeInlineParser` registration goes away so authors can't
+   write `\italic{x}` inline. Internal lowering keeps emitting Invokes
+   for now; that goes in step 3.
+3. **`ast.Invoke` reflection dispatch — replace with direct JSX
+   lowering.** `marklit/convert.go` lowers Markdown straight to
+   `ast.JSXElement` nodes. `VisitInvoke`, `Section.PluginFactories`,
+   `Section.Plugins`, `UsePlugin`, `booklit.Plugin`,
+   `booklit.PluginFactory`, and `baselit/`'s Plugin-method shape all
+   collapse: baselit's primitives become `builtins/`-registered
+   functions alongside `<Title>`/`<Section>`/etc. The "plugin" word
+   stops being used internally.
+4. **Stale planning docs at the project root — remove.**
+   `jsx-dang.md`, `phase-3b.md`, `decisions.md`, `dagger-content.md`
+   all deleted; this file becomes the only top-level pivot doc.
+5. **`html/` directory — split.** Component definitions move to
+   `components/` (PascalCase `.md` files). The `html/` directory
+   remains for Go html/template overrides of renderer-internal
+   templates (page, section, sidebar), but most projects do not need
+   it. The `--html-templates` flag goes away; both locations become
+   conventions Booklit looks up automatically next to `--in`.
+6. **`<Foo from="..."/>` — slop, removed from the roadmap.** Dagger
+   modules are reachable through `{expr}` because dangeval already
+   serves the local `dagger.json` module into the Dang env. A
+   dedicated JSX-tag tier for remote modules is unnecessary; one-off
+   imports remain a `dang.toml` concern, not a Booklit-side syntax.
+7. **Body/children passing to Dagger functions — punted.** When
+   needed, the simplest path is the eager-pre-render approach: render
+   children once and pass them as `contentjson` to the Dagger
+   function. The callback-channel and source-text variants are
+   parked; revisit only when a concrete use case demands one.
+8. **`contentjson` — kept.** It's the wire format Dagger-provided
+   plugins return content through. No in-tree consumer right now, but
+   the infrastructure stays in place rather than being torn down and
+   rebuilt later.
+9. **Template format unification — same MarkDangJSX as content.**
+   The custom template tokenizer in `templates/parse.go` goes away;
+   components are parsed by `marklit` like everything else. This gives
+   Markdown-inside-`<Component>` for free (per the React/MDX
+   lowercase-vs-PascalCase convention) and removes the second parser
+   that the codebase has to maintain.
 
-## Open questions (the come-to-Jesus list)
+## Cleanup checklist
 
-Things that could undermine the pivot if their answers turn out to be
-bad. Listed in rough order of how load-bearing the resolution is.
+Concrete tasks, ordered from least to most disruptive. Each line
+links back to a "Decisions" item above.
 
-### 1. Dagger-as-a-plugin-tier: what is the wire shape?
-
-The plan always said "Dagger functions are the fourth dispatch tier"
-(`<Foo from="github.com/.../mod"/>`). Today that tier doesn't exist.
-Dagger functions are reachable only through `{moduleFn(...)}` inside
-Dang `{expr}` — and only the introspected module's *dependencies +
-core API* land on the session `Query`, not the module's own
-functions. This means:
-
-- A project-owned helper in `.dagger/main.dang` can't be called
-  directly; you have to either expose it as a Dagger dependency or
-  write a Dang-side wrapper.
-- A one-off remote module needs a `dang.toml` import entry, not a
-  Booklit-level syntax.
-
-The deferred design question is the JSX-tag form: `<Foo from="..."/>`
-maps to *what call shape*? Options the team has talked through but not
-resolved:
-
-- (a) Pure tag sugar over `{moduleFn(props)}`. Module gets a single
-  JSON object of props, returns `JSON` content. Cheapest to implement
-  but limited.
-- (b) A dedicated tier that constructs the module's import lazily,
-  dispatches by tag name, and bridges children somehow (see Q2).
-- (c) Skip the tag form entirely and lean on `{expr}` + Dang helpers.
-
-### 2. Body/children passing to Dagger functions.
-
-Tier-2 (built-ins) and tier-3 (Dang) both give the component
-re-invocable access to its JSX children:
-
-- A Go built-in receives `node.Children` directly.
-- A Dang component receives a `&body(...)` block that, when called,
-  pushes its named args into Dang scope and re-evaluates the children;
-  iteration via `<For>` works because each `body(item: x)` re-renders
-  the JSX in scope of that `x`.
-
-A Dagger function call is process-boundary-crossing. There is no
-obvious analogue. Three sketched approaches, none yet validated:
-
-- (a) **Eager pre-render** — render children once into `contentjson`,
-  pass as a `body` arg. The Dagger function gets HTML-shaped content
-  and can splice it into its own output. Loses the per-iteration
-  re-evaluation that makes `<For>` work.
-- (b) **Callback channel** — boot a tiny Booklit-side service for the
-  duration of the call; the Dagger function calls back with
-  `body(args)` invocations that re-render in Booklit. State-heavy,
-  complicates session lifecycle.
-- (c) **Source-text body** — pass the children's *unevaluated* source
-  text and let the Dagger function treat it however it wants
-  (templating, code highlighting, …). Cheap, but it punts evaluation
-  to the module.
-
-The user-asked phrasing — *"like a Dang block arg, `<Foo>{bar}</Foo>`,
-that the Dagger function can invoke"* — is closest to (b). Whether
-that's worth the plumbing depends on use cases. None are concrete
-today; the `<LitSyntax>` experiment used the source-text-via-prop
-pattern (which inspired (c)) before being deleted.
-
-### 3. Is `contentjson` worth keeping with no consumer?
-
-`contentjson/` + `contentjson/wire/` are ~440 lines of speculative
-infrastructure: the only producer was `<LitSyntax>`, which is gone.
-The bridge in `dangeval.Evaluator.ContentFromValue` still recognizes
-the `JSON` / `JSONValue!` shapes and decodes them, so the runtime cost
-is small — but the maintenance cost grows the longer the format sits
-without a real user (the wire schema can't evolve confidently without
-something exercising it).
-
-Three options:
-
-- Keep as-is; the next out-of-process producer (a Dagger plugin
-  ecosystem) needs it.
-- Delete `contentjson/` and `contentjson/wire/`, simplify the bridge
-  to refuse `JSON`-typed returns. Restore when a real consumer appears.
-- Keep but document the constraint ("Section/TableOfContents/Lazy
-  can't cross") prominently, and write at least one example module so
-  the API is exercised.
-
-This question feeds into Q1: if Dagger-as-a-tier ships as option (a)
-above, `contentjson` is the natural return type. If it ships as option
-(c), `contentjson` might be unnecessary.
-
-### 4. mdx templates have *no* Markdown support.
-
-By design (per the phase-3b 2026-05-31 entry): templates are HTML
-scaffolding + JSX + `{expr}`, no `#`/`-`/`|`/fenced-code. The
-trade-off is on purpose — templates are layout, not prose. But the
-ceiling shows up fast: anything beyond a trivial wrapper has to either
-take rendered content as a `children` block or reach for raw HTML in
-the template body. If template authors start writing `<ul><li>...</li>
-</ul>` by hand to dodge Markdown's absence, we'll know it's wrong.
-
-No urgent action; flag it.
-
-### 5. `html/` mixes two unrelated systems under one flag.
-
-`--html-templates docs/html` feeds the *same* directory to two
-different loaders: `engine.LoadTemplates` (Go templates for renderer
-overrides) and `templates.Registry` (mdx for JSX components). The
-directory ends up holding `page.tmpl` next to `Define.md` next to
-`Card.md`, and you can't tell from the layout which file does what.
-
-Cleanups, in order of disruption:
-
-- Split into two dirs (`overrides/` for `.tmpl`, `components/` for
-  `.md`), introduce a `--components` flag, deprecate `--html-templates`
-  for JSX.
-- Or accept the conflation but document it explicitly.
-
-### 6. `Section.PluginFactories` survives as language plumbing only.
-
-The "Plugin" concept that the pivot was meant to eliminate
-user-facing is gone (no more compiled plugins). What survives is an
-internal dispatch path: Markdown lowering emits `ast.Invoke` →
-reflection dispatch on `Section.Plugins` → `baselit.Plugin` methods.
-External users never see it. Cleanup candidate 3 above is the
-follow-through: once Markdown lowers directly to JSX, this whole
-machinery — `Plugin`, `PluginFactory`, `Section.PluginFactories`,
-`Section.Plugins`, `UsePlugin`, the reflection table in
-`stages/evaluate.go::VisitInvoke` — can collapse into the
-`builtins/` registry. Until then it's vestigial but harmless.
+- [ ] **Sweep stale references** (decision 4 prep + decision 5
+      prep). Confirm nothing in the codebase still points at
+      `cmd/booklit-docs`, `docs/booklitdoc/`, `dagger/booklitdoc/`,
+      or `<LitSyntax>`.
+- [ ] **Delete planning docs** (decision 4): `jsx-dang.md`,
+      `phase-3b.md`, `decisions.md`, `dagger-content.md`. `pivot.md`
+      becomes the only top-level pivot doc.
+- [ ] **Remove user-facing `\foo{}` parsing** (decision 2): drop
+      the `NewInvokeInlineParser` registration from `marklit.go`'s
+      `newParser` and `Extension.Extend`. Internal `\foo{}` lowering
+      in `convert.go` stays for the moment; the `\foo{}` parser file
+      goes away only after step 5.
+- [ ] **Rewrite `.lit` tests as `.md`** (decision 1 prep): the
+      three `Ext: ".lit"` cases in `tests/prose_test.go` and the
+      `.lit` fixture strings in `tests/sections_test.go` migrate to
+      `.md` (rewriting `\title{...}\foo{...}` as JSX where
+      necessary, or as Markdown headings + JSX for `<IncludeSection>`
+      cases).
+- [ ] **Delete the PEG parser** (decision 1): remove
+      `ast/booklit.peg`, `ast/booklit.peg.go`, the pigeon Makefile
+      rule, `ast.ParseReader`, and the `.lit` branch in
+      `load/processor.go`. Drop the `pigeon` build dependency.
+- [ ] **Split templates → components** (decisions 5 + 9). Move
+      `docs/html/*.md` into `docs/components/`. Make `templates.New`
+      default to looking next to `--in` for a `components/`
+      directory (so the flag is unnecessary in the standard case).
+      Parse component files with `marklit` instead of the custom
+      tokenizer; delete `templates/parse.go`. Verify
+      Markdown-inside-Component behaves as expected for `<Card>...
+      </Card>` style cases.
+- [ ] **Rename / retire `--html-templates`** (decision 5). Keep the
+      lookup for `html/` overrides but stop requiring a flag; use a
+      conventional path. Drop the flag when its last use is gone.
+- [ ] **Lower Markdown directly to JSX** (decision 3): rewrite
+      `marklit/convert.go` so it emits `ast.JSXElement` for headings,
+      links, images, code spans, code blocks, lists, tables, raw
+      HTML, etc., instead of `ast.Invoke`. Add the missing built-ins
+      (`<List>`, `<OrderedList>`, `<Item>`, `<Table>`, `<TableRow>`,
+      etc.) so JSX dispatch covers the surface that reflection
+      currently covers. Re-add raw-html via `<RawHTML>` (already
+      exists).
+- [ ] **Retire the Plugin machinery** (decisions 3 + 6 follow-up):
+      delete `booklit.Plugin`, `booklit.PluginFactory`,
+      `Section.PluginFactories`, `Section.Plugins`,
+      `Section.UsePlugin`, and `VisitInvoke`. The `ast.Invoke` node
+      itself can also go once `convert.go` stops emitting it.
+- [ ] **Collapse `baselit/` into `builtins/`** (decision 3): each
+      remaining `baselit.Plugin` method becomes a `builtins.Register`
+      entry. The `baselit/` package directory goes away.
 
 ## Where to read more
 
-- `git log --oneline master..HEAD` is now the most accurate journey;
-  the pre-existing append-only planning docs (`jsx-dang.md`,
-  `phase-3b.md`, `decisions.md`, `dagger-content.md`) are kept around
-  as historical paper trail but their load-bearing claims have been
-  folded into this file. If they're still present after the cleanup
-  sweep, treat their progress-log sections as authoritative for "what
-  was decided at the time" and this file as authoritative for "what
-  is true now."
+- This file is the only one. Pre-existing planning docs are slated
+  for deletion (checklist item 2); their progress logs are
+  recoverable from `git log` if ever needed.
