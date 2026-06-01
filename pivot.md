@@ -345,6 +345,74 @@ decisions taken. Each one becomes a checklist item below.
     `custom-style.tmpl`/`inline-custom-style.tmpl` fixtures.
     `Styled.Partials` stays — it carries renderer metadata (e.g.
     `Language` on highlighted code blocks), not user-set content.
+11. **Retire `Styled` in favor of structured content + stdlib
+    components.** `Styled{Style, Block, Content, Partials}` is the
+    last partial-abstraction in the content model: a string-keyed
+    template lookup, a flag-based `IsFlow` override, and a
+    single-use `Partials` metadata bag (`Language` on highlighted
+    code blocks — set in one place, read by zero templates or
+    renderer code, fully dead weight). Replace with two structured
+    types and a `go:embed`-ed stdlib `components/` dir:
+
+    - **`RawElement{Tag, Attrs, Content}`** for lowercase JSX,
+      `<RawHTML>`, and the code builtins. `IsFlow()` returns
+      `!htmltags.Block[Tag]` — the outermost element's tag decides
+      block/flow. No flag, no string-parsing of
+      `Styled{raw-html, "<div>"}` bytes at any later stage.
+    - **`RawFragment{HTML}`** for pre-rendered HTML chunks (the
+      syntax highlighter's `<span>` wrappers around tokens). Always
+      flow.
+
+    Code builtins collapse onto these. `<Code>x</Code>` emits
+    `RawElement{Tag: "code", Content: x}` when its content is
+    flow, or `RawElement{Tag: "pre", Content: RawElement{Tag:
+    "code", Content: x}}` when block — same IsFlow-on-children
+    introspection as today, no new type. `<CodeBlock language="X">`
+    / `<Syntax language="X">` emit the same pre/code shape with a
+    `class="language-X"` attribute on the `<code>` (the
+    Prism/highlight.js convention, and the natural place for the
+    metadata that `Partials{Language}` was carrying for no
+    reader). `verbatim.tmpl` / `code-block.tmpl` / `code-flow.tmpl`
+    are all redundant once `<Code>` returns nested `RawElement`s
+    directly — they delete with no replacement Go visitor needed.
+
+    Block/flow detection moves from a Block flag to an
+    introspection rule: the outermost HTML element of the
+    rendered content decides. Lowercase tags consult an embedded
+    CommonMark/HTML5 block-tag set (~60 entries — goldmark
+    doesn't export theirs, hand-maintained). PascalCase
+    components introspect their evaluated output — `<Aside>` is
+    block because its body's outermost element is `<blockquote>`,
+    `<Larger>` is flow because its body is a `<span>`. The 5
+    styling shims (`<Larger>`, `<Smaller>`, `<Strike>`, `<Inset>`,
+    `<Aside>`) become MarkDangJSX components shipped in an
+    embedded `components/` FS, with project `components/` taking
+    precedence by name (consistent with the `--in`-anchored
+    override pattern used elsewhere).
+
+    Two new layout behaviors fall out:
+
+    - **Standalone-flow JSX gets paragraph-wrapped.** When the
+      block JSX parser claims an element and the evaluated
+      content is flow, wrap it in `Paragraph` so
+      `<Larger>x</Larger>` standalone still renders as
+      `<p><span>x</span></p>`. Mirrors the existing unwrap rule
+      in `VisitParagraph` in the inverse direction.
+    - **Mid-paragraph block content breaks the paragraph.** When
+      a `Sequence` line in a Markdown paragraph contains a block
+      element (`!IsFlow()`), split the paragraph at that point —
+      lines before are wrapped in a `<p>`, the block content
+      renders unwrapped, lines after start a new paragraph.
+      Matches CommonMark's raw-block-HTML-in-paragraph behavior;
+      replaces today's invalid `<p>…<blockquote>…</p>`
+      passthrough (which was previously masked by the
+      `Block: node.MultiLine` flag on lowercase JSX).
+
+    `Styled`, the `Style` type, all `Style*` constants, the
+    `booklit.Partials` type, the matching `.tmpl` files
+    (`larger`/`smaller`/`strike`/`inset`/`aside`/`verbatim`/
+    `code-block`/`code-flow`/`raw-html`), and contentjson's
+    `Style`/`Block`/`Partials` wire fields all delete.
 
 ## Cleanup checklist
 
@@ -544,6 +612,96 @@ Concrete tasks, in dependency order. Each line links back to a
       blocks), which is a separate concern from per-section partials.
       The baselit `SetPartial` method called out in the checklist was
       already dropped with baselit/.
+- [ ] **HTML block-tag registry** (decision 11 prep). New
+      `htmltags.go` (top-level, or `internal/htmltags` if kept
+      private) exporting a `Block` set / `Block(tag string) bool`
+      function over the CommonMark/HTML5 block-level tag list
+      (~60 entries: `address`, `article`, `aside`, `blockquote`,
+      `body`, `details`, `div`, `dl`, `dt`, `fieldset`, `figcaption`,
+      `figure`, `footer`, `form`, `h1`–`h6`, `header`, `hr`,
+      `iframe`, `li`, `main`, `menu`, `nav`, `ol`, `p`, `pre`,
+      `section`, `summary`, `table`, `tbody`, `td`, `tfoot`, `th`,
+      `thead`, `tr`, `ul`, …). Source: HTML5 spec § 4.6 +
+      CommonMark HTML block tag list. Goldmark uses an equivalent
+      list internally but doesn't export it; hand-maintained.
+- [ ] **`RawElement` / `RawFragment` content types + migration**
+      (decision 11). New `raw_element.go` / `raw_fragment.go` in
+      package `booklit`. `RawElement{Tag, Attrs, Content}` with
+      `IsFlow()` = `!htmltags.Block[Tag]`; implements
+      `VisitRawElement`. `RawFragment{HTML}` always flow; implements
+      `VisitRawFragment`. Renderer methods in `render/html.go`
+      replace `raw-html.tmpl` — `RawElement` renders
+      `<tag attrs>content</tag>` (self-closing for void elements),
+      `RawFragment` writes its bytes verbatim. Migrate every emit
+      site:
+      - `stages/evaluate.go::dispatchRawHTML` returns
+        `RawElement{Tag, Attrs, Content}` (the
+        `Sequence{Styled{open}, children, Styled{close}}` shape
+        and the `Block: node.MultiLine` plumbing all go).
+      - `builtins/raw_html.go` emits `RawElement` (the `block`
+        prop goes away — tag determines block-ness).
+      - `builtins/code.go`'s `rawHTML()` highlighter-span helper
+        emits `RawFragment`.
+      - `builtins/content.go`'s `<Code>` emits
+        `RawElement{Tag: "code"}` when content is flow, or
+        `RawElement{Tag: "pre", Content: RawElement{Tag: "code"}}`
+        when block. Same `code.IsFlow()` introspection as today;
+        no new type, no template.
+      - `builtins/code.go`'s `<CodeBlock>` / `<Syntax>` emit the
+        same `<pre><code>` shape with `class="language-X"` on the
+        inner `<code>` (Prism/highlight.js convention). The
+        `Partials{Language}` indirection — set in one place, read
+        by zero — is dropped entirely.
+      `verbatim.tmpl`, `code-block.tmpl`, and `code-flow.tmpl`
+      delete with no replacement Go visitor needed.
+- [ ] **Bake stdlib components in via `go:embed` + replace
+      styling shims** (decision 11). New `components/` package at
+      the repo root with `embed.FS` of `*.md` files (modeled on
+      `render/html/embed.go`'s `//go:embed *.tmpl`). Initial
+      contents (one-liners mirroring the current `.tmpl` bodies):
+      `Larger.md` (`<span style="font-size: 120%">{children}</span>`),
+      `Smaller.md`, `Strike.md`, `Inset.md`, `Aside.md`. The
+      component dispatch tier (third tier in
+      `VisitJSXElement`) gains a fallback to `components.Assets`;
+      project `components/` overrides stdlib by name. Then delete
+      `builtins/styled.go` (the `styled()` factory + 5
+      `Register` calls), `render/html/{larger,smaller,strike,inset,
+      aside}.tmpl`, and the `StyleLarger`/`StyleSmaller`/
+      `StyleStrike`/`StyleInset`/`StyleAside` constants. Rendered
+      HTML stays byte-identical, so integration fixtures in
+      `tests/blocks_test.go` / `tests/prose_test.go` don't move;
+      only content-tree-shape unit tests update.
+- [ ] **Paragraph boundary handling for block/flow JSX**
+      (decision 11). Two complementary changes in
+      `stages/evaluate.go::VisitParagraph` (and the dispatch
+      that handles standalone JSX):
+      (a) When a `Sequence` line contains a block element
+      (`!Sequence.IsFlow()` with `len(para) > 1`), split the
+      paragraph at that point — emit preceding lines as
+      `Paragraph`, emit the block content unwrapped, continue
+      paragraph-building with trailing lines. CommonMark
+      behavior; replaces the invalid `<p>…<blockquote>…</p>`
+      passthrough that today's `Block: node.MultiLine` flag was
+      masking.
+      (b) When the block JSX parser claims a node and its
+      evaluated content is flow (`content.IsFlow() == true` and
+      not already a `Paragraph`), wrap in
+      `booklit.Paragraph{content}` so standalone
+      `<Larger>x</Larger>` renders as `<p><span>x</span></p>`.
+      Mirrors the `len(para) == 1 && !para[0].IsFlow()` unwrap
+      logic in the inverse direction.
+- [ ] **Delete `Styled`, `Partials`, contentjson updates**
+      (decision 11). `styled.go` (the type, `IsFlow` override,
+      remaining `StyleVerbatim` / `StyleCodeBlock` /
+      `StyleCodeFlow` constants, `Style` type alias) deleted.
+      `booklit.Partials` type deleted from `section.go` — fully
+      unused after the previous items.
+      `contentjson/contentjson.go` loses its `case Styled`
+      branches, gains `case RawElement` / `case RawFragment`.
+      `contentjson/wire/wire.go` loses the `Style` / `Block` /
+      `Partials` `Node` fields, gains `Tag` / `Attrs` / `HTML`. The
+      `encodePartials` / `decodePartials` helpers go with the
+      Partials type.
 
 ### Findings (2026-06-01)
 
