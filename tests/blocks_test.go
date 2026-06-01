@@ -12,52 +12,18 @@ func TestBlocks(t *testing.T) {
 		{
 			name: "lists",
 			example: Example{
-				Input: `\title{Hello, world!}
-
-\list{a}{
-	b
-}{
-	\code{{
-	c
-	}}
-}
-`,
+				Input: "# Hello, world!\n\n" +
+					"- a\n" +
+					"- b\n" +
+					"- ```\n" +
+					"  c\n" +
+					"  ```\n",
 
 				Outputs: Files{
 					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<ul><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ul>
-</section>`,
-				},
-			},
-		},
-		{
-			name: "tables",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-\table{
-	\table-row{a}{1}
-}{
-	\table-row{b}{2}
-}
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-<table>
-	<tr>
-		<td>a</td>
-		<td>1</td>
-	</tr>
-	<tr>
-		<td>b</td>
-		<td>2</td>
-	</tr>
-</table>
+<ul><li>a</li><li>b</li><li><pre>c</pre></li></ul>
 </section>`,
 				},
 			},
@@ -65,13 +31,12 @@ func TestBlocks(t *testing.T) {
 		{
 			name: "definitions",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\definitions{
-	\definition{a}{1}
-}{
-	\definition{b}{2}
-}
+<Definitions>
+<Definition term="a">1</Definition>
+<Definition term="b">2</Definition>
+</Definitions>
 `,
 
 				Outputs: Files{
@@ -92,11 +57,9 @@ func TestBlocks(t *testing.T) {
 		{
 			name: "inset",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\inset{
-	Hello.
-}
+> Hello.
 `,
 
 				Outputs: Files{
@@ -113,11 +76,11 @@ func TestBlocks(t *testing.T) {
 		{
 			name: "aside",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\aside{
-	Hello.
-}
+<Aside>
+Hello.
+</Aside>
 `,
 
 				Outputs: Files{
@@ -134,22 +97,18 @@ func TestBlocks(t *testing.T) {
 		{
 			name: "ordered lists",
 			example: Example{
-				Input: `\title{Hello, world!}
-
-\ordered-list{a}{
-	b
-}{
-	\code{{
-	c
-	}}
-}
-`,
+				Input: "# Hello, world!\n\n" +
+					"1. a\n" +
+					"2. b\n" +
+					"3. ```\n" +
+					"   c\n" +
+					"   ```\n",
 
 				Outputs: Files{
 					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<ol><li>a</li><li><p>b</p></li><li><pre>c</pre></li></ol>
+<ol><li>a</li><li>b</li><li><pre>c</pre></li></ol>
 </section>`,
 				},
 			},
@@ -157,7 +116,7 @@ func TestBlocks(t *testing.T) {
 		{
 			name: "markdown tables",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 | a | 1 |
 | --- | --- |

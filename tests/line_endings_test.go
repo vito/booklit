@@ -13,7 +13,7 @@ func TestLineEndings(t *testing.T) {
 		{
 			name: "simple Hello World",
 			example: Example{
-				Input: crlf(`\title{Hello, world!}
+				Input: crlf(`# Hello, world!
 
 How are you?
 This is the same paragraph.
@@ -35,7 +35,7 @@ I'm another paragraph.
 		{
 			name: "comments",
 			example: Example{
-				Input: crlf(`\title{Hello, world!}
+				Input: crlf(`# Hello, world!
 
 How are you?
 
@@ -58,12 +58,10 @@ How are you?
 		{
 			name: "verbatim Hello World",
 			example: Example{
-				Input: crlf(`\title{Hello, world!}
-
-\code{{{
-	How are you?
-}}}
-`),
+				Input: crlf("# Hello, world!\n\n" +
+					"```\n" +
+					"How are you?\n" +
+					"```\n"),
 
 				Outputs: Files{
 					"hello-world.html": `<section>

@@ -12,7 +12,7 @@ func TestComments(t *testing.T) {
 		{
 			name: "inline comments",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 {- Goodbye, -}cruel world!
 
@@ -35,7 +35,7 @@ Goodbye, cruel{- world! -}
 		{
 			name: "comments with delimitery things",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 Goodbye, {- {cru-el} -}world!
 `,
@@ -52,7 +52,7 @@ Goodbye, {- {cru-el} -}world!
 		{
 			name: "nested comments",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 Goodbye, {- {cru-{- whoa -}el} -}world!
 `,
@@ -69,7 +69,7 @@ Goodbye, {- {cru-{- whoa -}el} -}world!
 		{
 			name: "block comments",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 Goodbye, world!
 
@@ -79,17 +79,15 @@ Goodbye, world!
 
 I'm another paragraph.
 
-\section{
-	\title{Subsection}
+## Subsection
 
-	Sup?
+Sup?
 
-	{-
-		I'm a big old indented block comment.
-	-}
+{-
+	I'm a big old indented block comment.
+-}
 
-	Not much.
-}
+Not much.
 `,
 
 				Outputs: Files{

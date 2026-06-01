@@ -12,23 +12,19 @@ func TestSearchIndex(t *testing.T) {
 		{
 			name: "sections",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
 Here's another paragraph.
 
-\section{
-	\title{How I'm doing}
+## How I'm doing
 
-	Good, thanks! And you?
-}
+Good, thanks! And you?
 
-\section{
-	\title{Their Reply}
+## Their Reply
 
-	Good, thanks!
-}
+Good, thanks!
 `,
 
 				SearchIndex: `{
@@ -59,21 +55,17 @@ Here's another paragraph.
 		{
 			name: "targets",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
 Here's another paragraph.
 
-\section{
-	\title{Sub-Section}
+## Sub-Section
 
-	Sub-section content.
+Sub-section content.
 
-	\target{some-target}{Some Target}{
-		This is more information about some-target.
-	}
-}
+<Target tag="some-target">Some Target</Target>
 `,
 
 				SearchIndex: `{
@@ -94,7 +86,7 @@ Here's another paragraph.
 			"some-target": {
 				"location": "hello-world.html#some-target",
 				"title": "Some Target",
-				"text": "This is more information about some-target.\n\n",
+				"text": "Sub-section content.\n\n",
 				"depth": 1,
 				"section_tag": "sub-section"
 			}
@@ -104,52 +96,42 @@ Here's another paragraph.
 		{
 			name: "interesting content",
 			example: Example{
-				Input: `\title{Hello, world!}
-
-How are you?
-
-Here's a paragraph with \code{code}, a \link{link}{https://example.com},
-and a \reference{sub-section}.
-
-\table-of-contents
-
-\list{
-	Item 1
-
-	Another line
-}{
-	Item 2
-}
-
-\ordered-list{
-	Ordered Item 1
-}{
-	Ordered Item 2
-}
-
-\code{{
-	line 1
-	line 2
-}}
-
-\table{
-	\table-row{a}{1}
-}{
-	\table-row{b}{2}
-}
-
-\definitions{
-	\definition{a}{1}
-}{
-	\definition{b}{2}
-}
-
-\section{
-	\title{Sub-Section}
-
-	Sub-section content.
-}
-`,
+				Input: "# Hello, world!\n" +
+					"\n" +
+					"How are you?\n" +
+					"\n" +
+					"Here's a paragraph with `code`, a [link](https://example.com),\n" +
+					"and a <Reference tag=\"sub-section\"/>.\n" +
+					"\n" +
+					"<TableOfContents/>\n" +
+					"\n" +
+					"- Item 1\n" +
+					"\n" +
+					"  Another line\n" +
+					"\n" +
+					"- Item 2\n" +
+					"\n" +
+					"1. Ordered Item 1\n" +
+					"\n" +
+					"2. Ordered Item 2\n" +
+					"\n" +
+					"```\n" +
+					"line 1\n" +
+					"line 2\n" +
+					"```\n" +
+					"\n" +
+					"| a | 1 |\n" +
+					"| --- | --- |\n" +
+					"| b | 2 |\n" +
+					"\n" +
+					"<Definitions>\n" +
+					"<Definition term=\"a\">1</Definition>\n" +
+					"<Definition term=\"b\">2</Definition>\n" +
+					"</Definitions>\n" +
+					"\n" +
+					"## Sub-Section\n" +
+					"\n" +
+					"Sub-section content.\n",
 
 				SearchIndex: `{
 			"hello-world": {

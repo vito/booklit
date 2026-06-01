@@ -12,7 +12,7 @@ func TestProse(t *testing.T) {
 		{
 			name: "simple Hello World",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 `,
@@ -29,7 +29,7 @@ How are you?
 		{
 			name: "no trailing linebreak",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?`,
 
@@ -45,9 +45,9 @@ How are you?`,
 		{
 			name: "link",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \link{you}{https://example.com}?
+How are [you](https://example.com)?
 `,
 
 				Outputs: Files{
@@ -62,9 +62,9 @@ How are \link{you}{https://example.com}?
 		{
 			name: "images",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
+Here's an ![with alt text](foo.png) and another ![](without.gif).
 `,
 
 				Outputs: Files{
@@ -79,9 +79,9 @@ Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
 		{
 			name: "italics",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \italic{you}?
+How are *you*?
 `,
 
 				Outputs: Files{
@@ -96,9 +96,9 @@ How are \italic{you}?
 		{
 			name: "bold",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \bold{you}?
+How are **you**?
 `,
 
 				Outputs: Files{
@@ -113,9 +113,9 @@ How are \bold{you}?
 		{
 			name: "larger",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \larger{you}?
+How are <Larger>you</Larger>?
 `,
 
 				Outputs: Files{
@@ -130,9 +130,9 @@ How are \larger{you}?
 		{
 			name: "smaller",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \smaller{you}?
+How are <Smaller>you</Smaller>?
 `,
 
 				Outputs: Files{
@@ -147,9 +147,9 @@ How are \smaller{you}?
 		{
 			name: "strike",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \strike{you}?
+How are <Strike>you</Strike>?
 `,
 
 				Outputs: Files{
@@ -164,9 +164,9 @@ How are \strike{you}?
 		{
 			name: "superscript",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \superscript{you}?
+How are <Superscript>you</Superscript>?
 `,
 
 				Outputs: Files{
@@ -181,9 +181,9 @@ How are \superscript{you}?
 		{
 			name: "subscript",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are \subscript{you}?
+How are <Subscript>you</Subscript>?
 `,
 
 				Outputs: Files{
@@ -198,7 +198,7 @@ How are \subscript{you}?
 		{
 			name: "multiple paragraphs",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
@@ -218,44 +218,22 @@ I'm good, thanks!
 			},
 		},
 		{
-			name: "invokes interspersed in words",
-			example: Example{
-				Ext: ".lit",
-
-				Input: `\title{Hello, world!}
-
-This{\italic{is}}a test.
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>This<em>is</em>a test.</p>
-</section>
-`,
-				},
-			},
-		},
-		{
 			name: "word-wrapped lines",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. \italic{Curabitur
-accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.} Sed
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. *Curabitur
+accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate.* Sed
 mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id
 pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum
 magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui
 sollicitudin porta.
 
-\section{
-	\title{Indented}
+## Indented
 
-	Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse
-	potenti. Maecenas varius iaculis volutpat. \italic{Vestibulum sagittis lacus
-	ut ex varius molestie.}
-}
+Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse
+potenti. Maecenas varius iaculis volutpat. *Vestibulum sagittis lacus
+ut ex varius molestie.*
 `,
 
 				Outputs: Files{
@@ -275,7 +253,7 @@ sollicitudin porta.
 		{
 			name: "word-wrapped paragraphs",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur accumsan a
 ligula id feugiat. Quisque luctus semper ex sodales vulputate. Sed mi mi,
@@ -296,6 +274,66 @@ varius molestie.
 	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur accumsan a ligula id feugiat. Quisque luctus semper ex sodales vulputate. Sed mi mi, rhoncus non justo et, aliquam dictum est. Donec egestas massa id pharetra scelerisque. Nulla nunc quam, sagittis vel est sed, ultrices bibendum magna. Nulla posuere ut erat eget tristique. Nullam vel nisl vitae dui sollicitudin porta.</p>
 
 	<p>Integer malesuada purus dignissim turpis lacinia fringilla. Suspendisse potenti. Maecenas varius iaculis volutpat. Vestibulum sagittis lacus ut ex varius molestie.</p>
+</section>
+`,
+				},
+			},
+		},
+		{
+			name: "empty styled arguments",
+			example: Example{
+				Input: `# Hello, world!
+
+This is an <Italic></Italic> empty italic.
+
+This is a <Italic> </Italic> space italic.
+
+This is an <Italic>  </Italic> even more spaced italic.
+`,
+
+				Outputs: Files{
+					"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>This is an <em></em> empty italic.</p>
+	<p>This is a <em> </em> space italic.</p>
+	<p>This is an <em>  </em> even more spaced italic.</p>
+</section>
+`,
+				},
+			},
+		},
+		{
+			name: "fenced code blocks",
+			example: Example{
+				Input: "# Hello, world!\n\n" +
+					"```\nHow are you?\n```\n",
+
+				Outputs: Files{
+					"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<pre>How are you?</pre>
+</section>
+`,
+				},
+			},
+		},
+		{
+			name: "invokes interspersed in words",
+			example: Example{
+				Ext: ".lit",
+
+				Input: `\title{Hello, world!}
+
+This{\italic{is}}a test.
+`,
+
+				Outputs: Files{
+					"hello-world.html": `<section>
+	<h1>Hello, world!</h1>
+
+	<p>This<em>is</em>a test.</p>
 </section>
 `,
 				},
@@ -447,92 +485,6 @@ I'm a code block.
 	<pre>I'm a code block in a sub-section.</pre>
 
 	<pre>   I'm a code block with a forced indent level.</pre>
-</section>
-`,
-				},
-			},
-		},
-		{
-			name: "empty arguments",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-This is an \italic{} empty italic.
-
-This is a \italic{ } space italic.
-
-This is an \italic{  } even more spaced italic.
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>This is an <em></em> empty italic.</p>
-	<p>This is a <em> </em> space italic.</p>
-	<p>This is an <em>  </em> even more spaced italic.</p>
-</section>
-`,
-				},
-			},
-		},
-		{
-			name: "empty multi-line arguments",
-			example: Example{
-				Input: `\title{Hello, world!}
-
-\code{
-}
-
-\code{{
-}}
-
-\code{{{
-}}}
-
-\code{
-
-}
-
-\code{{
-
-}}
-
-\code{{{
-
-}}}
-
-\code{
-
-
-}
-
-\code{{
-
-
-}}
-
-\code{{{
-
-
-}}}
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p><code></code></p>
-	<pre></pre>
-	<pre></pre>
-	<p><code></code></p>
-	<pre></pre>
-	<pre></pre>
-	<p><code></code></p>
-	<pre>
-</pre>
-	<pre>
-</pre>
 </section>
 `,
 				},

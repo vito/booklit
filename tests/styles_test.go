@@ -12,9 +12,9 @@ func TestStyles(t *testing.T) {
 		{
 			name: "styled sections",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\styled{styled}
+<Styled name="styled"/>
 
 Sup?
 `,
@@ -32,9 +32,9 @@ Sup?
 		{
 			name: "styled pages",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\styled{full-styled}
+<Styled name="full-styled"/>
 
 Sup?
 `,

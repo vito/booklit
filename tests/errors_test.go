@@ -10,34 +10,30 @@ func TestErrors(t *testing.T) {
 		example Example
 	}{
 		{
-			name: "unknown function",
+			name: "unknown JSX component",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\banana{attack}
+<Banana>attack</Banana>
 `,
 
-				LoadErr: `undefined function \banana`,
+				LoadErr: `unknown JSX component <Banana>`,
 			},
 		},
 		{
 			name: "ambiguous references",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-See also \reference{dupe-tag}{this tag}.
+See also [this tag](#dupe-tag).
 
-\section{
-	\title{First Tag}
+## First Tag
 
-	\target{dupe-tag}{I'm the first tag.}
-}
+<Target tag="dupe-tag">I'm the first tag.</Target>
 
-\section{
-	\title{Second Tag}
+## Second Tag
 
-	\target{dupe-tag}{I'm the second tag.}
-}
+<Target tag="dupe-tag">I'm the second tag.</Target>
 `,
 
 				RenderErr: `ambiguous target for tag 'dupe-tag'`,
@@ -46,9 +42,9 @@ See also \reference{dupe-tag}{this tag}.
 		{
 			name: "missing references",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-See also \reference{missing-tag}{this tag}.
+See also [this tag](#missing-tag).
 `,
 
 				RenderErr: `unknown tag 'missing-tag'`,
@@ -57,9 +53,9 @@ See also \reference{missing-tag}{this tag}.
 		{
 			name: "setting title twice",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\title{BAM}
+# BAM
 `,
 
 				LoadErr: "cannot set title twice",

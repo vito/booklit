@@ -12,27 +12,21 @@ func TestReferences(t *testing.T) {
 		{
 			name: "references to other sections on the same page",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-See also \reference{section-c}{the last section}.
+See also [the last section](#section-c).
 
-\section{
-	\title{Section A}
+## Section A
 
-	See also \reference{section-b}.
-}
+See also [#section-b].
 
-\section{
-	\title{Section B}
+## Section B
 
-	See also \reference{section-a}.
-}
+See also [#section-a].
 
-\section{
-	\title{Section C}
+## Section C
 
-	See also \reference{hello-world}.
-}
+See also [#hello-world].
 `,
 
 				Outputs: Files{
@@ -60,29 +54,23 @@ See also \reference{section-c}{the last section}.
 		{
 			name: "references to other sections on split pages",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-See also \reference{section-c}{the last section}.
+See also [the last section](#section-c).
 
-\split-sections
+<SplitSections/>
 
-\section{
-	\title{Section A}
+## Section A
 
-	See also \reference{section-b}.
-}
+See also [#section-b].
 
-\section{
-	\title{Section B}
+## Section B
 
-	See also \reference{section-a}.
-}
+See also [#section-a].
 
-\section{
-	\title{Section C}
+## Section C
 
-	See also \reference{hello-world}.
-}
+See also [#hello-world].
 `,
 
 				Outputs: Files{
@@ -116,41 +104,40 @@ See also \reference{section-c}{the last section}.
 		{
 			name: "explicit target elements",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\reference{target-a}
+Title fallback: [#target-a].
 
-\reference{target-a}{with display}
+With display: [with display](#target-a).
 
-\reference{target-without-display}
+Tag-name fallback: [#target-without-display].
 
-\reference{target-without-display}{with display}
+With display: [with display](#target-without-display).
 
-\section{
-	\title{Some Section}
+## Some Section
 
-	Foo bar.
+Foo bar.
 
-	\target{target-a}{Target A} Here's target A.
+<Target tag="target-a" title="Target A"/>
 
-	\target{target-without-display} Here's another target.
-}
+<Target tag="target-without-display"/>
 `,
 
 				Outputs: Files{
 					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p><a href="hello-world.html#target-a">Target A</a></p>
-	<p><a href="hello-world.html#target-a">with display</a></p>
-	<p><a href="hello-world.html#target-without-display">target-without-display</a></p>
-	<p><a href="hello-world.html#target-without-display">with display</a></p>
+	<p>Title fallback: <a href="hello-world.html#target-a">Target A</a>.</p>
+	<p>With display: <a href="hello-world.html#target-a">with display</a>.</p>
+	<p>Tag-name fallback: <a href="hello-world.html#target-without-display">target-without-display</a>.</p>
+	<p>With display: <a href="hello-world.html#target-without-display">with display</a>.</p>
 
 	<h2>1 Some Section</h2>
 
 	<p>Foo bar.</p>
-	<p><a id="target-a"></a> Here's target A.</p>
-	<p><a id="target-without-display"></a> Here's another target.</p>
+
+	<a id="target-a"></a>
+	<a id="target-without-display"></a>
 </section>
 `,
 				},
@@ -159,29 +146,25 @@ See also \reference{section-c}{the last section}.
 		{
 			name: "aux",
 			example: Example{
-				Input: `\title{Hello, world!\aux{: Foo Bar}}
+				Input: `# Hello, world!<Aux>: Foo Bar</Aux>
 
-See also \reference{section-c}{the last section}.
+See also [the last section](#section-c).
 
-\table-of-contents
+<TableOfContents/>
 
-\section{
-	\title{Section A}
+## Section A
 
-	See also \reference{section-b}.
-}
+See also [#section-b].
 
-\section{
-	\title{Section B\aux{aby}}
+## Section B<Aux>aby</Aux>
 
-	See also \reference{some-anchor}.
-}
+See also [#some-anchor].
 
-\section{
-	\title{Section C}
+## Section C
 
-	\target{some-anchor}{I'm an\aux{ awesome} anchor.}See also \reference{hello-world}.
-}
+<Target tag="some-anchor">I'm an<Aux> awesome</Aux> anchor.</Target>
+
+See also [#hello-world].
 `,
 
 				Outputs: Files{
@@ -206,7 +189,9 @@ See also \reference{section-c}{the last section}.
 
 	<h2>3 Section C</h2>
 
-	<p><a id="some-anchor"></a>See also <a href="hello-world.html">Hello, world!</a>.</p>
+	<a id="some-anchor"></a>
+
+	<p>See also <a href="hello-world.html">Hello, world!</a>.</p>
 </section>
 `,
 				},

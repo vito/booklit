@@ -12,44 +12,6 @@ func TestSections(t *testing.T) {
 		{
 			name: "sub-sections",
 			example: Example{
-				Input: `\title{Hello, world!}
-
-How are you?
-
-\section{
-	\title{How I'm doing}
-
-	Good, thanks! And you?
-}
-
-\section{
-	\title{Their Reply}
-
-	Good, thanks!
-}
-`,
-
-				Outputs: Files{
-					"hello-world.html": `<section>
-	<h1>Hello, world!</h1>
-
-	<p>How are you?</p>
-
-	<h2>1 How I'm doing</h2>
-
-	<p>Good, thanks! And you?</p>
-
-	<h2>2 Their Reply</h2>
-
-	<p>Good, thanks!</p>
-</section>
-`,
-				},
-			},
-		},
-		{
-			name: "sub-sections via headings",
-			example: Example{
 				Input: `# Hello, world!
 
 How are you?
@@ -82,7 +44,7 @@ Good, thanks!
 			},
 		},
 		{
-			name: "sub-sections via headings with tags",
+			name: "sub-sections with explicit tags",
 			example: Example{
 				Input: `# Hello, world! {#hello}
 
@@ -110,21 +72,19 @@ Good, thanks!
 		{
 			name: "sub-sections from files",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
-\include-section{how-im-doing.lit}
+<IncludeSection path="how-im-doing.md"/>
 
-\section{
-	\title{Their Reply}
+## Their Reply
 
-	Good, thanks!
-}
+Good, thanks!
 `,
 
 				Inputs: Files{
-					"how-im-doing.lit": `\title{How I'm doing}
+					"how-im-doing.md": `# How I'm doing
 
 Good, thanks! And you?
 `,
@@ -151,41 +111,37 @@ Good, thanks! And you?
 		{
 			name: "including sections relative to the section's path",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
-\include-section{./sub-path/how-im-doing.lit}
+<IncludeSection path="./sub-path/how-im-doing.md"/>
 
-\section{
-	\title{Their Reply}
+## Their Reply
 
-	Good, thanks!
-}
+Good, thanks!
 `,
 
 				Inputs: Files{
-					"sub-path/how-im-doing.lit": `\title{How I'm doing}
+					"sub-path/how-im-doing.md": `# How I'm doing
 
 Good, thanks! And you?
 
-\include-section{another-section.lit}
+<IncludeSection path="another-section.md"/>
 `,
 
-					"sub-path/another-section.lit": `\title{My Response}
+					"sub-path/another-section.md": `# My Response
 
 Not bad, not bad.
 
-\section{
-	\title{Including in an Inline Section}
+## Including in an Inline Section
 
-	That's great.
+That's great.
 
-	\include-section{yet-another-section.lit}
-}
+<IncludeSection path="yet-another-section.md"/>
 `,
 
-					"sub-path/yet-another-section.lit": `\title{Their Response to My Response}
+					"sub-path/yet-another-section.md": `# Their Response to My Response
 
 Sick.
 `,
@@ -224,25 +180,19 @@ Sick.
 		{
 			name: "nested sub-sections",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
-\section{
-	\title{How I'm doing}
+## How I'm doing
 
-	\section{
-		\title{After Much Deliberation}
+### After Much Deliberation
 
-		I have decided that I'm doing well. How about you?
-	}
-}
+I have decided that I'm doing well. How about you?
 
-\section{
-	\title{Their Reply}
+## Their Reply
 
-	Good, thanks!
-}
+Good, thanks!
 `,
 
 				Outputs: Files{
@@ -268,17 +218,15 @@ How are you?
 		{
 			name: "split sub-sections",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
-\split-sections
+<SplitSections/>
 
-\section{
-	\title{How I'm Doing}
+## How I'm Doing
 
-	Good, thanks!
-}
+Good, thanks!
 `,
 
 				Outputs: Files{
@@ -300,52 +248,40 @@ How are you?
 		{
 			name: "forcing sections onto one page",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-How are you? See \reference{deep-inlined}.
+How are you? See <Reference tag="deep-inlined"/>.
 
-\single-page
-\split-sections
+<SinglePage/>
+<SplitSections/>
 
-\section{
-	\title{Section A}
+## Section A
 
-	\split-sections
+<SplitSections/>
 
-	Blah blah in section A.
+Blah blah in section A.
 
-	\section{
-		\title{Nested Section}
+### Nested Section
 
-		Good, thanks!
-	}
-}
+Good, thanks!
 
-\section{
-	\title{Section B}
+## Section B
 
-	Blah blah in section B.
+Blah blah in section B.
 
-	\section{
-		\title{Nested Section 2}
+### Nested Section 2
 
-		Foo bar.
-	}
+Foo bar.
 
-	\section{
-		\title{Nested Section 3}
+### Nested Section 3
 
-		\split-sections
+<SplitSections/>
 
-		Fizz buzz.
+Fizz buzz.
 
-		\section{
-			\title{Super Duple Wrapped}{deep-inlined}
+#### Super Duple Wrapped {#deep-inlined}
 
-			Whoooooa.
-		}
-	}
-}
+Whoooooa.
 `,
 
 				Outputs: Files{
@@ -385,23 +321,19 @@ How are you? See \reference{deep-inlined}.
 		{
 			name: "split sub-sub-sections",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
-\section{
-	\title{How I'm Doing}
+## How I'm Doing
 
-	\split-sections
+<SplitSections/>
 
-	Good, thanks!
+Good, thanks!
 
-	\section{
-		\title{Nested Section}
+### Nested Section
 
-		Sup.
-	}
-}
+Sup.
 `,
 
 				Outputs: Files{
@@ -427,51 +359,39 @@ How are you?
 		{
 			name: "tables of contents",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
 How are you?
 
-\table-of-contents
+<TableOfContents/>
 
 This is some more content.
 
-\section{
-	\title{Top Section A}
+## Top Section A
 
-	Foo bar.
+Foo bar.
 
-	\section{
-		\title{Nested Section}
+### Nested Section
 
-		Fizz buzz.
-	}
+Fizz buzz.
 
-	\section{
-		\title{Another Nested Section}
+### Another Nested Section
 
-		Fiddlesticks.
-	}
+Fiddlesticks.
 
-	\section{
-		\title{Section with Omitted Children}
+### Section with Omitted Children
 
-		I omit my children.
+I omit my children.
 
-		\omit-children-from-table-of-contents
+<OmitChildrenFromTableOfContents/>
 
-		\section{
-			\title{Invisible Child}
+#### Invisible Child
 
-			Boo!
-		}
-	}
-}
+Boo!
 
-\section{
-	\title{Top Section B}
+## Top Section B
 
-	Fiddlesticks is as far as I go.
-}
+Fiddlesticks is as far as I go.
 `,
 
 				Outputs: Files{
@@ -527,31 +447,25 @@ This is some more content.
 		{
 			name: "styled sections",
 			example: Example{
-				Input: `\title{Hello, world!}
+				Input: `# Hello, world!
 
-\styled{top-template}
+<Styled name="top-template"/>
 
 How are you?
 
-\section{
-	\title{How I'm doing}
+## How I'm doing
 
-	\styled{sub-template}
+<Styled name="sub-template"/>
 
-	Good, thanks! And you?
+Good, thanks! And you?
 
-	\section{
-		\title{After Much Deliberation}
+### After Much Deliberation
 
-		I have decided that I'm doing well. How about you?
-	}
-}
+I have decided that I'm doing well. How about you?
 
-\section{
-	\title{Their Reply}
+## Their Reply
 
-	Good, thanks!
-}
+Good, thanks!
 `,
 
 				Outputs: Files{
