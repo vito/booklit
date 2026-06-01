@@ -137,7 +137,7 @@ Sub-section content.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\n* Item 1\n\n  Another line\n\n* Item 2\n\n1. Ordered Item 1\n\n2. Ordered Item 2\n\nline 1\nline 2\n| a | 1 |\n| b | 2 |\n\na: 1\nb: 2\n\n",
+				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\nItem 1\n\nAnother line\n\nItem 2\n\nOrdered Item 1\n\nOrdered Item 2\n\nline 1\nline 2\na1b2a: 1\nb: 2\n\n",
 				"depth": 0,
 				"section_tag": "hello-world"
 			},

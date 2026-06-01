@@ -88,8 +88,8 @@ func (c *converter) convertDocument(n gast.Node) ast.Node {
 	}
 
 	// Build the result: content before the first heading is top-level body,
-	// the first heading at titleLevel is the \title call, deeper headings
-	// create \section blocks.
+	// the first heading at titleLevel is the <Title> call, deeper headings
+	// create <Section> blocks.
 	return c.structureSections(children, titleLevel)
 }
 
@@ -100,7 +100,7 @@ type sectionChild struct {
 }
 
 // structureSections takes a flat list of goldmark children and a "title level"
-// and produces a Booklit AST with proper \title and \section nesting.
+// and produces a Booklit AST with proper <Title> and <Section> nesting.
 func (c *converter) structureSections(children []sectionChild, titleLevel int) ast.Node {
 	var result []ast.Node
 
@@ -119,7 +119,7 @@ func (c *converter) structureSections(children []sectionChild, titleLevel int) a
 		i++
 	}
 
-	// First heading at titleLevel → \title invocation
+	// First heading at titleLevel → <Title> element
 	if i < len(children) && children[i].heading != nil && children[i].heading.Level == titleLevel {
 		result = append(result, c.headingToTitle(children[i].heading))
 		i++
@@ -145,7 +145,7 @@ func (c *converter) structureSections(children []sectionChild, titleLevel int) a
 			result = append(result, sectionNode)
 		} else if ch.heading != nil && ch.heading.Level == titleLevel {
 			// Another heading at the same level — this would be unusual
-			// in a single document but handle it as another \title
+			// in a single document but handle it as another <Title>
 			result = append(result, c.headingToTitle(ch.heading))
 			i++
 		} else {
@@ -168,38 +168,36 @@ func (c *converter) structureSections(children []sectionChild, titleLevel int) a
 	}
 }
 
-// buildSection creates a \section{...} invoke from a group of children
-// starting with a heading. The heading becomes the \title inside the section;
-// deeper headings create nested sub-sections.
+// buildSection creates a <Section>...</Section> JSX element from a group of
+// children starting with a heading. The heading becomes the <Title> inside
+// the section; deeper headings create nested sub-sections.
 func (c *converter) buildSection(children []sectionChild, headingLevel int) ast.Node {
-	// The section body is built by recursively structuring the children
 	body := c.structureSections(children, headingLevel)
 
-	return ast.Paragraph{ast.Sequence{ast.Invoke{
-		Function:  "section",
-		Arguments: []ast.Node{body},
+	return ast.Paragraph{ast.Sequence{ast.JSXElement{
+		Name:      "Section",
+		Children:  []ast.Node{body},
+		MultiLine: true,
 	}}}
 }
 
-// headingToTitle converts a goldmark Heading into a \title invocation.
-// If the heading has an {#id} attribute, it becomes the tag argument.
+// headingToTitle converts a goldmark Heading into a <Title>...</Title> JSX
+// element. If the heading has an {#id} attribute, it becomes the tag prop.
 func (c *converter) headingToTitle(h *gast.Heading) ast.Node {
 	titleContent := c.collectInlines(h)
-	args := []ast.Node{ast.Sequence(titleContent)}
 
-	// Check for {#id} attribute → becomes the tag
+	elem := ast.JSXElement{
+		Name:     "Title",
+		Children: titleContent,
+	}
+
 	if id, ok := h.AttributeString("id"); ok {
 		if idStr, ok := id.([]byte); ok {
-			args = append(args, ast.String(idStr))
+			elem.Props = map[string]ast.Node{"tag": ast.String(idStr)}
 		}
 	}
 
-	return ast.Paragraph{
-		ast.Sequence{ast.Invoke{
-			Function:  "title",
-			Arguments: args,
-		}},
-	}
+	return ast.Paragraph{ast.Sequence{elem}}
 }
 
 // convertNode dispatches on goldmark node kind to produce a Booklit AST node.
@@ -248,19 +246,13 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 		return c.convertChildren(n)
 
 	case gast.KindThematicBreak:
-		// Render as a horizontal rule styled element
-		return ast.Invoke{
-			Function: "thematic-break",
-		}
+		return ast.JSXElement{Name: "hr", MultiLine: true}
 
 	case gast.KindHTMLBlock:
 		return c.convertHTMLBlock(n.(*gast.HTMLBlock))
 
 	case gast.KindRawHTML:
 		return c.convertRawHTML(n.(*gast.RawHTML))
-
-	case KindInvoke:
-		return c.convertInvoke(n.(*InvokeNode))
 
 	case KindJSXExprInline:
 		e := n.(*jsxExprInlineNode)
@@ -396,19 +388,18 @@ func isASCIIPunct(c byte) bool {
 func (c *converter) convertHeading(h *gast.Heading) ast.Node {
 	// When a heading is encountered outside of document-level section
 	// structuring (e.g. inside a blockquote or a JSX child), it falls
-	// back to a simple \title invocation.
+	// back to a simple <Title> element.
 	return c.headingToTitle(h)
 }
 
 func (c *converter) convertEmphasis(e *gast.Emphasis) ast.Node {
-	inner := c.collectInlines(e)
-	funcName := "italic"
+	name := "em"
 	if e.Level >= 2 {
-		funcName = "bold"
+		name = "strong"
 	}
-	return ast.Invoke{
-		Function:  funcName,
-		Arguments: []ast.Node{ast.Sequence(inner)},
+	return ast.JSXElement{
+		Name:     name,
+		Children: c.collectInlines(e),
 	}
 }
 
@@ -420,35 +411,29 @@ func (c *converter) convertCodeSpan(n gast.Node) ast.Node {
 			text.WriteString(string(t.Value(c.source)))
 		}
 	}
-	return ast.Invoke{
-		Function:  "code",
-		Arguments: []ast.Node{ast.String(text.String())},
+	return ast.JSXElement{
+		Name:     "code",
+		Children: []ast.Node{ast.String(text.String())},
 	}
 }
 
 func (c *converter) convertLink(l *gast.Link) ast.Node {
 	dest := string(l.Destination)
 
-	// [text](#tag) → \reference{tag}{text}
+	// [text](#tag) → <Reference tag="tag">text</Reference>
 	if len(dest) > 1 && dest[0] == '#' {
 		tag := dest[1:]
-		inner := c.collectInlines(l)
-		return ast.Invoke{
-			Function: "reference",
-			Arguments: []ast.Node{
-				ast.String(tag),
-				ast.Sequence(inner),
-			},
+		return ast.JSXElement{
+			Name:     "Reference",
+			Props:    map[string]ast.Node{"tag": ast.String(tag)},
+			Children: c.collectInlines(l),
 		}
 	}
 
-	inner := c.collectInlines(l)
-	return ast.Invoke{
-		Function: "link",
-		Arguments: []ast.Node{
-			ast.Sequence(inner),
-			ast.String(l.Destination),
-		},
+	return ast.JSXElement{
+		Name:     "a",
+		Props:    map[string]ast.Node{"href": ast.String(dest)},
+		Children: c.collectInlines(l),
 	}
 }
 
@@ -462,25 +447,22 @@ func (c *converter) convertImage(img *gast.Image) ast.Node {
 	}
 	alt := strings.Join(altParts, "")
 
-	args := []ast.Node{ast.String(img.Destination)}
-	if alt != "" {
-		args = append(args, ast.String(alt))
-	}
-	return ast.Invoke{
-		Function:  "image",
-		Arguments: args,
+	return ast.JSXElement{
+		Name: "img",
+		Props: map[string]ast.Node{
+			"src": ast.String(img.Destination),
+			"alt": ast.String(alt),
+		},
 	}
 }
 
 func (c *converter) convertAutoLink(al *gast.AutoLink) ast.Node {
 	url := al.URL(c.source)
 	label := al.Label(c.source)
-	return ast.Invoke{
-		Function: "link",
-		Arguments: []ast.Node{
-			ast.String(label),
-			ast.String(url),
-		},
+	return ast.JSXElement{
+		Name:     "a",
+		Props:    map[string]ast.Node{"href": ast.String(url)},
+		Children: []ast.Node{ast.String(label)},
 	}
 }
 
@@ -496,59 +478,69 @@ func (c *converter) convertCodeBlock(n gast.Node) ast.Node {
 
 	pre := ast.Preformatted(lines)
 
-	// For fenced code blocks, wrap in a code-block invoke with language info
+	// For fenced code blocks with a language, route through <CodeBlock> so
+	// the syntax-highlighting builtin runs over the body.
 	if fcb, ok := n.(*gast.FencedCodeBlock); ok {
 		lang := fcb.Language(c.source)
 		if len(lang) > 0 {
-			return ast.Invoke{
-				Function:  "code-block",
-				Arguments: []ast.Node{ast.String(lang), pre},
+			return ast.JSXElement{
+				Name:      "CodeBlock",
+				Props:     map[string]ast.Node{"language": ast.String(lang)},
+				Children:  []ast.Node{pre},
+				MultiLine: true,
 			}
 		}
 	}
 
-	return ast.Invoke{
-		Function:  "code",
-		Arguments: []ast.Node{pre},
+	return ast.JSXElement{
+		Name:      "pre",
+		Children:  []ast.Node{pre},
+		MultiLine: true,
 	}
 }
 
 func (c *converter) convertBlockquote(n gast.Node) ast.Node {
-	inner := c.convertChildren(n)
-	return ast.Invoke{
-		Function:  "inset",
-		Arguments: []ast.Node{inner},
+	// Routed through <Inset> rather than a plain <blockquote> so the
+	// rendered output keeps the `class="inset"` wrapper that the rest of
+	// the docs (and existing CSS) expect.
+	return ast.JSXElement{
+		Name:      "Inset",
+		Children:  []ast.Node{c.convertChildren(n)},
+		MultiLine: true,
 	}
 }
 
 func (c *converter) convertList(l *gast.List) ast.Node {
-	funcName := "list"
+	name := "ul"
 	if l.IsOrdered() {
-		funcName = "ordered-list"
+		name = "ol"
 	}
 
 	var items []ast.Node
 	for child := l.FirstChild(); child != nil; child = child.NextSibling() {
-		item := c.convertChildren(child)
-		items = append(items, item)
+		items = append(items, ast.JSXElement{
+			Name:      "li",
+			Children:  []ast.Node{c.convertChildren(child)},
+			MultiLine: true,
+		})
 	}
 
-	return ast.Invoke{
-		Function:  funcName,
-		Arguments: items,
+	return ast.JSXElement{
+		Name:      name,
+		Children:  items,
+		MultiLine: true,
 	}
 }
 
 func (c *converter) convertTable(t *east.Table) ast.Node {
 	var rows []ast.Node
 	for child := t.FirstChild(); child != nil; child = child.NextSibling() {
-		// Each child is a TableHeader or TableRow; both contain TableCells
-		row := c.convertTableRow(child)
-		rows = append(rows, row)
+		rows = append(rows, c.convertTableRow(child))
 	}
-	return ast.Invoke{
-		Function:  "table",
-		Arguments: rows,
+	return ast.JSXElement{
+		Name:      "table",
+		Children:  rows,
+		MultiLine: true,
 	}
 }
 
@@ -556,23 +548,34 @@ func (c *converter) convertTableRow(row gast.Node) ast.Node {
 	var cells []ast.Node
 	for cell := row.FirstChild(); cell != nil; cell = cell.NextSibling() {
 		inlines := c.collectInlines(cell)
-		if len(inlines) == 0 {
-			cells = append(cells, ast.String(""))
-		} else {
-			cells = append(cells, ast.Sequence(inlines))
+		var content ast.Node
+		switch len(inlines) {
+		case 0:
+			content = ast.String("")
+		case 1:
+			content = inlines[0]
+		default:
+			content = ast.Sequence(inlines)
 		}
+		cells = append(cells, ast.JSXElement{
+			Name:      "td",
+			Children:  []ast.Node{content},
+			MultiLine: true,
+		})
 	}
-	return ast.Invoke{
-		Function:  "table-row",
-		Arguments: cells,
+	return ast.JSXElement{
+		Name:      "tr",
+		Children:  cells,
+		MultiLine: true,
 	}
 }
 
 // convertHTMLBlock is a fallback for cases where goldmark still produces
 // an HTMLBlock node — primarily HTML comments (`<!-- -->`) and similar
-// edge cases that our JSX block parser doesn't claim. Output is a raw
-// `raw-html-block` invoke; no `{expr}` interpolation, since lowercase
-// JSX elements are the way to get interpolation now.
+// edge cases that our JSX block parser doesn't claim. The body is wrapped
+// in a `<RawHTML block="true">…</RawHTML>` element so the bytes survive
+// untouched and the surrounding paragraph layout treats it as block
+// content.
 func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	var text []byte
 	for i := 0; i < n.Lines().Len(); i++ {
@@ -582,41 +585,27 @@ func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	if n.HasClosure() {
 		text = append(text, n.ClosureLine.Value(c.source)...)
 	}
-	return ast.Invoke{
-		Function:  "raw-html-block",
-		Arguments: []ast.Node{ast.String(text)},
+	return ast.JSXElement{
+		Name:      "RawHTML",
+		Props:     map[string]ast.Node{"block": ast.String("true")},
+		Children:  []ast.Node{ast.String(text)},
+		MultiLine: true,
 	}
 }
 
 // convertRawHTML is the fallback for inline raw HTML that goldmark's
 // default parser claims when our JSX inline parser doesn't (e.g. `<br>`
-// without an explicit `<br/>`, comments). No interpolation either.
+// without an explicit `<br/>`, comments). Bytes pass through verbatim.
 func (c *converter) convertRawHTML(n *gast.RawHTML) ast.Node {
 	var text []byte
 	for i := 0; i < n.Segments.Len(); i++ {
 		seg := n.Segments.At(i)
 		text = append(text, seg.Value(c.source)...)
 	}
-	return ast.Invoke{
-		Function:  "raw-html",
-		Arguments: []ast.Node{ast.String(text)},
+	return ast.JSXElement{
+		Name:     "RawHTML",
+		Children: []ast.Node{ast.String(text)},
 	}
-}
-
-func (c *converter) convertInvoke(n *InvokeNode) ast.Node {
-	invoke := ast.Invoke{
-		Function: n.Function,
-		Location: ast.Location{
-			Line: n.Line,
-			Col:  n.Col,
-		},
-	}
-
-	for _, raw := range n.RawArgs {
-		invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
-	}
-
-	return invoke
 }
 
 // buildJSXElement turns parsed JSX node data into ast.JSXElement. Shared

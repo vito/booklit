@@ -439,47 +439,41 @@ Concrete tasks, in dependency order. Each line links back to a
       share one helper now. Makefile + `docs/lit/html-renderer.md` +
       `docs/lit/plugins.md` updated to reflect the convention-based
       lookup.
-- [ ] **Lower Markdown directly to JSX** (decision 3): rewrite each
-      `convertX` in `marklit/convert.go` so it emits `ast.JSXElement`
-      instead of `ast.Invoke`. With the unified parser (commit
-      `745925e`) lowercase JSX renders as plain HTML, so most lowerings
-      go straight to lowercase HTML — no new built-ins needed:
+- [x] **Lower Markdown directly to JSX** (decision 3). `marklit/convert.go`
+      and `marklit/reference_parser.go` now emit `ast.JSXElement` for every
+      Markdown construct; `ast.Invoke` is no longer produced anywhere in
+      marklit. The lowerings landed as planned:
 
-      - `# heading` → `<Title>` (PascalCase — hooks into the section
-        tree via the existing builtin)
-      - `## sub` → `<Section><Title>…</Title>…</Section>` (PascalCase)
+      - `# heading` → `<Title>`; `## sub` → `<Section><Title>…</Title>…
+        </Section>` (PascalCase)
       - `[text](#tag)` and `[#tag]` → `<Reference tag="…">…</Reference>`
-        (PascalCase — `reference_parser.go` flips too, retiring the
-        last `ast.Invoke` producer)
-      - ` ```lang ` fenced code → `<CodeBlock language="lang">` /
-        `<Syntax>` (PascalCase — treehighlight integration)
-      - `*italic*` → `<em>`; `**bold**` → `<strong>`
-      - `[text](url)` → `<a href="url">text</a>`
-      - `![alt](src)` → `<img src="src" alt="alt"/>`
+        (PascalCase — `reference_parser.go` flipped)
+      - ` ```lang ` fenced code → `<CodeBlock language="lang">…
+        </CodeBlock>` (PascalCase, treehighlight)
+      - ` ``` ` fenced code without language → `<pre>`
+      - `*italic*` → `<em>`; `**bold**` → `<strong>`;
+        `` `code` `` → `<code>`
+      - `[text](url)` → `<a href="url">…</a>`;
+        `![alt](src)` → `<img src="…" alt="…"/>`
       - `- list` / `1. list` → `<ul>`/`<ol>` + `<li>`
       - `| tables |` → `<table><tr><td>…`
-      - `> quote` → `<blockquote>` (drop `\inset`-via-baselit — the
-        existing `inset.tmpl` adds a `class="inset"` + inline-style
-        wrapper; either lower to `<Inset>` PascalCase to preserve, or
-        emit `<blockquote class="inset">` directly. Check whether any
-        CSS depends on the existing structure first)
-      - `` `code` `` inline → `<code>` (drop `Styled{Style: "code"}`
-        unless something depends on it)
-      - Raw HTML inline / block → already JSX'd by the parser
+      - `---` → `<hr/>`
+      - `> quote` → `<Inset>` (kept PascalCase so the `class="inset"`
+        wrapper survives; lowering to bare `<blockquote>` would have
+        broken the existing CSS/test expectations)
+      - Inline / block raw HTML fallback → `<RawHTML>` /
+        `<RawHTML block="true">` (the latter is the new prop on the
+        existing `RawHTML` builtin)
 
-      Once `convert.go` stops emitting `ast.Invoke` and
-      `reference_parser.go` switches to `ast.JSXElement`, **delete any
-      now-unused `render/html/*.tmpl`** — most of them
-      (`list.tmpl`, `table.tmpl`, `link.tmpl`, `image.tmpl`,
-      `italic.tmpl`, `bold.tmpl`, `larger.tmpl`, `smaller.tmpl`,
-      `strike.tmpl`, etc.) are thin shims that lowercase JSX
-      replaces. Audit `render/html/embed.go` for any that aren't
-      reachable anymore. Keep templates for things that still flow
-      through `Styled{…}` (e.g. code-block / syntax highlighting
-      output, the page / section / sidebar scaffolding).
+      Templates *not* yet deleted — every `Styled{Style: "X"}` shim
+      (`italic.tmpl`, `bold.tmpl`, `link.tmpl`, `image.tmpl`, …) is
+      still reached through the matching PascalCase styled builtin
+      (`<Italic>`, `<Bold>`, `<Link>`, …). They become unreachable
+      only when those builtins are retired, so the template sweep is
+      deferred to the next checklist item.
 
-      This unblocks the next two items (retire Plugin machinery,
-      collapse baselit/ into builtins/).
+      This unblocks the next three items (retire Plugin machinery,
+      collapse baselit/ into builtins/, template sweep).
 - [ ] **Retire the Plugin machinery** (decisions 3 + 6 follow-up):
       delete `booklit.Plugin`, `booklit.PluginFactory`,
       `Section.PluginFactories`, `Section.Plugins`,
@@ -557,6 +551,23 @@ Concrete tasks, in dependency order. Each line links back to a
   template" by stuffing entries into a per-section map keyed by
   string; the same job is done more naturally by component children
   and props. Recorded as decision 10 + checklist item above.
+- Markdown → JSX lowering landed (2026-06-01). `marklit/convert.go`
+  and `marklit/reference_parser.go` emit `ast.JSXElement` for every
+  construct; `convertInvoke`, the `KindInvoke` dispatch, and
+  `marklit/invoke_node.go` are deleted. Two unexpected side-effects:
+  - `Styled.String()` used to return its content's text verbatim;
+    after lowering, the `Sequence{Styled{raw-html,"<em>"}, …,
+    Styled{raw-html,"</em>"}}` wrapper meant plain-text consumers
+    (search index, `stringifyEverything`) started seeing raw HTML
+    bytes. Fix: short-circuit `Styled.String()` for `Style ==
+    "raw-html"` so markup bytes don't leak into text contexts.
+    Renderer path moves from `{{ . | rawHTML }}` to `{{ .Content |
+    rawHTML }}` in `raw-html.tmpl` to compensate (it was previously
+    relying on `Styled.String()` to return its content).
+  - Search index text for lists/tables is now flatter
+    (`Item 1\n\nItem 2\n\n` instead of `* Item 1\n\n* Item 2\n\n`,
+    `a1b2` instead of `| a | 1 |`). Test expectation updated;
+    revisit if the search UX wants the old prefixes back.
 
 ## Where to read more
 

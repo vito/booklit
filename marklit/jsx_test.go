@@ -81,9 +81,9 @@ func TestJSX(t *testing.T) {
 			in:   `<Foo>hello *world*</Foo>`,
 			want: jsx("Foo", nil, []ast.Node{
 				ast.String("hello "),
-				ast.Invoke{
-					Function:  "italic",
-					Arguments: []ast.Node{ast.Sequence{ast.String("world")}},
+				ast.JSXElement{
+					Name:     "em",
+					Children: []ast.Node{ast.String("world")},
 				},
 			}),
 		},

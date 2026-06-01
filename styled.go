@@ -36,7 +36,17 @@ const (
 )
 
 // String summarizes the content for debugging purposes.
+//
+// Raw-html Styled wrappers carry literal markup bytes (`<em>`, `</a>`,
+// syntax-highlighting spans, …) rather than user-visible text — stringifying
+// them would leak that markup into the search index, section bodies surfaced
+// by stringifyEverything, and any other plain-text consumer. The bytes are
+// already in the rendered HTML output via VisitStyled, so suppressing them
+// here loses nothing.
 func (con Styled) String() string {
+	if con.Style == "raw-html" {
+		return ""
+	}
 	return con.Content.String()
 }
 

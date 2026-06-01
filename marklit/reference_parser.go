@@ -6,8 +6,8 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-// referenceInlineParser parses [#tag] shorthand into a \reference{tag}
-// invocation. It triggers on '[' and matches [#tag] where tag is composed
+// referenceInlineParser parses [#tag] shorthand into a <Reference tag="…"/>
+// JSX element. It triggers on '[' and matches [#tag] where tag is composed
 // of alphanumeric characters, hyphens, and underscores.
 type referenceInlineParser struct{}
 
@@ -55,7 +55,11 @@ func (p *referenceInlineParser) Parse(parent gast.Node, block text.Reader, pc pa
 
 	block.Advance(i + 1) // consume [#tag]
 
-	node := NewInvokeNode("reference")
-	node.RawArgs = [][]byte{[]byte(tag)}
-	return node
+	return &JSXElementNode{
+		Name:        "Reference",
+		SelfClosing: true,
+		Props: []JSXProp{
+			{Name: "tag", Kind: JSXPropString, Value: []byte(tag)},
+		},
+	}
 }
