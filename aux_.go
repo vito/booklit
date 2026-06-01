@@ -131,6 +131,19 @@ func (strip *stripAuxVisitor) VisitLazy(con *Lazy) error {
 	return nil
 }
 
+func (strip *stripAuxVisitor) VisitRawElement(con RawElement) error {
+	if con.Content != nil {
+		con.Content = StripAux(con.Content)
+	}
+	strip.Result = con
+	return nil
+}
+
+func (strip *stripAuxVisitor) VisitRawFragment(con RawFragment) error {
+	strip.Result = con
+	return nil
+}
+
 func stripAuxSeq(seq []Content) []Content {
 	stripped := []Content{}
 

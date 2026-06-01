@@ -24,7 +24,11 @@ func auxFunc(ctx *Context, _ map[string]ast.Node, children []ast.Node) (booklit.
 	return booklit.Aux{Content: content}, nil
 }
 
-// codeFunc — `<Code>x</Code>`. Inline verbatim content; mirrors \code{}.
+// codeFunc — `<Code>x</Code>`. Inline-or-block verbatim content; the
+// shape of the body decides. Flow content (a short snippet, a phrase)
+// wraps in `<code>`; block content (a multi-paragraph or other block
+// container) wraps in `<pre><code>` so the result is valid HTML and
+// renders monospaced as a block.
 func codeFunc(ctx *Context, _ map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	content, err := EvaluateChildren(ctx, children)
 	if err != nil {
@@ -33,7 +37,13 @@ func codeFunc(ctx *Context, _ map[string]ast.Node, children []ast.Node) (booklit
 	if content == nil {
 		content = booklit.Empty
 	}
-	return booklit.Styled{Content: content, Style: booklit.StyleVerbatim}, nil
+	if content.IsFlow() {
+		return booklit.RawElement{Tag: "code", Content: content}, nil
+	}
+	return booklit.RawElement{
+		Tag:     "pre",
+		Content: booklit.RawElement{Tag: "code", Content: content},
+	}, nil
 }
 
 // linkFunc — `<Link target="url">content</Link>`. Mirrors \link{content}{target}.
@@ -69,4 +79,3 @@ func imageFunc(ctx *Context, props map[string]ast.Node, _ []ast.Node) (booklit.C
 	}
 	return img, nil
 }
-

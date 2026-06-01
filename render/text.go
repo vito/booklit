@@ -71,6 +71,13 @@ type TextEngine struct {
 
 	template *template.Template
 	data     any
+
+	// direct, when non-nil, is pre-rendered text that render() writes
+	// straight to the output instead of executing a template. Used by
+	// the RawElement / RawFragment visitors so they can express "render
+	// the body" or "render nothing" without going through the template
+	// layer. An empty (non-nil) slice signals "render nothing".
+	direct []byte
 }
 
 // NewTextEngine constructs a new TextEngine with the basic set of text
@@ -269,6 +276,26 @@ func (engine *TextEngine) VisitDefinitions(con booklit.Definitions) error {
 	return engine.setTmpl("definitions")
 }
 
+// VisitRawElement renders the body content as text and discards the
+// surrounding HTML tag. Plain-text output strips structural HTML — the
+// text consumer wants the words, not `<div>`.
+func (engine *TextEngine) VisitRawElement(con booklit.RawElement) error {
+	if con.Content == nil {
+		engine.direct = nil
+		engine.template = nil
+		engine.data = nil
+		return nil
+	}
+	return con.Content.Visit(engine)
+}
+
+// VisitRawFragment renders nothing. A fragment is pure HTML decoration
+// (e.g. syntax-highlighter spans) with no text payload of its own.
+func (engine *TextEngine) VisitRawFragment(booklit.RawFragment) error {
+	engine.direct = []byte{}
+	return nil
+}
+
 // VisitLazy forces the content to evaluate and renders its result.
 func (engine *TextEngine) VisitLazy(con *booklit.Lazy) error {
 	content, err := con.Force()
@@ -292,6 +319,13 @@ func (engine *TextEngine) setTmpl(name string) error {
 }
 
 func (engine *TextEngine) render(out io.Writer) error {
+	if engine.direct != nil {
+		bytes := engine.direct
+		engine.direct = nil
+		_, err := out.Write(bytes)
+		return err
+	}
+
 	if engine.template == nil {
 		return fmt.Errorf("unknown template for '%s' (%T)", engine.data, engine.data)
 	}

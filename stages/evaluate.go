@@ -164,15 +164,20 @@ func isLowerCaseTag(name string) bool {
 	return c >= 'a' && c <= 'z'
 }
 
-// dispatchRawHTML wraps a lowercase JSX element's evaluated children in
-// literal `<name attrs>` / `</name>` HTML. String-valued props render
-// as `name="literal"`; expression-valued props evaluate against the
-// held Dang env and stringify (HTML-escaped). A node with no children
-// emits a single self-closing `<name attrs/>` chunk.
+// dispatchRawHTML emits a booklit.RawElement for a lowercase JSX
+// element. Attributes are pre-rendered (string-valued props splice in
+// verbatim, expression-valued props evaluate against the Dang env and
+// stringify with HTML-escaping). A node with no children produces a
+// RawElement with nil Content, which the renderer emits self-closing.
 //
-// MultiLine carries through to Styled.Block so a `<div>` written across
-// multiple source lines doesn't get re-wrapped in `<p>` by the
-// surrounding paragraph layout.
+// Block/flow classification now comes from the tag name (via
+// internal/htmltags), not from MultiLine — `<div>` is always block,
+// `<span>` is always flow, regardless of how the source spans lines.
+// The previous design used a Block flag fed from MultiLine to keep
+// multi-line `<div>` blocks from being re-wrapped in `<p>`; tag-based
+// classification gets the same result for the common cases and
+// removes a footgun where a single-line `<div>x</div>` was getting
+// paragraph-wrapped.
 func (eval *Evaluate) dispatchRawHTML(node ast.JSXElement) error {
 	attrs, err := eval.renderRawHTMLAttrs(node.Props)
 	if err != nil {
@@ -180,11 +185,9 @@ func (eval *Evaluate) dispatchRawHTML(node ast.JSXElement) error {
 	}
 
 	if len(node.Children) == 0 {
-		open := "<" + node.Name + attrs + "/>"
-		eval.Result = booklit.Append(eval.Result, booklit.Styled{
-			Style:   "raw-html",
-			Block:   node.MultiLine,
-			Content: booklit.String(open),
+		eval.Result = booklit.Append(eval.Result, booklit.RawElement{
+			Tag:   node.Name,
+			Attrs: attrs,
 		})
 		return nil
 	}
@@ -193,29 +196,11 @@ func (eval *Evaluate) dispatchRawHTML(node ast.JSXElement) error {
 	if err != nil {
 		return err
 	}
-	if children == nil {
-		children = booklit.Empty
-	}
 
-	// The opening Styled chunk carries the Block flag for the whole
-	// wrapper. The Sequence's IsFlow then returns false (see Sequence.
-	// IsFlow + Styled.IsFlow), telling the surrounding paragraph layout
-	// to skip its `<p>` wrap. Wrapping the entire pieces Sequence in
-	// another Styled would force the renderer to stringify everything —
-	// any nested Paragraph would lose its `<p>...</p>` template and
-	// render as plain text — so the open/close fragments stay as
-	// separate Styled siblings, each rendered by the raw-html template.
-	eval.Result = booklit.Append(eval.Result, booklit.Sequence{
-		booklit.Styled{
-			Style:   "raw-html",
-			Block:   node.MultiLine,
-			Content: booklit.String("<" + node.Name + attrs + ">"),
-		},
-		children,
-		booklit.Styled{
-			Style:   "raw-html",
-			Content: booklit.String("</" + node.Name + ">"),
-		},
+	eval.Result = booklit.Append(eval.Result, booklit.RawElement{
+		Tag:     node.Name,
+		Attrs:   attrs,
+		Content: children,
 	})
 	return nil
 }

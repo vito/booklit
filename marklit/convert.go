@@ -572,10 +572,16 @@ func (c *converter) convertTableRow(row gast.Node) ast.Node {
 
 // convertHTMLBlock is a fallback for cases where goldmark still produces
 // an HTMLBlock node — primarily HTML comments (`<!-- -->`) and similar
-// edge cases that our JSX block parser doesn't claim. The body is wrapped
-// in a `<RawHTML block="true">…</RawHTML>` element so the bytes survive
-// untouched and the surrounding paragraph layout treats it as block
-// content.
+// edge cases that our JSX block parser doesn't claim. The body is
+// wrapped in a `<RawHTML>` element so the bytes survive untouched.
+//
+// The bytes go through as a RawFragment (flow) downstream. Block-level
+// HTML comments end up wrapped in `<p>`; browsers ignore that for
+// comments, and the only other edge cases here are `<!DOCTYPE>`-style
+// metadata that doesn't render visibly either. Authors who actually
+// need block-level raw HTML should write a lowercase JSX element
+// (`<div>...</div>`) and let dispatchRawHTML route it through
+// RawElement, whose IsFlow comes from the tag.
 func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	var text []byte
 	for i := 0; i < n.Lines().Len(); i++ {
@@ -587,7 +593,6 @@ func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	}
 	return ast.JSXElement{
 		Name:      "RawHTML",
-		Props:     map[string]ast.Node{"block": ast.String("true")},
 		Children:  []ast.Node{ast.String(text)},
 		MultiLine: true,
 	}

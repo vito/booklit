@@ -170,3 +170,19 @@ func (collect *Collect) VisitDefinitions(con booklit.Definitions) error {
 func (collect *Collect) VisitLazy(con *booklit.Lazy) error {
 	return nil
 }
+
+// VisitRawElement visits the element's body content so any nested
+// targets (e.g. a `<Target>` inside a lowercase `<div>` wrapper) still
+// register on the section.
+func (collect *Collect) VisitRawElement(con booklit.RawElement) error {
+	if con.Content == nil {
+		return nil
+	}
+	return con.Content.Visit(collect)
+}
+
+// VisitRawFragment does nothing. Pre-rendered HTML chunks carry no
+// nested content for collection.
+func (collect *Collect) VisitRawFragment(booklit.RawFragment) error {
+	return nil
+}

@@ -83,6 +83,14 @@ type HTMLEngine struct {
 
 	template *template.Template
 	data     any
+
+	// direct, when non-nil, is pre-rendered HTML that render() writes
+	// straight to the output instead of executing a template. The
+	// RawElement / RawFragment visitors use this — their output is
+	// already final HTML built from structured fields, so the template
+	// layer would just be an indirection. Reset to nil after each
+	// render so a reused engine doesn't carry stale bytes.
+	direct []byte
 }
 
 // NewHTMLEngine constructs a new HTMLEngine with the basic set of HTML
@@ -282,6 +290,42 @@ func (engine *HTMLEngine) VisitDefinitions(con booklit.Definitions) error {
 	return engine.setTmpl("definitions")
 }
 
+// VisitRawElement composes `<tag attrs>body</tag>` directly into the
+// engine's `direct` buffer, sub-rendering Content the same way templates
+// would have. A nil Content produces a self-closing `<tag attrs/>`.
+// Replaces the legacy raw-html.tmpl path (which stringified
+// `Styled{Style: "raw-html", Content: "<div>"}` markers and reassembled
+// them at render time).
+func (engine *HTMLEngine) VisitRawElement(con booklit.RawElement) error {
+	var buf bytes.Buffer
+	buf.WriteString("<")
+	buf.WriteString(con.Tag)
+	buf.WriteString(con.Attrs)
+	if con.Content == nil {
+		buf.WriteString("/>")
+		engine.direct = buf.Bytes()
+		return nil
+	}
+	buf.WriteString(">")
+	inner, err := engine.subRender(con.Content)
+	if err != nil {
+		return err
+	}
+	buf.WriteString(string(inner))
+	buf.WriteString("</")
+	buf.WriteString(con.Tag)
+	buf.WriteString(">")
+	engine.direct = buf.Bytes()
+	return nil
+}
+
+// VisitRawFragment writes the fragment's HTML verbatim. The syntax
+// highlighter's per-token `<span>` wrappers come through here.
+func (engine *HTMLEngine) VisitRawFragment(con booklit.RawFragment) error {
+	engine.direct = []byte(con.HTML)
+	return nil
+}
+
 // VisitLazy forces the content to evaluate and renders its result.
 func (engine *HTMLEngine) VisitLazy(con *booklit.Lazy) error {
 	content, err := con.Force()
@@ -305,6 +349,13 @@ func (engine *HTMLEngine) setTmpl(name string) error {
 }
 
 func (engine *HTMLEngine) render(out io.Writer) error {
+	if engine.direct != nil {
+		bytes := engine.direct
+		engine.direct = nil
+		_, err := out.Write(bytes)
+		return err
+	}
+
 	if engine.template == nil {
 		return fmt.Errorf("unknown template for '%s' (%T)", engine.data, engine.data)
 	}

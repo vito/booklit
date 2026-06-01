@@ -623,36 +623,71 @@ Concrete tasks, in dependency order. Each line links back to a
       Kept under `internal/` because consumers are all in-tree
       (builtins, stages, render); promote to a public package if
       a future external module needs the same classification.
-- [ ] **`RawElement` / `RawFragment` content types + migration**
-      (decision 11). New `raw_element.go` / `raw_fragment.go` in
-      package `booklit`. `RawElement{Tag, Attrs, Content}` with
-      `IsFlow()` = `!htmltags.Block[Tag]`; implements
-      `VisitRawElement`. `RawFragment{HTML}` always flow; implements
-      `VisitRawFragment`. Renderer methods in `render/html.go`
-      replace `raw-html.tmpl` — `RawElement` renders
-      `<tag attrs>content</tag>` (self-closing for void elements),
-      `RawFragment` writes its bytes verbatim. Migrate every emit
-      site:
-      - `stages/evaluate.go::dispatchRawHTML` returns
-        `RawElement{Tag, Attrs, Content}` (the
-        `Sequence{Styled{open}, children, Styled{close}}` shape
-        and the `Block: node.MultiLine` plumbing all go).
-      - `builtins/raw_html.go` emits `RawElement` (the `block`
-        prop goes away — tag determines block-ness).
-      - `builtins/code.go`'s `rawHTML()` highlighter-span helper
-        emits `RawFragment`.
-      - `builtins/content.go`'s `<Code>` emits
-        `RawElement{Tag: "code"}` when content is flow, or
-        `RawElement{Tag: "pre", Content: RawElement{Tag: "code"}}`
-        when block. Same `code.IsFlow()` introspection as today;
-        no new type, no template.
-      - `builtins/code.go`'s `<CodeBlock>` / `<Syntax>` emit the
-        same `<pre><code>` shape with `class="language-X"` on the
-        inner `<code>` (Prism/highlight.js convention). The
-        `Partials{Language}` indirection — set in one place, read
-        by zero — is dropped entirely.
-      `verbatim.tmpl`, `code-block.tmpl`, and `code-flow.tmpl`
-      delete with no replacement Go visitor needed.
+- [x] **`RawElement` / `RawFragment` content types + migration**
+      (decision 11). `raw_element.go` and `raw_fragment.go` live in
+      package `booklit`. `RawElement{Tag, Attrs, Content}` has
+      `IsFlow()` = `!htmltags.Block[Tag]`; `RawFragment{HTML}` is
+      always flow. Both .String() return only the inner text (or "")
+      so markup bytes don't leak into the search index. `Visitor`
+      gained `VisitRawElement` / `VisitRawFragment`; all four
+      implementations (Collect, stripAux, HTMLEngine, TextEngine)
+      grew the methods.
+      The HTML renderer composes `<tag attrs>...</tag>` (or
+      `<tag attrs/>` when Content is nil) directly through a new
+      `engine.direct []byte` escape hatch — `render()` checks
+      `direct` first and writes it through, bypassing the template
+      layer for content that's already final HTML. The text
+      renderer reuses the same direct hatch to emit "" for fragments
+      and to render-then-emit the body for elements.
+      Emit-site migrations:
+      - `stages/evaluate.go::dispatchRawHTML` returns one
+        `RawElement` (the open/close `Styled` siblings and the
+        `Block: node.MultiLine` plumbing all gone). Block/flow now
+        comes from the tag, not from MultiLine — `<div>` is block
+        regardless of how it spans lines; `<span>` is flow likewise.
+        Side-effect: a single-line `<div>x</div>` no longer gets
+        paragraph-wrapped (the previous shape ended up inside
+        `<p>...</p>`, which was invalid HTML).
+      - `builtins/raw_html.go::RawHTML` evaluates children,
+        stringifies, and emits `RawFragment{HTML: content.String()}`.
+        The `block` prop is dropped; `marklit/convert.go::
+        convertHTMLBlock` correspondingly stops emitting it. Block
+        HTML-comment edge cases (the main remaining HTMLBlock
+        source after JSX-parser unification) end up wrapped in
+        `<p>`, which is harmless for invisible markup; authors who
+        actually need block raw HTML can write a lowercase JSX
+        element directly.
+      - `builtins/code.go`'s highlighter helper now emits
+        `RawFragment` for highlighter spans, and `syntax()` returns
+        either a flat `<code class="language-X">` (inline / flow
+        content) or a nested `<pre><code class="language-X">` shape
+        (block content), both as `RawElement`s. The Prism/highlight
+        .js `class="language-X"` convention replaces the
+        `Partials{Language}` bag (which was set in one place and
+        read by zero readers).
+      - `builtins/content.go::<Code>` mirrors the same pattern:
+        flow content → `RawElement{Tag: "code"}`, block content →
+        `RawElement{Tag: "pre", Content: RawElement{Tag: "code"}}`.
+      `verbatim.tmpl`, `code-block.tmpl`, `code-flow.tmpl`, and
+      `raw-html.tmpl` deleted from `render/html/`. The
+      `StyleVerbatim` / `StyleCodeBlock` / `StyleCodeFlow`
+      constants and the `raw-html` short-circuit in
+      `Styled.String()` are gone too. `Styled` itself stays for
+      the remaining styling shims (`<Larger>`, `<Smaller>`, …);
+      those move to embedded components in the next step.
+      Findings: docs render diff shows the now-dead
+      `docs/html/code-block.tmpl` / `code-flow.tmpl` / `big-code
+      .tmpl` overrides no longer fire (the underlying `Styled{Style:
+      "code-block"}` / `"code-flow"` lookups don't happen anymore),
+      so renders lose the `<div class="highlight">` /
+      `<code class="highlight">` wrapper class. Docs-side concern,
+      not framework — the docs CSS targets `.highlight a` for link
+      color in code blocks and may want to switch to a
+      `pre code a` / `code[class^="language-"] a` rule, but that's
+      a docs styling pass, not part of the framework migration.
+      Leaving those template files in place for now; they're dead
+      code on the docs side, harmless until the docs CSS is
+      updated.
 - [ ] **Bake stdlib components in via `go:embed` + replace
       styling shims** (decision 11). New `components/` package at
       the repo root with `embed.FS` of `*.md` files (modeled on

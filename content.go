@@ -33,4 +33,6 @@ type Visitor interface {
 	VisitTable(Table) error
 	VisitDefinitions(Definitions) error
 	VisitLazy(*Lazy) error
+	VisitRawElement(RawElement) error
+	VisitRawFragment(RawFragment) error
 }
