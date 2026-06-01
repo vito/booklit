@@ -75,10 +75,10 @@ func (example Example) Run(t *testing.T) {
 
 	processor := &load.Processor{
 		Dang: dang,
-		// Per-test tempdir wins over the shared fixtures directory, so a
-		// test can override a global template like Card.md by including
-		// one in its Inputs.
-		Templates: templates.New(dir, "fixtures"),
+		// Per-test tempdir's `components/` wins over the shared
+		// `tests/components/` directory, so a test can override a global
+		// template like Card.md by including one in its Inputs.
+		Templates: templates.New(filepath.Join(dir, "components"), "components"),
 	}
 
 	section, err := processor.LoadFile(sectionPath, pluginFactories)

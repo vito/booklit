@@ -91,20 +91,27 @@ func (node Preformatted) Visit(visitor Visitor) error {
 
 // JSXElement is a JSX-style invocation, e.g. <Foo bar="x">body</Foo>.
 //
-// Name is the component name as authored (PascalCase by convention; lowercase
-// tags are passed through as literal HTML by the parser and do not become
-// JSXElement nodes).
+// Name is the tag as authored. PascalCase tags dispatch through the
+// JSX tier (built-in, Dang scope, mdx template); lowercase tags wrap
+// their evaluated children in literal HTML opening/closing tags at
+// evaluation time.
 //
-// Props maps camelCase prop names to their values. A value is either an
+// Props maps prop names to their values. A value is either an
 // ast.String (literal "..." attribute) or an ast.JSXExpression (attribute
 // of the form name={expr}).
 //
 // Children is the flat list of nodes between the opening and closing tags,
 // in source order. Empty for self-closing elements.
+//
+// MultiLine reports whether the element spanned more than one source
+// line. Block-level lowercase tags use this to decide whether to flag
+// their output as Block content (so the surrounding paragraph wrapper
+// skips its `<p>` wrap).
 type JSXElement struct {
-	Name     string
-	Props    map[string]Node
-	Children []Node
+	Name      string
+	Props     map[string]Node
+	Children  []Node
+	MultiLine bool
 
 	Location Location
 }

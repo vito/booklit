@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/vito/booklit/ast"
+	"github.com/vito/booklit/marklit"
 )
 
 // Registry loads and caches mdx template files from a list of search
@@ -97,10 +98,11 @@ func (r *Registry) Load(name string) (ast.Node, bool, error) {
 	// verbatim because templates are HTML-significant.
 	source = bytes.TrimRight(source, "\n")
 
-	node, err := Parse(source)
-	if err != nil {
-		return nil, false, fmt.Errorf("parse %s: %w", path, err)
-	}
+	// ParseInlineArg (not Parse) so a single-paragraph template doesn't
+	// pick up a stray `<p>` wrap. Templates are content to splice in at
+	// the call site — block vs. inline is decided by what the template
+	// actually contains, not by goldmark's default paragraph wrapping.
+	node := marklit.ParseInlineArg(source)
 
 	r.cache[name] = cached{node: node, modTime: info.ModTime()}
 	return node, true, nil

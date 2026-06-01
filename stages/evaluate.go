@@ -107,22 +107,23 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 	return nil
 }
 
-// VisitJSXElement dispatches a JSX element across three tiers. An
-// unknown name is an error rather than an implicit Styled wrap — the
-// hard-cutover posture from phase-3b.md Q9 (a).
+// VisitJSXElement dispatches a JSX element. Tags are split on case:
 //
-//  1. **Built-in**: a Go function registered in the builtins package.
-//  2. **Dang scope**: a `pub PascalCase` function in scope, dispatched
-//     with props bridged as named args and children compiled as a
-//     `&body` block whose invocation pushes the named args into Dang
-//     scope and re-evaluates the children.
-//  3. **mdx template**: an `.md` file in the configured templates
-//     directory; evaluated with props bound in Dang scope and
-//     `children` carrying the JSX children's rendered content.
+//   - **lowercase** tags are treated as raw HTML wrappers: children
+//     are evaluated normally, attribute values are stringified (with
+//     HTML-escaping), and the result is sandwiched between literal
+//     `<name attrs>` / `</name>` opening and closing fragments.
 //
-// Dagger dispatch is the eventual fourth tier (see jsx-dang.md).
+//   - **PascalCase** tags route through three tiers in order: a Go
+//     builtin in `builtins/`; a `pub PascalCase` function in Dang
+//     scope; an mdx-template `.md` file. An unmatched PascalCase tag
+//     is an error rather than an implicit Styled wrap.
 func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 	eval.Section.InvokeLocation = node.Location
+
+	if isLowerCaseTag(node.Name) {
+		return eval.dispatchRawHTML(node)
+	}
 
 	ctx := &builtins.Context{
 		Section:  eval.Section,
@@ -162,6 +163,138 @@ func (eval *Evaluate) VisitJSXElement(node ast.JSXElement) error {
 	}
 
 	return fmt.Errorf("unknown JSX component <%s>: no built-in, no Dang function, no <%s>.md template", node.Name, node.Name)
+}
+
+func isLowerCaseTag(name string) bool {
+	if name == "" {
+		return false
+	}
+	c := name[0]
+	return c >= 'a' && c <= 'z'
+}
+
+// dispatchRawHTML wraps a lowercase JSX element's evaluated children in
+// literal `<name attrs>` / `</name>` HTML. String-valued props render
+// as `name="literal"`; expression-valued props evaluate against the
+// held Dang env and stringify (HTML-escaped). A node with no children
+// emits a single self-closing `<name attrs/>` chunk.
+//
+// MultiLine carries through to Styled.Block so a `<div>` written across
+// multiple source lines doesn't get re-wrapped in `<p>` by the
+// surrounding paragraph layout.
+func (eval *Evaluate) dispatchRawHTML(node ast.JSXElement) error {
+	attrs, err := eval.renderRawHTMLAttrs(node.Props)
+	if err != nil {
+		return fmt.Errorf("rendering attrs for <%s>: %w", node.Name, err)
+	}
+
+	if len(node.Children) == 0 {
+		open := "<" + node.Name + attrs + "/>"
+		eval.Result = booklit.Append(eval.Result, booklit.Styled{
+			Style:   "raw-html",
+			Block:   node.MultiLine,
+			Content: booklit.String(open),
+		})
+		return nil
+	}
+
+	children, err := eval.evalArg(ast.Sequence(node.Children))
+	if err != nil {
+		return err
+	}
+	if children == nil {
+		children = booklit.Empty
+	}
+
+	// The opening Styled chunk carries the Block flag for the whole
+	// wrapper. The Sequence's IsFlow then returns false (see Sequence.
+	// IsFlow + Styled.IsFlow), telling the surrounding paragraph layout
+	// to skip its `<p>` wrap. Wrapping the entire pieces Sequence in
+	// another Styled would force the renderer to stringify everything —
+	// any nested Paragraph would lose its `<p>...</p>` template and
+	// render as plain text — so the open/close fragments stay as
+	// separate Styled siblings, each rendered by the raw-html template.
+	eval.Result = booklit.Append(eval.Result, booklit.Sequence{
+		booklit.Styled{
+			Style:   "raw-html",
+			Block:   node.MultiLine,
+			Content: booklit.String("<" + node.Name + attrs + ">"),
+		},
+		children,
+		booklit.Styled{
+			Style:   "raw-html",
+			Content: booklit.String("</" + node.Name + ">"),
+		},
+	})
+	return nil
+}
+
+// renderRawHTMLAttrs concatenates ` name="value"` fragments for each
+// prop. String values pass through verbatim (the source already wrote
+// them as escaped HTML); expression values evaluate against the Dang
+// env, stringify, and HTML-escape. Prop iteration order is not
+// guaranteed by Go's map; deterministic ordering isn't material here
+// since browsers and XML diffing tolerate any order.
+func (eval *Evaluate) renderRawHTMLAttrs(props map[string]ast.Node) (string, error) {
+	if len(props) == 0 {
+		return "", nil
+	}
+	var out string
+	for name, val := range props {
+		switch v := val.(type) {
+		case ast.String:
+			out += " " + name + `="` + htmlEscapeAttr(string(v)) + `"`
+		case ast.JSXExpression:
+			if eval.Dang == nil {
+				return "", fmt.Errorf("attr %q={%s}: no Dang evaluator", name, v.Raw)
+			}
+			dv, err := eval.Dang.Eval(v.Raw)
+			if err != nil {
+				return "", fmt.Errorf("attr %q={%s}: %w", name, v.Raw, err)
+			}
+			content, err := eval.Dang.ContentFromValue(dv, eval.Section)
+			if err != nil {
+				return "", fmt.Errorf("attr %q={%s}: %w", name, v.Raw, err)
+			}
+			s := ""
+			if content != nil {
+				s = content.String()
+			}
+			out += " " + name + `="` + htmlEscapeAttr(s) + `"`
+		default:
+			content, err := eval.evalArg(val)
+			if err != nil {
+				return "", fmt.Errorf("attr %q: %w", name, err)
+			}
+			s := ""
+			if content != nil {
+				s = content.String()
+			}
+			out += " " + name + `="` + htmlEscapeAttr(s) + `"`
+		}
+	}
+	return out, nil
+}
+
+// htmlEscapeAttr escapes a string for safe inclusion in a double-quoted
+// HTML attribute value.
+func htmlEscapeAttr(s string) string {
+	var b []byte
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '&':
+			b = append(b, "&amp;"...)
+		case '<':
+			b = append(b, "&lt;"...)
+		case '>':
+			b = append(b, "&gt;"...)
+		case '"':
+			b = append(b, "&quot;"...)
+		default:
+			b = append(b, s[i])
+		}
+	}
+	return string(b)
 }
 
 // dispatchDang invokes a Dang function representing a JSX component.
@@ -512,12 +645,18 @@ func (eval Evaluate) convert(to reflect.Type, node ast.Node) (reflect.Value, err
 		if err != nil {
 			return reflect.ValueOf(nil), err
 		}
+		if content == nil {
+			return reflect.ValueOf(""), nil
+		}
 
 		return reflect.ValueOf(content.String()), nil
 	case *booklit.Content:
 		content, err := eval.evalArg(node)
 		if err != nil {
 			return reflect.ValueOf(nil), err
+		}
+		if content == nil {
+			content = booklit.Empty
 		}
 
 		return reflect.ValueOf(content), nil

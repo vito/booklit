@@ -100,7 +100,7 @@ func (cmd *Command) Serve() error {
 		Processor: &load.Processor{
 			SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 			Dang:                dang,
-			Templates:           templates.New(cmd.HTMLEngine.Templates),
+			Templates:           templates.New(findComponentsDir(cmd.In), cmd.HTMLEngine.Templates),
 		},
 
 		Templates:  cmd.HTMLEngine.Templates,
@@ -117,6 +117,30 @@ var basePluginFactories = []booklit.PluginFactory{
 	baselit.NewPlugin,
 }
 
+// findComponentsDir walks up from filepath.Dir(in) looking for a sibling
+// `components/` directory and returns its absolute path. The walk mirrors
+// dangeval's project-root resolution so an `--in lit/index.md` invocation
+// from a project root finds the project's `components/` dir without
+// needing a flag. Returns "" if no `components/` is found, which a nil
+// `templates.New` arg handles silently.
+func findComponentsDir(in string) string {
+	dir, err := filepath.Abs(filepath.Dir(in))
+	if err != nil {
+		return ""
+	}
+	for {
+		candidate := filepath.Join(dir, "components")
+		if info, err := os.Stat(candidate); err == nil && info.IsDir() {
+			return candidate
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+		dir = parent
+	}
+}
+
 func (cmd *Command) Build() error {
 	dang, err := dangeval.New(context.Background(), filepath.Dir(cmd.In))
 	if err != nil {
@@ -127,7 +151,7 @@ func (cmd *Command) Build() error {
 	processor := &load.Processor{
 		SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 		Dang:                dang,
-		Templates:           templates.New(cmd.HTMLEngine.Templates),
+		Templates:           templates.New(findComponentsDir(cmd.In), cmd.HTMLEngine.Templates),
 	}
 
 	var engine render.Engine

@@ -18,7 +18,7 @@ func TestMdxTemplateDispatch(t *testing.T) {
 			name: "prop interpolation",
 			example: Example{
 				Inputs: Files{
-					"Greet.md": `<RawHTML>hello, </RawHTML>{name}<RawHTML>!</RawHTML>`,
+					"components/Greet.md": `<RawHTML>hello, </RawHTML>{name}<RawHTML>!</RawHTML>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -38,7 +38,7 @@ Says: <Italic><Greet name="world"/></Italic>.
 			name: "children interpolation via {children}",
 			example: Example{
 				Inputs: Files{
-					"Wrap.md": `<Italic>{children}</Italic>`,
+					"components/Wrap.md": `<Italic>{children}</Italic>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -58,7 +58,7 @@ Wrapped: <Wrap>body text</Wrap>.
 			name: "children interpolation via <Children/>",
 			example: Example{
 				Inputs: Files{
-					"Wrap.md": `<Bold><Children/></Bold>`,
+					"components/Wrap.md": `<Bold><Children/></Bold>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -78,7 +78,7 @@ Wrapped: <Wrap>body text</Wrap>.
 			name: "empty children renders nothing",
 			example: Example{
 				Inputs: Files{
-					"Mark.md": `<Italic>[{children}]</Italic>`,
+					"components/Mark.md": `<Italic>[{children}]</Italic>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -98,7 +98,7 @@ Empty: <Mark/>.
 			name: "nested JSX inside template",
 			example: Example{
 				Inputs: Files{
-					"Pair.md": `<Italic>{first}</Italic> and <Bold>{second}</Bold>`,
+					"components/Pair.md": `<Italic>{first}</Italic> and <Bold>{second}</Bold>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -118,7 +118,7 @@ Picked: <Pair first="apples" second="oranges"/>.
 			name: "multi-line template with raw HTML",
 			example: Example{
 				Inputs: Files{
-					"Card.md": `<div class="card">
+					"components/Card.md": `<div class="card">
   <h3>{title}</h3>
   <div class="body">{children}</div>
 </div>`,
@@ -143,13 +143,39 @@ Body text here.
 			},
 		},
 		{
+			// Per the React/MDX convention recorded in pivot.md design
+			// notes: PascalCase JSX children are Markdown-parsed, lowercase
+			// tags are raw HTML. Card wraps children in a lowercase <div>,
+			// but Markdown is parsed at the *caller* level where <Card> is
+			// invoked — `**bold**` is emphasized before reaching the
+			// template.
+			name: "Markdown inside Component children",
+			example: Example{
+				Inputs: Files{
+					"components/Card.md": `<div class="card">{children}</div>`,
+				},
+				Input: `<Title>Hi</Title>
+
+<Card>**bold** and *italic*.</Card>
+`,
+				Outputs: Files{
+					"hi.html": `<section>
+	<h1>Hi</h1>
+
+	<div class="card"><strong>bold</strong> and <em>italic</em>.</div>
+</section>
+`,
+				},
+			},
+		},
+		{
 			name: "templates have priority over legacy Styled fallback",
 			example: Example{
 				// Without Foo.md, this falls through to Styled fallback and
 				// the renderer would error on a missing Foo.tmpl. With
 				// Foo.md, the template handles it.
 				Inputs: Files{
-					"Foo.md": `<Italic>via template: {children}</Italic>`,
+					"components/Foo.md": `<Italic>via template: {children}</Italic>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -173,7 +199,7 @@ Picked: <Foo>x</Foo>.
 				Inputs: Files{
 					"helpers.dang": `pub Pick(): String! { "dang" }
 `,
-					"Pick.md": `<RawHTML>template</RawHTML>`,
+					"components/Pick.md": `<RawHTML>template</RawHTML>`,
 				},
 				Input: `<Title>Hi</Title>
 
@@ -193,7 +219,7 @@ Picked: <Italic><Pick/></Italic>.
 			name: "expression prop passed to template",
 			example: Example{
 				Inputs: Files{
-					"Echo.md": `<Italic>{val}</Italic>`,
+					"components/Echo.md": `<Italic>{val}</Italic>`,
 				},
 				Input: `<Title>Hi</Title>
 

@@ -262,6 +262,10 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 	case KindInvoke:
 		return c.convertInvoke(n.(*InvokeNode))
 
+	case KindJSXExprInline:
+		e := n.(*jsxExprInlineNode)
+		return ast.JSXExpression{Raw: e.Raw}
+
 	case KindJSXElement:
 		j := n.(*JSXElementNode)
 		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
@@ -564,6 +568,11 @@ func (c *converter) convertTableRow(row gast.Node) ast.Node {
 	}
 }
 
+// convertHTMLBlock is a fallback for cases where goldmark still produces
+// an HTMLBlock node — primarily HTML comments (`<!-- -->`) and similar
+// edge cases that our JSX block parser doesn't claim. Output is a raw
+// `raw-html-block` invoke; no `{expr}` interpolation, since lowercase
+// JSX elements are the way to get interpolation now.
 func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	var text []byte
 	for i := 0; i < n.Lines().Len(); i++ {
@@ -579,6 +588,9 @@ func (c *converter) convertHTMLBlock(n *gast.HTMLBlock) ast.Node {
 	}
 }
 
+// convertRawHTML is the fallback for inline raw HTML that goldmark's
+// default parser claims when our JSX inline parser doesn't (e.g. `<br>`
+// without an explicit `<br/>`, comments). No interpolation either.
 func (c *converter) convertRawHTML(n *gast.RawHTML) ast.Node {
 	var text []byte
 	for i := 0; i < n.Segments.Len(); i++ {
@@ -619,8 +631,9 @@ func (c *converter) convertInvoke(n *InvokeNode) ast.Node {
 // Nested elements inherit the parent's block context.
 func (c *converter) buildJSXElement(name string, props []JSXProp, children []JSXChild, line, col int, block bool) ast.Node {
 	elem := ast.JSXElement{
-		Name:  name,
-		Props: make(map[string]ast.Node, len(props)),
+		Name:      name,
+		Props:     make(map[string]ast.Node, len(props)),
+		MultiLine: block,
 		Location: ast.Location{
 			Line: line,
 			Col:  col,

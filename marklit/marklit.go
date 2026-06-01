@@ -170,11 +170,17 @@ func parseArg(source []byte, doStripIndent bool) ast.Node {
 
 // newParser builds a goldmark parser with the Booklit JSX + reference
 // extensions and GFM table support registered.
+//
+// The default HTML block parser (CommonMark §4.6 types 6/7) is stripped:
+// our JSX block parser now claims both PascalCase and lowercase `<tag>`
+// openings, so leaving HTMLBlockParser enabled would just race against
+// us and occasionally win, gobbling content as raw HTML before we get a
+// chance to parse interleaved JSX or `{expr}`.
 func newParser() parser.Parser {
 	return parser.NewParser(
 		parser.WithBlockParsers(
 			append(
-				parser.DefaultBlockParsers(),
+				blockParsersWithoutHTMLBlock(),
 				util.Prioritized(NewJSXBlockParser(), 100),
 			)...,
 		),
@@ -183,6 +189,7 @@ func newParser() parser.Parser {
 				parser.DefaultInlineParsers(),
 				util.Prioritized(NewReferenceInlineParser(), 99),
 				util.Prioritized(NewJSXInlineParser(), 98),
+				util.Prioritized(NewJSXExpressionInlineParser(), 97),
 			)...,
 		),
 		parser.WithParagraphTransformers(
@@ -198,6 +205,21 @@ func newParser() parser.Parser {
 	)
 }
 
+// blockParsersWithoutHTMLBlock returns goldmark's default block parsers
+// minus the HTMLBlockParser (priority 900). See newParser for the
+// rationale.
+func blockParsersWithoutHTMLBlock() []util.PrioritizedValue {
+	defaults := parser.DefaultBlockParsers()
+	filtered := make([]util.PrioritizedValue, 0, len(defaults))
+	for _, p := range defaults {
+		if p.Priority == 900 {
+			continue
+		}
+		filtered = append(filtered, p)
+	}
+	return filtered
+}
+
 // Extension is a goldmark.Extender that adds Booklit JSX + reference syntax
 // support.
 type Extension struct{}
@@ -211,6 +233,7 @@ func (e *Extension) Extend(md goldmark.Markdown) {
 		parser.WithInlineParsers(
 			util.Prioritized(NewReferenceInlineParser(), 99),
 			util.Prioritized(NewJSXInlineParser(), 98),
+			util.Prioritized(NewJSXExpressionInlineParser(), 97),
 		),
 	)
 }

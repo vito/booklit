@@ -147,15 +147,14 @@ func TestJSX(t *testing.T) {
 	}
 }
 
-// TestJSXLowercaseFallsThrough verifies that lowercase tag names are NOT
-// claimed by the JSX parser and remain available to goldmark's raw-HTML
-// handling.
-func TestJSXLowercaseFallsThrough(t *testing.T) {
-	// Lowercase <div> should pass through; the resulting AST should NOT
-	// contain a JSXElement.
+// TestJSXLowercaseTags verifies that lowercase tag names are claimed by
+// the JSX parser just like PascalCase ones. The evaluator later
+// distinguishes the two (lowercase → wrap in raw HTML; PascalCase →
+// dispatch through builtin/Dang/template tiers).
+func TestJSXLowercaseTags(t *testing.T) {
 	got := marklit.Parse([]byte(`<div>hi</div>`))
-	if containsJSX(got) {
-		t.Errorf("lowercase <div> was claimed by JSX parser; got %s", nodeString(got))
+	if !containsJSX(got) {
+		t.Errorf("lowercase <div> was NOT claimed by JSX parser; got %s", nodeString(got))
 	}
 }
 

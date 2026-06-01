@@ -7,9 +7,11 @@ import (
 )
 
 // jsxInlineParser parses JSX-style invocations: <Name attr="x" foo={expr}>
-// children</Name> or <Name.../>. It triggers on '<' and only claims the
-// input when the following byte is an uppercase ASCII letter (lowercase
-// tags fall through to goldmark's raw-HTML handling).
+// children</Name> or <Name.../>. It triggers on '<' and claims the input
+// for any tag whose first byte is an ASCII letter — both PascalCase
+// (component) and lowercase (raw HTML) tags route through the same
+// parser. The evaluator dispatches on case later: PascalCase looks up a
+// builtin/Dang/template; lowercase wraps content in raw HTML tags.
 type jsxInlineParser struct{}
 
 var defaultJSXInlineParser = &jsxInlineParser{}
@@ -27,7 +29,7 @@ func (p *jsxInlineParser) Trigger() []byte {
 // Parse parses one JSX element. On failure the reader position is restored.
 func (p *jsxInlineParser) Parse(parent gast.Node, block text.Reader, pc parser.Context) gast.Node {
 	line, _ := block.PeekLine()
-	if len(line) < 2 || line[0] != '<' || !isUpperAlpha(line[1]) {
+	if len(line) < 2 || line[0] != '<' || !isAlpha(line[1]) {
 		return nil
 	}
 
@@ -123,7 +125,7 @@ func parseJSXElement(s *jsxScanner) (*JSXElementNode, bool) {
 		return nil, false
 	}
 
-	name, ok := readJSXName(s, true)
+	name, ok := readJSXName(s, false)
 	if !ok {
 		return nil, false
 	}
@@ -379,7 +381,7 @@ func parseChildren(s *jsxScanner, parentName string, out *[]JSXChild) bool {
 				s.block.Advance(tagLen)
 				return true
 			}
-			if len(line) >= 2 && isUpperAlpha(line[1]) {
+			if len(line) >= 2 && isAlpha(line[1]) {
 				flushText()
 				child, ok := parseJSXElement(s)
 				if !ok {
@@ -427,7 +429,7 @@ func scanCloseTag(line []byte) (length int, name string, ok bool) {
 	if len(line) < 4 || line[0] != '<' || line[1] != '/' {
 		return 0, "", false
 	}
-	if !isUpperAlpha(line[2]) {
+	if !isAlpha(line[2]) {
 		return 0, "", false
 	}
 	i := 2

@@ -412,14 +412,24 @@ Concrete tasks, in dependency order. Each line links back to a
       `marklit.Parse` handles everything via `io.ReadAll`.
       `booklit.ParseError` is now unused but kept; no harm and
       it's part of the public API.
-- [ ] **Split templates → components** (decisions 5 + 9). Move
-      `docs/html/*.md` into `docs/components/`. Make `templates.New`
-      default to looking next to `--in` for a `components/`
-      directory (so the flag is unnecessary in the standard case).
-      Parse component files with `marklit` instead of the custom
-      tokenizer; delete `templates/parse.go`. Verify
-      Markdown-inside-Component behaves as expected for `<Card>...
-      </Card>` style cases.
+- [x] **Split templates → components** (decisions 5 + 9).
+      `docs/html/*.md` moved to `docs/components/` (git-mv'd, history
+      preserved). `tests/fixtures/Card.md` → `tests/components/Card.md`;
+      the harness reads from `<tmpdir>/components/` + a shared
+      `components/` dir. `booklitcmd` walks up from `filepath.Dir(--in)`
+      looking for a sibling `components/` dir (`findComponentsDir`),
+      so the `--html-templates` flag is no longer required for the
+      standard layout. `templates/parse.go` + `templates/raw.go`
+      deleted; the Registry now calls `marklit.ParseInlineArg` so a
+      single-paragraph template doesn't pick up a stray `<p>` wrap.
+      The bigger change is in marklit itself (see findings below):
+      one unified JSX parser handles both lowercase HTML and
+      PascalCase JSX, with case-based dispatch in
+      `VisitJSXElement` — lowercase tags wrap their evaluated
+      children in literal `<name attrs>...</name>` raw HTML;
+      PascalCase routes through the three existing tiers.
+      Markdown-inside-Component verified with a new test (`<Card>
+      **bold**</Card>`).
 - [ ] **Rename / retire `--html-templates`** (decision 5). Keep the
       lookup for `html/` overrides but stop requiring a flag; use a
       conventional path. Drop the flag when its last use is gone.
@@ -477,6 +487,32 @@ Concrete tasks, in dependency order. Each line links back to a
   pulled in. `booklit.ParseError` is now unreferenced but kept —
   public API, no cost. `marklit.Parse` is the only source-text
   parser now.
+- Components split + unified JSX parser (2026-06-01). The big design
+  shift here is in marklit: the JSX parser used to trigger only on
+  `<Upper...>`, leaving lowercase tags to goldmark's raw-HTML
+  pipeline. That meant nested PascalCase JSX inside `<div>` blocks
+  (like `docs/components/Define.md`'s `<Target>...<Syntax>...`
+  pattern) was eaten by goldmark's HTMLBlockParser before our
+  parser saw it. Now the JSX parser claims ANY `<letter...>`. The
+  evaluator distinguishes at dispatch time: lowercase wraps the
+  evaluated children in literal raw HTML opening/closing tags
+  (block flag piped through from `MultiLine`); PascalCase still
+  routes through builtin → Dang → template tiers. Goldmark's
+  HTMLBlockParser is stripped from the default set entirely (it
+  would only race against us and occasionally win). Tradeoffs:
+  - Void HTML elements (`<br>`, `<hr>`, `<img>`) require an
+    explicit `/>` to be recognized as JSX; otherwise they fall
+    through to goldmark's inline raw-HTML parser as literal text.
+    Acceptable cost for the parser unification.
+  - `docs/components/Define.md` needed one edit: bare `<` and `>`
+    in JSX child position now get Markdown-parsed (the `>`
+    triggered the blockquote parser), so the template uses a Dang
+    string concat (`{"<" + componentName(tag: tag) + ">"}`)
+    instead of literal angle brackets.
+  - `convert.go` lost its `interpolateRawHTML` machinery (~130
+    lines) — `{expr}` interpolation inside raw HTML is no longer
+    needed; expressions are real JSX children of the lowercase
+    element now.
 - New finding: partials are dead weight now that components exist.
   `<SetPartial>` was solving "thread named content into a renderer
   template" by stuffing entries into a per-section map keyed by

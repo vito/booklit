@@ -6,10 +6,10 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-// jsxBlockParser claims block-level JSX elements before goldmark's HTML
-// block parser can swallow them. Lines starting with `<UpperCaseTag` would
-// otherwise match CommonMark HTML block type 7 and become raw HTML blocks
-// with no inline parsing.
+// jsxBlockParser claims block-level JSX elements, including lowercase
+// raw-HTML tags like `<div>`. With goldmark's HTMLBlockParser disabled
+// (see newParser), this is the only thing that recognizes `<x...>` at
+// the start of a line.
 //
 // The block parser consumes the full element (possibly across multiple
 // lines) via the same scanner used by the inline parser. Goldmark's rule
@@ -33,7 +33,7 @@ func (p *jsxBlockParser) Trigger() []byte {
 func (p *jsxBlockParser) Open(parent gast.Node, reader text.Reader, pc parser.Context) (gast.Node, parser.State) {
 	line, _ := reader.PeekLine()
 	pos := pc.BlockOffset()
-	if pos < 0 || pos+1 >= len(line) || line[pos] != '<' || !isUpperAlpha(line[pos+1]) {
+	if pos < 0 || pos+1 >= len(line) || line[pos] != '<' || !isAlpha(line[pos+1]) {
 		return nil, parser.NoChildren
 	}
 
@@ -46,6 +46,15 @@ func (p *jsxBlockParser) Open(parent gast.Node, reader text.Reader, pc parser.Co
 		reader.SetPosition(saveLine, savePos)
 		return nil, parser.NoChildren
 	}
+	// If the element ended on the line it started on and there's still
+	// non-whitespace text after it, the element is part of a flow of
+	// inline content (e.g. `<Italic>x</Italic> and <Bold>y</Bold>`).
+	// Bail back to inline parsing — claiming a block here would let the
+	// remainder of the line silently fall off.
+	if !inline.MultiLine && hasTrailingContent(reader) {
+		reader.SetPosition(saveLine, savePos)
+		return nil, parser.NoChildren
+	}
 	block := NewJSXBlockElementNode(inline.Name)
 	block.Props = inline.Props
 	block.SelfClosing = inline.SelfClosing
@@ -54,6 +63,21 @@ func (p *jsxBlockParser) Open(parent gast.Node, reader text.Reader, pc parser.Co
 	block.Line = inline.Line
 	block.Col = inline.Col
 	return block, parser.NoChildren
+}
+
+// hasTrailingContent reports whether the rest of the current line in
+// reader contains anything besides whitespace.
+func hasTrailingContent(reader text.Reader) bool {
+	line, _ := reader.PeekLine()
+	for _, b := range line {
+		if b == '\n' {
+			return false
+		}
+		if b != ' ' && b != '\t' && b != '\r' {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *jsxBlockParser) Continue(node gast.Node, reader text.Reader, pc parser.Context) parser.State {
