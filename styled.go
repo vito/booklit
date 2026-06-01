@@ -19,15 +19,6 @@ type Styled struct {
 // Style identifies a template name.
 type Style string
 
-// Common styled templated names.
-const (
-	StyleLarger  Style = "larger"
-	StyleSmaller Style = "smaller"
-	StyleStrike  Style = "strike"
-	StyleInset   Style = "inset"
-	StyleAside   Style = "aside"
-)
-
 // String summarizes the content for debugging purposes.
 func (con Styled) String() string {
 	return con.Content.String()

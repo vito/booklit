@@ -688,23 +688,33 @@ Concrete tasks, in dependency order. Each line links back to a
       Leaving those template files in place for now; they're dead
       code on the docs side, harmless until the docs CSS is
       updated.
-- [ ] **Bake stdlib components in via `go:embed` + replace
+- [x] **Bake stdlib components in via `go:embed` + replace
       styling shims** (decision 11). New `components/` package at
-      the repo root with `embed.FS` of `*.md` files (modeled on
-      `render/html/embed.go`'s `//go:embed *.tmpl`). Initial
-      contents (one-liners mirroring the current `.tmpl` bodies):
-      `Larger.md` (`<span style="font-size: 120%">{children}</span>`),
-      `Smaller.md`, `Strike.md`, `Inset.md`, `Aside.md`. The
-      component dispatch tier (third tier in
-      `VisitJSXElement`) gains a fallback to `components.Assets`;
-      project `components/` overrides stdlib by name. Then delete
-      `builtins/styled.go` (the `styled()` factory + 5
-      `Register` calls), `render/html/{larger,smaller,strike,inset,
-      aside}.tmpl`, and the `StyleLarger`/`StyleSmaller`/
-      `StyleStrike`/`StyleInset`/`StyleAside` constants. Rendered
-      HTML stays byte-identical, so integration fixtures in
-      `tests/blocks_test.go` / `tests/prose_test.go` don't move;
-      only content-tree-shape unit tests update.
+      the repo root with five MarkDangJSX one-liners
+      (`Larger.md`, `Smaller.md`, `Strike.md`, `Inset.md`,
+      `Aside.md`) embedded via `//go:embed *.md` and exported as
+      `components.Assets`. `templates.Registry.Load` now falls back
+      to that FS after the on-disk dirs miss, so project
+      `components/` dirs still override stdlib by name. `builtins/
+      styled.go` (the `styled()` factory + 5 `Register` calls),
+      the five matching `render/html/*.tmpl` files, and the
+      `StyleLarger`/`StyleSmaller`/`StyleStrike`/`StyleInset`/
+      `StyleAside` constants are gone. The contentjson and
+      bridge-content tests that used `StyleLarger` as a generic
+      sample switched to a literal `Style("larger")` value.
+      Side trip: rendered HTML for raw-HTML attributes is now
+      emitted in alphabetical attribute order. The previous
+      `for name, val := range props` in
+      `renderRawHTMLAttrs` was nondeterministic, and the `<Inset>`
+      template needs two attrs (`class` + `style`), so the
+      component-migrated path would have flaked tests under map
+      iteration randomization. Alphabetical is the canonical pick
+      — no AST surface change (no `PropNames` slice to keep in
+      sync), no per-producer bookkeeping. Cost: one fixture line
+      in `tests/blocks_test.go` (`<div style="..." class="...">`
+      → `<div class="..." style="...">`) and the
+      corresponding `<div>` in the docs build. Both are attribute
+      reorderings with no visible HTML change.
 - [ ] **Paragraph boundary handling for block/flow JSX**
       (decision 11). Two complementary changes in
       `stages/evaluate.go::VisitParagraph` (and the dispatch

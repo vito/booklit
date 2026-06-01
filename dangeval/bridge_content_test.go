@@ -23,7 +23,7 @@ func TestContentFromValueJSONScalarDecodes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ContentFromValue: %v", err)
 	}
-	want := booklit.Styled{Style: booklit.StyleLarger, Content: booklit.String("hi")}
+	want := booklit.Styled{Style: booklit.Style("larger"), Content: booklit.String("hi")}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %#v, want %#v", got, want)
 	}

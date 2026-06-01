@@ -67,7 +67,8 @@ func (node Preformatted) Visit(visitor Visitor) error {
 //
 // Props maps prop names to their values. A value is either an
 // ast.String (literal "..." attribute) or an ast.JSXExpression (attribute
-// of the form name={expr}).
+// of the form name={expr}). The map is unordered — raw-HTML attribute
+// emission sorts the names alphabetically for determinism.
 //
 // Children is the flat list of nodes between the opening and closing tags,
 // in source order. Empty for self-closing elements.

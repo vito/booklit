@@ -15,7 +15,7 @@ func TestRoundTrip(t *testing.T) {
 	content := booklit.Sequence{
 		booklit.String("hello "),
 		booklit.Styled{
-			Style:    booklit.StyleLarger,
+			Style:    booklit.Style("larger"),
 			Block:    true,
 			Content:  booklit.String("world"),
 			Partials: booklit.Partials{"Foo": booklit.String("bar")},

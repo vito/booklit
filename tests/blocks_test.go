@@ -66,7 +66,7 @@ func TestBlocks(t *testing.T) {
 					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-<div style="margin: 0 2em 1em" class="inset">
+<div class="inset" style="margin: 0 2em 1em">
 	<p>Hello.</p>
 </div>
 </section>`,

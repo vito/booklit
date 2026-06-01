@@ -2,6 +2,7 @@ package stages
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/vito/booklit"
 	"github.com/vito/booklit/ast"
@@ -208,15 +209,24 @@ func (eval *Evaluate) dispatchRawHTML(node ast.JSXElement) error {
 // renderRawHTMLAttrs concatenates ` name="value"` fragments for each
 // prop. String values pass through verbatim (the source already wrote
 // them as escaped HTML); expression values evaluate against the Dang
-// env, stringify, and HTML-escape. Prop iteration order is not
-// guaranteed by Go's map; deterministic ordering isn't material here
-// since browsers and XML diffing tolerate any order.
+// env, stringify, and HTML-escape.
+//
+// Attrs are emitted in alphabetical order. Go's map iteration is
+// randomized, and rendered HTML is observed by golden-file tests and
+// the docs build, so a deterministic order matters. Alphabetical is
+// the canonical pick — no need to track authored order on the AST.
 func (eval *Evaluate) renderRawHTMLAttrs(props map[string]ast.Node) (string, error) {
 	if len(props) == 0 {
 		return "", nil
 	}
+	names := make([]string, 0, len(props))
+	for name := range props {
+		names = append(names, name)
+	}
+	sort.Strings(names)
 	var out string
-	for name, val := range props {
+	for _, name := range names {
+		val := props[name]
 		switch v := val.(type) {
 		case ast.String:
 			out += " " + name + `="` + htmlEscapeAttr(string(v)) + `"`
