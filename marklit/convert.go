@@ -662,38 +662,206 @@ func (c *converter) buildJSXElement(name string, props []JSXProp, children []JSX
 		}
 	}
 
-	for _, child := range children {
-		switch child.Kind {
-		case JSXChildElement:
-			j := child.Elem
-			// Nested elements use their own multi-line status, not the
-			// parent's: <Section> can hold an inline <Title> whose
-			// children should still be inline-parsed.
-			elem.Children = append(elem.Children, c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine))
-		case JSXChildExpression:
-			elem.Children = append(elem.Children, ast.JSXExpression{Raw: string(child.Text)})
-		default:
-			var node ast.Node
-			if block {
-				node = ParseArg(child.Text)
-			} else {
-				node = ParseInlineArg(child.Text)
-			}
-			// Skip empty results (whitespace-only chunks between block
-			// children would otherwise add stray empty sequences).
-			if s, ok := node.(ast.String); ok && len(s) == 0 {
-				continue
-			}
-			if seq, ok := node.(ast.Sequence); ok {
-				if len(seq) == 0 {
+	if block {
+		elem.Children = c.buildBlockChildren(children)
+	} else {
+		for _, child := range children {
+			switch child.Kind {
+			case JSXChildElement:
+				j := child.Elem
+				elem.Children = append(elem.Children, c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine))
+			case JSXChildExpression:
+				elem.Children = append(elem.Children, ast.JSXExpression{Raw: string(child.Text)})
+			default:
+				node := ParseInlineArg(child.Text)
+				if s, ok := node.(ast.String); ok && len(s) == 0 {
 					continue
 				}
-				elem.Children = append(elem.Children, seq...)
-			} else {
-				elem.Children = append(elem.Children, node)
+				if seq, ok := node.(ast.Sequence); ok {
+					if len(seq) == 0 {
+						continue
+					}
+					elem.Children = append(elem.Children, seq...)
+				} else {
+					elem.Children = append(elem.Children, node)
+				}
 			}
 		}
 	}
 
 	return elem
+}
+
+// hasSameLineContentAfter reports whether the bytes after the last
+// newline in `text` contain any non-whitespace. Empty text returns
+// false (treated as a newline boundary). Used to decide whether a
+// preceding text chunk leaves content on the line the following JSX
+// child starts on.
+func hasSameLineContentAfter(text []byte) bool {
+	if i := bytes.LastIndexByte(text, '\n'); i >= 0 {
+		text = text[i+1:]
+	}
+	return len(bytes.TrimSpace(text)) > 0
+}
+
+// hasSameLineContentBefore is the mirror of hasSameLineContentAfter:
+// non-whitespace before the first newline in `text` means the
+// following text continues a line that the preceding JSX is part of.
+func hasSameLineContentBefore(text []byte) bool {
+	if i := bytes.IndexByte(text, '\n'); i >= 0 {
+		text = text[:i]
+	}
+	return len(bytes.TrimSpace(text)) > 0
+}
+
+// buildBlockChildren produces the children of a block-context JSX
+// element, merging inline-JSX children into adjacent text paragraphs
+// so authors can write prose with inline components on the same line
+// without the body being fragmented at the JSX boundary.
+//
+// The naive shape — ParseArg each text chunk independently and emit
+// JSX children as siblings — produces
+// `[Paragraph{"Present ..."}, JSX, Paragraph{" upon rendering."}]`
+// for `Present ... <Larger>x</Larger> upon rendering.`, which
+// renders as three separate blocks instead of one. The merge below
+// folds adjacent text-Paragraphs and inline (`!MultiLine`) JSX
+// children into a single Paragraph, splitting only at multi-line JSX
+// children (block-style standalone elements) and at blank-line
+// boundaries inside text chunks.
+func (c *converter) buildBlockChildren(children []JSXChild) []ast.Node {
+	var (
+		result []ast.Node
+		open   ast.Sequence // current open paragraph's body, nil when not open
+	)
+	flush := func() {
+		if len(open) == 0 {
+			open = nil
+			return
+		}
+		result = append(result, ast.Paragraph{open})
+		open = nil
+	}
+	appendInline := func(n ast.Node) {
+		if s, ok := n.(ast.String); ok && len(s) == 0 {
+			return
+		}
+		if seq, ok := n.(ast.Sequence); ok {
+			open = append(open, seq...)
+			return
+		}
+		open = append(open, n)
+	}
+	mergeTextResult := func(node ast.Node) {
+		// ParseArg's result for a single text chunk: either a single
+		// non-Sequence node (a Paragraph, a list, …), or a Sequence
+		// of block-level nodes when blank lines separated multiple
+		// blocks in the chunk. Either way we want to merge the first
+		// (and only the first) block into the current open paragraph
+		// when it's itself a Paragraph — subsequent blocks flush and
+		// emit as standalone, and the final Paragraph (if any) re-
+		// opens for the next inline JSX to merge into.
+		blocks := []ast.Node{node}
+		if seq, ok := node.(ast.Sequence); ok {
+			blocks = seq
+		}
+		for i, b := range blocks {
+			para, isPara := b.(ast.Paragraph)
+			if !isPara {
+				// Non-Paragraph block (a list, table, blockquote, …):
+				// it's its own block, can't fold into prose. Flush
+				// whatever's open and emit standalone.
+				flush()
+				result = append(result, b)
+				continue
+			}
+			// Merge the first block's lines into the open paragraph
+			// (continuing the prose stream from the preceding JSX).
+			// The second and later blocks were separated from the
+			// first by a blank line in the source, so flush the open
+			// paragraph and start a new one carrying their lines.
+			if i > 0 {
+				flush()
+			}
+			for _, line := range para {
+				open = append(open, line...)
+			}
+		}
+	}
+	// inlineByContext reports whether the child at index i is on the
+	// same source line as adjacent prose. A child is treated as INLINE
+	// when at least one of its neighbors has non-whitespace content on
+	// the same line; it's treated as a BLOCK standalone otherwise. The
+	// boundaries of the body (before the first child / after the last)
+	// behave as if the body began/ended with a newline, since the
+	// opening/closing tag forced a line break.
+	inlineByContext := func(i int) bool {
+		var prev, next []byte
+		if i > 0 && children[i-1].Kind == JSXChildText {
+			prev = children[i-1].Text
+		}
+		if i+1 < len(children) && children[i+1].Kind == JSXChildText {
+			next = children[i+1].Text
+		}
+		return hasSameLineContentAfter(prev) || hasSameLineContentBefore(next)
+	}
+	for i, child := range children {
+		switch child.Kind {
+		case JSXChildElement:
+			j := child.Elem
+			built := c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
+			treatInline := !j.MultiLine && inlineByContext(i)
+			if !treatInline {
+				// Standalone block: flush the current paragraph and
+				// emit the element as its own child. The next text
+				// chunk starts a fresh paragraph.
+				flush()
+				if p, ok := built.(ast.Paragraph); ok && len(p) == 1 {
+					// buildJSXElement returns ast.Paragraph{Sequence
+					// {elem}} only when the element itself is being
+					// emitted as a top-level (block) result; for our
+					// purpose here we want the bare element, since the
+					// containing block JSX already owns the layout.
+					result = append(result, p[0]...)
+				} else {
+					result = append(result, built)
+				}
+				continue
+			}
+			appendInline(built)
+		case JSXChildExpression:
+			appendInline(ast.JSXExpression{Raw: string(child.Text)})
+		default:
+			// Whitespace-only text chunks contribute nothing: they're
+			// just the indentation between block JSX children. The
+			// extra `<p>  </p>` paragraphs they used to seed when
+			// preserving leading/trailing whitespace are spurious.
+			if len(bytes.TrimSpace(child.Text)) == 0 {
+				continue
+			}
+			// Capture leading and trailing whitespace before parsing.
+			// Goldmark strips them from paragraph text and we need
+			// them back so the spaces between text and an adjacent
+			// inline JSX child survive the merge — e.g.
+			// `prose <Larger>x</Larger> more` must render with spaces
+			// on both sides of the span, not glued together.
+			leading := leadingWhitespace(child.Text)
+			trailing := trailingWhitespace(child.Text)
+			node := ParseArg(child.Text)
+			if s, ok := node.(ast.String); ok && len(s) == 0 {
+				continue
+			}
+			if seq, ok := node.(ast.Sequence); ok && len(seq) == 0 {
+				continue
+			}
+			if leading != "" {
+				appendInline(ast.String(leading))
+			}
+			mergeTextResult(node)
+			if trailing != "" {
+				appendInline(ast.String(trailing))
+			}
+		}
+	}
+	flush()
+	return result
 }
