@@ -1,5 +1,5 @@
-// Package marklit parses Markdown documents with Booklit \invoke extensions
-// and produces Booklit AST nodes.
+// Package marklit parses MarkDangJSX (Markdown + JSX + Dang expressions)
+// source documents into Booklit AST nodes.
 package marklit
 
 import (
@@ -13,19 +13,17 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-// Parse parses a Markdown+Booklit source document into a Booklit AST node.
+// Parse parses a MarkDangJSX source document into a Booklit AST node.
 func Parse(source []byte) ast.Node {
 	return parseArg(source, false)
 }
 
 // ParseInlineArg parses inline argument content (single-line, no block
 // elements) into a Booklit AST node. Used for parsing the content inside
-// \invoke{...} braces.
+// inline JSX elements.
 //
 // Unlike Parse, this unwraps single-paragraph results so that inline
 // arguments produce flat content rather than block-wrapped content.
-// This matches the behavior of the old PEG parser where inline args
-// like \title{Hello} produced a Sequence, not a Paragraph.
 func ParseInlineArg(source []byte) ast.Node {
 	if len(bytes.TrimSpace(source)) == 0 {
 		return ast.String(source)
@@ -93,13 +91,55 @@ func unwrapInlineResult(node ast.Node) ast.Node {
 	return node
 }
 
+// stripIndent removes a leading newline, detects the indentation of the first
+// content line, strips that indentation from all lines, and removes a trailing
+// whitespace-only line (the line before the closing brace). It lets block JSX
+// children keep their natural indentation in source without being interpreted
+// as Markdown code blocks.
+func stripIndent(content []byte) []byte {
+	if len(content) > 0 && content[0] == '\n' {
+		content = content[1:]
+	} else if len(content) > 1 && content[0] == '\r' && content[1] == '\n' {
+		content = content[2:]
+	}
+
+	if len(content) == 0 {
+		return content
+	}
+
+	var prefix []byte
+	for _, ch := range content {
+		if ch == ' ' || ch == '\t' {
+			prefix = append(prefix, ch)
+		} else {
+			break
+		}
+	}
+
+	lines := bytes.Split(content, []byte("\n"))
+
+	if len(lines) > 0 && len(bytes.TrimSpace(lines[len(lines)-1])) == 0 {
+		lines = lines[:len(lines)-1]
+	}
+
+	if len(prefix) > 0 {
+		for i, line := range lines {
+			if bytes.HasPrefix(line, prefix) {
+				lines[i] = line[len(prefix):]
+			} else {
+				lines[i] = bytes.TrimLeft(line, " \t")
+			}
+		}
+	}
+
+	return bytes.Join(lines, []byte("\n"))
+}
+
 // ParseArg parses a full argument (may contain block elements, paragraphs,
-// etc.) into a Booklit AST node. Used for block-level \invoke arguments.
+// etc.) into a Booklit AST node. Used for block-level JSX children.
 //
-// Leading common indentation is stripped after preprocessing (which extracts
-// {{{...}}} verbatim blocks) but before goldmark parsing. This prevents
-// goldmark from interpreting indented content as code blocks without
-// corrupting verbatim content that has different indentation.
+// Leading common indentation is stripped before goldmark parsing so that
+// indented block children don't get reinterpreted as code blocks.
 func ParseArg(source []byte) ast.Node {
 	return parseArg(source, true)
 }
@@ -109,16 +149,13 @@ func parseArg(source []byte, doStripIndent bool) ast.Node {
 		source = stripIndent(source)
 	}
 
-	processed, extractions := preprocess(source)
+	processed := preprocess(source)
 
 	p := newParser()
 	reader := text.NewReader(processed)
 	doc := p.Parse(reader)
 
-	c := &converter{
-		source:      processed,
-		extractions: extractions,
-	}
+	c := &converter{source: processed}
 	result := c.convertChildren(doc)
 	// An empty or whitespace-only arg should produce an empty String,
 	// not an empty Sequence (which evaluates to nil and panics).
@@ -131,8 +168,8 @@ func parseArg(source []byte, doStripIndent bool) ast.Node {
 	return result
 }
 
-// newParser builds a goldmark parser with the Booklit \invoke extension
-// and GFM table support registered.
+// newParser builds a goldmark parser with the Booklit JSX + reference
+// extensions and GFM table support registered.
 func newParser() parser.Parser {
 	return parser.NewParser(
 		parser.WithBlockParsers(
@@ -144,7 +181,6 @@ func newParser() parser.Parser {
 		parser.WithInlineParsers(
 			append(
 				parser.DefaultInlineParsers(),
-				util.Prioritized(NewInvokeInlineParser(), 100),
 				util.Prioritized(NewReferenceInlineParser(), 99),
 				util.Prioritized(NewJSXInlineParser(), 98),
 			)...,
@@ -162,7 +198,8 @@ func newParser() parser.Parser {
 	)
 }
 
-// Extension is a goldmark.Extender that adds Booklit \invoke syntax support.
+// Extension is a goldmark.Extender that adds Booklit JSX + reference syntax
+// support.
 type Extension struct{}
 
 // Extend implements goldmark.Extender.
@@ -172,7 +209,6 @@ func (e *Extension) Extend(md goldmark.Markdown) {
 			util.Prioritized(NewJSXBlockParser(), 100),
 		),
 		parser.WithInlineParsers(
-			util.Prioritized(NewInvokeInlineParser(), 100),
 			util.Prioritized(NewReferenceInlineParser(), 99),
 			util.Prioritized(NewJSXInlineParser(), 98),
 		),

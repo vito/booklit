@@ -10,8 +10,7 @@ import (
 )
 
 type converter struct {
-	source      []byte
-	extractions []extractedInvoke
+	source []byte
 }
 
 // convertChildren collects the Booklit AST for all children of a goldmark
@@ -263,9 +262,6 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 	case KindInvoke:
 		return c.convertInvoke(n.(*InvokeNode))
 
-	case KindInvokeBlock:
-		return c.convertInvokeBlock(n.(*InvokeBlockNode))
-
 	case KindJSXElement:
 		j := n.(*JSXElementNode)
 		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
@@ -284,15 +280,13 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 }
 
 func (c *converter) convertParagraph(n gast.Node) ast.Node {
-	// Check if this paragraph contains only invocations (and whitespace
-	// between them). In the old parser, each function call on its own line
-	// was a separate statement. Goldmark groups consecutive lines into one
-	// paragraph, so we split them back into individual paragraphs. This
-	// prevents spurious <p> </p> when side-effect-only calls like
-	// \use-plugin return empty content (the soft-break space between them
-	// would otherwise persist).
-	if invokes := c.splitInvokeOnlyParagraph(n); invokes != nil {
-		return invokes
+	// A paragraph containing only block-shaped JSX elements (with whitespace
+	// between them) is split back into separate paragraphs. Goldmark glues
+	// consecutive single-element lines into one paragraph, but
+	// `<TableOfContents/>\n<Section>…</Section>` is two top-level blocks,
+	// not one paragraph with a soft-break between them.
+	if split := c.splitElementOnlyParagraph(n); split != nil {
+		return split
 	}
 
 	inlines := c.collectInlines(n)
@@ -302,49 +296,36 @@ func (c *converter) convertParagraph(n gast.Node) ast.Node {
 	return ast.Paragraph{ast.Sequence(inlines)}
 }
 
-// splitInvokeOnlyParagraph checks if a goldmark paragraph contains only
-// invoke nodes (and whitespace/soft-break text between them). If so, it
-// returns each invocation wrapped in its own ast.Paragraph (matching the
-// old parser behavior). Returns nil if the paragraph has non-invoke content.
-func (c *converter) splitInvokeOnlyParagraph(n gast.Node) ast.Node {
-	// First pass: verify the paragraph is invoke-only
-	invokeCount := 0
+// splitElementOnlyParagraph splits a paragraph that contains only JSX
+// elements (and whitespace between them) back into one paragraph per
+// element. Returns nil if the paragraph has any non-element content.
+func (c *converter) splitElementOnlyParagraph(n gast.Node) ast.Node {
+	elemCount := 0
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
 		switch child.Kind() {
-		case KindInvoke, KindInvokeBlock, KindJSXElement:
-			invokeCount++
+		case KindJSXElement:
+			elemCount++
 		case gast.KindText:
 			t := child.(*gast.Text)
-			value := t.Value(c.source)
-			text := string(value)
-			// Strip all placeholder markers, then check if only whitespace remains
-			stripped := stripPlaceholders(text)
-			if strings.TrimSpace(stripped) != "" {
+			if strings.TrimSpace(string(t.Value(c.source))) != "" {
 				return nil
 			}
 		default:
 			return nil
 		}
 	}
-	if invokeCount < 2 {
-		return nil // single invoke: keep as normal paragraph
+	if elemCount < 2 {
+		return nil
 	}
 
-	// Second pass: extract each invocation into its own paragraph
 	var nodes []ast.Node
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
-		switch child.Kind() {
-		case KindInvoke, KindInvokeBlock, KindJSXElement:
-			converted := c.convertNode(child)
-			if converted != nil {
-				nodes = append(nodes, ast.Paragraph{ast.Sequence{converted}})
-			}
-		case gast.KindText:
-			t := child.(*gast.Text)
-			value := t.Value(c.source)
-			if node := c.tryResolvePlaceholder(string(value)); node != nil {
-				nodes = append(nodes, ast.Paragraph{ast.Sequence{node}})
-			}
+		if child.Kind() != KindJSXElement {
+			continue
+		}
+		converted := c.convertNode(child)
+		if converted != nil {
+			nodes = append(nodes, ast.Paragraph{ast.Sequence{converted}})
 		}
 	}
 	if len(nodes) == 1 {
@@ -368,25 +349,6 @@ func (c *converter) collectInlines(n gast.Node) []ast.Node {
 
 func (c *converter) convertText(t *gast.Text) ast.Node {
 	value := t.Value(c.source)
-	text := string(value)
-
-	// Check if the entire text is a placeholder
-	if node := c.tryResolvePlaceholder(text); node != nil {
-		return node
-	}
-
-	// Check if text contains embedded placeholders (block invocations that
-	// appeared inline within a sentence, e.g. "easier to \x00BLI1\x00 later")
-	if strings.Contains(text, invokePlaceholderPrefix) {
-		node := c.resolveEmbeddedPlaceholders(text)
-		if t.SoftLineBreak() {
-			return ensureSequence(node, ast.String(" "))
-		}
-		if t.HardLineBreak() {
-			return ensureSequence(node, ast.String("\n"))
-		}
-		return node
-	}
 
 	// Strip Markdown backslash escapes. Goldmark's text segments contain
 	// raw escape sequences (e.g. \* \[ \\) — its own renderer strips them,
@@ -427,116 +389,10 @@ func isASCIIPunct(c byte) bool {
 		(c >= '[' && c <= '`') || (c >= '{' && c <= '~')
 }
 
-// resolveEmbeddedPlaceholders splits text at placeholder markers and returns
-// a Sequence with the text segments interspersed with resolved invoke nodes.
-func (c *converter) resolveEmbeddedPlaceholders(text string) ast.Node {
-	var nodes []ast.Node
-	for {
-		idx := strings.Index(text, invokePlaceholderPrefix)
-		if idx < 0 {
-			break
-		}
-		// Add text before the placeholder
-		if idx > 0 {
-			nodes = append(nodes, ast.String(text[:idx]))
-		}
-		// Find the null terminator after the index number
-		rest := text[idx:]
-		nullIdx := strings.IndexByte(rest[len(invokePlaceholderPrefix):], 0)
-		if nullIdx < 0 {
-			// Malformed placeholder — emit as text
-			nodes = append(nodes, ast.String(rest))
-			text = ""
-			break
-		}
-		placeholder := rest[:len(invokePlaceholderPrefix)+nullIdx+1]
-		if node := c.tryResolvePlaceholder(placeholder); node != nil {
-			nodes = append(nodes, node)
-		}
-		text = rest[len(placeholder):]
-	}
-	// Add remaining text
-	if len(text) > 0 {
-		nodes = append(nodes, ast.String(text))
-	}
-	if len(nodes) == 1 {
-		return nodes[0]
-	}
-	return ast.Sequence(nodes)
-}
-
-// stripPlaceholders removes all \x00BLI<n>\x00 placeholder markers from text,
-// returning only the non-placeholder content.
-func stripPlaceholders(text string) string {
-	var result strings.Builder
-	for {
-		idx := strings.Index(text, invokePlaceholderPrefix)
-		if idx < 0 {
-			result.WriteString(text)
-			break
-		}
-		result.WriteString(text[:idx])
-		rest := text[idx+len(invokePlaceholderPrefix):]
-		_, after, ok := strings.Cut(rest, "\x00")
-		if !ok {
-			result.WriteString(text[idx:])
-			break
-		}
-		text = after
-	}
-	return result.String()
-}
-
-// ensureSequence appends extra to node, wrapping in a Sequence if needed.
-func ensureSequence(node ast.Node, extra ast.Node) ast.Node {
-	if seq, ok := node.(ast.Sequence); ok {
-		return append(seq, extra)
-	}
-	return ast.Sequence{node, extra}
-}
-
-// tryResolvePlaceholder checks if a text string is a placeholder marker and
-// returns the corresponding extracted invoke node, or nil.
-func (c *converter) tryResolvePlaceholder(text string) ast.Node {
-	idx, ok := isPlaceholder(text)
-	if !ok || idx >= len(c.extractions) {
-		return nil
-	}
-
-	ext := c.extractions[idx]
-	invoke := ast.Invoke{
-		Function: ext.Function,
-	}
-	for i, raw := range ext.RawArgs {
-		argType := ArgNormal
-		if i < len(ext.ArgTypes) {
-			argType = ext.ArgTypes[i]
-		}
-
-		switch argType {
-		case ArgVerbatim:
-			invoke.Arguments = append(invoke.Arguments, verbatimToNode(raw))
-		case ArgPreformatted:
-			invoke.Arguments = append(invoke.Arguments, ParsePreformattedArg(raw))
-		default:
-			// Use block parsing only for args that start with a newline
-			// (i.e. the content begins on the line after the opening {).
-			// Args with newlines in the middle are just soft-wrapped
-			// inline text (e.g. @ref{tag}{display text\nwrapped}).
-			if len(raw) > 0 && (raw[0] == '\n' || raw[0] == '\r') {
-				invoke.Arguments = append(invoke.Arguments, ParseArg(raw))
-			} else {
-				invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
-			}
-		}
-	}
-	return invoke
-}
-
 func (c *converter) convertHeading(h *gast.Heading) ast.Node {
 	// When a heading is encountered outside of document-level section
-	// structuring (e.g. inside a blockquote or an \invoke arg), it
-	// falls back to a simple \title invocation.
+	// structuring (e.g. inside a blockquote or a JSX child), it falls
+	// back to a simple \title invocation.
 	return c.headingToTitle(h)
 }
 
@@ -744,42 +600,8 @@ func (c *converter) convertInvoke(n *InvokeNode) ast.Node {
 		},
 	}
 
-	for i, raw := range n.RawArgs {
-		argType := ArgNormal
-		if i < len(n.ArgTypes) {
-			argType = n.ArgTypes[i]
-		}
-
-		var argNode ast.Node
-		switch argType {
-		case ArgVerbatim:
-			argNode = verbatimToNode(raw)
-		case ArgPreformatted:
-			argNode = ParsePreformattedArg(raw)
-		default:
-			// Parse the argument content as Markdown to get nested Booklit
-			// nodes. This allows things like \title{Hello *world*} to work.
-			argNode = ParseInlineArg(raw)
-		}
-
-		invoke.Arguments = append(invoke.Arguments, argNode)
-	}
-
-	return invoke
-}
-
-func (c *converter) convertInvokeBlock(n *InvokeBlockNode) ast.Node {
-	invoke := ast.Invoke{
-		Function: n.Function,
-		Location: ast.Location{
-			Line: n.Line,
-			Col:  n.Col,
-		},
-	}
-
 	for _, raw := range n.RawArgs {
-		argNode := ParseArg(raw)
-		invoke.Arguments = append(invoke.Arguments, argNode)
+		invoke.Arguments = append(invoke.Arguments, ParseInlineArg(raw))
 	}
 
 	return invoke

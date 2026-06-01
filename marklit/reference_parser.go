@@ -57,6 +57,5 @@ func (p *referenceInlineParser) Parse(parent gast.Node, block text.Reader, pc pa
 
 	node := NewInvokeNode("reference")
 	node.RawArgs = [][]byte{[]byte(tag)}
-	node.ArgTypes = []ArgType{ArgNormal}
 	return node
 }

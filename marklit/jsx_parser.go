@@ -440,6 +440,7 @@ func scanCloseTag(line []byte) (length int, name string, ok bool) {
 	return i + 1, string(line[2:i]), true
 }
 
+func isLowerAlpha(c byte) bool { return c >= 'a' && c <= 'z' }
 func isUpperAlpha(c byte) bool { return c >= 'A' && c <= 'Z' }
 func isAlpha(c byte) bool      { return isLowerAlpha(c) || isUpperAlpha(c) }
 func isDigit(c byte) bool      { return c >= '0' && c <= '9' }

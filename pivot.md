@@ -27,16 +27,17 @@ headings still auto-create sections.
 `marklit/jsx_parser.go` + `jsx_block_parser.go` are the goldmark
 extensions; `ast.JSXElement` and `ast.JSXExpression` are the new AST
 nodes, layered *alongside* the existing pipeline rather than replacing
-it. `ast.Invoke` and the `\foo{}` parser are NOT gone: Markdown prose
-still lowers to `ast.Invoke` for every built-in feature (`#` headings →
-`\section` / `\title`, links, images, code, code blocks, tables, lists,
-insets, references, and raw HTML → `raw-html` / `raw-html-block`), and
-`marklit` still registers the `\foo{}` inline parser, so backslash
-invokes keep working in `.md`. `.lit` files still go through the
-original PEG parser (`ast.ParseReader`). These `ast.Invoke` nodes are
-evaluated by `VisitInvoke`, which dispatches by reflection against the
-section's plugins — i.e. `baselit` — exactly as before the pivot. The
-JSX layer (`VisitJSXElement`) is the new, parallel path.
+it. User-facing `\foo{}` in Markdown has been removed (decision 2),
+but `ast.Invoke` is NOT gone: Markdown prose still lowers to
+`ast.Invoke` for every built-in feature (`#` headings → `\section` /
+`\title`, links, images, code, code blocks, tables, lists, insets,
+references, and raw HTML → `raw-html` / `raw-html-block`). The
+`[#tag]` reference shorthand also produces an `ast.Invoke`. `.lit`
+files still go through the original PEG parser (`ast.ParseReader`).
+These `ast.Invoke` nodes are evaluated by `VisitInvoke`, which
+dispatches by reflection against the section's plugins — i.e.
+`baselit` — exactly as before the pivot. The JSX layer
+(`VisitJSXElement`) is the new, parallel path.
 
 ## Plugin system: gone
 
@@ -374,16 +375,21 @@ Concrete tasks, in dependency order. Each line links back to a
       three `\code{...}` flavors, indent tracking) — they exercise
       `.lit`-specific parser quirks and go away in step 5.
       `tests/partials_test.go` is deleted entirely; see decision 10.
-- [ ] **Remove user-facing `\foo{}` parsing in Markdown**
-      (decision 2): drop the `NewInvokeInlineParser` registration
-      from `marklit.go`'s `newParser` and `Extension.Extend`, and
-      replace `preprocess`'s block-level `\foo{...}` extraction with
-      a no-op (keep only CRLF + comment stripping). Delete the
-      now-obsolete tests in `marklit/marklit_test.go` that exercised
-      `\foo{}` / verbatim / preformatted args (~25 cases). Dead
-      files (`invoke_parser.go`, `verbatim.go`, `InvokeBlockNode`,
-      `convertInvokeBlock`, `parseAllBracedArgs`) can be removed in
-      the same commit or a follow-up.
+- [x] **Remove user-facing `\foo{}` parsing in Markdown**
+      (decision 2). `NewInvokeInlineParser` registration dropped
+      from `marklit.go`'s `newParser` and `Extension.Extend`.
+      `preprocess` reduced to CRLF normalization + `{- comment -}`
+      stripping. Dead code removed in the same pass:
+      `invoke_parser.go`, `verbatim.go`, `InvokeBlockNode` +
+      `convertInvokeBlock`, `parseAllBracedArgs` /
+      `parseBracedContent`, the placeholder machinery
+      (`tryResolvePlaceholder` / `resolveEmbeddedPlaceholders` /
+      `stripPlaceholders`), and the `ArgType` field on
+      `InvokeNode` (only `[#tag]` produces `InvokeNode` now, and
+      it uses a single normal arg). `splitInvokeOnlyParagraph`
+      narrowed to JSX-only and renamed `splitElementOnlyParagraph`.
+      Obsolete `\foo{}` / `{{…}}` / `{{{…}}}` tests in
+      `marklit/marklit_test.go` deleted (~25 cases).
 - [ ] **Rewrite remaining `.lit` test fixtures as `.md`**
       (decision 1 prep): the three `Ext: ".lit"` cases in
       `tests/prose_test.go` and any `.lit` fixture strings in
@@ -438,6 +444,12 @@ Concrete tasks, in dependency order. Each line links back to a
 - Test-fixture migration completed (commit `da05f5f`). Markdown
   preferred; JSX only where it has to be. The parser removal (next
   unticked item) is now unblocked.
+- `\foo{}` Markdown parser removed (2026-06-01). One test change of
+  note: `TestBackslashEscape` for `user\\example.com` now produces a
+  single `ast.String("user\example.com")` instead of two split
+  strings — goldmark used to split text segments at the `\` trigger
+  character our (now-gone) invoke inline parser registered for.
+  Output is identical; the change is internal AST shape only.
 - New finding: partials are dead weight now that components exist.
   `<SetPartial>` was solving "thread named content into a renderer
   template" by stuffing entries into a per-section map keyed by
