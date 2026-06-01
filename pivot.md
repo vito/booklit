@@ -489,9 +489,17 @@ Concrete tasks, in dependency order. Each line links back to a
       report VisitInvoke failures. `golang.org/x/text` (which only
       powered `Invoke.Method`'s kebab→PascalCase title casing) is now
       indirect-only; `go mod tidy` reflects that.
-- [ ] **Collapse `baselit/` into `builtins/`** (decision 3): each
-      remaining `baselit.Plugin` method becomes a `builtins.Register`
-      entry. The `baselit/` package directory goes away.
+- [x] **Collapse `baselit/` into `builtins/`** (decision 3). The
+      `baselit/` directory is gone. By the time it landed nothing
+      called any `baselit.Plugin` method except `Syntax`, so collapsing
+      meant moving the treehighlight glue
+      (`Syntax`/`highlightedCodeContent`/`autoLink`/`codeWrapper`/
+      `rawHTML`) into `builtins/code.go` as the `syntax` helper used by
+      the existing `<CodeBlock>`/`<Syntax>` builtin and porting
+      `TestSyntaxLinksBooklitComponentTags` to `builtins/code_test.go`.
+      Every other `baselit.Plugin` method (Title, Italic, Bold, List,
+      Table, Reference, Target, RawHtml, …) was already dead code after
+      the Plugin-machinery retirement and dropped with the package.
 - [ ] **Retire the partials machinery** (decision 10). Tests are
       already off it (`tests/partials_test.go` deleted in `da05f5f`);
       remaining work is the `Section.SetPartial`/`.Partial`/`.Partials`

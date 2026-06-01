@@ -1,6 +1,6 @@
 //go:build cgo
 
-package baselit
+package builtins
 
 import (
 	"testing"
@@ -10,9 +10,8 @@ import (
 
 func TestSyntaxLinksBooklitComponentTags(t *testing.T) {
 	section := &booklit.Section{}
-	plugin := NewPlugin(section)
 
-	content, err := plugin.Syntax("markdown", booklit.Preformatted{booklit.String(`<IncludeSection path="quotes.md"/>`)})
+	content, err := syntax(section, "markdown", booklit.Preformatted{booklit.String(`<IncludeSection path="quotes.md"/>`)})
 	if err != nil {
 		t.Fatal(err)
 	}
