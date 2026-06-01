@@ -82,6 +82,23 @@ func assertLinkChunk(t *testing.T, chunks []Chunk, tag, text string) {
 	t.Fatalf("expected link chunk %q/%q, got %#v", tag, text, chunks)
 }
 
+func TestBooklitInjectsDangIntoTagExpr(t *testing.T) {
+	// The booklit grammar only produces a tag_expr node for JSX
+	// attribute-style {expr} regions (not for content between separate
+	// opening and closing tags). Verify the injection fires there: the
+	// integer literal 2 inside title={2 + 2} should be highlighted as a
+	// Dang constant.numeric, which falls back to "constant" in our style
+	// map.
+	html, err := HTML("markdown", `<Card title={2 + 2}/>`, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const constantStyle = `color:#fcc21b">2</span>`
+	if !strings.Contains(html, constantStyle) {
+		t.Fatalf("expected Dang to highlight `2` inside tag_expr, got:\n%s", html)
+	}
+}
+
 func TestUnknownLanguageFallsBackToEscapedHTML(t *testing.T) {
 	html, err := HTML("made-up", `<x>`, false)
 	if err != nil {

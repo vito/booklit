@@ -22,6 +22,7 @@ import (
 	tshtml "github.com/tree-sitter/tree-sitter-html/bindings/go"
 	tsjavascript "github.com/tree-sitter/tree-sitter-javascript/bindings/go"
 	booklitgrammar "github.com/vito/booklit/treehighlight/internal/tree_sitter_booklit"
+	"github.com/vito/dang/pkg/dang/danglang"
 )
 
 // Chunk is a rendered fragment of highlighted source. HTML chunks should be
@@ -86,40 +87,66 @@ var captureStyles = map[string]string{
 }
 
 type languageSpec struct {
-	name       string
-	language   func() unsafe.Pointer
+	name string
+	// language returns the wrapped tree-sitter Language. The closure form
+	// (instead of a stored *Language) defers cgo initialization until a
+	// language is actually used; some grammars allocate non-trivial state.
+	language   func() *tree_sitter.Language
 	highlights string
+	// injections is an optional tree-sitter injection query whose
+	// (`@injection.content`, `@injection.language`) captures (typically set via
+	// `#set! injection.language "name"`) hand off byte ranges to another
+	// language's highlighter. The resolver in Chunks looks the named language
+	// up in this map.
+	injections string
 	links      string
 	linkTag    func(string) string
+}
+
+// wrapLanguage adapts an upstream tree-sitter binding's raw `Language() unsafe.Pointer`
+// into a closure returning the runtime's wrapped *Language. We wrap per-call
+// because tree_sitter.NewLanguage is cheap and avoids package-init ordering
+// issues with the bound grammars.
+func wrapLanguage(raw func() unsafe.Pointer) func() *tree_sitter.Language {
+	return func() *tree_sitter.Language { return tree_sitter.NewLanguage(raw()) }
 }
 
 var languages = map[string]*languageSpec{
 	"booklit": {
 		name:       "booklit",
-		language:   booklitgrammar.Language,
+		language:   wrapLanguage(booklitgrammar.Language),
 		highlights: booklitHighlightsQuery,
+		injections: booklitInjectionsQuery,
 		links:      booklitLinksQuery,
 		linkTag:    booklitLinkTag,
 	},
 	"go": {
 		name:       "go",
-		language:   tsgo.Language,
+		language:   wrapLanguage(tsgo.Language),
 		highlights: goHighlightsQuery,
 	},
 	"javascript": {
 		name:       "javascript",
-		language:   tsjavascript.Language,
+		language:   wrapLanguage(tsjavascript.Language),
 		highlights: javascriptHighlightsQuery,
 	},
 	"html": {
 		name:       "html",
-		language:   tshtml.Language,
+		language:   wrapLanguage(tshtml.Language),
 		highlights: htmlHighlightsQuery,
 	},
 	"bash": {
 		name:       "bash",
-		language:   tsbash.Language,
+		language:   wrapLanguage(tsbash.Language),
 		highlights: bashHighlightsQuery,
+	},
+	"dang": {
+		// danglang.Language already returns a *tree_sitter.Language; no
+		// wrapper needed (and adding one would pointlessly call
+		// tree_sitter.NewLanguage on an already-wrapped value).
+		name:       "dang",
+		language:   danglang.Language,
+		highlights: dangHighlightsQuery,
 	},
 }
 
@@ -145,6 +172,7 @@ var languageAliases = map[string]string{
 	"bash":             "bash",
 	"sh":               "bash",
 	"shell":            "bash",
+	"dang":             "dang",
 }
 
 // HTML returns a highlighted HTML fragment wrapped in the same <pre><code> or
@@ -180,26 +208,28 @@ func HTML(language, source string, inline bool) (string, error) {
 
 // Chunks returns highlighted source split into raw HTML and optional reference
 // chunks. Unknown languages fall back to escaped, unhighlighted source.
+//
+// When the parent language has an injections query, captured byte ranges hand
+// off to a child language's highlighter via the resolver. We build child
+// configurations lazily inside a configRegistry so each one is compiled at
+// most once per Chunks call and all of them are released together.
 func Chunks(language, source string, opts Options) ([]Chunk, error) {
 	spec := lookupLanguage(language)
 	if spec == nil {
 		return []Chunk{{HTML: html.EscapeString(source)}}, nil
 	}
 
-	lang := tree_sitter.NewLanguage(spec.language())
-	cfg, err := tshighlight.NewConfiguration(lang, spec.name, []byte(spec.highlights), nil, nil)
+	cfgs := newConfigRegistry()
+	defer cfgs.close()
+
+	cfg, err := cfgs.compile(spec)
 	if err != nil {
-		return nil, fmt.Errorf("configure %s highlighter: %w", spec.name, err)
-	}
-	cfg.Configure(captureNames)
-	defer cfg.Query.Close()
-	if cfg.CombinedInjectionsQuery != nil {
-		defer cfg.CombinedInjectionsQuery.Close()
+		return nil, err
 	}
 
 	var links []linkRange
 	if opts.LinkReferences && spec.links != "" {
-		links, err = collectLinks(spec, lang, []byte(source))
+		links, err = collectLinks(spec, cfg.Language, []byte(source))
 		if err != nil {
 			return nil, err
 		}
@@ -207,8 +237,63 @@ func Chunks(language, source string, opts Options) ([]Chunk, error) {
 
 	highlighter := tshighlight.New()
 	defer highlighter.Parser.Close()
-	events := highlighter.Highlight(context.Background(), *cfg, []byte(source), func(string) *tshighlight.Configuration { return nil })
+	events := highlighter.Highlight(context.Background(), *cfg, []byte(source), cfgs.resolve)
 	return renderChunks(events, []byte(source), links)
+}
+
+// configRegistry compiles and caches tshighlight.Configurations for the
+// duration of a single Chunks call. The injection-resolver callback uses it
+// to find or build a child language's configuration on demand.
+type configRegistry struct {
+	configs map[string]*tshighlight.Configuration
+}
+
+func newConfigRegistry() *configRegistry {
+	return &configRegistry{configs: map[string]*tshighlight.Configuration{}}
+}
+
+func (r *configRegistry) compile(spec *languageSpec) (*tshighlight.Configuration, error) {
+	if existing, ok := r.configs[spec.name]; ok {
+		return existing, nil
+	}
+	lang := spec.language()
+	cfg, err := tshighlight.NewConfiguration(lang, spec.name, []byte(spec.highlights), []byte(spec.injections), nil)
+	if err != nil {
+		return nil, fmt.Errorf("configure %s highlighter: %w", spec.name, err)
+	}
+	cfg.Configure(captureNames)
+	r.configs[spec.name] = cfg
+	return cfg, nil
+}
+
+// resolve is the InjectionCallback passed to tshighlight. It returns nil for
+// unknown languages so the highlighter falls back to escaped source for that
+// range — better than crashing on a language we can't recognize.
+func (r *configRegistry) resolve(name string) *tshighlight.Configuration {
+	if name == "" {
+		return nil
+	}
+	if existing, ok := r.configs[name]; ok {
+		return existing
+	}
+	spec, ok := languages[name]
+	if !ok {
+		return nil
+	}
+	cfg, err := r.compile(spec)
+	if err != nil {
+		return nil
+	}
+	return cfg
+}
+
+func (r *configRegistry) close() {
+	for _, c := range r.configs {
+		c.Query.Close()
+		if c.CombinedInjectionsQuery != nil {
+			c.CombinedInjectionsQuery.Close()
+		}
+	}
 }
 
 func lookupLanguage(language string) *languageSpec {
@@ -529,6 +614,27 @@ const booklitLinksQuery = `
 (tag name: (identifier) @reference)
 `
 
+// booklitInjectionsQuery routes the contents of JSX-style {expr} regions
+// (the booklit grammar's `tag_expr` node) to the Dang highlighter. The
+// captured range includes the surrounding `{` and `}` because tshighlight's
+// query layer here does not support the `#offset!` directive that would
+// trim them — Dang parses `{...}` as a block expression, so the extra
+// braces are tolerated by the child parser even if it adds an outer
+// punctuation.bracket span.
+//
+// The trailing dummy pattern is a workaround for tshighlight's
+// injectionForMatch, which short-circuits when the configuration lacks an
+// @injection.language capture *index*, even for patterns that supply the
+// name via #set!. The dummy gives the index something to bind to without
+// actually injecting (no @injection.content, so the caller's `contentNode
+// != nil` guard rejects it).
+const booklitInjectionsQuery = `
+((tag_expr) @injection.content
+  (#set! injection.language "dang"))
+
+((delimiter) @injection.language)
+`
+
 const goHighlightsQuery = `
 [
   "break"
@@ -685,4 +791,121 @@ const bashHighlightsQuery = `
 (number) @number
 (variable_name) @variable
 (simple_expansion) @variable
+`
+
+// dangHighlightsQuery mirrors ~/src/dang/treesitter/queries/highlights.scm.
+// Dot-suffixed capture names (e.g. keyword.control, constant.numeric) fall
+// back to their root capture (keyword, constant) via tshighlight's
+// Configure() dot-fallback, so we do not need to add new entries to
+// captureStyles for the more specific Dang captures.
+const dangHighlightsQuery = `
+;; Keywords
+[
+  (let_token)
+  (pub_token)
+] @keyword
+[
+  (type_token)
+  (interface_token)
+  (union_token)
+  (implements_token)
+  (enum_token)
+  (scalar_token)
+  (if_token)
+  (else_token)
+  (for_token)
+  (break_token)
+  (continue_token)
+  (case_token)
+  (directive_token)
+  (on_token)
+  (import_token)
+  (new_token)
+  (try_token)
+  (catch_token)
+  (raise_token)
+  (return_token)
+  (and_token)
+  (or_token)
+] @keyword.control
+
+(self_keyword) @variable.special
+
+;; Literals
+(string) @string
+(doc_string) @string
+(triple_quote_string) @string
+(int) @constant.numeric
+(boolean) @constant.builtin.boolean
+(null) @constant.builtin
+
+;; Comments
+(comment_token) @comment.line
+(upper_token) @type
+
+;; Directives
+(directive_name) @function.macro
+(directive_application
+  (id) @function.macro)
+(directive_location
+  (upper_id) @constant.builtin)
+
+;; Operators and punctuation
+[
+  (equal_token)
+  (plus_equal_token)
+  (double_interro_token)
+  (bang_token)
+  (arrow_token)
+  (ampersand_token)
+] @operator
+["{{" "}}" "{" "}" "[" "]" "(" ")"] @punctuation.bracket
+[
+  (comma_token)
+  (dot_token)
+] @punctuation.delimiter
+["@" "|"] @punctuation.special
+
+;; Identifiers
+(symbol) @variable
+(call (symbol) @function.method)
+
+;; Key-value pairs
+(key_value
+  (word_token) @property)
+
+;; Field selections
+(select_or_call
+  (field_id) @function.method)
+(field_selection
+  (id) @property)
+
+;; Type-bearing slots
+(type_and_block_slot
+  (symbol) @function.method)
+(type_and_args_and_block_slot
+  (symbol) @function.method)
+(type_and_value_slot
+  (symbol) @function.method)
+(value_only_slot
+  (symbol) @function.method)
+(type_only_slot
+  (symbol) @function.method)
+(type_only_fun_slot
+  (symbol) @function.method)
+
+(arg_with_block_default
+  (symbol) @variable.parameter)
+(arg_with_type
+  (symbol) @variable.parameter)
+(arg_with_default
+  (symbol) @variable.parameter)
+
+;; Class definitions
+(class (symbol) @type)
+(implements (symbol) @type)
+(interface (symbol) @type)
+(enum (symbol) @type)
+(enum (caps_symbol) @property)
+(scalar (symbol) @type)
 `
