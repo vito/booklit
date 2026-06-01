@@ -612,18 +612,17 @@ Concrete tasks, in dependency order. Each line links back to a
       blocks), which is a separate concern from per-section partials.
       The baselit `SetPartial` method called out in the checklist was
       already dropped with baselit/.
-- [ ] **HTML block-tag registry** (decision 11 prep). New
-      `htmltags.go` (top-level, or `internal/htmltags` if kept
-      private) exporting a `Block` set / `Block(tag string) bool`
-      function over the CommonMark/HTML5 block-level tag list
-      (~60 entries: `address`, `article`, `aside`, `blockquote`,
-      `body`, `details`, `div`, `dl`, `dt`, `fieldset`, `figcaption`,
-      `figure`, `footer`, `form`, `h1`–`h6`, `header`, `hr`,
-      `iframe`, `li`, `main`, `menu`, `nav`, `ol`, `p`, `pre`,
-      `section`, `summary`, `table`, `tbody`, `td`, `tfoot`, `th`,
-      `thead`, `tr`, `ul`, …). Source: HTML5 spec § 4.6 +
-      CommonMark HTML block tag list. Goldmark uses an equivalent
-      list internally but doesn't export it; hand-maintained.
+- [x] **HTML block-tag registry** (decision 11 prep). Landed as
+      `internal/htmltags/htmltags.go`, exporting a `Block
+      map[string]bool` keyed on lowercase tag names. 68 entries:
+      goldmark's `allowedBlockTags` (CommonMark HTML block types 1
+      and 6 — copied verbatim from `parser/html_block.go` since
+      goldmark doesn't export it) plus `pre`/`script`/`style`/
+      `textarea` (CommonMark type-1 raw-text blocks, which goldmark
+      handles via a separate regex rather than the type-6 table).
+      Kept under `internal/` because consumers are all in-tree
+      (builtins, stages, render); promote to a public package if
+      a future external module needs the same classification.
 - [ ] **`RawElement` / `RawFragment` content types + migration**
       (decision 11). New `raw_element.go` / `raw_fragment.go` in
       package `booklit`. `RawElement{Tag, Attrs, Content}` with
