@@ -99,12 +99,24 @@ func (eval *Evaluate) VisitParagraph(node ast.Paragraph) error {
 		flow = booklit.Paragraph{}
 	}
 	emit := func(item booklit.Content) {
-		if item.IsFlow() {
-			flow = append(flow, item)
+		if !item.IsFlow() {
+			flushFlow()
+			eval.Result = booklit.Append(eval.Result, item)
 			return
 		}
-		flushFlow()
-		eval.Result = booklit.Append(eval.Result, item)
+		// Flow content with no visible text (Target's bare anchor,
+		// empty Sequence, self-closing void RawElement, …) is a
+		// side-effect marker. Wrapping it in a Paragraph would
+		// emit an empty `<p>` carrying just an anchor or nothing —
+		// not what an author writing `<Target tag="x"/>` on its
+		// own line expects. Emit unwrapped instead, the same way
+		// block content escapes the paragraph.
+		if item.String() == "" {
+			flushFlow()
+			eval.Result = booklit.Append(eval.Result, item)
+			return
+		}
+		flow = append(flow, item)
 	}
 
 	for _, line := range lines {

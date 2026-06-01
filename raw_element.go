@@ -34,12 +34,24 @@ type RawElement struct {
 	Content Content
 }
 
-// IsFlow returns true when Tag is not a block-level HTML element. The
-// classification comes from internal/htmltags, which mirrors
-// CommonMark/HTML5's block-tag list. An unknown tag (e.g. a custom
-// element like `<my-widget>`) is treated as flow — the same default
-// HTML applies when rendering an unrecognized inline element.
+// IsFlow returns true when Tag is not a block-level HTML element AND
+// the Content (if any) is itself flow. The tag classification comes
+// from internal/htmltags, which mirrors CommonMark/HTML5's block-tag
+// list. An unknown tag (e.g. a custom element like `<my-widget>`) is
+// treated as flow — the same default HTML applies when rendering an
+// unrecognized inline element.
+//
+// The Content check covers the degenerate but real case where a
+// flow-tagged element wraps block content (a `<span>` wrapping a
+// `<p>` from `<Larger>\nmulti-paragraph\n</Larger>`). The rendered
+// HTML is invalid either way (span can't contain p), but treating
+// the wrapper as effectively block keeps the surrounding paragraph
+// layout from sandwiching the whole thing in another `<p>` —
+// preserving the pre-Styled-retirement behavior.
 func (con RawElement) IsFlow() bool {
+	if con.Content != nil && !con.Content.IsFlow() {
+		return false
+	}
 	return !htmltags.Block[con.Tag]
 }
 

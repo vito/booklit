@@ -264,7 +264,26 @@ func (c *converter) convertNode(n gast.Node) ast.Node {
 
 	case KindJSXBlockElement:
 		j := n.(*JSXBlockElementNode)
-		return c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
+		// Wrap top-level block-claimed JSX in ast.Paragraph so the
+		// evaluator runs its flow/block segmentation against the
+		// result. The combined rule (see
+		// stages/evaluate.go::VisitParagraph) is:
+		//   - block-shaped result → emit unwrapped (e.g. <Section>,
+		//     <Inset> with a paragraph body),
+		//   - flow-shaped result with visible content → wrap in
+		//     `<p>` (standalone <Larger>x</Larger>,
+		//     <Image path="..."/>),
+		//   - flow-shaped result with no visible content → emit
+		//     unwrapped (standalone <Target tag="..."/>, <Aux/>,
+		//     anything whose .String() is empty — side-effect
+		//     markers that authors don't expect to occupy a
+		//     paragraph).
+		// Without the wrap, eval.Result was appended directly to
+		// the containing flow, so flow-shaped block-claimed
+		// elements rendered as bare `<span>` outside any paragraph
+		// instead of `<p><span>...</span></p>`.
+		elem := c.buildJSXElement(j.Name, j.Props, j.Children, j.Line, j.Col, j.MultiLine)
+		return ast.Paragraph{ast.Sequence{elem}}
 
 	default:
 		if n.Kind() == east.KindTable {

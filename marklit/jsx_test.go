@@ -142,9 +142,27 @@ func TestJSX(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := marklit.Parse([]byte(tc.in))
-			assertNode(t, got, tc.want)
+			// Top-level block-claimed JSX is wrapped in
+			// ast.Paragraph{ast.Sequence{...}} at convert time so
+			// the evaluator's flow/block segmentation runs against
+			// it (see marklit/convert.go::KindJSXBlockElement).
+			// These cases all parse as block JSX — express the
+			// expectation in terms of the bare element to keep the
+			// table focused on the JSX parsing shape, and wrap
+			// here for comparison.
+			want := wrapBlockJSX(tc.want)
+			assertNode(t, got, want)
 		})
 	}
+}
+
+// wrapBlockJSX mirrors convert.go's wrap of top-level block-claimed
+// JSX in ast.Paragraph{ast.Sequence{...}}.
+func wrapBlockJSX(n ast.Node) ast.Node {
+	if _, ok := n.(ast.JSXElement); ok {
+		return ast.Paragraph{ast.Sequence{n}}
+	}
+	return n
 }
 
 // TestJSXLowercaseTags verifies that lowercase tag names are claimed by
