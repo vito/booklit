@@ -89,8 +89,9 @@ func main() {
 ```
 
 Use that binary instead of the stock `booklit` CLI to build your docs.
-This is exactly how the documentation site you're reading is built —
-see `cmd/booklit-docs` and `docs/booklitdoc/` in the Booklit repo.
+Booklit's own documentation now builds with the stock CLI; its docs-only
+components live in `docs/html/` as templates or in the `booklitdoc`
+Dagger module.
 
 ### Built-in Signature
 

@@ -12,7 +12,7 @@ func init() {
 }
 
 // codeBlockFunc — `<CodeBlock language="go">code</CodeBlock>` or
-// `<Syntax language="go" style="monokai">code</Syntax>`. Chroma-driven
+// `<Syntax language="go" style="monokai">code</Syntax>`. Tree-sitter-driven
 // syntax highlighting; delegates to baselit's existing implementation.
 func codeBlockFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	language, err := requireStringProp(ctx, props, "language", "CodeBlock")

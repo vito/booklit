@@ -5,14 +5,11 @@ go 1.26.3
 require (
 	dagger.io/dagger v0.20.7-0.20260522154811-5dde81db2f77
 	github.com/Khan/genqlient v0.8.1
-	github.com/alecthomas/chroma/v2 v2.23.1
 	github.com/dagger/otel-go v1.43.1-0.20260515012101-af7cd0684887
 	github.com/vektah/gqlparser/v2 v2.5.33
 	go.opentelemetry.io/otel v1.44.0
 	go.opentelemetry.io/otel/trace v1.44.0
 )
-
-require github.com/dlclark/regexp2 v1.11.5 // indirect
 
 require (
 	github.com/99designs/gqlgen v0.17.90 // indirect
@@ -22,8 +19,14 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0 // indirect
+	github.com/mattn/go-pointer v0.0.1 // indirect
 	github.com/sosodev/duration v1.4.0 // indirect
-	github.com/vito/booklit v0.0.0-00010101000000-000000000000
+	github.com/tree-sitter/go-tree-sitter v0.25.0 // indirect
+	github.com/tree-sitter/tree-sitter-bash v0.25.1 // indirect
+	github.com/tree-sitter/tree-sitter-go v0.25.0 // indirect
+	github.com/tree-sitter/tree-sitter-html v0.23.2 // indirect
+	github.com/tree-sitter/tree-sitter-javascript v0.25.0 // indirect
+	go.gopad.dev/go-tree-sitter-highlight v0.0.0-20241203223050-3ffb64c3a650 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.17.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.17.0 // indirect
@@ -55,5 +58,3 @@ replace go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp => go.opente
 replace go.opentelemetry.io/otel/log => go.opentelemetry.io/otel/log v0.16.0
 
 replace go.opentelemetry.io/otel/sdk/log => go.opentelemetry.io/otel/sdk/log v0.16.0
-
-replace github.com/vito/booklit => ../..

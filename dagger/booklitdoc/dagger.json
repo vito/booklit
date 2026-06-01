@@ -3,10 +3,5 @@
   "engineVersion": "v0.21.0",
   "sdk": {
     "source": "go"
-  },
-  "include": [
-    "../../go.mod",
-    "../../go.sum",
-    "../../contentjson"
-  ]
+  }
 }

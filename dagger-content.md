@@ -16,7 +16,7 @@ module return Booklit content?** The answer we built: a JSON wire format
 ## What's done (all committed on `jsx-dang`)
 
 End-to-end works: a `<LitSyntax code="…"/>` in a `.md` runs a Dagger
-module that highlights the code with chroma and returns it as JSON;
+module that highlights the code with tree-sitter and returns it as JSON;
 Booklit decodes it into native content and renders it through the
 existing templates. Verified by rendering a real doc.
 
@@ -36,10 +36,10 @@ Commits, oldest first:
    longer a `<LitSyntax>` built-in.
 3. **Dang** evaluates the `{expr}`. `booklitdoc` is the installed Dagger
    dependency; `litSyntax` is its function. The call goes to the engine.
-4. **Module** (`dagger/booklitdoc`, Go SDK) highlights with chroma,
-   linkifies `\function` tokens into `wire.Ref` nodes, builds a
-   `*wire.Node` tree, and returns `wire.Marshal(...)` as the Dagger
-   `JSON` scalar.
+4. **Module** (`dagger/booklitdoc`, Go SDK) highlights with its vendored
+   copy of `treehighlight`, turns tree-sitter query captures for
+   `\function` names into `wire.Ref` nodes, builds a `*wire.Node` tree,
+   and returns `wire.Marshal(...)` as the Dagger `JSON` scalar.
 5. **Bridge** (`dangeval.Evaluator.ContentFromValue`) sees a `JSON`
    scalar, runs `contentjson.Unmarshal(data, section)` → native
    `booklit.Content`, rehydrating `Reference`/`Target` against the
@@ -77,20 +77,17 @@ not just `litSyntax`.
 
 ## The module + its local dependency
 
-`dagger/booklitdoc` is a Go-SDK module that imports
-`github.com/vito/booklit/contentjson/wire` and chroma. Because `booklit`
-is unpublished (this branch), it uses the standard Dagger monorepo
-pattern:
+`dagger/booklitdoc` is a Go-SDK module with local copies of
+`contentjson/wire` and `treehighlight`. The copy is deliberate: the Go
+SDK runtime builds with cgo disabled, while tree-sitter's Go bindings
+need cgo, so `LitSyntax` shells out to `cmd/lit-syntax` in a
+`golang:1.26` container with `CGO_ENABLED=1`.
 
-- `go.mod`: `replace github.com/vito/booklit => ../..`
-- `dagger.json`: `"include": ["../../go.mod", "../../go.sum",
-  "../../contentjson"]` so the engine build can see the parent.
-- Installed into the root module with `dagger install ./dagger/booklitdoc`
-  (root `dagger.json` gained a `dependencies` entry).
-
-Generated SDK code (`dagger.gen.go`, `internal/`) is gitignored;
-**after a fresh checkout run `dagger develop` in `dagger/booklitdoc`**
-before the module will build.
+The module is installed into the root module with
+`dagger install ./dagger/booklitdoc` (root `dagger.json` has a
+`dependencies` entry). Generated SDK code (`dagger.gen.go`, `internal/`)
+is gitignored; **after a fresh checkout run `dagger develop` in
+`dagger/booklitdoc`** before the module will build.
 
 ## How to run / iterate
 
@@ -102,9 +99,9 @@ before the module will build.
   `dagger develop` at the repo root.
 - Render a doc end-to-end (starts the engine, builds + serves the
   module):
-  `go run ./cmd/booklit-docs -i docs/lit/<file>.md -o /tmp/out --html-templates docs/html`
+  `go run ./cmd/booklit -i docs/lit/<file>.md -o /tmp/out --html-templates docs/html`
 - Unit tests (no engine needed):
-  `go test ./contentjson/... ./dangeval/`
+  `go test ./contentjson/... ./dangeval/ ./treehighlight/...`
 - Full site: `make docs/outputs/index.html` (or `scripts/build-docs`).
 
 ## Open follow-ups (roughly prioritized)
@@ -124,19 +121,19 @@ before the module will build.
    raw output), but a doc that actually `\define`s the target tags is
    needed to confirm `<a href>` output. `<LitSyntax>` is currently
    unused by the real docs.
-4. **Retire `cmd/booklit-docs` entirely.** Only the chroma
-   `styles.Fallback` palette keeps it alive (it colors every fenced
-   block, highlighted in-process by `baselit`). To drop the binary,
-   route all code-block highlighting through the module (e.g. a
-   `<CodeBlock>` template, or intercept the `code-block` invoke) and
-   express the palette as chroma config in the container. Bigger job.
-5. **Keep the two palettes in sync.** The booklitdoc chroma palette now
-   lives in two places: `docs/booklitdoc/booklitdoc.go` (in-process,
-   fenced blocks) and `dagger/booklitdoc/main.go` (`litStyle`). Folding
-   #4 in removes the duplication.
-6. **Fix `decisions.md`.** Its claim that `{build(...)}` (a root-module
+4. **Fix `decisions.md`.** Its claim that `{build(...)}` (a root-module
    function) is callable from docs is wrong: introspection exposes the
    module's dependencies + core API on `Query`, not its own functions.
+
+## Latest update: tree-sitter highlighter
+
+`cmd/booklit-docs` and `docs/booklitdoc` are gone. `baselit.Syntax` now
+uses `treehighlight`, a tree-sitter renderer with inline styles, so
+fenced blocks no longer depend on a process-wide chroma `styles.Fallback`.
+`<LitSyntax>` uses a vendored copy through the Dagger module and emits
+references from tree-sitter query captures rather than a regex over
+highlighted HTML. If Booklit is built with `CGO_ENABLED=0`,
+`treehighlight` compiles to an escaped plain-code fallback.
 
 ## Gotchas worth remembering
 

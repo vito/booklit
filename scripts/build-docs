@@ -8,6 +8,4 @@ go run ./cmd/booklit \
   -i docs/lit/index.md \
   -o $out \
   --html-templates docs/html \
-  --plugin github.com/vito/booklit/docs/go \
-  --plugin github.com/vito/booklit/chroma/plugin \
   "$@"
