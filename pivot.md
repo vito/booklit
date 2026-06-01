@@ -430,9 +430,15 @@ Concrete tasks, in dependency order. Each line links back to a
       PascalCase routes through the three existing tiers.
       Markdown-inside-Component verified with a new test (`<Card>
       **bold**</Card>`).
-- [ ] **Rename / retire `--html-templates`** (decision 5). Keep the
-      lookup for `html/` overrides but stop requiring a flag; use a
-      conventional path. Drop the flag when its last use is gone.
+- [x] **Rename / retire `--html-templates`** (decision 5). Flag and
+      its struct field (`HTMLEngine.Templates`) gone from
+      `booklitcmd/command.go`. The renderer now auto-discovers an
+      `html/` directory the same way `components/` is found —
+      `findProjectSubdir(--in, "html")` walks up from
+      `filepath.Dir(--in)` looking for a sibling. Both auto-discoveries
+      share one helper now. Makefile + `docs/lit/html-renderer.md` +
+      `docs/lit/plugins.md` updated to reflect the convention-based
+      lookup.
 - [ ] **Lower Markdown directly to JSX** (decision 3): rewrite
       `marklit/convert.go` so it emits `ast.JSXElement` for headings,
       links, images, code spans, code blocks, lists, tables, raw

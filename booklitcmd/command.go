@@ -41,10 +41,6 @@ type Command struct {
 	HTTPProfilePort int    `long:"http-profile" description:"Start the Go net/http/pprof server on this port."`
 	CPUProfilePath  string `long:"cpu-profile"  description:"Write a CPU profile to this path."`
 
-	HTMLEngine struct {
-		Templates string `long:"templates" description:"Directory containing .tmpl files to load."`
-	} `group:"HTML Rendering Engine" namespace:"html"`
-
 	TextEngine struct {
 		FileExtension string `long:"file-extension" description:"File extension to use for generated files."`
 		Templates     string `long:"templates"      description:"Directory containing .tmpl files to load."`
@@ -95,15 +91,16 @@ func (cmd *Command) Serve() error {
 	}
 	defer dang.Close()
 
+	htmlDir := findProjectSubdir(cmd.In, "html")
 	http.Handle("/", &Server{
 		In: cmd.In,
 		Processor: &load.Processor{
 			SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 			Dang:                dang,
-			Templates:           templates.New(findComponentsDir(cmd.In), cmd.HTMLEngine.Templates),
+			Templates:           templates.New(findProjectSubdir(cmd.In, "components")),
 		},
 
-		Templates:  cmd.HTMLEngine.Templates,
+		Templates:  htmlDir,
 		Engine:     render.NewHTMLEngine(),
 		FileServer: http.FileServer(http.Dir(cmd.Out)),
 	})
@@ -117,19 +114,18 @@ var basePluginFactories = []booklit.PluginFactory{
 	baselit.NewPlugin,
 }
 
-// findComponentsDir walks up from filepath.Dir(in) looking for a sibling
-// `components/` directory and returns its absolute path. The walk mirrors
-// dangeval's project-root resolution so an `--in lit/index.md` invocation
-// from a project root finds the project's `components/` dir without
-// needing a flag. Returns "" if no `components/` is found, which a nil
-// `templates.New` arg handles silently.
-func findComponentsDir(in string) string {
+// findProjectSubdir walks up from filepath.Dir(in) looking for a sibling
+// directory named subdir and returns its absolute path. Returns "" if no
+// match is found. The walk mirrors dangeval's project-root resolution so
+// an `--in lit/index.md` invocation from a project root finds the
+// project's `components/` (or `html/`) dir without needing a flag.
+func findProjectSubdir(in, subdir string) string {
 	dir, err := filepath.Abs(filepath.Dir(in))
 	if err != nil {
 		return ""
 	}
 	for {
-		candidate := filepath.Join(dir, "components")
+		candidate := filepath.Join(dir, subdir)
 		if info, err := os.Stat(candidate); err == nil && info.IsDir() {
 			return candidate
 		}
@@ -151,7 +147,7 @@ func (cmd *Command) Build() error {
 	processor := &load.Processor{
 		SlowInvokeThreshold: cmd.SlowInvokeThreshold,
 		Dang:                dang,
-		Templates:           templates.New(findComponentsDir(cmd.In), cmd.HTMLEngine.Templates),
+		Templates:           templates.New(findProjectSubdir(cmd.In, "components")),
 	}
 
 	var engine render.Engine
@@ -169,8 +165,8 @@ func (cmd *Command) Build() error {
 	} else {
 		htmlEngine := render.NewHTMLEngine()
 
-		if cmd.HTMLEngine.Templates != "" {
-			err := htmlEngine.LoadTemplates(cmd.HTMLEngine.Templates)
+		if htmlDir := findProjectSubdir(cmd.In, "html"); htmlDir != "" {
+			err := htmlEngine.LoadTemplates(htmlDir)
 			if err != nil {
 				return err
 			}

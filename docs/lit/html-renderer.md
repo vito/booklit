@@ -9,18 +9,24 @@ styling at all. You'll probably want to change that.
 
 The HTML renderer uses Go's built-in
 [`html/template`](https://golang.org/pkg/html/template) package. To
-override templates, create a directory for your `.tmpl` files and pass it
-to Booklit with the `--html-templates` flag.
+override templates, drop your `.tmpl` files into a directory named
+`html/` at your project root. Booklit walks up from `--in` looking for
+a sibling `html/` directory and loads anything it finds — no flag is
+needed.
 
-The `--html-templates` flag must be passed every time you build your docs,
-so you may want to put it in a script:
+A typical layout:
 
 ```bash
-#!/bin/bash
+project/
+├── lit/
+│   └── index.md     # passed to --in
+└── html/
+    ├── page.tmpl    # override
+    └── section.tmpl # override
+```
 
-booklit -i lit/index.md -o public \
-  --html-templates ./html \
-  "$@" # forward args from script to booklit
+```bash
+booklit -i lit/index.md -o public
 ```
 
 <TableOfContents/>
@@ -162,8 +168,8 @@ I'm a fancy section!
 I'm a normal sub-section!
 ```
 
-...and the following as `fancy.tmpl` under the given templates path
-(`--html-templates`):
+...and the following as `fancy.tmpl` in your project's `html/`
+directory:
 
 ```go-html-template
 <div class="fancy">

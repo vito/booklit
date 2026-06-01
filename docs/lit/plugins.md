@@ -18,10 +18,12 @@ walks through both approaches.
 
 If a JSX invocation has no matching built-in and no `pub PascalCase`
 Dang function in scope, Booklit looks for an mdx template at
-`<templates-dir>/<Name>.md` and evaluates it with the props bound in
-Dang scope and `children` carrying the rendered JSX body.
+`components/<Name>.md` (a sibling of `lit/`) and evaluates it with the
+props bound in Dang scope and `children` carrying the rendered JSX
+body.
 
-Say you want a `<Card>` component. Drop the following into `html/Card.md`:
+Say you want a `<Card>` component. Drop the following into
+`components/Card.md`:
 
 ```markdown
 <div class="card">
@@ -38,12 +40,13 @@ Welcome to the test.
 </Card>
 ```
 
-Build with `booklit --html-templates html ...` and the component renders.
-No Go, no recompile. Templates are HTML scaffolding with two interpolation
-forms: `{name}` for a Dang expression (props arrive as named bindings),
-and `<Children/>` if `{children}` doesn't fit in JSX child position.
-Lowercase tags pass through as raw HTML; uppercase tags recursively
-dispatch through built-ins, Dang functions, or other mdx templates.
+`booklit -i lit/index.md -o public` and the component renders — no Go,
+no recompile, no flag. Templates are HTML scaffolding with two
+interpolation forms: `{name}` for a Dang expression (props arrive as
+named bindings), and `<Children/>` if `{children}` doesn't fit in JSX
+child position. Lowercase tags pass through as raw HTML; uppercase
+tags recursively dispatch through built-ins, Dang functions, or other
+mdx templates.
 
 ## Go Built-ins {#go-builtins}
 

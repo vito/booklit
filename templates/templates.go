@@ -41,9 +41,9 @@ type cached struct {
 
 // New returns a Registry that searches dirs in order. Empty strings
 // are skipped (so `New("")` is a no-op registry, matching the "no
-// --html-templates flag" case). Caller-supplied earlier dirs shadow
-// later ones, which is how the test harness lets a per-test tempdir
-// override shared fixtures.
+// components directory found" case). Caller-supplied earlier dirs
+// shadow later ones, which is how the test harness lets a per-test
+// tempdir override shared fixtures.
 func New(dirs ...string) *Registry {
 	filtered := make([]string, 0, len(dirs))
 	for _, d := range dirs {
