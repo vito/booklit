@@ -62,12 +62,6 @@ func encode(content booklit.Content) (*wire.Node, error) {
 			return nil, err
 		}
 		return wire.Para(items...), nil
-	case booklit.Preformatted:
-		items, err := encodeAll(v)
-		if err != nil {
-			return nil, err
-		}
-		return wire.Pre(items...), nil
 	case booklit.RawElement:
 		inner, err := encode(v.Content)
 		if err != nil {
@@ -76,44 +70,6 @@ func encode(content booklit.Content) (*wire.Node, error) {
 		return wire.Element(v.Tag, v.Attrs, inner), nil
 	case booklit.RawFragment:
 		return wire.Fragment(v.HTML), nil
-	case booklit.Link:
-		inner, err := encode(v.Content)
-		if err != nil {
-			return nil, err
-		}
-		return wire.Link(v.Target, inner), nil
-	case booklit.Image:
-		return wire.Image(v.Path, v.Description), nil
-	case booklit.List:
-		items, err := encodeAll(v.Items)
-		if err != nil {
-			return nil, err
-		}
-		return wire.List(v.Ordered, items...), nil
-	case booklit.Table:
-		rows := make([][]*wire.Node, len(v.Rows))
-		for i, row := range v.Rows {
-			cols, err := encodeAll(row)
-			if err != nil {
-				return nil, err
-			}
-			rows[i] = cols
-		}
-		return wire.Table(rows...), nil
-	case booklit.Definitions:
-		defs := make([]wire.Def, len(v))
-		for i, def := range v {
-			subject, err := encode(def.Subject)
-			if err != nil {
-				return nil, err
-			}
-			body, err := encode(def.Definition)
-			if err != nil {
-				return nil, err
-			}
-			defs[i] = wire.Def{Subject: subject, Def: body}
-		}
-		return wire.Definitions(defs...), nil
 	case booklit.Aux:
 		inner, err := encode(v.Content)
 		if err != nil {
@@ -177,58 +133,21 @@ func decode(n *wire.Node, sec *booklit.Section) (booklit.Content, error) {
 			return nil, err
 		}
 		return booklit.Paragraph(items), nil
-	case "pre":
-		items, err := decodeAll(n.Items, sec)
-		if err != nil {
-			return nil, err
-		}
-		return booklit.Preformatted(items), nil
 	case "element":
-		inner, err := decode(n.Content, sec)
-		if err != nil {
-			return nil, err
+		// Preserve a nil Content (self-closing element) across the wire —
+		// decoding via the recursive helper would expand it into
+		// booklit.Empty, breaking round-trips of <img>/<br>/etc.
+		var inner booklit.Content
+		if n.Content != nil {
+			c, err := decode(n.Content, sec)
+			if err != nil {
+				return nil, err
+			}
+			inner = c
 		}
 		return booklit.RawElement{Tag: n.HTMLTag, Attrs: n.Attrs, Content: inner}, nil
 	case "fragment":
 		return booklit.RawFragment{HTML: n.S}, nil
-	case "link":
-		inner, err := decode(n.Content, sec)
-		if err != nil {
-			return nil, err
-		}
-		return booklit.Link{Content: inner, Target: n.Target}, nil
-	case "image":
-		return booklit.Image{Path: n.Path, Description: n.Desc}, nil
-	case "list":
-		items, err := decodeAll(n.Items, sec)
-		if err != nil {
-			return nil, err
-		}
-		return booklit.List{Items: items, Ordered: n.Ordered}, nil
-	case "table":
-		rows := make([][]booklit.Content, len(n.Rows))
-		for i, row := range n.Rows {
-			cols, err := decodeAll(row, sec)
-			if err != nil {
-				return nil, err
-			}
-			rows[i] = cols
-		}
-		return booklit.Table{Rows: rows}, nil
-	case "defs":
-		defs := make(booklit.Definitions, len(n.Defs))
-		for i, def := range n.Defs {
-			subject, err := decode(def.Subject, sec)
-			if err != nil {
-				return nil, err
-			}
-			body, err := decode(def.Def, sec)
-			if err != nil {
-				return nil, err
-			}
-			defs[i] = booklit.Definition{Subject: subject, Definition: body}
-		}
-		return defs, nil
 	case "aux":
 		inner, err := decode(n.Content, sec)
 		if err != nil {

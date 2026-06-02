@@ -37,11 +37,6 @@ type Command struct {
 
 	HTTPProfilePort int    `long:"http-profile" description:"Start the Go net/http/pprof server on this port."`
 	CPUProfilePath  string `long:"cpu-profile"  description:"Write a CPU profile to this path."`
-
-	TextEngine struct {
-		FileExtension string `long:"file-extension" description:"File extension to use for generated files."`
-		Templates     string `long:"templates"      description:"Directory containing .tmpl files to load."`
-	} `group:"Text Rendering Engine" namespace:"text"`
 }
 
 func (cmd *Command) Execute(args []string) error {
@@ -141,30 +136,16 @@ func (cmd *Command) Build() error {
 		Templates: templates.New(findProjectSubdir(cmd.In, "components")),
 	}
 
-	var engine render.Engine
-	if cmd.TextEngine.FileExtension != "" {
-		textEngine := render.NewTextEngine(cmd.TextEngine.FileExtension)
+	htmlEngine := render.NewHTMLEngine()
 
-		if cmd.TextEngine.Templates != "" {
-			err := textEngine.LoadTemplates(cmd.TextEngine.Templates)
-			if err != nil {
-				return err
-			}
+	if htmlDir := findProjectSubdir(cmd.In, "html"); htmlDir != "" {
+		err := htmlEngine.LoadTemplates(htmlDir)
+		if err != nil {
+			return err
 		}
-
-		engine = textEngine
-	} else {
-		htmlEngine := render.NewHTMLEngine()
-
-		if htmlDir := findProjectSubdir(cmd.In, "html"); htmlDir != "" {
-			err := htmlEngine.LoadTemplates(htmlDir)
-			if err != nil {
-				return err
-			}
-		}
-
-		engine = htmlEngine
 	}
+
+	var engine render.Engine = htmlEngine
 
 	section, err := processor.LoadFile(cmd.In)
 	if err != nil {

@@ -14,6 +14,10 @@ func init() {
 // codeBlockFunc — `<CodeBlock language="go">code</CodeBlock>` or
 // `<Syntax language="go">code</Syntax>`. Tree-sitter-driven syntax
 // highlighting; identifiers that resolve to existing tags are linkified.
+//
+// `block="true"` forces the `<pre><code>…</code></pre>` block shape;
+// otherwise the inline-vs-block split comes from the evaluated body's
+// IsFlow.
 func codeBlockFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	language, err := requireStringProp(ctx, props, "language", "CodeBlock")
 	if err != nil {
@@ -28,7 +32,16 @@ func codeBlockFunc(ctx *Context, props map[string]ast.Node, children []ast.Node)
 		code = booklit.Empty
 	}
 
-	return syntax(ctx.Section, language, code)
+	block := false
+	if b, ok := props["block"]; ok {
+		bv, err := ctx.Evaluate(b)
+		if err != nil {
+			return nil, err
+		}
+		block = bv != nil && bv.String() == "true"
+	}
+
+	return syntax(ctx.Section, language, code, block)
 }
 
 // syntax runs the source through treehighlight and wraps the resulting
@@ -51,13 +64,13 @@ func codeBlockFunc(ctx *Context, props map[string]ast.Node, children []ast.Node)
 // NOTE: the open/close wrappers here mirror treehighlight.HTML and
 // treehighlight.PlainHTML; keep all three in sync if the markup
 // changes.
-func syntax(section *booklit.Section, language string, code booklit.Content) (booklit.Content, error) {
+func syntax(section *booklit.Section, language string, code booklit.Content, block bool) (booklit.Content, error) {
 	chunks, err := treehighlight.Chunks(language, code.String(), treehighlight.Options{LinkReferences: true})
 	if err != nil {
 		return nil, err
 	}
 
-	inline := code.IsFlow()
+	inline := !block && code.IsFlow()
 
 	var body booklit.Sequence
 	for _, chunk := range chunks {

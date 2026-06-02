@@ -15,26 +15,14 @@ import "encoding/json"
 type Node struct {
 	Kind string `json:"k"`
 
-	S        string    `json:"s,omitempty"`        // string, fragment
-	Items    []*Node   `json:"items,omitempty"`    // seq, para, pre, list
-	Content  *Node     `json:"content,omitempty"`  // element, link, aux, ref, target
-	HTMLTag  string    `json:"htag,omitempty"`     // element
-	Attrs    string    `json:"attrs,omitempty"`    // element
-	Target   string    `json:"target,omitempty"`   // link
-	Path     string    `json:"path,omitempty"`     // image
-	Desc     string    `json:"desc,omitempty"`     // image
-	Ordered  bool      `json:"ordered,omitempty"`  // list
-	Rows     [][]*Node `json:"rows,omitempty"`     // table
-	Defs     []Def     `json:"defs,omitempty"`     // definitions
-	Tag      string    `json:"tag,omitempty"`      // ref, target
-	Title    *Node     `json:"title,omitempty"`    // target
-	Optional bool      `json:"optional,omitempty"` // ref
-}
-
-// Def is one entry in a definitions node.
-type Def struct {
-	Subject *Node `json:"subject"`
-	Def     *Node `json:"def"`
+	S        string  `json:"s,omitempty"`        // string, fragment
+	Items    []*Node `json:"items,omitempty"`    // seq, para
+	Content  *Node   `json:"content,omitempty"`  // element, aux, ref, target
+	HTMLTag  string  `json:"htag,omitempty"`     // element
+	Attrs    string  `json:"attrs,omitempty"`    // element
+	Tag      string  `json:"tag,omitempty"`      // ref, target
+	Title    *Node   `json:"title,omitempty"`    // target
+	Optional bool    `json:"optional,omitempty"` // ref
 }
 
 // Marshal serializes a node tree to the wire format.
@@ -61,9 +49,6 @@ func Seq(items ...*Node) *Node { return &Node{Kind: "seq", Items: items} }
 // Para is a paragraph (block).
 func Para(items ...*Node) *Node { return &Node{Kind: "para", Items: items} }
 
-// Pre is preformatted content (block), e.g. a code block.
-func Pre(items ...*Node) *Node { return &Node{Kind: "pre", Items: items} }
-
 // Element is a raw HTML element with a tag, pre-rendered attribute string
 // (leading space, attribute values HTML-escaped), and body content. A nil
 // content renders self-closing.
@@ -76,25 +61,6 @@ func Element(tag, attrs string, content *Node) *Node {
 // see — the typical case is a syntax highlighter's per-token span
 // wrappers.
 func Fragment(html string) *Node { return &Node{Kind: "fragment", S: html} }
-
-// Link is a hyperlink.
-func Link(target string, content *Node) *Node {
-	return &Node{Kind: "link", Target: target, Content: content}
-}
-
-// Image embeds an image.
-func Image(path, desc string) *Node { return &Node{Kind: "image", Path: path, Desc: desc} }
-
-// List is an ordered or unordered list.
-func List(ordered bool, items ...*Node) *Node {
-	return &Node{Kind: "list", Ordered: ordered, Items: items}
-}
-
-// Table is a grid of rows and columns.
-func Table(rows ...[]*Node) *Node { return &Node{Kind: "table", Rows: rows} }
-
-// Definitions is a list of subject/definition pairs.
-func Definitions(defs ...Def) *Node { return &Node{Kind: "defs", Defs: defs} }
 
 // Aux is auxiliary content that can be stripped in some contexts.
 func Aux(content *Node) *Node { return &Node{Kind: "aux", Content: content} }

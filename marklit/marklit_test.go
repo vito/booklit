@@ -429,19 +429,6 @@ func (v *stringVisitor) VisitParagraph(p ast.Paragraph) error {
 	return nil
 }
 
-func (v *stringVisitor) VisitPreformatted(p ast.Preformatted) error {
-	v.result += "Pre("
-	for i, line := range p {
-		if i > 0 {
-			v.result += "|"
-		}
-		sub := &stringVisitor{}
-		_ = line.Visit(sub)
-		v.result += sub.result
-	}
-	v.result += ")"
-	return nil
-}
 
 func (v *stringVisitor) VisitJSXElement(j ast.JSXElement) error {
 	v.result += "J(" + j.Name

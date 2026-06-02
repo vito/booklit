@@ -107,27 +107,31 @@ type Func func(
 ) (booklit.Content, error)
 ```
 
-<Definitions>
-<Definition term="ctx.Section">
+<dl>
+<dt>ctx.Section</dt>
+<dd>
 The current section. Built-ins that mutate the section tree (like
 [#section] and [#title]) use this directly.
-</Definition>
-<Definition term="ctx.Evaluate(node)">
+</dd>
+<dt>ctx.Evaluate(node)</dt>
+<dd>
 Evaluates an AST node and returns its booklit.Content result. Use this
 to evaluate individual props or children on demand.
-</Definition>
-<Definition term="props">
+</dd>
+<dt>props</dt>
+<dd>
 The component's props as raw AST. Each value is either an
 <Godoc ref="ast.String"/> (string-literal `attr="x"`) or an
 <Godoc ref="ast.JSXExpression"/> (`attr={expr}`). Call
 `ctx.Evaluate` on a prop to evaluate it.
-</Definition>
-<Definition term="children">
+</dd>
+<dt>children</dt>
+<dd>
 The component's children as raw AST nodes. For single-line invocations
 these are inline content; for multi-line invocations they are block
 content (paragraphs).
-</Definition>
-</Definitions>
+</dd>
+</dl>
 
 ### Return Values
 

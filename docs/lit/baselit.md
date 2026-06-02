@@ -213,15 +213,12 @@ already cover the cases:
 | 1 | 2 | 3 |
 ```
 
-For *definition* lists, which Markdown doesn't have, see [#definitions]
-below.
+For *definition* lists, which Markdown doesn't have, use the lowercase
+HTML `<dl>`/`<dt>`/`<dd>` tags directly:
 
-<Define tag="definitions" sig='<Definitions><Definition term="...">body</Definition></Definitions>'>
-Render a definition list. Each entry is a `<Definition>` with a
-*term* prop and the body as children.
-
-<Definitions>
-<Definition term="a">1</Definition>
-<Definition term="b">2</Definition>
-</Definitions>
-</Define>
+<dl>
+<dt>a</dt>
+<dd>1</dd>
+<dt>b</dt>
+<dd>2</dd>
+</dl>

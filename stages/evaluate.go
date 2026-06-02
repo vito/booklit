@@ -465,31 +465,6 @@ func (eval *Evaluate) VisitJSXExpression(node ast.JSXExpression) error {
 	return nil
 }
 
-// VisitPreformatted behaves similarly to VisitParagraph, but with no
-// special-case for block content, and it appends a booklit.Preformatted
-// instead.
-func (eval *Evaluate) VisitPreformatted(node ast.Preformatted) error {
-	previous := eval.Result
-
-	pre := booklit.Preformatted{}
-	for _, line := range node {
-		eval.Result = nil
-
-		err := line.Visit(eval)
-		if err != nil {
-			return err
-		}
-
-		if eval.Result != nil {
-			pre = append(pre, eval.Result)
-		}
-	}
-
-	eval.Result = booklit.Append(previous, pre)
-
-	return nil
-}
-
 func (eval Evaluate) evalArg(node ast.Node) (booklit.Content, error) {
 	subEval := &Evaluate{
 		Section:   eval.Section,

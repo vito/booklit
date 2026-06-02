@@ -11,7 +11,7 @@ import (
 func TestSyntaxLinksBooklitComponentTags(t *testing.T) {
 	section := &booklit.Section{}
 
-	content, err := syntax(section, "markdown", booklit.Preformatted{booklit.String(`<IncludeSection path="quotes.md"/>`)})
+	content, err := syntax(section, "markdown", booklit.String(`<IncludeSection path="quotes.md"/>`), true)
 	if err != nil {
 		t.Fatal(err)
 	}

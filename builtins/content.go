@@ -46,36 +46,45 @@ func codeFunc(ctx *Context, _ map[string]ast.Node, children []ast.Node) (booklit
 	}, nil
 }
 
-// linkFunc — `<Link target="url">content</Link>`. Mirrors \link{content}{target}.
+// linkFunc — `<Link target="url">content</Link>`. Lowers to the lowercase
+// `<a href="url">…</a>` JSX shape so the standard raw-HTML dispatcher
+// handles attribute escaping; the PascalCase form exists for parity with
+// the rest of the builtin API.
 func linkFunc(ctx *Context, props map[string]ast.Node, children []ast.Node) (booklit.Content, error) {
 	target, err := requireStringProp(ctx, props, "target", "Link")
 	if err != nil {
 		return nil, err
 	}
-	content, err := EvaluateChildren(ctx, children)
-	if err != nil {
-		return nil, err
+	if len(children) == 0 {
+		children = []ast.Node{ast.String(target)}
 	}
-	if content == nil {
-		content = booklit.String(target)
-	}
-	return booklit.Link{Content: content, Target: target}, nil
+	return ctx.Evaluate(ast.JSXElement{
+		Name:     "a",
+		Props:    map[string]ast.Node{"href": ast.String(target)},
+		Children: children,
+	})
 }
 
-// imageFunc — `<Image path="..." description="..."/>`. Mirrors
-// \image{path}{description}.
+// imageFunc — `<Image path="..." description="..."/>`. Lowers to
+// `<img src="..." alt="..."/>`.
 func imageFunc(ctx *Context, props map[string]ast.Node, _ []ast.Node) (booklit.Content, error) {
 	path, err := requireStringProp(ctx, props, "path", "Image")
 	if err != nil {
 		return nil, err
 	}
-	img := booklit.Image{Path: path}
+	imgProps := map[string]ast.Node{
+		"src": ast.String(path),
+		"alt": ast.String(""),
+	}
 	if d, ok := props["description"]; ok {
 		desc, err := ctx.Evaluate(d)
 		if err != nil {
 			return nil, err
 		}
-		img.Description = desc.String()
+		imgProps["alt"] = ast.String(desc.String())
 	}
-	return img, nil
+	return ctx.Evaluate(ast.JSXElement{
+		Name:  "img",
+		Props: imgProps,
+	})
 }

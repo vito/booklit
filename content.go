@@ -21,16 +21,10 @@ type Visitor interface {
 	VisitString(String) error
 	VisitSequence(Sequence) error
 	VisitReference(*Reference) error
-	VisitLink(Link) error
 	VisitSection(*Section) error
 	VisitParagraph(Paragraph) error
 	VisitTableOfContents(TableOfContents) error
-	VisitPreformatted(Preformatted) error
 	VisitTarget(Target) error
-	VisitImage(Image) error
-	VisitList(List) error
-	VisitTable(Table) error
-	VisitDefinitions(Definitions) error
 	VisitLazy(*Lazy) error
 	VisitRawElement(RawElement) error
 	VisitRawFragment(RawFragment) error

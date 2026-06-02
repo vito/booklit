@@ -40,19 +40,12 @@ templates directory, with the corresponding data type as `.`:
 | --- | --- |
 | <TemplateLink tmpl="page.tmpl"/> | <Godoc ref="booklit.Section"/> |
 | <TemplateLink tmpl="section.tmpl"/> | <Godoc ref="booklit.Section"/> |
-| <TemplateLink tmpl="link.tmpl"/> | <Godoc ref="booklit.Link"/> |
-| <TemplateLink tmpl="list.tmpl"/> | <Godoc ref="booklit.List"/> |
 | <TemplateLink tmpl="paragraph.tmpl"/> | <Godoc ref="booklit.Paragraph"/> |
-| <TemplateLink tmpl="preformatted.tmpl"/> | <Godoc ref="booklit.Preformatted"/> |
 | <TemplateLink tmpl="reference.tmpl"/> | <Godoc ref="booklit.Reference"/> |
 | <TemplateLink tmpl="sequence.tmpl"/> | <Godoc ref="booklit.Sequence"/> |
 | <TemplateLink tmpl="string.tmpl"/> | <Godoc ref="booklit.String"/> |
 | <TemplateLink tmpl="target.tmpl"/> | <Godoc ref="booklit.Target"/> |
 | <TemplateLink tmpl="toc.tmpl"/> | <Godoc ref="booklit.Section"/> |
-| <TemplateLink tmpl="aside.tmpl"/> | <Godoc ref="booklit.Aside"/> |
-| <TemplateLink tmpl="definitions.tmpl"/> | <Godoc ref="booklit.Definitions"/> |
-| <TemplateLink tmpl="table.tmpl"/> | <Godoc ref="booklit.Table"/> |
-| <TemplateLink tmpl="image.tmpl"/> | <Godoc ref="booklit.Image"/> |
 
 The most impactful of these is `page.tmpl`, which is used for the
 top-level section for each "page" rendered. This is where you would place
@@ -62,31 +55,38 @@ assets in `<head>`, for example.
 
 Booklit executes templates with the following functions available:
 
-<Definitions>
-<Definition term='{{tag | url}}'>
+<dl>
+<dt>`{{tag | url}}`</dt>
+<dd>
 generate a URL for the tag
-</Definition>
-<Definition term='{{content | stripAux}}'>
+</dd>
+<dt>`{{content | stripAux}}`</dt>
+<dd>
 strip [#aux] elements from the content
-</Definition>
-<Definition term='{{string | rawHTML}}'>
+</dd>
+<dt>`{{string | rawHTML}}`</dt>
+<dd>
 render the string as raw HTML, unescaped
-</Definition>
-<Definition term='{{string | rawURL}}'>
+</dd>
+<dt>`{{string | rawURL}}`</dt>
+<dd>
 permit the rendered value to be placed in a `url=""` attribute
-</Definition>
-<Definition term='{{content | render}}'>
+</dd>
+<dt>`{{content | render}}`</dt>
+<dd>
 render the content
-</Definition>
-<Definition term='{{walkContext currentSection subSection}}'>
+</dd>
+<dt>`{{walkContext currentSection subSection}}`</dt>
+<dd>
 generate a convenience struct with fields `.Current` and `.Section`,
 useful for traversing a tree of sections while retaining the "current"
 section, e.g. so it can be marked as "active" in a navigation tree
-</Definition>
-<Definition term='{{section | headerDepth}}'>
+</dd>
+<dt>`{{section | headerDepth}}`</dt>
+<dd>
 return the number that should be used for the section's header, i.e. `<hN>`
-</Definition>
-</Definitions>
+</dd>
+</dl>
 
 ## Styled Content
 

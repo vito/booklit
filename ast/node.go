@@ -12,7 +12,6 @@ type Visitor interface {
 	VisitString(String) error
 	VisitSequence(Sequence) error
 	VisitParagraph(Paragraph) error
-	VisitPreformatted(Preformatted) error
 	VisitJSXElement(JSXElement) error
 	VisitJSXExpression(JSXExpression) error
 }
@@ -48,14 +47,6 @@ type Paragraph []Sequence
 // Visit calls VisitParagraph.
 func (node Paragraph) Visit(visitor Visitor) error {
 	return visitor.VisitParagraph(node)
-}
-
-// Preformatted is a grouping of lines, typically parsed
-type Preformatted []Sequence
-
-// Visit calls VisitPreformatted.
-func (node Preformatted) Visit(visitor Visitor) error {
-	return visitor.VisitPreformatted(node)
 }
 
 // JSXElement is a JSX-style invocation, e.g. <Foo bar="x">body</Foo>.

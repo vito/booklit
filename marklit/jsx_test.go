@@ -230,12 +230,6 @@ func (v *jsxDetector) VisitParagraph(p ast.Paragraph) error {
 	}
 	return nil
 }
-func (v *jsxDetector) VisitPreformatted(p ast.Preformatted) error {
-	for _, line := range p {
-		_ = line.Visit(v)
-	}
-	return nil
-}
 func (v *jsxDetector) VisitJSXElement(ast.JSXElement) error {
 	v.found = true
 	return nil

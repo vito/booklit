@@ -33,10 +33,12 @@ func TestBlocks(t *testing.T) {
 			example: Example{
 				Input: `# Hello, world!
 
-<Definitions>
-<Definition term="a">1</Definition>
-<Definition term="b">2</Definition>
-</Definitions>
+<dl>
+<dt>a</dt>
+<dd>1</dd>
+<dt>b</dt>
+<dd>2</dd>
+</dl>
 `,
 
 				Outputs: Files{

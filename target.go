@@ -17,9 +17,6 @@ func (con Target) IsFlow() bool {
 }
 
 // String returns an empty string.
-//
-// XXX: maybe this should summarize it, and the search index should use
-// render.TextEngine isntead of String
 func (con Target) String() string {
 	return ""
 }

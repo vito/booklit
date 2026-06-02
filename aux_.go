@@ -39,11 +39,6 @@ func (strip *stripAuxVisitor) VisitParagraph(con Paragraph) error {
 	return nil
 }
 
-func (strip *stripAuxVisitor) VisitPreformatted(con Preformatted) error {
-	strip.Result = Preformatted(stripAuxSeq(con))
-	return nil
-}
-
 func (strip *stripAuxVisitor) VisitReference(con *Reference) error {
 	ref := *con
 	ref.Content = StripAux(ref.Content)
@@ -65,46 +60,6 @@ func (strip *stripAuxVisitor) VisitTarget(con Target) error {
 	con.Title = StripAux(con.Title)
 	con.Content = StripAux(con.Content)
 	strip.Result = con
-	return nil
-}
-
-func (strip *stripAuxVisitor) VisitImage(con Image) error {
-	strip.Result = con
-	return nil
-}
-
-func (strip *stripAuxVisitor) VisitList(con List) error {
-	con.Items = stripAuxSeq(con.Items)
-	strip.Result = con
-	return nil
-}
-
-func (strip *stripAuxVisitor) VisitLink(con Link) error {
-	con.Content = StripAux(con.Content)
-	strip.Result = con
-	return nil
-}
-
-func (strip *stripAuxVisitor) VisitTable(con Table) error {
-	newTable := Table{}
-	for _, row := range con.Rows {
-		newTable.Rows = append(newTable.Rows, stripAuxSeq(row))
-	}
-
-	strip.Result = newTable
-	return nil
-}
-
-func (strip *stripAuxVisitor) VisitDefinitions(con Definitions) error {
-	stripped := Definitions{}
-	for _, def := range con {
-		stripped = append(stripped, Definition{
-			Subject:    StripAux(def.Subject),
-			Definition: StripAux(def.Definition),
-		})
-	}
-
-	strip.Result = stripped
 	return nil
 }
 

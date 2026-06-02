@@ -236,12 +236,6 @@ func (engine *HTMLEngine) VisitParagraph(con booklit.Paragraph) error {
 	return engine.setTmpl("paragraph")
 }
 
-// VisitPreformatted renders con using preformatted.tmpl.
-func (engine *HTMLEngine) VisitPreformatted(con booklit.Preformatted) error {
-	engine.data = con
-	return engine.setTmpl("preformatted")
-}
-
 // VisitTableOfContents renders con using toc.tmpl.
 func (engine *HTMLEngine) VisitTableOfContents(con booklit.TableOfContents) error {
 	engine.data = con.Section
@@ -252,36 +246,6 @@ func (engine *HTMLEngine) VisitTableOfContents(con booklit.TableOfContents) erro
 func (engine *HTMLEngine) VisitTarget(con booklit.Target) error {
 	engine.data = con
 	return engine.setTmpl("target")
-}
-
-// VisitImage renders con using image.tmpl.
-func (engine *HTMLEngine) VisitImage(con booklit.Image) error {
-	engine.data = con
-	return engine.setTmpl("image")
-}
-
-// VisitList renders con using list.tmpl.
-func (engine *HTMLEngine) VisitList(con booklit.List) error {
-	engine.data = con
-	return engine.setTmpl("list")
-}
-
-// VisitLink renders con using link.tmpl.
-func (engine *HTMLEngine) VisitLink(con booklit.Link) error {
-	engine.data = con
-	return engine.setTmpl("link")
-}
-
-// VisitTable renders con using table.tmpl.
-func (engine *HTMLEngine) VisitTable(con booklit.Table) error {
-	engine.data = con
-	return engine.setTmpl("table")
-}
-
-// VisitDefinitions renders con using definitions.tmpl.
-func (engine *HTMLEngine) VisitDefinitions(con booklit.Definitions) error {
-	engine.data = con
-	return engine.setTmpl("definitions")
 }
 
 // VisitRawElement composes `<tag attrs>body</tag>` directly into the

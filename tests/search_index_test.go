@@ -124,10 +124,12 @@ Sub-section content.
 					"| --- | --- |\n" +
 					"| b | 2 |\n" +
 					"\n" +
-					"<Definitions>\n" +
-					"<Definition term=\"a\">1</Definition>\n" +
-					"<Definition term=\"b\">2</Definition>\n" +
-					"</Definitions>\n" +
+					"<dl>\n" +
+					"<dt>a</dt>\n" +
+					"<dd>1</dd>\n" +
+					"<dt>b</dt>\n" +
+					"<dd>2</dd>\n" +
+					"</dl>\n" +
 					"\n" +
 					"## Sub-Section\n" +
 					"\n" +
@@ -137,7 +139,7 @@ Sub-section content.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\nItem 1\n\nAnother line\n\nItem 2\n\nOrdered Item 1\n\nOrdered Item 2\n\nline 1\nline 2\na1b2a: 1\nb: 2\n\n",
+				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\nItem 1\n\nAnother line\n\nItem 2\n\nOrdered Item 1\n\nOrdered Item 2\n\nline 1\nline 2a1b2a1b2",
 				"depth": 0,
 				"section_tag": "hello-world"
 			},

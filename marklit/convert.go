@@ -486,26 +486,29 @@ func (c *converter) convertAutoLink(al *gast.AutoLink) ast.Node {
 }
 
 func (c *converter) convertCodeBlock(n gast.Node) ast.Node {
-	var lines []ast.Sequence
+	var b strings.Builder
 	for i := 0; i < n.Lines().Len(); i++ {
 		seg := n.Lines().At(i)
-		line := seg.Value(c.source)
-		// Strip trailing newline — Preformatted renders its own line separators
-		line = bytes.TrimRight(line, "\n")
-		lines = append(lines, ast.Sequence{ast.String(line)})
+		b.Write(seg.Value(c.source))
 	}
-
-	pre := ast.Preformatted(lines)
+	text := strings.TrimRight(b.String(), "\n")
+	body := ast.String(text)
 
 	// For fenced code blocks with a language, route through <CodeBlock> so
-	// the syntax-highlighting builtin runs over the body.
+	// the syntax-highlighting builtin runs over the body. block="true"
+	// preserves the block intent that the old ast.Preformatted body type
+	// used to carry — without it, a single-line fenced block would render
+	// as inline `<code>`.
 	if fcb, ok := n.(*gast.FencedCodeBlock); ok {
 		lang := fcb.Language(c.source)
 		if len(lang) > 0 {
 			return ast.JSXElement{
-				Name:      "CodeBlock",
-				Props:     map[string]ast.Node{"language": ast.String(lang)},
-				Children:  []ast.Node{pre},
+				Name: "CodeBlock",
+				Props: map[string]ast.Node{
+					"language": ast.String(lang),
+					"block":    ast.String("true"),
+				},
+				Children:  []ast.Node{body},
 				MultiLine: true,
 			}
 		}
@@ -513,7 +516,7 @@ func (c *converter) convertCodeBlock(n gast.Node) ast.Node {
 
 	return ast.JSXElement{
 		Name:      "pre",
-		Children:  []ast.Node{pre},
+		Children:  []ast.Node{body},
 		MultiLine: true,
 	}
 }

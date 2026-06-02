@@ -15,25 +15,12 @@ func TestRoundTrip(t *testing.T) {
 	content := booklit.Sequence{
 		booklit.String("hello "),
 		booklit.RawElement{Tag: "div", Attrs: ` class="x"`, Content: booklit.String("world")},
+		booklit.RawElement{Tag: "img", Attrs: ` alt="alt text" src="/a.png"`},
 		booklit.RawFragment{HTML: "<i>fragment</i>"},
-		booklit.Link{Target: "https://example.com", Content: booklit.String("link")},
-		booklit.Image{Path: "/a.png", Description: "alt text"},
-		booklit.List{Ordered: true, Items: []booklit.Content{
-			booklit.String("a"),
-			booklit.String("b"),
-		}},
-		booklit.Table{Rows: [][]booklit.Content{
-			{booklit.String("r1c1"), booklit.String("r1c2")},
-			{booklit.String("r2c1"), booklit.String("r2c2")},
-		}},
-		booklit.Definitions{
-			{Subject: booklit.String("term"), Definition: booklit.String("definition")},
-		},
 		booklit.Aux{Content: booklit.String("aux")},
 		&booklit.Reference{Section: sec, TagName: "some-tag", Content: booklit.String("display"), Optional: true},
 		booklit.Target{TagName: "anchor", Title: booklit.String("title"), Content: booklit.String("body")},
 		booklit.Paragraph{booklit.String("a sentence")},
-		booklit.Preformatted{booklit.String("preformatted")},
 	}
 
 	data, err := contentjson.Marshal(content)
