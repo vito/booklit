@@ -77,12 +77,14 @@ func (plugin Plugin) SyntaxTransform(language string, code booklit.Content, chro
 		return nil, err
 	}
 
-	var formatter *html.Formatter
-	if code.IsFlow() {
-		formatter = html.New(html.InlineCode(true))
-	} else {
-		formatter = html.New()
+	var opts []html.Option
+	if baselit.HighlightWithClasses {
+		opts = append(opts, html.WithClasses(true))
 	}
+	if code.IsFlow() {
+		opts = append(opts, html.InlineCode(true))
+	}
+	formatter := html.New(opts...)
 
 	buf := new(bytes.Buffer)
 	err = formatter.Format(buf, chromaStyle, iterator)
