@@ -20,6 +20,28 @@ func init() {
 	booklit.RegisterPlugin("baselit", NewPlugin)
 }
 
+// HighlightWithClasses controls how syntax highlighting emits color. When
+// false (the default) chroma writes inline style attributes on each token,
+// matching booklit's historical output. When true it emits chroma's CSS class
+// names instead, leaving color to a stylesheet the caller provides (e.g. via
+// chroma's html.Formatter.WriteCSS, or a hand-written palette). This lets a
+// site theme code blocks — for instance switching palettes under
+// prefers-color-scheme — which inline styles cannot do.
+var HighlightWithClasses = false
+
+// highlightFormatter builds the chroma HTML formatter for the current
+// HighlightWithClasses setting. flow marks inline (non-block) code.
+func highlightFormatter(flow bool) *html.Formatter {
+	var opts []html.Option
+	if HighlightWithClasses {
+		opts = append(opts, html.WithClasses(true))
+	}
+	if flow {
+		opts = append(opts, html.InlineCode(true))
+	}
+	return html.New(opts...)
+}
+
 func NewPlugin(section *booklit.Section) booklit.Plugin {
 	return Plugin{
 		section: section,
@@ -150,12 +172,7 @@ func (plugin Plugin) syntaxHighlight(language string, code booklit.Content, chro
 		return nil, err
 	}
 
-	var formatter *html.Formatter
-	if code.IsFlow() {
-		formatter = html.New(html.InlineCode(true))
-	} else {
-		formatter = html.New()
-	}
+	formatter := highlightFormatter(code.IsFlow())
 
 	buf := new(bytes.Buffer)
 	err = formatter.Format(buf, chromaStyle, iterator)
