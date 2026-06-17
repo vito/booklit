@@ -12,6 +12,12 @@ import (
 type converter struct {
 	source      []byte
 	extractions []extractedInvoke
+
+	// quotePrev is the last text rune seen in the current flow block, used by
+	// smartQuotes to decide whether a quote opens or closes across adjacent
+	// text segments (e.g. text split by emphasis). It is reset to 0 at flow
+	// block boundaries by collectInlines.
+	quotePrev rune
 }
 
 // convertChildren collects the Booklit AST for all children of a goldmark
@@ -348,6 +354,11 @@ func (c *converter) splitInvokeOnlyParagraph(n gast.Node) ast.Node {
 // collectInlines gathers all inline children of a block node into a flat
 // slice of Booklit AST nodes.
 func (c *converter) collectInlines(n gast.Node) []ast.Node {
+	// Reset smart-quote context at the start of each flow block so a quote at
+	// the start of a paragraph, heading, table cell, etc. opens correctly and
+	// never inherits context from a previous block.
+	c.quotePrev = 0
+
 	var nodes []ast.Node
 	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
 		converted := c.convertNode(child)
@@ -380,10 +391,15 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 		return node
 	}
 
-	// Strip Markdown backslash escapes. Goldmark's text segments contain
-	// raw escape sequences (e.g. \* \[ \\) — its own renderer strips them,
-	// but since we produce Booklit AST we need to strip them here.
-	s := ast.String(stripBackslashEscapes(value))
+	// Strip Markdown backslash escapes and apply smart-quote typography.
+	// Goldmark's text segments contain raw escape sequences (e.g. \* \[ \\) —
+	// its own renderer strips them, but since we produce Booklit AST we need to
+	// strip them here. This is also the single chokepoint for plain flow text,
+	// so curly-quote substitution happens here too; verbatim/code content never
+	// reaches convertText and is left untouched.
+	smart, last := smartTypography(c.quotePrev, string(value))
+	c.quotePrev = last
+	s := ast.String(smart)
 	if t.SoftLineBreak() {
 		// Soft line breaks become spaces in flow content
 		return ast.Sequence{s, ast.String(" ")}
@@ -392,26 +408,6 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 		return ast.Sequence{s, ast.String("\n")}
 	}
 	return s
-}
-
-// stripBackslashEscapes removes Markdown backslash escapes from text.
-// In CommonMark, \ followed by an ASCII punctuation character produces the
-// literal punctuation character. The escape backslash is stripped.
-func stripBackslashEscapes(b []byte) []byte {
-	if !bytes.ContainsRune(b, '\\') {
-		return b
-	}
-	var out []byte
-	for i := 0; i < len(b); i++ {
-		if b[i] == '\\' && i+1 < len(b) && isASCIIPunct(b[i+1]) {
-			// Skip the escape backslash; emit the escaped char directly
-			i++
-			out = append(out, b[i])
-			continue
-		}
-		out = append(out, b[i])
-	}
-	return out
 }
 
 func isASCIIPunct(c byte) bool {

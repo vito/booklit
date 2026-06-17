@@ -14,6 +14,70 @@ func TestPlainText(t *testing.T) {
 	})
 }
 
+func TestSmartDoubleQuotes(t *testing.T) {
+	node := marklit.Parse([]byte(`He said "hello" to me.`))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{ast.String("He said “hello” to me.")},
+	})
+}
+
+func TestSmartSingleQuotesAndApostrophes(t *testing.T) {
+	node := marklit.Parse([]byte("Don't say 'no' yet."))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{ast.String("Don’t say ‘no’ yet.")},
+	})
+}
+
+func TestSmartQuotesAcrossEmphasis(t *testing.T) {
+	// The opening quote ends one text segment and the closing quote begins a
+	// later one; context is threaded across the emphasis so they pair up.
+	node := marklit.Parse([]byte(`A "**word**" here.`))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.String("A “"),
+			ast.Invoke{
+				Function:  "bold",
+				Arguments: []ast.Node{ast.Sequence{ast.String("word")}},
+			},
+			ast.String("” here."),
+		},
+	})
+}
+
+func TestSmartQuotesResetBetweenParagraphs(t *testing.T) {
+	// A quote opening a new paragraph must not inherit context from the
+	// previous one (which ends in a letter).
+	node := marklit.Parse([]byte("end.\n\n\"Start\""))
+	assertNode(t, node, ast.Sequence{
+		ast.Paragraph{ast.Sequence{ast.String("end.")}},
+		ast.Paragraph{ast.Sequence{ast.String("“Start”")}},
+	})
+}
+
+func TestSmartQuotesNotInCodeSpan(t *testing.T) {
+	node := marklit.Parse([]byte("Run `echo \"hi\"` now."))
+	assertNode(t, node, ast.Paragraph{
+		ast.Sequence{
+			ast.String("Run "),
+			ast.Invoke{
+				Function:  "code",
+				Arguments: []ast.Node{ast.String(`echo "hi"`)},
+			},
+			ast.String(" now."),
+		},
+	})
+}
+
+func TestSmartQuotesNotInCodeBlock(t *testing.T) {
+	node := marklit.Parse([]byte("```\nsay \"hi\"\n```"))
+	assertNode(t, node, ast.Invoke{
+		Function: "code",
+		Arguments: []ast.Node{
+			ast.Preformatted{ast.Sequence{ast.String(`say "hi"`)}},
+		},
+	})
+}
+
 func TestMultipleParagraphs(t *testing.T) {
 	node := marklit.Parse([]byte("First paragraph.\n\nSecond paragraph."))
 	assertNode(t, node, ast.Sequence{

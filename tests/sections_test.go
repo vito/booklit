@@ -35,7 +35,7 @@ How are you?
 
 	<p>How are you?</p>
 
-	<h2>1 How I'm doing</h2>
+	<h2>1 How I’m doing</h2>
 
 	<p>Good, thanks! And you?</p>
 
@@ -69,7 +69,7 @@ Good, thanks!
 
 	<p>How are you?</p>
 
-	<h2>1 How I'm doing</h2>
+	<h2>1 How I’m doing</h2>
 
 	<p>Good, thanks! And you?</p>
 
@@ -99,7 +99,7 @@ Good, thanks!
 
 	<p>How are you?</p>
 
-	<h2>1 How I'm doing</h2>
+	<h2>1 How I’m doing</h2>
 
 	<p>Good, thanks!</p>
 </section>
@@ -251,11 +251,11 @@ How are you?
 
 	<p>How are you?</p>
 
-	<h2>1 How I'm doing</h2>
+	<h2>1 How I’m doing</h2>
 
 	<h3>1.1 After Much Deliberation</h3>
 
-	<p>I have decided that I'm doing well. How about you?</p>
+	<p>I have decided that I’m doing well. How about you?</p>
 
 	<h2>2 Their Reply</h2>
 
@@ -289,7 +289,7 @@ How are you?
 </section>
 `,
 					"how-im-doing.html": `<section>
-	<h1>1 How I'm Doing</h1>
+	<h1>1 How I’m Doing</h1>
 
 	<p>Good, thanks!</p>
 </section>
@@ -410,7 +410,7 @@ How are you?
 
 	<p>How are you?</p>
 
-	<h2>1 How I'm Doing</h2>
+	<h2>1 How I’m Doing</h2>
 
 	<p>Good, thanks!</p>
 </section>
@@ -564,7 +564,7 @@ How are you?
 		<p>How are you?</p>
 	</div>
 
-	<h2>1 How I'm doing</h2>
+	<h2>1 How I’m doing</h2>
 
 	<p>I'm a sub template! Here's my body:</p>
 
@@ -574,7 +574,7 @@ How are you?
 
 	<h3>1.1 After Much Deliberation</h3>
 
-	<p>I have decided that I'm doing well. How about you?</p>
+	<p>I have decided that I’m doing well. How about you?</p>
 
 	<h2>2 Their Reply</h2>
 

@@ -73,7 +73,7 @@ Here's an \image{foo.png}{with alt text} and another \image{without.gif}.
 					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p>Here's an <img src="foo.png" alt="with alt text" /> and another <img src="without.gif" alt="" />.</p>
+	<p>Here’s an <img src="foo.png" alt="with alt text" /> and another <img src="without.gif" alt="" />.</p>
 </section>`,
 				},
 			},
@@ -213,7 +213,7 @@ I'm good, thanks!
 
 	<p>How are you?</p>
 
-	<p>I'm good, thanks!</p>
+	<p>I’m good, thanks!</p>
 </section>
 `,
 				},
@@ -573,7 +573,7 @@ And here I'm just using it to \string{{{escape {{wacky}} curlies}}}.
 					"hello-world.html": `<section>
 	<h1>Hello, world!</h1>
 
-	<p>Here's a code block:</p>
+	<p>Here’s a code block:</p>
 
 	<p>I'm a code block.
 
@@ -591,7 +591,7 @@ I'm indented less.
 One more line, with meaning.
 </p>
 
-<p>And here I'm just using it to escape {{wacky}} curlies.</p>
+<p>And here I’m just using it to escape {{wacky}} curlies.</p>
 </section>
 `,
 				},
