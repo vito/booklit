@@ -29,13 +29,13 @@ Some more body.
 					"set-partial-read-template.html": `<div>
 	Here's a partial:
 
-	<p>I'm a partial!</p>
+	<p>I’m a partial!</p>
 </div>
 
 <div>
 	Here's the partial again:
 
-	<p>I'm a partial!</p>
+	<p>I’m a partial!</p>
 </div>
 
 <p>I want to be some body.</p>
@@ -69,7 +69,7 @@ Some more body. \reference{some-target}
 
 	<p><a id="some-target"></a></p>
 
-	<p>I'm a partial!</p>
+	<p>I’m a partial!</p>
 
 	<p><a href="set-partial-read-template.html">Set Partial Read Template</a></p>
 </div>
@@ -79,7 +79,7 @@ Some more body. \reference{some-target}
 
 	<p><a id="some-target"></a></p>
 
-	<p>I'm a partial!</p>
+	<p>I’m a partial!</p>
 
 	<p><a href="set-partial-read-template.html">Set Partial Read Template</a></p>
 </div>

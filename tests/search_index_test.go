@@ -35,13 +35,13 @@ Here's another paragraph.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's another paragraph.\n\n",
+				"text": "How are you?\n\nHere’s another paragraph.\n\n",
 				"depth": 0,
 				"section_tag": "hello-world"
 			},
 			"how-im-doing": {
 				"location": "hello-world.html#how-im-doing",
-				"title": "How I'm doing",
+				"title": "How I’m doing",
 				"text": "Good, thanks! And you?\n\n",
 				"depth": 1,
 				"section_tag": "how-im-doing"
@@ -80,7 +80,7 @@ Here's another paragraph.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's another paragraph.\n\n",
+				"text": "How are you?\n\nHere’s another paragraph.\n\n",
 				"depth": 0,
 				"section_tag": "hello-world"
 			},
@@ -155,7 +155,7 @@ and a \reference{sub-section}.
 			"hello-world": {
 				"location": "hello-world.html",
 				"title": "Hello, world!",
-				"text": "How are you?\n\nHere's a paragraph with code, a link, and a Sub-Section.\n\n* Item 1\n\n  Another line\n\n* Item 2\n\n1. Ordered Item 1\n\n2. Ordered Item 2\n\nline 1\nline 2\n| a | 1 |\n| b | 2 |\n\na: 1\nb: 2\n\n",
+				"text": "How are you?\n\nHere’s a paragraph with code, a link, and a Sub-Section.\n\n* Item 1\n\n  Another line\n\n* Item 2\n\n1. Ordered Item 1\n\n2. Ordered Item 2\n\nline 1\nline 2\n| a | 1 |\n| b | 2 |\n\na: 1\nb: 2\n\n",
 				"depth": 0,
 				"section_tag": "hello-world"
 			},

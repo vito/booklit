@@ -29,7 +29,7 @@ I'm another paragraph.
 
 	<p>How are you? This is the same paragraph.</p>
 
-	<p>I'm another paragraph.</p>
+	<p>I’m another paragraph.</p>
 </section>`,
 				},
 			},
