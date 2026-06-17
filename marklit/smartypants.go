@@ -6,17 +6,23 @@ import (
 	"unicode/utf8"
 )
 
-// Smart-quote replacement runes.
+// Typographic replacement runes.
 const (
 	leftDoubleQuote  = '“' // “
 	rightDoubleQuote = '”' // ”
 	leftSingleQuote  = '‘' // ‘
 	rightSingleQuote = '’' // ’ (also the apostrophe)
+	enDash           = '–' // – (--)
+	emDash           = '—' // — (---)
+	ellipsis         = '…' // … (...)
 )
 
-// smartQuotes strips Markdown backslash escapes and applies SmartyPants-style
-// typographic substitution to plain flow text: straight double and single
-// quotes become their curly equivalents based on the surrounding context.
+// smartTypography strips Markdown backslash escapes and applies SmartyPants-style
+// typographic substitution to plain flow text:
+//
+//   - straight double and single quotes become curly quotes based on context
+//   - "--" becomes an en dash and "---" an em dash
+//   - "..." becomes an ellipsis
 //
 // This only ever runs on plain paragraph/flow text. Verbatim and preformatted
 // content — code spans, code blocks, and verbatim/preformatted \invoke
@@ -29,10 +35,10 @@ const (
 // later one — e.g. "*bold*" — resolve correctly across emphasis. The returned
 // rune is the last rune processed, to thread as prev into the next segment.
 //
-// A backslash escape is the explicit opt-out: `\"` and `\'` (like any other
-// `\<punct>`) emit the literal straight character, matching CommonMark
+// A backslash escape is the explicit opt-out: `\"`, `\'`, `\-`, `\.` (like any
+// other `\<punct>`) emit the literal straight character, matching CommonMark
 // escaping.
-func smartQuotes(prev rune, s string) (string, rune) {
+func smartTypography(prev rune, s string) (string, rune) {
 	var out strings.Builder
 	out.Grow(len(s))
 
@@ -68,6 +74,28 @@ func smartQuotes(prev rune, s string) (string, rune) {
 			default:
 				out.WriteRune(rightSingleQuote)
 			}
+		case '-':
+			if strings.HasPrefix(s[i:], "---") {
+				out.WriteRune(emDash)
+				prev = emDash
+				i += 3
+				continue
+			}
+			if strings.HasPrefix(s[i:], "--") {
+				out.WriteRune(enDash)
+				prev = enDash
+				i += 2
+				continue
+			}
+			out.WriteByte('-')
+		case '.':
+			if strings.HasPrefix(s[i:], "...") {
+				out.WriteRune(ellipsis)
+				prev = ellipsis
+				i += 3
+				continue
+			}
+			out.WriteByte('.')
 		default:
 			out.WriteRune(r)
 		}

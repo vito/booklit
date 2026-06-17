@@ -397,7 +397,7 @@ func (c *converter) convertText(t *gast.Text) ast.Node {
 	// strip them here. This is also the single chokepoint for plain flow text,
 	// so curly-quote substitution happens here too; verbatim/code content never
 	// reaches convertText and is left untouched.
-	smart, last := smartQuotes(c.quotePrev, string(value))
+	smart, last := smartTypography(c.quotePrev, string(value))
 	c.quotePrev = last
 	s := ast.String(smart)
 	if t.SoftLineBreak() {
