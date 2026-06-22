@@ -1,0 +1,26 @@
+[modules.booklit]
+source = ".dagger/modules/booklit"
+entrypoint = true
+
+# settings.source = "./path"
+
+[modules.dang]
+source = "dang"
+
+[modules.go]
+source = "github.com/dagger/go"
+# Go version used for the default Go base image.
+# settings.version = ""
+# Base image used for Go test, generate, and helper containers.
+# settings.base = "alpine:latest"
+# Extra workspace-root include patterns mounted for each module's Go commands.
+# settings.includeExtraFiles = [""]
+# Module roots to lint. A bare pattern selects, a "!"-prefixed pattern
+# settings.lint = [""]
+# Module roots to test. Same selection rules as `lint`.
+# settings.test = [""]
+# Module roots to run go generate in. Same selection rules as `lint`.
+# settings.generate = [""]
+
+[[modules.dang.as-sdk.modules]]
+path = ".dagger/modules/booklit"
