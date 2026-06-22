@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	_ "github.com/vito/booklit/tests/fixtures/erroring-plugin"
+	_ "github.com/vito/booklit/tests/testdata/erroring-plugin"
 )
 
 func TestErrors(t *testing.T) {

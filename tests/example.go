@@ -77,7 +77,7 @@ func (example Example) Run(t *testing.T) {
 
 	engine := render.NewHTMLEngine()
 
-	err = engine.LoadTemplates("fixtures")
+	err = engine.LoadTemplates("testdata")
 	require.NoError(t, err)
 
 	writer := render.Writer{
@@ -127,10 +127,10 @@ func assertXMLEqual(t *testing.T, expected, actual string, msgAndArgs ...any) {
 
 // xmlNode mirrors gomega's internal XML representation.
 type xmlNode struct {
-	XMLName   xml.Name
-	XMLAttr   []xml.Attr
-	Content   []byte
-	Nodes     []*xmlNode
+	XMLName xml.Name
+	XMLAttr []xml.Attr
+	Content []byte
+	Nodes   []*xmlNode
 }
 
 // parseXMLContent replicates gomega's parseXmlContent: the first element

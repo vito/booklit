@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	_ "github.com/vito/booklit/tests/fixtures/arbitrary-style-plugin"
+	_ "github.com/vito/booklit/tests/testdata/arbitrary-style-plugin"
 )
 
 func TestBlocks(t *testing.T) {

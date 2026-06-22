@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	_ "github.com/vito/booklit/tests/fixtures/set-partials-plugin"
+	_ "github.com/vito/booklit/tests/testdata/set-partials-plugin"
 )
 
 func TestPartials(t *testing.T) {

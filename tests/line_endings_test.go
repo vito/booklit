@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
+	_ "github.com/vito/booklit/tests/testdata/stringer-plugin"
 )
 
 func TestLineEndings(t *testing.T) {
