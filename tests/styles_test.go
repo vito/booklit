@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	_ "github.com/vito/booklit/tests/fixtures/partials-style-plugin"
+	_ "github.com/vito/booklit/tests/testdata/partials-style-plugin"
 )
 
 func TestStyles(t *testing.T) {

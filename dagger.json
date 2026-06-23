@@ -1,8 +1,15 @@
 {
   "name": "booklit",
-  "engineVersion": "v0.20.4",
+  "engineVersion": "v1.0.0-beta.4",
   "sdk": {
     "source": "dang"
   },
+  "dependencies": [
+    {
+      "name": "go",
+      "source": "github.com/dagger/go@main",
+      "pin": "5683fb4f7e2e909a453eba727fb982077d5d11b5"
+    }
+  ],
   "source": ".dagger"
 }

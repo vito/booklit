@@ -1,0 +1,11 @@
+name = "booklit"
+engineVersion = "v0.20.4"
+source = "../.."
+
+[runtime]
+  source = "dang"
+
+[[dependencies]]
+  name = "go"
+  source = "github.com/dagger/go@main"
+  pin = "5683fb4f7e2e909a453eba727fb982077d5d11b5"

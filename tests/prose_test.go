@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	_ "github.com/vito/booklit/tests/fixtures/stringer-plugin"
+	_ "github.com/vito/booklit/tests/testdata/stringer-plugin"
 )
 
 func TestProse(t *testing.T) {
