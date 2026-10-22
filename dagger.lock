@@ -2,10 +2,13 @@
 # Any Dagger command may update this file; always commit it with your changes.
 # Run `dagger lock update` to refresh the pinned versions.
 [["version","2"]]
+["","git-latest",["github.com/dagger/go",["tagPrefix","gobuild"],["version","v0.3.0"]],"refs/tags/v0.3.0"]
 ["","git-latest",["github.com/dagger/go",["tagPrefix","gomod"],["version","v0.2.0"]],"refs/tags/v0.2.0"]
-["","git-latest",["github.com/dagger/go"],"refs/tags/v0.3.0"]
+["","git-latest",["github.com/dagger/go",["tagPrefix","gomod"],["version","v0.3.0"]],"refs/tags/v0.3.0"]
+["","git-latest",["github.com/dagger/go"],"refs/tags/v0.3.1"]
 ["","git-sha",["github.com/dagger/go","refs/tags/v0.2.0"],"334136faaa1cd36ac26dfdc648eda907ce99c063"]
 ["","git-sha",["github.com/dagger/go","refs/tags/v0.3.0"],"99e78894947ae7b6cdc27c8694def9a52ba001fb"]
+["","git-sha",["github.com/dagger/go","refs/tags/v0.3.1"],"c25c457c7567a426133d536523913988c09ffb1e"]
 ["","oci-sha",["docker.io/library/alpine:3.22.1"],"sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1"]
 ["","oci-sha",["docker.io/library/golang:1.25-alpine"],"sha256:1ae0735f00daffa3aaf1363a5184c0d2dc55c78e3db4ec70241cdac97bf84b59"]
 ["","oci-sha",["docker.io/library/golang:1.26-alpine"],"sha256:27f2d3b83cfc5803c8078f8e730af0f7c431bf067afaec8f60a36fb763187cba"]
