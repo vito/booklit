@@ -135,17 +135,16 @@ type Booklit {
       .withDirectory("/assets", assets)
       .withFile("/notes.md", info.file("notes.md"))
       .withSecretVariable("GH_TOKEN", githubToken)
-      .withEnvVariable("TITLE", info.file("name").contents.trimSpace)
-      .withEnvVariable("VERSION", version)
-      .withEnvVariable("TARGET", sha)
-      .withEnvVariable("REPO", repo)
-      .withExec(["sh", "-c", '''
-        gh release create "$VERSION" /assets/* \
-          --repo "$REPO" \
-          --target "$TARGET" \
-          --title "$TITLE" \
-          --notes-file /notes.md
-      '''])
+      .withExec(
+        ["gh", "release", "create", version]
+          + platforms.map { platform => "/assets/" + binaryName(platform) }
+          + [
+            "--repo", repo,
+            "--target", sha,
+            "--title", info.file("name").contents.trimSpace,
+            "--notes-file", "/notes.md",
+          ],
+      )
       .stdout
   }
 
