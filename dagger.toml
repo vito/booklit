@@ -1,6 +1,12 @@
 [modules.go]
 source = "dagger.io/go"
 
+[modules.editor]
+source = "github.com/vito/editor"
+
+[modules.contributor]
+source = "github.com/vito/agents/contributor"
+
 [modules.dang-sdk]
 source = "dagger.io/sdk/dang"
 
