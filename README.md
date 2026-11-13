@@ -41,3 +41,27 @@ alternatively, run the docs in server mode:
 ```
 
 ...and then browse to [localhost:3000](https://localhost:3000)
+
+## development
+
+tests, generated files and release builds all run with [Dagger](https://dagger.io):
+
+```bash
+dagger check      # tests, cross-compilation, and that generated files are up to date
+dagger generate   # regenerate the parser, the stylesheets, and the docs site
+```
+
+`dagger generate` covers everything derived from a source file:
+
+| generated                                    | from                              |
+| -------------------------------------------- | --------------------------------- |
+| `ast/booklit.peg.go`                         | `ast/booklit.peg` (`go generate`) |
+| `errhtml/errors.css`, `docs/css/booklit.css` | `less/*.less`                     |
+| `docs/*.html`, `docs/outputs/`               | `docs/lit/`, `docs/hello/`        |
+
+to cut a release, push `<version>/name` and `<version>/notes.md` to the
+`version` branch, then:
+
+```bash
+dagger call release --version v0.13.0 --github-token "cmd://gh auth token"
+```

@@ -1,0 +1,200 @@
+"""
+Builds, generates and releases Booklit.
+
+Tests, go generate (the parser) and plain builds come from the dagger.io/go
+module installed beside this one; this module covers the rest: the
+stylesheets, the docs site, and versioned cross-platform release binaries.
+"""
+type Booklit {
+  """
+  Platforms release binaries are built for, as GOOS/GOARCH.
+  """
+  platforms: [String!]! = [
+    "linux/amd64",
+    "linux/arm64",
+    "darwin/amd64",
+    "darwin/arm64",
+    "windows/amd64",
+  ]
+
+  """
+  Compile the stylesheets from less/ into errhtml/errors.css and
+  docs/css/booklit.css.
+  """
+  css(ws: Workspace!): Changeset! @generate {
+    let compiled = container
+      .from("node:22-alpine")
+      .withMountedCache("/usr/local/share/.cache/yarn", cacheVolume("booklit-yarn"))
+      .withWorkdir("/src")
+      .withFile("package.json", ws.file("package.json"))
+      .withFile("yarn.lock", ws.file("yarn.lock"))
+      .withExec(["yarn", "install", "--frozen-lockfile"])
+      .withDirectory("less", ws.directory("less"))
+      .withExec(["yarn", "run", "lessc", "less/errors.less", "errhtml/errors.css"])
+      .withExec(["yarn", "run", "lessc", "less/docs.less", "docs/css/booklit.css"])
+
+    ws
+      .withFile("errhtml/errors.css", compiled.file("errhtml/errors.css"))
+      .withFile("docs/css/booklit.css", compiled.file("docs/css/booklit.css"))
+      .changes(ws)
+  }
+
+  """
+  Build the docs site into docs/, and the hello example into docs/outputs/.
+  """
+  docs(ws: Workspace!): Changeset! @generate {
+    let built = goBase
+      .withDirectory("/src", ws.directory(".", gitignore: true, exclude: [
+        ".dagger",
+        "docs/*.html",
+        "docs/outputs",
+      ]))
+      .withWorkdir("/src")
+      .withExec([
+        "go", "run", "./cmd/booklit",
+        "-i", "docs/lit/index.md",
+        "-o", "docs",
+        "--html-templates", "docs/html",
+        "--plugin", "github.com/vito/booklit/docs/go",
+        "--plugin", "github.com/vito/booklit/chroma/plugin",
+      ])
+      .withWorkdir("/src/docs/hello")
+      .withExec([
+        "go", "tool", "booklit",
+        "--plugin", "github.com/vito/booklit/docs/hello/go",
+        "--html-templates", "html",
+        "-i", "index.lit",
+        "-o", "../outputs",
+      ])
+
+    ws.withDirectory("docs", built.directory("/src/docs")).changes(ws)
+  }
+
+  """
+  The booklit binary for one platform, with its version stamped in.
+  """
+  binary(
+    ws: Workspace!,
+    """
+    Version reported by booklit --version.
+    """
+    version: String! = "0.0.0-dev",
+    """
+    Target platform, as GOOS/GOARCH.
+    """
+    platform: String! = "linux/amd64",
+  ): File! {
+    build(goSource(ws.directory(".")), version, platform)
+  }
+
+  """
+  Release binaries for every platform, named booklit_<os>_<arch>[.exe].
+  """
+  binaries(ws: Workspace!, version: String! = "0.0.0-dev"): Directory! {
+    buildAll(goSource(ws.directory(".")), version)
+  }
+
+  """
+  Check that booklit cross-compiles for every release platform.
+  """
+  crossCompile(ws: Workspace!): Void @check {
+    binaries(ws).sync
+    null
+  }
+
+  """
+  Publish a GitHub release of the workspace's checked-out commit.
+
+  Binaries are built from that commit, not from uncommitted changes. The
+  title and notes come from <version>/name and <version>/notes.md on the
+  repository's version branch, which must be pushed first.
+  """
+  release(
+    ws: Workspace!,
+    """
+    Version to release, e.g. v0.13.0. Also the tag that is created.
+    """
+    version: String!,
+    """
+    GitHub token allowed to create releases, e.g. cmd://gh auth token.
+    """
+    githubToken: Secret!,
+    """
+    Repository to release, as owner/name.
+    """
+    repo: String! = "vito/booklit",
+  ): String! @cache(policy: FunctionCachePolicy.NEVER) {
+    let head = ws.git.head
+    let sha = head.commit
+    let assets = buildAll(goSource(head.tree), version)
+    let info = git("https://github.com/" + repo).branch("version").tree.directory(version)
+
+    container
+      .from("alpine:3.22")
+      .withExec(["apk", "add", "--no-cache", "github-cli"])
+      .withDirectory("/assets", assets)
+      .withFile("/notes.md", info.file("notes.md"))
+      .withSecretVariable("GH_TOKEN", githubToken)
+      .withEnvVariable("TITLE", info.file("name").contents.trimSpace)
+      .withEnvVariable("VERSION", version)
+      .withEnvVariable("TARGET", sha)
+      .withEnvVariable("REPO", repo)
+      .withExec(["sh", "-c", '''
+        gh release create "$VERSION" /assets/* \
+          --repo "$REPO" \
+          --target "$TARGET" \
+          --title "$TITLE" \
+          --notes-file /notes.md
+      '''])
+      .stdout
+  }
+
+  let goBase: Container! {
+    container
+      .from("golang:1.25-alpine")
+      .withMountedCache("/go/pkg/mod", cacheVolume("booklit-go-mod"))
+      .withMountedCache("/root/.cache/go-build", cacheVolume("booklit-go-build"))
+  }
+
+  # Just what go build ./cmd/booklit reads: the Go sources and the assets they
+  # embed.
+  let goSource(src: Directory!): Directory! {
+    src.filter(
+      include: ["go.mod", "go.sum", "**/*.go", "**/*.tmpl", "**/*.css", "**/*.js"],
+      exclude: ["docs", "tests"],
+    )
+  }
+
+  let binaryName(platform: String!): String! {
+    let parts = platform.split("/")
+    let ext = if (parts[0] == "windows") { ".exe" } else { "" }
+    "booklit_" + parts[0]! + "_" + parts[1]! + ext
+  }
+
+  let build(src: Directory!, version: String!, platform: String!): File! {
+    let parts = platform.split("/")
+    let goos = parts[0]!
+    let goarch = parts[1]!
+    let exe = binaryName(platform)
+
+    goBase
+      .withDirectory("/src", src)
+      .withWorkdir("/src")
+      .withEnvVariable("GOOS", goos)
+      .withEnvVariable("GOARCH", goarch)
+      .withEnvVariable("CGO_ENABLED", "0")
+      .withExec([
+        "go", "build",
+        "-o", "/out/" + exe,
+        "-ldflags", "-X github.com/vito/booklit.Version=" + version,
+        "./cmd/booklit",
+      ])
+      .file("/out/" + exe)
+  }
+
+  let buildAll(src: Directory!, version: String!): Directory! {
+    platforms.reduce(directory) { dir, platform =>
+      dir.withFile(binaryName(platform), build(src, version, platform))
+    }
+  }
+}
