@@ -1,2 +1,22 @@
 [modules.go]
 source = "dagger.io/go"
+
+[modules.editor]
+source = "github.com/vito/editor"
+
+[modules.contributor]
+source = "github.com/vito/agents/contributor"
+
+[modules.dang-sdk]
+source = "dagger.io/sdk/dang"
+
+[sdks.dang]
+module = "dang-sdk"
+
+[modules.booklit]
+main = true
+source = ".dagger/modules/booklit"
+
+[sdks.dang.scopes.".dagger/modules/booklit"]
+is-module = true
+name = "booklit"

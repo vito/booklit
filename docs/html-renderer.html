@@ -35,7 +35,7 @@
 
       <h1 class="section-header"><a id="html-renderer"></a><span class="section-number"><a href="html-renderer.html">3</a> </span>The HTML Renderer</h1>
 
-<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it&#39;s probably the one you&#39;ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don&#39;t include any styling at all. You&#39;ll probably want to change that.</p><p>The HTML renderer uses Go&#39;s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, create a directory for your <code>.tmpl</code> files and pass it to Booklit with the <code>--html-templates</code> flag.</p><p>The <code>--html-templates</code> flag must be passed every time you build your docs, so you may want to put it in a script:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#c29d7c">#!/bin/bash
+<p>The presentation of your content is controlled by a <em>renderer</em>. At present, there is only one, and it’s probably the one you’ll want to use: HTML, for generating static websites.</p><p>Booklit comes with some extremely barebones templates that don’t include any styling at all. You’ll probably want to change that.</p><p>The HTML renderer uses Go’s built-in <a href="https://golang.org/pkg/html/template"><code>html/template</code></a> package. To override templates, create a directory for your <code>.tmpl</code> files and pass it to Booklit with the <code>--html-templates</code> flag.</p><p>The <code>--html-templates</code> flag must be passed every time you build your docs, so you may want to put it in a script:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span><span style="color:#c29d7c">#!/bin/bash
 </span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>booklit -i lit/index.lit -o public <span style="color:#fcc21b">\
 </span></span></span><span style="display:flex;"><span>  --html-templates ./html <span style="color:#fcc21b">\
@@ -218,7 +218,7 @@
     
   </tr>
   
-</table><p>The most impactful of these is <code>page.tmpl</code>, which is used for the top-level section for each &#34;page&#34; rendered. This is where you would place assets in <code>&lt;head&gt;</code>, for example.</p>
+</table><p>The most impactful of these is <code>page.tmpl</code>, which is used for the top-level section for each “page” rendered. This is where you would place assets in <code>&lt;head&gt;</code>, for example.</p>
 
 
   
@@ -244,10 +244,10 @@
     <dd><p>render the content</p></dd>
   
   <dt><code>{{walkContext currentSection subSection}}</code></dt>
-    <dd><p>generate a convenience struct with fields <code>.Current</code> and <code>.Section</code>, useful for traversing a tree of sections while retaining the &#34;current&#34; section, e.g. so it can be marked as &#34;active&#34; in a navigation tree</p></dd>
+    <dd><p>generate a convenience struct with fields <code>.Current</code> and <code>.Section</code>, useful for traversing a tree of sections while retaining the “current” section, e.g. so it can be marked as “active” in a navigation tree</p></dd>
   
   <dt><code>{{section | headerDepth}}</code></dt>
-    <dd><p>return the number that should be used for the section&#39;s header, i.e. <code>&lt;hN&gt;</code></p></dd>
+    <dd><p>return the number that should be used for the section’s header, i.e. <code>&lt;hN&gt;</code></p></dd>
   
 </dl>
 
@@ -302,7 +302,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  I&#39;m a normal sub-section!
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div></div><p>...and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
+</span></span></code></pre></div></div><p>…and the following as <code>fancy.tmpl</code> under the given templates path (<code>--html-templates</code>):</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;<span style="color:#c29d7c">{{</span>.Title | render<span style="color:#c29d7c">}}</span>&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#c29d7c">{{</span>.Body | render<span style="color:#c29d7c">}}</span>
@@ -313,7 +313,7 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">end</span><span style="color:#c29d7c">}}</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#c29d7c">{{</span><span style="color:#ed6c30;font-weight:bold">end</span><span style="color:#c29d7c">}}</span>
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#fcc21b;font-weight:bold">div</span>&gt;
-</span></span></code></pre></div><p>...the following will be the rendered HTML for the section:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
+</span></span></code></pre></div><p>…the following will be the rendered HTML for the section:</p><div class="highlight"><pre style=";-webkit-text-size-adjust:none;"><code><span style="display:flex;"><span>&lt;<span style="color:#fcc21b;font-weight:bold">div</span> class=<span style="color:#fcc21b">&#34;fancy&#34;</span>&gt;
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">em</span>&gt;&lt;<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;Fancy Section&lt;/<span style="color:#fcc21b;font-weight:bold">strong</span>&gt;&lt;/<span style="color:#fcc21b;font-weight:bold">em</span>&gt;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  &lt;<span style="color:#fcc21b;font-weight:bold">p</span>&gt;I&#39;m a fancy section!&lt;/<span style="color:#fcc21b;font-weight:bold">p</span>&gt;
